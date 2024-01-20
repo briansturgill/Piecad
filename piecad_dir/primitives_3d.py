@@ -74,7 +74,7 @@ def extrude(
     _chkGE("scale_y", scale_y, 0)
     return Obj3d(
         _m.Manifold.extrude(
-            obj.v, height, num_twist_divisions, twist, (scale_x, scale_y)
+            obj.mo, height, num_twist_divisions, twist, (scale_x, scale_y)
         )
     )
 
@@ -95,4 +95,4 @@ def revolve(obj: Obj2d, segments: int = -1, revolve_degrees: float = 360.0) -> O
     _chkTY("obj", obj, Obj2d)
     _chkGE("segments", segments, 3)
     _chkGT("revolve_degrees", revolve_degrees, 0)
-    return Obj3d(_m.Manifold.revolve(obj.v, segments, revolve_degrees))
+    return Obj3d(_m.Manifold.revolve(obj.mo, segments, revolve_degrees))

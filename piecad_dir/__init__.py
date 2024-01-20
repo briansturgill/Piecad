@@ -1,31 +1,53 @@
 """
-LATER document
+"Easy as Pie" CAD (Piecad)
+
+It is my opinionted view of what a good, simple CAD API should look like.
+
+For many years I used [OpenSCAD](https://www.openscad.org),
+but the functional language it uses was often a hinderance and its speed
+was poor.
+
+Piecad is based on [Manifold](https://github.com/elalish/manifold).
+Manifold incorporates [Clipper2](https://github.com/AngusJohnson/Clipper2)
+for 2D objects. It also uses
+[`quickhull`](https://github.com/akuukka/quickhull) for 3d convex hulls.
+
 """
+
+
+def version():
+    "Piecad version"
+    return "0.2.0"
 
 
 class Obj3d:
     """
     Wrapper class for "Manifolds", which are 3D graphical objects.
+
+    Attributes:
+        mo The Manifold::Manifold object used by manifold3d.
     """
 
     def __init__(self, o: object):
-        self.v = o
-        self.color = None
+        self.mo = o
 
 
 class Obj2d:
     """
     Wrapper class for "CrossSections", which are 2D graphical objects.
+
+    Attributes:
+        mo The Manifold::CrossSection object used by manifold3d.
     """
 
     def __init__(self, o: object):
-        self.v = o
-        self.color = None
+        self.mo = o
 
 
-class FatalError(Exception):
+class ValidationError(Exception):
     """
-    Exception class for errors raised in **piecad**.
+    Exception class for errors detected in arguments to **piecad**
+    functions and methods.
     """
 
     pass

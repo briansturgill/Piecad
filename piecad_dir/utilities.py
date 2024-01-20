@@ -40,26 +40,22 @@ def save(filename: str, obj: Union[Obj3d, Obj2d]) -> None:
 
     """
     if type(obj) != Obj3d and type(obj) != Obj2d:
-        raise (FatalError("Object must be of type Obj3d or Obj2d."))
+        raise (ValidationError("Object must be of type Obj3d or Obj2d."))
     if type(obj) == Obj3d:
-        mesh = obj.v.to_mesh()
+        mesh = obj.mo.to_mesh()
         if mesh.vert_properties.shape[1] > 3:
             vertices = mesh.vert_properties[:, :3]
-            colors = (mesh.vert_properties[:, 3:] * 255).astype(np.uint8)
         else:
             vertices = mesh.vert_properties
-            colors = None
-        mesh_output = trimesh.Trimesh(
-            vertices=vertices, faces=mesh.tri_verts, vertex_colors=colors
-        )
-        print("LATER", mesh_output.is_watertight)
+        mesh_output = trimesh.Trimesh(vertices=vertices, faces=mesh.tri_verts)
+        assert mesh_output.is_watertight
         dot_idx = filename.rindex(".")
         ext = filename[dot_idx + 1 :]
         trimesh.exchange.export.export_mesh(mesh_output, filename, ext)
     else:  # Obj2d
         ext = filename[dot_idx + 1 :]
         if ext != "svg":
-            raise (FatalError("Only the SVG format is supported for Obj2d."))
+            raise (ValidationError("Only the SVG format is supported for Obj2d."))
 
 
 _view_queue = queue.Queue()
@@ -81,7 +77,7 @@ def view(obj: Union[Obj3d, Obj2d], title: str = "") -> None:
     global _view_thread
 
     if type(obj) != Obj3d and type(obj) != Obj2d:
-        raise (FatalError("Object must be of type Obj3d or Obj2d."))
+        raise (ValidationError("Object must be of type Obj3d or Obj2d."))
 
     if type(obj) == Obj2d:
         color = obj.color
@@ -93,7 +89,7 @@ def view(obj: Union[Obj3d, Obj2d], title: str = "") -> None:
         _view_thread.start()
         atexit.register(_tell_view_handler_to_exit)
 
-    mesh = obj.v.to_mesh()
+    mesh = obj.mo.to_mesh()
     if mesh.vert_properties.shape[1] > 3:
         vertices = mesh.vert_properties[:, :3]
     else:
