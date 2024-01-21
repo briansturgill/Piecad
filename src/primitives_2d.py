@@ -21,4 +21,5 @@ def circle(radius: float, segments: int = -1) -> Obj2d:
         segments = config["DefaultSegments"]
     _chkGT("radius", radius, 0)
     _chkGE("segments", segments, 3)
+
     return Obj2d(_m.CrossSection.circle(radius, segments))

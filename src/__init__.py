@@ -28,8 +28,27 @@ class Obj3d:
         mo The Manifold::Manifold object used by manifold3d.
     """
 
-    def __init__(self, o: object):
+    def __init__(self, o: object, color=None):
         self.mo = o
+        self._color = color
+
+    def color(self, cspec):
+        """
+        Assign the given color to this object.</summary>
+
+        Parameters:
+
+            The `color` parameter has 3 formats:
+
+            *   A tuple of RGB color values, where each value is between
+                0 and 255. Such as: `(255, 128, 0)`
+
+            * A string beginning with "#" followed by 6 hex digits
+                representing RGB. Such as "#FF00FF"
+            * A string that is one of the basic or extended CSS color names.
+              For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color/keywords)
+        """
+        return Obj3d(self.mo, _parse_color(cspec))
 
 
 class Obj2d:
@@ -40,11 +59,30 @@ class Obj2d:
         mo The Manifold::CrossSection object used by manifold3d.
     """
 
-    def __init__(self, o: object):
+    def __init__(self, o: object, color=None):
         self.mo = o
+        self._color = color
+
+    def color(self, cspec):
+        """
+        Assign the given color to this object.</summary>
+
+        Parameters:
+
+            The `color` parameter has 3 formats:
+
+            *   A tuple of RGB color values, where each value is between
+                0 and 255. Such as: `(255, 128, 0)`
+
+            * A string beginning with "#" followed by 6 hex digits
+                representing RGB. Such as "#FF00FF"
+            * A string that is one of the basic or extended CSS color names.
+              For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color/keywords)
+        """
+        return Obj2d(self.mo, _parse_color(cspec))
 
 
-class ValidationError(Exception):
+class ValidationError(BaseException):
     """
     Exception class for errors detected in arguments to **piecad**
     functions and methods.
@@ -68,6 +106,7 @@ from .primitives_2d import *
 from .primitives_3d import *
 from .trigonometry import *
 from .utilities import *
+from ._color import _parse_color
 from ._c import _chkGT, _chkTY, _chkGE
 
 

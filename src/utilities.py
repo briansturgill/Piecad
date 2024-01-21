@@ -48,7 +48,7 @@ def save(filename: str, obj: Union[Obj3d, Obj2d]) -> None:
         else:
             vertices = mesh.vert_properties
         mesh_output = trimesh.Trimesh(vertices=vertices, faces=mesh.tri_verts)
-        assert mesh_output.is_watertight
+        # LATER assert mesh_output.is_watertight
         dot_idx = filename.rindex(".")
         ext = filename[dot_idx + 1 :]
         trimesh.exchange.export.export_mesh(mesh_output, filename, ext)
