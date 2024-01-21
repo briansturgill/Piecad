@@ -35,6 +35,31 @@ def cone(
     return con  # con already Obj3d
 
 
+def cube(size: float) -> Obj3d:
+    """
+    Make a cube of with sides of the given size.
+
+    """
+    if type(size) == list or type(size) == tuple:
+        return cuboid(size)
+    sq = square(size)
+    cub = extrude(sq, size, 0, 0.0, 1.0, 1.0)
+    return cub  # cub already Obj3d
+
+
+def cuboid(size: list[float, float, float]) -> Obj3d:
+    """
+    Make a cuboid with the x, y, and z values given in size.
+
+    """
+    if type(size) == float or type(size) == int:
+        return cube(size)
+    x, y, z = size
+    rect = rectangle([x, y])
+    cub = extrude(rect, z, 0, 0.0, 1.0, 1.0)
+    return cub  # cub already Obj3d
+
+
 def cylinder(height: float, radius: float, segments: int = -1) -> Obj3d:
     """
     Make a cylinder of a given radius and height.

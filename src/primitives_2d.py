@@ -29,6 +29,7 @@ def circle(radius: float, segments: int = -1) -> Obj2d:
         circ = _unit_circles[segments]
     else:
         circ = _m.CrossSection.circle(1, segments)
+        _unit_circles[segments] = circ
 
     if radius == 1:
         return Obj2d(circ)
@@ -40,7 +41,7 @@ def rectangle(size: list[float, float]) -> Obj2d:
     Make a rectangle of a given size.
 
     """
-    if type(size) == int:
+    if type(size) == float or type(size) == int:
         return square(size)
     _chkV2("size", size)
 
