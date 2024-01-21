@@ -2,11 +2,44 @@ import pytest
 from piecad import *
 
 
+def _square(s):
+    o = square(s)
+    o.mo.num_vert()
+    return o
+
+
+def _rectangle(t):
+    o = rectangle(t)
+    o.mo.num_vert()
+    return o
+
+
+def _circle(r, s):
+    c = circle(r, s)
+    c.mo.num_vert()
+    return c
+
+
 def test_circle_10(benchmark):
-    o = benchmark(circle, 1, 10)
+    o = benchmark(_circle, 3, 10)
     assert o.mo.num_vert() == 10
 
 
 def test_circle_100(benchmark):
-    o = benchmark(circle, 1, 100)
+    o = benchmark(_circle, 3, 100)
     assert o.mo.num_vert() == 100
+
+
+def test_square(benchmark):
+    o = benchmark(_square, 10)
+    assert o.mo.num_vert() == 4
+
+
+def test_rectangle(benchmark):
+    o = benchmark(_rectangle, [10, 10])
+    assert o.mo.num_vert() == 4
+
+
+def test_rectangle2(benchmark):
+    o = benchmark(_rectangle, (10, 10))
+    assert o.mo.num_vert() == 4

@@ -29,7 +29,10 @@ def cone(
     _chkGT("radius_low", radius_low, 0)
     _chkGE("radius_high", radius_high, 0)
     _chkGE("segments", segments, 3)
-    return Obj3d(_m.Manifold.cylinder(height, radius_low, radius_high, segments, True))
+    circ = circle(radius_low, segments)
+    factor = radius_high / radius_low
+    con = extrude(circ, height, 0, 0.0, factor, factor)
+    return con  # con already Obj3d
 
 
 def cylinder(height: float, radius: float, segments: int = -1) -> Obj3d:
@@ -44,7 +47,9 @@ def cylinder(height: float, radius: float, segments: int = -1) -> Obj3d:
     _chkGT("height", height, 0)
     _chkGT("radius", radius, 0)
     _chkGE("segments", segments, 3)
-    return Obj3d(_m.Manifold.cylinder(height, radius, radius, segments, True))
+    circ = circle(radius, segments)
+    cyl = extrude(circ, height, 0, 0.0, 1.0, 1.0)
+    return cyl  # cyl already Obj3d
 
 
 def extrude(

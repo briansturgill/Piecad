@@ -198,4 +198,6 @@ def _parse_color(c):
             return _cssColors[c]
         raise ValidationError(f"Color '{c}' is not a known color.")
     else:
-        ValidationError("A color is specifed by a string or a tuple of RGB values")
+        raise ValidationError(
+            "A color is specifed by a string or a tuple of RGB values"
+        )
