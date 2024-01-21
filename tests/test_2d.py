@@ -14,6 +14,12 @@ def _rectangle(t):
     return o
 
 
+def _rounded_rectangle(t, r, s):
+    o = rounded_rectangle(t, r, s)
+    o.mo.num_vert()
+    return o
+
+
 def _circle(r, s):
     c = circle(r, s)
     c.mo.num_vert()
@@ -41,5 +47,10 @@ def test_rectangle(benchmark):
 
 
 def test_rectangle2(benchmark):
-    o = benchmark(_rectangle, (10, 10))
+    o = benchmark(_rectangle, (10, 10))  # Check list vs tuple
     assert o.mo.num_vert() == 4
+
+
+def test_rounded_rectangle(benchmark):
+    o = benchmark(_rounded_rectangle, (10, 10), 2.0, 36)
+    assert o.mo.num_vert() == 40

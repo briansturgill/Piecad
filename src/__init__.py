@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 "Easy as Pie" CAD (Piecad)
 
@@ -13,6 +15,8 @@ for 2D objects. It also uses
 [`quickhull`](https://github.com/akuukka/quickhull) for 3d convex hulls.
 
 """
+
+from ._c import _chkGT, _chkTY, _chkGE, _chkV2, _chkV3
 
 
 def version():
@@ -50,6 +54,13 @@ class Obj3d:
         """
         return Obj3d(self.mo, _parse_color(cspec))
 
+    def translate(self, offsets: list[float, float, float]) -> Obj3d:
+        """
+        Translate (move) this object by the given offsets.
+        """
+        _chkV3("offsets", offsets)
+        return Obj3d(self.mo.translate(offsets), color=self._color)
+
 
 class Obj2d:
     """
@@ -81,6 +92,13 @@ class Obj2d:
         """
         return Obj2d(self.mo, _parse_color(cspec))
 
+    def translate(self, offsets: list[float, float]) -> Obj2d:
+        """
+        Translate (move) this object by the given offsets.
+        """
+        _chkV2("offsets", offsets)
+        return Obj2d(self.mo.translate(offsets), color=self._color)
+
 
 class ValidationError(BaseException):
     """
@@ -102,12 +120,12 @@ LATER document -- get rid of set_default_segments?
 
 """
 
+from .bulk_ops import *
 from .primitives_2d import *
 from .primitives_3d import *
 from .trigonometry import *
 from .utilities import *
 from ._color import _parse_color
-from ._c import _chkGT, _chkTY, _chkGE
 
 
 def set_default_segments(segments: int) -> None:

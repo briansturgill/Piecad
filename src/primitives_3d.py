@@ -86,14 +86,22 @@ def extrude(
     scale_y=1.0,
 ) -> Obj3d:
     """
-    Create a Obj3d solid from Obj2 of given height.
+    Create a Obj3d solid from Obj2d of given height.
 
     The 2d object will be copied and moved up to ``height``.
     Lines will be added creating an ``obj``-shaped 3d solid.
 
-    Parameter ``num_twist_divisions`` should only ve used when ``twist`` is greater than zero
+    Parameter ``num_twist_divisions`` should only be used when ``twist`` is
+    greater than zero.
 
-    "LATER explain twist and scaling",
+    Parameter `twist` will cause a circular rotation for each `num_twist_divisions`.
+
+    Scale_x and scale_y is also applied at each division.
+
+    Example:
+
+        o2 = union(circle(4), circle(4).translate([-4, 4*2], circle(4).translate([4, 4*2])
+        o3 = extrude(o2, 20, 40, 360/10, 1.2, 1.2)
 
     """
     _chkTY("obj", obj, Obj2d)
@@ -112,7 +120,7 @@ def extrude(
 def revolve(obj: Obj2d, segments: int = -1, revolve_degrees: float = 360.0) -> Obj3d:
     """
     LATER
-    Create a Obj3d solid from Obj2 of given height.
+    Create a Obj3d solid from Obj2d of given height.
 
     The 2d object will be copied and moved up to ``height``.
     Lines will be added creating an ``obj``-shaped 3d solid.
