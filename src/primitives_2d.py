@@ -136,15 +136,18 @@ def square(size: float) -> Obj2d:
 
     return Obj2d(_m.CrossSection.square((size, size)))
 
-def star(num_points: int, outer_radius: float = 10.0, inner_radius: float = 0.0) -> Obj2d:
+
+def star(
+    num_points: int, outer_radius: float = 10.0, inner_radius: float = 0.0
+) -> Obj2d:
     """
     Make a regular star of a given number of points.
 
     If `inner_radius` is `0.0` then it will be calculated based on outer_radius.
     """
     pts = []
-    deg_per_np = 360.0/num_points
-    ido = deg_per_np/2.0 # inner_degree_offset
+    deg_per_np = 360.0 / num_points
+    ido = deg_per_np / 2.0  # inner_degree_offset
 
     if inner_radius == 0.0:
         ratio = cos(360.0 / num_points) / cos(180 / num_points)
@@ -153,7 +156,7 @@ def star(num_points: int, outer_radius: float = 10.0, inner_radius: float = 0.0)
     deg = 90
     for i in range(0, num_points):
         pts.append((outer_radius * cos(deg), outer_radius * sin(deg)))
-        pts.append((inner_radius * cos(deg+ido), inner_radius * sin(deg+ido)))
+        pts.append((inner_radius * cos(deg + ido), inner_radius * sin(deg + ido)))
         deg += deg_per_np
-    
+
     return polygon(pts)

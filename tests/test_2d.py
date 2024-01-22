@@ -77,6 +77,7 @@ def test_rounded_rectangle(benchmark):
     o = benchmark(_rounded_rectangle, (10, 10), 2.0, 36)
     assert o.mo.num_vert() == 40
 
+
 def test_star(benchmark):
     o = benchmark(_star, 5, 20)
     assert o.mo.num_vert() == 10
