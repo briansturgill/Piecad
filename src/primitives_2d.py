@@ -38,6 +38,35 @@ def circle(radius: float, segments: int = -1) -> Obj2d:
     return Obj2d(circ.scale((radius, radius)))
 
 
+def ellipse(radii: list[float, float], segments: int = -1) -> Obj2d:
+    """
+    Make an ellipse with the given radii.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    """
+    if segments == -1:
+        segments = config["DefaultSegments"]
+    _chkV2("radii", radii)
+    _chkGE("segments", segments, 3)
+
+    if segments in _unit_circles:
+        circ = _unit_circles[segments]
+    else:
+        circ = _m.CrossSection.circle(1, segments)
+        _unit_circles[segments] = circ
+
+    return Obj2d(circ.scale(radii))
+
+
+def polygon(points: list[float, float]) -> Obj2d:
+    """
+    Create a polygon from a single closed path of points.
+
+    """
+    return Obj2d(_m.CrossSection([points], _m.FillRule.EvenOdd))
+
+
 def rectangle(size: list[float, float]) -> Obj2d:
     """
     Make a rectangle of a given size.
@@ -106,3 +135,25 @@ def square(size: float) -> Obj2d:
     _chkGT("size", size, 0)
 
     return Obj2d(_m.CrossSection.square((size, size)))
+
+def star(num_points: int, outer_radius: float = 10.0, inner_radius: float = 0.0) -> Obj2d:
+    """
+    Make a regular star of a given number of points.
+
+    If `inner_radius` is `0.0` then it will be calculated based on outer_radius.
+    """
+    pts = []
+    deg_per_np = 360.0/num_points
+    ido = deg_per_np/2.0 # inner_degree_offset
+
+    if inner_radius == 0.0:
+        ratio = cos(360.0 / num_points) / cos(180 / num_points)
+        inner_radius = outer_radius * ratio
+
+    deg = 90
+    for i in range(0, num_points):
+        pts.append((outer_radius * cos(deg), outer_radius * sin(deg)))
+        pts.append((inner_radius * cos(deg+ido), inner_radius * sin(deg+ido)))
+        deg += deg_per_np
+    
+    return polygon(pts)

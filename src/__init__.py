@@ -36,6 +36,17 @@ class Obj3d:
         self.mo = o
         self._color = color
 
+    def bounding_box(self):
+        """
+        Return the bounding box of this object.
+
+        Return a tuple: (left, front, bottom, right, back, top) which represents
+        a cuboid that would exactly contain this object.
+
+        It can be broken up like this: `x1, y1, z1, x2, y2, z2 = obj.bounding_box()`
+        """
+        return self.mo.bounding_box()
+
     def color(self, cspec):
         """
         Assign the given color to this object.</summary>
@@ -53,6 +64,40 @@ class Obj3d:
               For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color/keywords)
         """
         return Obj3d(self.mo, _parse_color(cspec))
+
+    def piecut(self, start_angle=0, end_angle=90) -> Obj3d:
+        """
+        Cut a wedge out of this object.
+
+        It returns a copy of this object minus the wedge.
+
+        """
+        if end_angle < start_angle:
+            end_angle = end_angle + 360.0
+        x1, y1, z1, x2, y2, z2 = self.bounding_box()
+        c_x = (x2 + x1) / 2.0
+        c_y = (y2 + y1) / 2.0
+        c_z = (z2 + z1) / 2.0
+        rad = max(z2 - z1, x2 - x1, y2 - y1)  # Actually 2*rad which is good
+        h = z2 - z1
+        pts = []
+        pts.append((rad * cos(start_angle), rad * sin(start_angle)))
+        ang = 90 + start_angle
+        while ang < end_angle:
+            pts.append((rad * cos(ang), rad * sin(ang)))
+            ang = ang + 90
+        pts.append((rad * cos(end_angle), rad * sin(end_angle)))
+        cutter = extrude(polygon(pts), h).translate([c_x, c_y, c_z - (h / 2)])
+        return difference(self, cutter)
+
+    def scale(self, factors: list[float, float, float]) -> Obj3d:
+        """
+        Scale this object by the given factors.
+
+        If you want no change, use `1.0`, that means 100% (thus unchanged).
+        """
+        _chkV3("factors", factors)
+        return Obj3d(self.mo.translate(factors), color=self._color)
 
     def translate(self, offsets: list[float, float, float]) -> Obj3d:
         """
@@ -74,6 +119,17 @@ class Obj2d:
         self.mo = o
         self._color = color
 
+    def bounding_box(self):
+        """
+        Return the bounding box of this object.
+
+        Return a tuple: (left, bottom, right, top) which represents
+        a rectangle that would exactly contain this object.
+
+        It can be broken up like this: `x1, y1, x2, y2 = obj.bounding_box()`
+        """
+        return self.mo.bounds()
+
     def color(self, cspec):
         """
         Assign the given color to this object.</summary>
@@ -91,6 +147,38 @@ class Obj2d:
               For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color/keywords)
         """
         return Obj2d(self.mo, _parse_color(cspec))
+
+    def piecut(self, start_angle=0, end_angle=90) -> Obj2d:
+        """
+        Cut a wedge out of this object.
+
+        It returns a copy of this object minus the wedge.
+
+        """
+        if end_angle < start_angle:
+            end_angle = end_angle + 360.0
+        x1, y1, x2, y2 = self.bounding_box()
+        c_x = (x2 + x1) / 2.0
+        c_y = (y2 + y1) / 2.0
+        rad = max(x2 - x1, y2 - y1)  # Actually 2*rad which is good
+        pts = []
+        pts.append((rad * cos(start_angle) + c_x, rad * sin(start_angle) + c_y))
+        ang = 90 + start_angle
+        while ang < end_angle:
+            pts.append((rad * cos(ang) + c_x, rad * sin(ang) + c_y))
+            ang = ang + 90
+        pts.append((rad * cos(end_angle) + c_x, rad * sin(end_angle) + c_y))
+        cutter = polygon(pts)
+        return difference(self, cutter)
+
+    def scale(self, factors: list[float, float]) -> Obj2d:
+        """
+        Scale this object by the given factors.
+
+        If you want no change, use `1.0`, that means 100% (thus unchanged).
+        """
+        _chkV3("factors", factors)
+        return Obj2d(self.mo.translate(factors), color=self._color)
 
     def translate(self, offsets: list[float, float]) -> Obj2d:
         """
