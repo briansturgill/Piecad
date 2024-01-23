@@ -1,5 +1,5 @@
 """
-## Miscellaneans bulk operations that work on multiple objects.
+## Miscellaneous bulk operations that work on multiple objects.
 
 """
 
