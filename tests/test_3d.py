@@ -26,6 +26,12 @@ def _cylinder(h, r, s):
     return c
 
 
+def _extrude(o, h):
+    o = extrude(o, h)
+    o.mo.num_vert()
+    return o
+
+
 def test_cone(benchmark):
     c = benchmark(_cone, 15, 10, 36)
     assert c.mo.num_vert() == 72
@@ -46,9 +52,10 @@ def test_cuboid(benchmark):
     assert c.mo.num_vert() == 8
 
 
-def test_extrude():
+def test_extrude(benchmark):
     c = circle(10)
-    assert extrude(c, 1).mo.num_vert() == 72
+    o = benchmark(_extrude, c, 1)
+    assert o.mo.num_vert() == 72
 
 
 def test_revolve():
