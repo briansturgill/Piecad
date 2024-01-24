@@ -1,4 +1,5 @@
 from __future__ import annotations
+import manifold3d as _m
 
 """
 "Easy as Pie" CAD (Piecad)
@@ -66,6 +67,35 @@ class Obj3d:
         """
         return Obj3d(self.mo, _parse_color(cspec))
 
+    def is_empty(self):
+        """
+        Is this object empty?
+
+        """
+        return self.mo.is_empty()
+
+    def num_faces(self) -> int:
+        """
+        The number of faces in this object.
+
+        This is useful in unit testing shapes.
+
+        It is very difficult to check that a shape is correct, but knowing that a correct
+        number of faces is present goes a long way to making sure things are healthy.
+        """
+        return self.mo.num_tri()
+
+    def num_verts(self) -> int:
+        """
+        The number of vertices in this object.
+
+        This is useful in unit testing shapes.
+
+        It is very difficult to check that a shape is correct, but knowing that a correct
+        number of vertices is present goes a long way to making sure things are healthy.
+        """
+        return self.mo.num_vert()
+
     def piecut(self, start_angle=0, end_angle=90) -> Obj3d:
         """
         Cut a wedge out of this object.
@@ -88,7 +118,9 @@ class Obj3d:
             pts.append((rad * cos(ang), rad * sin(ang)))
             ang = ang + 90
         pts.append((rad * cos(end_angle), rad * sin(end_angle)))
-        cutter = extrude(polygon(pts), h).translate([c_x, c_y, c_z - (h / 2)])
+        cutter = Obj3d(_m.Manifold.extrude(polygon(pts).mo, h)).translate(
+            [c_x, c_y, c_z - (h / 2)]
+        )
         return difference(self, cutter)
 
     def rotate(self, degrees: list[float, float, float]) -> Obj3d:
@@ -107,6 +139,20 @@ class Obj3d:
         """
         _chkV3("factors", factors)
         return Obj3d(self.mo.scale(factors), color=self._color)
+
+    def to_verts_and_faces(
+        self,
+    ) -> tuple(list(list[float, float, float]), list(list[int, int, int])):
+        """
+        Return a pair containg a list of vertices and a list of faces for this object.
+
+        """
+        mesh = self.mo.to_mesh()
+        if mesh.vert_properties.shape[1] > 3:
+            vertices = mesh.vert_properties[:, :3]
+        else:
+            vertices = mesh.vert_properties
+        return (vertices, mesh.tri_verts)
 
     def translate(self, offsets: list[float, float, float]) -> Obj3d:
         """
@@ -157,6 +203,28 @@ class Obj2d:
         """
         return Obj2d(self.mo, _parse_color(cspec))
 
+    def is_empty(self):
+        """
+        Is this object empty?
+
+        """
+        return self.mo.is_empty()
+
+    def extrude(self, height: int):
+        _chkGT("height", height, 0.0)
+        Obj3d(_m.Manifold.extrude(self.mo, height))
+
+    def num_verts(self) -> int:
+        """
+        The number of vertices in this object.
+
+        This is useful in unit testing shapes.
+
+        It is very difficult to check that a shape is correct, but knowing that a correct
+        number of vertices is present goes a long way to making sure things are healthy.
+        """
+        return self.mo.num_vert()
+
     def piecut(self, start_angle=0, end_angle=90) -> Obj2d:
         """
         Cut a wedge out of this object.
@@ -196,6 +264,13 @@ class Obj2d:
         """
         _chkV2("factors", factors)
         return Obj2d(self.mo.scale(factors), color=self._color)
+
+    def to_paths(self) -> list(list[float, float]):
+        """
+        Return a lists of paths, each of which is a list of vertices that make up this object.
+
+        """
+        return self.mo.to_polygons()
 
     def translate(self, offsets: list[float, float]) -> Obj2d:
         """

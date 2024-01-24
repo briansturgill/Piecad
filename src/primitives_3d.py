@@ -6,8 +6,8 @@
 import manifold3d as _m
 import trimesh
 
-from ._c import _chkGT, _chkTY, _chkGE
 from . import *
+from ._c import _chkGT, _chkTY, _chkGE
 
 
 def cone(
@@ -146,14 +146,9 @@ def geodesic_sphere(radius, segments=-1):
 
 def revolve(obj: Obj2d, segments: int = -1, revolve_degrees: float = 360.0) -> Obj3d:
     """
-    LATER
-    Create a Obj3d solid from Obj2d of given height.
+    Create a Obj3d revolving an Obj2d around the Y-axis, then rotating it so that Y becomes Z.
 
-    The 2d object will be copied and moved up to ``height``.
-    Lines will be added creating an ``obj``-shaped 3d solid.
-
-    Parameter ``segments`` is only used when ``twist`` is greater than zero
-    For more on ``segments`` see the documentation of ``set_default_segments``.
+    For ``segments`` see the documentation of ``set_default_segments``.
     """
     if segments == -1:
         segments = config["DefaultSegments"]
