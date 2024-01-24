@@ -2,6 +2,18 @@ import pytest
 from piecad import *
 
 
+def _sphere(r, s):
+    o = sphere(r, s)
+    o.mo.num_vert()
+    return o
+
+
+def _geodesic_sphere(r, s):
+    o = geodesic_sphere(r, s)
+    o.mo.num_vert()
+    return o
+
+
 def _cube(s):
     c = cube(s)
     c.mo.num_vert()
@@ -61,3 +73,13 @@ def test_extrude(benchmark):
 def test_revolve():
     c = circle(10)
     assert revolve(c).mo.num_vert() == 614
+
+
+def test_sphere(benchmark):
+    c = benchmark(_sphere, 10, 100)
+    assert c.mo.num_vert() == 4902
+
+
+def test_geodesic_sphere(benchmark):
+    c = benchmark(_geodesic_sphere, 10, 100)
+    assert c.mo.num_vert() == 2502

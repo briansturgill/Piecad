@@ -117,6 +117,33 @@ def extrude(
     )
 
 
+_unit_geodesic_spheres = {}
+
+
+def geodesic_sphere(radius, segments=-1):
+    """
+    Create a geodesic sphere of a given radius.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    """
+    _chkGT("radius", radius, 0)
+    _chkGE("radius", radius, 3)
+    if segments == -1:
+        segments = config["DefaultSegments"]
+
+    if segments in _unit_geodesic_spheres:
+        sph = _unit_geodesic_spheres[segments]
+    else:
+        sph = _m.Manifold.sphere(1, segments)
+        _unit_geodesic_spheres[segments] = sph
+
+    if radius == 1:
+        return Obj3d(sph)
+
+    return Obj3d(sph.scale((radius, radius, radius)))
+
+
 def revolve(obj: Obj2d, segments: int = -1, revolve_degrees: float = 360.0) -> Obj3d:
     """
     LATER
@@ -134,3 +161,31 @@ def revolve(obj: Obj2d, segments: int = -1, revolve_degrees: float = 360.0) -> O
     _chkGE("segments", segments, 3)
     _chkGT("revolve_degrees", revolve_degrees, 0)
     return Obj3d(_m.Manifold.revolve(obj.mo, segments, revolve_degrees))
+
+
+_unit_spheres = {}
+
+
+def sphere(radius, segments=-1):
+    """
+    Create a geodesic sphere of a given radius.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    """
+    _chkGT("radius", radius, 0)
+    _chkGE("radius", radius, 3)
+    if segments == -1:
+        segments = config["DefaultSegments"]
+
+    if segments in _unit_spheres:
+        sph = _unit_spheres[segments]
+    else:
+        circ = circle(1, segments).piecut(90, 270)
+        sph = revolve(circ, segments=segments)
+        _unit_spheres[segments] = sph
+
+    if radius == 1:
+        return sph
+
+    return sph.scale((radius, radius, radius))

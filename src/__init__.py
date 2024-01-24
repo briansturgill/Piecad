@@ -17,6 +17,7 @@ for 2D objects. It also uses
 """
 
 from ._c import _chkGT, _chkTY, _chkGE, _chkV2, _chkV3
+from .validation_error import ValidationError
 
 
 def version():
@@ -90,6 +91,14 @@ class Obj3d:
         cutter = extrude(polygon(pts), h).translate([c_x, c_y, c_z - (h / 2)])
         return difference(self, cutter)
 
+    def rotate(self, degrees: list[float, float, float]) -> Obj3d:
+        """
+        Rotate this object by the given degrees for each axis.
+
+        """
+        _chkV3("degrees", degrees)
+        return Obj3d(self.mo.rotate(degrees), color=self._color)
+
     def scale(self, factors: list[float, float, float]) -> Obj3d:
         """
         Scale this object by the given factors.
@@ -97,7 +106,7 @@ class Obj3d:
         If you want no change, use `1.0`, that means 100% (thus unchanged).
         """
         _chkV3("factors", factors)
-        return Obj3d(self.mo.translate(factors), color=self._color)
+        return Obj3d(self.mo.scale(factors), color=self._color)
 
     def translate(self, offsets: list[float, float, float]) -> Obj3d:
         """
@@ -171,14 +180,22 @@ class Obj2d:
         cutter = polygon(pts)
         return difference(self, cutter)
 
+    def rotate(self, degrees: list[float, float]) -> Obj2d:
+        """
+        Rotate this object by the given degrees for each axis.
+
+        """
+        _chkV2("degrees", degrees)
+        return Obj2d(self.mo.rotate(degrees), color=self._color)
+
     def scale(self, factors: list[float, float]) -> Obj2d:
         """
         Scale this object by the given factors.
 
         If you want no change, use `1.0`, that means 100% (thus unchanged).
         """
-        _chkV3("factors", factors)
-        return Obj2d(self.mo.translate(factors), color=self._color)
+        _chkV2("factors", factors)
+        return Obj2d(self.mo.scale(factors), color=self._color)
 
     def translate(self, offsets: list[float, float]) -> Obj2d:
         """
@@ -186,15 +203,6 @@ class Obj2d:
         """
         _chkV2("offsets", offsets)
         return Obj2d(self.mo.translate(offsets), color=self._color)
-
-
-class ValidationError(BaseException):
-    """
-    Exception class for errors detected in arguments to **piecad**
-    functions and methods.
-    """
-
-    pass
 
 
 config = {}

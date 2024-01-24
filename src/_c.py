@@ -1,4 +1,4 @@
-from . import *
+from .validation_error import ValidationError
 
 
 def _chkGE(name: str, val: object, const: object):
@@ -22,11 +22,11 @@ def _chkV2(name: str, v1: object):
     if type(v1) != list and type(v1) != tuple:
         raise ValidationError(f"Parameter {name} must be of type list or tuple")
     if len(v1) != 2:
-        raise ValidationError("Parameter {name} list/tuple must have length of 2.")
+        raise ValidationError(f"Parameter {name} list/tuple must have length of 2.")
 
 
 def _chkV3(name: str, v1: object):
     if type(v1) != list and type(v1) != tuple:
         raise ValidationError(f"Parameter {name} must be of type list or tuple")
     if len(v1) != 3:
-        raise ValidationError("Parameter {name} list/tuple must have length of 2.")
+        raise ValidationError(f"Parameter {name} list/tuple must have length of 3.")
