@@ -2,8 +2,8 @@ import pytest
 from piecad import *
 
 
-def _extrude_list(l):
-    o = extrude_list(l)
+def _extrude_chaining(l):
+    o = extrude_chaining(l)
     o.num_verts()
     return o
 
@@ -26,9 +26,9 @@ def _union(o1, o2):
     return o
 
 
-def test_extrude_list(benchmark):
+def test_extrude_chaining(benchmark):
     c = circle(10)
-    o = benchmark(_extrude_list, [(1, c)])
+    o = benchmark(_extrude_chaining, [(1, c)])
     assert o.num_verts() == 72
 
 

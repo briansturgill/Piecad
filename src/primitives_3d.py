@@ -22,7 +22,7 @@ def cone(
     don't 3d print very well. If the model is not to be printed,
     by all means set it to 0.
 
-    <iframe width="100%" height="200" src="examples/cone.html"></iframe>
+    <iframe width="100%" height="220" src="examples/cone.html"></iframe>
 
     """
     if segments == -1:
@@ -33,7 +33,7 @@ def cone(
     _chkGE("segments", segments, 3)
     circ = circle(radius_low, segments)
     factor = radius_high / radius_low
-    con = extrude(circ, height, 0, 0.0, factor, factor)
+    con = extrude_transforming(circ, height, 0, 0.0, factor, factor)
     return con  # con already Obj3d
 
 
@@ -41,13 +41,13 @@ def cube(size: float) -> Obj3d:
     """
     Make a cube of with sides of the given size.
 
-    <iframe width="100%" height="200" src="examples/cube.html"></iframe>
+    <iframe width="100%" height="220" src="examples/cube.html"></iframe>
 
     """
     if type(size) == list or type(size) == tuple:
         return cuboid(size)
     sq = square(size)
-    cub = extrude(sq, size, 0, 0.0, 1.0, 1.0)
+    cub = extrude(sq, size)
     return cub  # cub already Obj3d
 
 
@@ -55,14 +55,14 @@ def cuboid(size: list[float, float, float]) -> Obj3d:
     """
     Make a cuboid with the x, y, and z values given in size.
 
-    <iframe width="100%" height="200" src="examples/cuboid.html"></iframe>
+    <iframe width="100%" height="220" src="examples/cuboid.html"></iframe>
 
     """
     if type(size) == float or type(size) == int:
         return cube(size)
     x, y, z = size
     rect = rectangle([x, y])
-    cub = extrude(rect, z, 0, 0.0, 1.0, 1.0)
+    cub = extrude(rect, z)
     return cub  # cub already Obj3d
 
 
@@ -72,7 +72,7 @@ def cylinder(height: float, radius: float, segments: int = -1) -> Obj3d:
 
     For ``segments`` see the documentation of ``set_default_segments``.
 
-    <iframe width="100%" height="200" src="examples/cylinder.html"></iframe>
+    <iframe width="100%" height="220" src="examples/cylinder.html"></iframe>
 
     """
     if segments == -1:
@@ -81,11 +81,26 @@ def cylinder(height: float, radius: float, segments: int = -1) -> Obj3d:
     _chkGT("radius", radius, 0)
     _chkGE("segments", segments, 3)
     circ = circle(radius, segments)
-    cyl = extrude(circ, height, 0, 0.0, 1.0, 1.0)
+    cyl = extrude(circ, height)
     return cyl  # cyl already Obj3d
 
 
-def extrude(
+def extrude(obj: Obj2d, height: float) -> Obj3d:
+    """
+    Create a Obj3d solid from Obj2d of given height.
+
+    The 2d object will be copied and moved up to ``height``.
+    Lines will be added creating an ``obj``-shaped 3d solid.
+
+    <iframe width="100%" height="220" src="examples/extrude.html"></iframe>
+
+    """
+    _chkTY("obj", obj, Obj2d)
+    _chkGT("height", height, 0)
+    return Obj3d(_m.Manifold.extrude(obj.mo, height))
+
+
+def extrude_transforming(
     obj: Obj2d,
     height: float,
     num_twist_divisions: int = 0,
@@ -106,7 +121,7 @@ def extrude(
 
     Scale_x and scale_y is also applied at each division.
 
-    <iframe width="100%" height="200" src="examples/extrude.html"></iframe>
+    <iframe width="100%" height="250" src="examples/extrude_transforming.html"></iframe>
 
     """
     _chkTY("obj", obj, Obj2d)
@@ -122,16 +137,13 @@ def extrude(
     )
 
 
-_unit_geodesic_spheres = {}
-
-
 def geodesic_sphere(radius, segments=-1):
     """
     Create a geodesic sphere of a given radius.
 
     For ``segments`` see the documentation of ``set_default_segments``.
 
-    <iframe width="100%" height="200" src="examples/geodesic_sphere.html"></iframe>
+    <iframe width="100%" height="220" src="examples/geodesic_sphere.html"></iframe>
 
     """
     _chkGT("radius", radius, 0)
@@ -139,11 +151,7 @@ def geodesic_sphere(radius, segments=-1):
     if segments == -1:
         segments = config["DefaultSegments"]
 
-    if segments in _unit_geodesic_spheres:
-        sph = _unit_geodesic_spheres[segments]
-    else:
-        sph = _m.Manifold.sphere(1, segments)
-        _unit_geodesic_spheres[segments] = sph
+    sph = _m.Manifold.sphere(1, segments)
 
     if radius == 1:
         return Obj3d(sph)
@@ -157,7 +165,7 @@ def revolve(obj: Obj2d, segments: int = -1, revolve_degrees: float = 360.0) -> O
 
     For ``segments`` see the documentation of ``set_default_segments``.
 
-    <iframe width="100%" height="200" src="examples/revolve.html"></iframe>
+    <iframe width="100%" height="220" src="examples/revolve.html"></iframe>
 
     """
     if segments == -1:
@@ -168,16 +176,13 @@ def revolve(obj: Obj2d, segments: int = -1, revolve_degrees: float = 360.0) -> O
     return Obj3d(_m.Manifold.revolve(obj.mo, segments, revolve_degrees))
 
 
-_unit_spheres = {}
-
-
 def sphere(radius, segments=-1):
     """
     Create a classical sphere of a given radius.
 
     For ``segments`` see the documentation of ``set_default_segments``.
 
-    <iframe width="100%" height="200" src="examples/sphere.html"></iframe>
+    <iframe width="100%" height="220" src="examples/sphere.html"></iframe>
 
     """
     _chkGT("radius", radius, 0)
@@ -185,12 +190,8 @@ def sphere(radius, segments=-1):
     if segments == -1:
         segments = config["DefaultSegments"]
 
-    if segments in _unit_spheres:
-        sph = _unit_spheres[segments]
-    else:
-        circ = circle(1, segments).piecut(90, 270)
-        sph = revolve(circ, segments=segments)
-        _unit_spheres[segments] = sph
+    circ = circle(1, segments).piecut(90, 270)
+    sph = revolve(circ, segments=segments)
 
     if radius == 1:
         return sph

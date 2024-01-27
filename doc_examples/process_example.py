@@ -26,11 +26,10 @@ body {{
 }}
 pre {{
     margin: 0;
+    text-align: left;
 }}
 .cd {{
-	text-align: center;
-	vertical-align: middle;
-	padding-top: 10px;
+	padding-top: 0px;
 }}
 .mv {{
 	display: block;
@@ -49,7 +48,11 @@ pre {{
     <table width="100%">
     <tr>
     <td class="cd">
-		<pre><code>{"".join(example_code)}</code></pre>
+<code>
+<pre>
+{"".join(example_code)}
+</pre>
+</code>
     </td>
 		</tr>
 		<tr>

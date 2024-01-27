@@ -98,10 +98,10 @@ def rounded_rectangle(
 
     circ = circle(radius, segments)
     return hull(
-        circ,
-        circ.translate((10, 0)),
-        circ.translate((0, 10)),
-        circ.translate((10, 10)),
+        circ.translate((radius, radius)),
+        circ.translate((size[0] - radius, radius)),
+        circ.translate((size[0] - radius, size[1] - radius)),
+        circ.translate((radius, size[1] - radius)),
     )
 
     # Surprisingly, the code below is nearly three times slower than

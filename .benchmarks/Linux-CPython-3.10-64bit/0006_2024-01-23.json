@@ -742,8 +742,8 @@
         },
         {
             "group": null,
-            "name": "test_extrude_list",
-            "fullname": "tests/test_3d.py::test_extrude_list",
+            "name": "test_extrude_chaining",
+            "fullname": "tests/test_3d.py::test_extrude_chaining",
             "params": null,
             "param": null,
             "extra_info": {},

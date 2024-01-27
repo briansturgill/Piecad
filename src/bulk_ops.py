@@ -36,7 +36,7 @@ def difference(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
         raise ValidationError("All objects must be of one type, Obj2d or Obj3d")
 
 
-def extrude_list(
+def extrude_chaining(
     paths: list[float, Obj2d | tuple[Obj2d, Obj2d]], initial_z: float = 0.0
 ) -> Obj3d:
     """
