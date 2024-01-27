@@ -166,13 +166,13 @@ def extrude_chaining(
                             v((x1, y1, h)),
                         )
                     )
-        else:
+        else:  # Fan triangulation
             poly = polys[0]  # We have only one to deal with
             n = len(poly)
             chosen = poly[0]
-            for i in range(1, n):
+            for i in range(1, n - 1):
                 cur = poly[i]
-                next = poly[(i + 1) % n]
+                next = poly[i + 1]
                 if top:
                     triangles.append(
                         (
