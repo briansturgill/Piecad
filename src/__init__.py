@@ -207,13 +207,12 @@ class Obj2d:
     def is_empty(self):
         """
         Is this object empty?
-
         """
         return self.mo.is_empty()
 
     def extrude(self, height: int):
         """
-        LATER
+        Extrude this object into a Obj3d of the given height.
         """
         return _piecad.extrude(self, height)
 
@@ -233,7 +232,6 @@ class Obj2d:
         Cut a wedge out of this object.
 
         It returns a copy of this object minus the wedge.
-
         """
         if end_angle < start_angle:
             end_angle = end_angle + 360.0
@@ -256,7 +254,6 @@ class Obj2d:
         Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
 
         For ``segments`` see the documentation of ``set_default_segments``.
-
         """
         return _piecad.revolve(self, segments, revolve_degrees)
 
@@ -280,7 +277,6 @@ class Obj2d:
     def to_paths(self) -> list(list[float, float]):
         """
         Return a lists of paths, each of which is a list of vertices that make up this object.
-
         """
         return self.mo.to_polygons()
 

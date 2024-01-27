@@ -44,6 +44,12 @@ def _extrude(o, h):
     return o
 
 
+def _extrude_chaining(l, uec):
+    o = extrude_chaining(l, use_ear_cut=uec)
+    o.num_verts()
+    return o
+
+
 def test_cone(benchmark):
     c = benchmark(_cone, 15, 10, 36)
     assert c.num_verts() == 72
@@ -65,8 +71,8 @@ def test_cuboid(benchmark):
 
 
 def test_extrude(benchmark):
-    c = circle(10)
-    o = benchmark(_extrude, c, 1)
+    c = circle(100)
+    o = benchmark(_extrude, c, 10)
     assert o.num_verts() == 72
 
 
@@ -84,3 +90,15 @@ def test_geodesic_sphere(benchmark):
     c = benchmark(_geodesic_sphere, 10, 100)
     assert c.num_verts() == 2502
     assert c.num_faces() == 5000
+
+
+def test_extrude_chaining_earcut(benchmark):
+    c = circle(100)
+    o = benchmark(_extrude_chaining, [(10, c)], True)
+    assert o.num_verts() == 72
+
+
+def test_extrude_chaining_fan(benchmark):
+    c = circle(100)
+    o = benchmark(_extrude_chaining, [(10, c)], False)
+    assert o.num_verts() == 72

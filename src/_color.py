@@ -12,7 +12,6 @@ A tuple of RGB values in as a 3 tuple: (0, 255, 255)
 
 
 For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color/keywords)
-
 """
 
 

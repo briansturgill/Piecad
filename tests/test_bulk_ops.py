@@ -2,12 +2,6 @@ import pytest
 from piecad import *
 
 
-def _extrude_chaining(l):
-    o = extrude_chaining(l)
-    o.num_verts()
-    return o
-
-
 def _difference(o1, o2):
     o = difference(o1, o2)
     o.num_verts()
@@ -24,12 +18,6 @@ def _union(o1, o2):
     o = union(o1, o2)
     o.num_verts()
     return o
-
-
-def test_extrude_chaining(benchmark):
-    c = circle(10)
-    o = benchmark(_extrude_chaining, [(1, c)])
-    assert o.num_verts() == 72
 
 
 def test_difference_2d(benchmark):

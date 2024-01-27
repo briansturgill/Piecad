@@ -15,6 +15,8 @@ from typing import Union
 from ._c import _chkGT, _chkTY, _chkGE
 from . import *
 
+_viewer_available = config["CADViewerEnabled"]
+
 
 def save(filename: str, obj: Union[Obj3d, Obj2d]) -> None:
     """
@@ -36,11 +38,12 @@ def save(filename: str, obj: Union[Obj3d, Obj2d]) -> None:
 
     \\(See [https://github/mikedh/trimesh] for more formats.\\)
 
-    For 2D only the SVG (.svg) format is available.
-
+    For 2D, only the SVG (.svg) format is available.
     """
     if type(obj) != Obj3d and type(obj) != Obj2d:
         raise (ValidationError("Object must be of type Obj3d or Obj2d."))
+    if config["CADViewDoNotSendSaves"] == False and _viewer_available:
+        view(obj, filename)
     if type(obj) == Obj3d:
         mesh = obj.mo.to_mesh()
         if mesh.vert_properties.shape[1] > 3:
@@ -69,14 +72,11 @@ def view(obj: Union[Obj3d, Obj2d], title: str = "") -> None:
     Use CADView protocol to display the geometry object.
 
     Returns obj unchanged... so that it works well in return statements.
-
-    Example:
-
-      return View(Obj);
-
     """
 
     global _view_thread
+    if _viewer_available == False:
+        return
 
     if type(obj) != Obj3d and type(obj) != Obj2d:
         raise (ValidationError("Object must be of type Obj3d or Obj2d."))
@@ -116,10 +116,15 @@ def _tell_view_handler_to_exit():
 
 
 def _view_handler():
-    conn = http.client.HTTPConnection(config["CADViewerHostAndPort"])
-    content = json.dumps('{"clear":true}')
-    conn.request("POST", "/", content)
-    response = conn.getresponse()
+    global _viewer_available
+    try:
+        conn = http.client.HTTPConnection(config["CADViewerHostAndPort"])
+        content = json.dumps('{"clear":true}')
+        conn.request("POST", "/", content)
+        response = conn.getresponse()
+    except:
+        _viewer_available = False
+        return
 
     while True:
         view_data = _view_queue.get()

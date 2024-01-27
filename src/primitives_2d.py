@@ -1,6 +1,5 @@
 """
 ## Create 2D objects such as circles and retangles.
-
 """
 
 import manifold3d as _m
@@ -20,7 +19,6 @@ def circle(radius: float, segments: int = -1) -> Obj2d:
     Make a circle of a given radius.
 
     For ``segments`` see the documentation of ``set_default_segments``.
-
     """
     if segments == -1:
         segments = config["DefaultSegments"]
@@ -43,7 +41,6 @@ def ellipse(radii: list[float, float], segments: int = -1) -> Obj2d:
     Make an ellipse with the given radii.
 
     For ``segments`` see the documentation of ``set_default_segments``.
-
     """
     if segments == -1:
         segments = config["DefaultSegments"]
@@ -62,7 +59,6 @@ def ellipse(radii: list[float, float], segments: int = -1) -> Obj2d:
 def polygon(points: list[float, float]) -> Obj2d:
     """
     Create a polygon from a single closed path of points.
-
     """
     return Obj2d(_m.CrossSection([points], _m.FillRule.EvenOdd))
 
@@ -70,7 +66,6 @@ def polygon(points: list[float, float]) -> Obj2d:
 def rectangle(size: list[float, float]) -> Obj2d:
     """
     Make a rectangle of a given size.
-
     """
     if type(size) == float or type(size) == int:
         return square(size)
@@ -127,7 +122,6 @@ def rounded_rectangle(
 def square(size: float) -> Obj2d:
     """
     Make a square of a given size.
-
     """
     if type(size) == list or type(size) == tuple:
         return rectangle(size)
