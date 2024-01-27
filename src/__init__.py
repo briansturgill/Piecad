@@ -1,5 +1,6 @@
 from __future__ import annotations
 import manifold3d as _m
+import piecad as _piecad
 
 """
 "Easy as Pie" CAD (Piecad)
@@ -211,8 +212,10 @@ class Obj2d:
         return self.mo.is_empty()
 
     def extrude(self, height: int):
-        _chkGT("height", height, 0.0)
-        Obj3d(_m.Manifold.extrude(self.mo, height))
+        """
+        LATER
+        """
+        return _piecad.extrude(self, height)
 
     def num_verts(self) -> int:
         """
@@ -247,6 +250,15 @@ class Obj2d:
         pts.append((rad * cos(end_angle) + c_x, rad * sin(end_angle) + c_y))
         cutter = polygon(pts)
         return difference(self, cutter)
+
+    def revolve(self, segments: int = -1, revolve_degrees: float = 360.0):
+        """
+        Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
+
+        For ``segments`` see the documentation of ``set_default_segments``.
+
+        """
+        return _piecad.revolve(self, segments, revolve_degrees)
 
     def rotate(self, degrees: list[float, float]) -> Obj2d:
         """

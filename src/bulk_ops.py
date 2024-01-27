@@ -6,9 +6,8 @@
 import manifold3d as _m
 import numpy as _np
 
-from ._c import _chkGT, _chkTY, _chkGE, _chkV2
-
 from . import *
+from ._c import _chkGT, _chkTY, _chkGE, _chkV2
 
 
 def difference(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:

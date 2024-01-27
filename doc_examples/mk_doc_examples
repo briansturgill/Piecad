@@ -1,0 +1,16 @@
+#!/bin/sh
+models="../html/piecad/models"
+examples="../html/piecad/examples"
+if [ ! -d $models ]; then
+	mkdir $models
+fi
+if [ ! -d $examples ]; then
+	mkdir $examples
+fi
+for f in *.example; do
+	python process_example.py $f
+done
+
+mv tmp/*.glb $models
+mv tmp/*.html $examples
+rm tmp/*.py

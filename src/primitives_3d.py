@@ -1,6 +1,6 @@
 """
 ## Create 3D objects such as spheres and cubes.
-
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 """
 
 import manifold3d as _m
@@ -22,6 +22,8 @@ def cone(
     don't 3d print very well. If the model is not to be printed,
     by all means set it to 0.
 
+    <iframe width="100%" height="200" src="examples/cone.html"></iframe>
+
     """
     if segments == -1:
         segments = config["DefaultSegments"]
@@ -39,6 +41,8 @@ def cube(size: float) -> Obj3d:
     """
     Make a cube of with sides of the given size.
 
+    <iframe width="100%" height="200" src="examples/cube.html"></iframe>
+
     """
     if type(size) == list or type(size) == tuple:
         return cuboid(size)
@@ -50,6 +54,8 @@ def cube(size: float) -> Obj3d:
 def cuboid(size: list[float, float, float]) -> Obj3d:
     """
     Make a cuboid with the x, y, and z values given in size.
+
+    <iframe width="100%" height="200" src="examples/cuboid.html"></iframe>
 
     """
     if type(size) == float or type(size) == int:
@@ -65,6 +71,8 @@ def cylinder(height: float, radius: float, segments: int = -1) -> Obj3d:
     Make a cylinder of a given radius and height.
 
     For ``segments`` see the documentation of ``set_default_segments``.
+
+    <iframe width="100%" height="200" src="examples/cylinder.html"></iframe>
 
     """
     if segments == -1:
@@ -98,10 +106,7 @@ def extrude(
 
     Scale_x and scale_y is also applied at each division.
 
-    Example:
-
-        o2 = union(circle(4), circle(4).translate([-4, 4*2], circle(4).translate([4, 4*2])
-        o3 = extrude(o2, 20, 40, 360/10, 1.2, 1.2)
+    <iframe width="100%" height="200" src="examples/extrude.html"></iframe>
 
     """
     _chkTY("obj", obj, Obj2d)
@@ -126,6 +131,8 @@ def geodesic_sphere(radius, segments=-1):
 
     For ``segments`` see the documentation of ``set_default_segments``.
 
+    <iframe width="100%" height="200" src="examples/geodesic_sphere.html"></iframe>
+
     """
     _chkGT("radius", radius, 0)
     _chkGE("radius", radius, 3)
@@ -146,9 +153,12 @@ def geodesic_sphere(radius, segments=-1):
 
 def revolve(obj: Obj2d, segments: int = -1, revolve_degrees: float = 360.0) -> Obj3d:
     """
-    Create a Obj3d revolving an Obj2d around the Y-axis, then rotating it so that Y becomes Z.
+    Create a Obj3d by revolving an Obj2d around the Y-axis, then rotating it so that Y becomes Z.
 
     For ``segments`` see the documentation of ``set_default_segments``.
+
+    <iframe width="100%" height="200" src="examples/revolve.html"></iframe>
+
     """
     if segments == -1:
         segments = config["DefaultSegments"]
@@ -163,9 +173,11 @@ _unit_spheres = {}
 
 def sphere(radius, segments=-1):
     """
-    Create a geodesic sphere of a given radius.
+    Create a classical sphere of a given radius.
 
     For ``segments`` see the documentation of ``set_default_segments``.
+
+    <iframe width="100%" height="200" src="examples/sphere.html"></iframe>
 
     """
     _chkGT("radius", radius, 0)

@@ -48,6 +48,8 @@ def save(filename: str, obj: Union[Obj3d, Obj2d]) -> None:
         else:
             vertices = mesh.vert_properties
         mesh_output = trimesh.Trimesh(vertices=vertices, faces=mesh.tri_verts)
+        if obj._color != None:
+            mesh_output.visual.vertex_colors = obj._color
         # LATER assert mesh_output.is_watertight
         dot_idx = filename.rindex(".")
         ext = filename[dot_idx + 1 :]
