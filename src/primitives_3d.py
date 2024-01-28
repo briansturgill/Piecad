@@ -1,6 +1,5 @@
 """
 ## Create 3D objects such as spheres and cubes.
-<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 """
 
 import manifold3d as _m
@@ -114,17 +113,24 @@ def extrude_chaining(
 
     Caps:
 
-        If `height` is zero then Obj2d is a cap.
-        A cap is generated, the cap is differenced from the previous shape.
+        If `height` is zero then Obj2d is a partial cap.
+        In other words, you want to make a hole.
+        For manifold correctness reasons you need to cap the hole bottom.
+
+        Once the cap is generated, the cap is differenced from the previous shape.
         This is the new previous shape and will determine the number of points needed in
         the following shapes.
         At least one extrusion must follow a cap.
 
         (Caps are automatically generated at the bottom and top of the extrusion.]
 
-        LATER 0 height use prev
+        If you have made a partial cap, you can extrude the differenced shape/cap
+        with a pair: (height, None). This is so you don't have to do the 2d
+        difference that was already done.
 
     <iframe width="100%" height="300" src="examples/extrude_chaining.html"></iframe>
+
+    <iframe width="100%" height="300" src="examples/extrude_chaining_rr.html"></iframe>
     """
     vertex_map = {}
     vertex_list = []
@@ -206,9 +212,15 @@ def extrude_chaining(
 
     while cur_idx < last:
         cur = paths[cur_idx][1]
+        if cur == None:
+            # This means to extrude the shape from the previous shape.
+            # Usually this is done after a partial cap and you want
+            # to extrude the difference done for the partial cap.
+            cur = prev
+
         h = paths[cur_idx][0]
 
-        if h == 0:  # A cap.
+        if h == 0:  # A partial cap.
             add_cap(cur_z, cur, top=True)
             prev = difference(prev, cur)
             cur_idx += 1
