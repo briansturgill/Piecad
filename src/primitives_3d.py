@@ -106,6 +106,12 @@ def extrude_chaining(
 
     Input list is a list of pairs: `[[height, Obj2d], ...]`.
 
+    Use `initial_z` if you want it extruded starting at a different z value.
+
+    The parameter `use_ear_cut` set to `False` uses a much faster triangulation
+    algoritm (called fan) which only works on a convex shape. If you don't
+    understand what this means, leave this option alone.
+
     Caps:
 
         If `height` is zero then Obj2d is a cap.
@@ -116,7 +122,9 @@ def extrude_chaining(
 
         (Caps are automatically generated at the bottom and top of the extrusion.]
 
-    <iframe width="100%" height="250" src="examples/extrude_chaining.html"></iframe>
+        LATER 0 height use prev
+
+    <iframe width="100%" height="300" src="examples/extrude_chaining.html"></iframe>
     """
     vertex_map = {}
     vertex_list = []
@@ -226,7 +234,7 @@ def extrude_chaining(
         cur_z += h
         cur_idx += 1
 
-    add_cap(cur_z, paths[-1][1], top=True)
+    add_cap(cur_z, cur, top=True)
 
     vertex_list = _np.array(vertex_list, _np.float32)
     triangles = _np.array(triangles, _np.int32)
@@ -329,7 +337,7 @@ def sphere(radius, segments=-1):
     if segments == -1:
         segments = config["DefaultSegments"]
 
-    circ = circle(1, segments).piecut(90, 270)
+    circ = circle(radius, segments).piecut(90, 270)
     sph = revolve(circ, segments=segments)
 
     if radius == 1:

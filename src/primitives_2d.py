@@ -4,9 +4,9 @@
 
 import manifold3d as _m
 
-from ._c import _chkGT, _chkTY, _chkGE, _chkV2
 
 from . import *
+from ._c import _chkGT, _chkTY, _chkGE, _chkV2
 
 from .trigonometry import cos, sin
 
@@ -22,7 +22,7 @@ def circle(radius: float, segments: int = -1) -> Obj2d:
     """
     if segments == -1:
         segments = config["DefaultSegments"]
-    _chkGT("radius", radius, 0)
+    _chkGT("radius", radius, 0.0)
     _chkGE("segments", segments, 3)
 
     if segments in _unit_circles:

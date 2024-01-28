@@ -257,12 +257,12 @@ class Obj2d:
         """
         return _piecad.revolve(self, segments, revolve_degrees)
 
-    def rotate(self, degrees: list[float, float]) -> Obj2d:
+    def rotate(self, degrees: float) -> Obj2d:
         """
-        Rotate this object by the given degrees for each axis.
+        Rotate this object by the given degrees.
 
         """
-        _chkV2("degrees", degrees)
+        _chkTY("degrees", degrees, float)
         return Obj2d(self.mo.rotate(degrees), color=self._color)
 
     def scale(self, factors: list[float, float]) -> Obj2d:

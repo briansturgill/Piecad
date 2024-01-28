@@ -12,8 +12,8 @@ import numpy as np
 import trimesh
 from typing import Union
 
-from ._c import _chkGT, _chkTY, _chkGE
 from . import *
+from ._c import _chkGT, _chkTY, _chkGE
 
 _viewer_available = config["CADViewerEnabled"]
 

@@ -46,7 +46,7 @@ def _extrude(o, h):
 
 def _extrude_chaining(l, uec):
     o = extrude_chaining(l, use_ear_cut=uec)
-    o.num_verts()
+    print(o.num_verts())
     return o
 
 
@@ -102,3 +102,26 @@ def test_extrude_chaining_fan(benchmark):
     c = circle(100)
     o = benchmark(_extrude_chaining, [(10, c)], False)
     assert o.num_verts() == 72
+
+
+def _sphere_from_chaining(radius, segs):
+    deg_per_seg = 180.0 / segs
+    hs = (3.14 * radius) / segs
+    l = []
+    for i in range(1, segs):
+        factor = sin(i * deg_per_seg)
+        r = radius * factor
+        # if r <= 0.0:
+        # r = 0.002
+        h = hs * factor
+        # if h <= 0.0:
+        # h = 0.002
+        l.append((h, circle(r, segs)))
+
+    out = extrude_chaining(l, use_ear_cut=False)
+    return out
+
+
+def test_sphere_from_chaining(benchmark):
+    c = benchmark(_sphere_from_chaining, 10, 50)
+    assert c.num_verts() == 2500
