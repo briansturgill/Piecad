@@ -141,7 +141,7 @@ def extrude_chaining(
 
     _chkGT("paths length", len(paths), 0)
     _chkGE("initial_z", initial_z, 0)
-    if paths[0] == 0 or paths[-1] == 0:
+    if paths[0][0] == 0 or paths[-1][0] == 0:
         raise ValidationError("Caps cannnot be the first and/or last element of paths.")
 
     def add_cap(h, shape, top):

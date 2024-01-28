@@ -1,0 +1,3 @@
+c1 = circle(6)
+c2 = circle(4).translate((6, 0))
+out = intersect(c1, c2)

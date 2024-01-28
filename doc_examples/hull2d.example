@@ -1,0 +1,4 @@
+c1 = circle(3)
+c2 = circle(3).translate((7, 0))
+c3 = circle(3).translate((0, 7))
+out = hull(c1, c2, c3)

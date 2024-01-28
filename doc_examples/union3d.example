@@ -1,0 +1,3 @@
+c1 = cylinder(10, 6)
+c2 = cylinder(10, 4).translate((6,0,0))
+out = union(c1, c2)

@@ -1,0 +1,4 @@
+c1 = cylinder(10, 4)
+c2 = cylinder(10, 4).translate((5, 0, 0))
+c3 = cylinder(10, 4).translate((0, 5, 3))
+out = hull(c1, c2, c3)
