@@ -12,7 +12,7 @@ import numpy as np
 import trimesh
 from typing import Union
 
-from . import *
+from . import Obj2d, Obj3d, config
 from ._c import _chkGT, _chkTY, _chkGE
 
 _viewer_available = config["CADViewerEnabled"]
@@ -44,6 +44,8 @@ def save(filename: str, obj: Union[Obj3d, Obj2d]) -> None:
         raise (ValidationError("Object must be of type Obj3d or Obj2d."))
     if config["CADViewDoNotSendSaves"] == False and _viewer_available:
         view(obj, filename)
+    dot_idx = filename.rindex(".")
+    ext = filename[dot_idx + 1 :]
     if type(obj) == Obj3d:
         mesh = obj.mo.to_mesh()
         if mesh.vert_properties.shape[1] > 3:
@@ -54,11 +56,8 @@ def save(filename: str, obj: Union[Obj3d, Obj2d]) -> None:
         if obj._color != None:
             mesh_output.visual.vertex_colors = obj._color
         # LATER assert mesh_output.is_watertight
-        dot_idx = filename.rindex(".")
-        ext = filename[dot_idx + 1 :]
         trimesh.exchange.export.export_mesh(mesh_output, filename, ext)
     else:  # Obj2d
-        ext = filename[dot_idx + 1 :]
         if ext != "svg":
             raise (ValidationError("Only the SVG format is supported for Obj2d."))
 
