@@ -299,11 +299,11 @@ LATER document -- get rid of set_default_segments?
 
 """
 
+from .utilities import *
 from .bulk_ops import *
 from .primitives_2d import *
 from .primitives_3d import *
 from .trigonometry import *
-from .utilities import *
 from ._color import _parse_color
 
 
