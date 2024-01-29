@@ -6,7 +6,16 @@ import manifold3d as _m
 import numpy as _np
 import trimesh
 
-from . import *
+from . import (
+    config,
+    Obj2d,
+    Obj3d,
+    circle,
+    ValidationError,
+    square,
+    rectangle,
+    difference,
+)
 from ._c import _chkGT, _chkTY, _chkGE
 
 
@@ -96,7 +105,7 @@ def extrude(obj: Obj2d, height: float) -> Obj3d:
 
 
 def extrude_chaining(
-    paths: list[tuple[float, Obj2d]], initial_z: float = 0.0, use_ear_cut=True
+    pairs: list[tuple[float, Obj2d]], initial_z: float = 0.0, use_ear_cut=True
 ) -> Obj3d:
     """
     Extrude multiple Obj2d into a single Obj3d.
@@ -145,10 +154,10 @@ def extrude_chaining(
 
     triangles = []
 
-    _chkGT("paths length", len(paths), 0)
+    _chkGT("pairs length", len(pairs), 0)
     _chkGE("initial_z", initial_z, 0)
-    if paths[0][0] == 0 or paths[-1][0] == 0:
-        raise ValidationError("Caps cannnot be the first and/or last element of paths.")
+    if pairs[0][0] == 0 or pairs[-1][0] == 0:
+        raise ValidationError("Caps cannnot be the first and/or last element of pairs.")
 
     def add_cap(h, shape, top):
         polys = shape.mo.to_polygons()
@@ -205,20 +214,20 @@ def extrude_chaining(
                     )
 
     cur_z = initial_z
-    add_cap(cur_z, paths[0][1], top=False)
-    last = len(paths)
-    prev = paths[0][1]
+    add_cap(cur_z, pairs[0][1], top=False)
+    last = len(pairs)
+    prev = pairs[0][1]
     cur_idx = 0
 
     while cur_idx < last:
-        cur = paths[cur_idx][1]
+        cur = pairs[cur_idx][1]
         if cur == None:
             # This means to extrude the shape from the previous shape.
             # Usually this is done after a partial cap and you want
             # to extrude the difference done for the partial cap.
             cur = prev
 
-        h = paths[cur_idx][0]
+        h = pairs[cur_idx][0]
 
         if h == 0:  # A partial cap.
             add_cap(cur_z, cur, top=True)
