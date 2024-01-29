@@ -1,6 +1,5 @@
 from __future__ import annotations
 import manifold3d as _m
-import piecad as _piecad
 
 """
 "Easy as Pie" CAD (Piecad)
@@ -214,7 +213,7 @@ class Obj2d:
         """
         Extrude this object into a Obj3d of the given height.
         """
-        return _piecad.extrude(self, height)
+        return extrude(self, height)
 
     def num_verts(self) -> int:
         """
@@ -255,7 +254,7 @@ class Obj2d:
 
         For ``segments`` see the documentation of ``set_default_segments``.
         """
-        return _piecad.revolve(self, segments, revolve_degrees)
+        return revolve(self, segments, revolve_degrees)
 
     def rotate(self, degrees: float) -> Obj2d:
         """

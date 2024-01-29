@@ -4,7 +4,7 @@
 
 import manifold3d as _m
 
-from . import *
+from . import Obj2d, Obj3d, ValidationError
 from ._c import _chkGT, _chkTY, _chkGE, _chkV2
 
 

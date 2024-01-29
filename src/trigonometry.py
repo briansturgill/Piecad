@@ -6,8 +6,6 @@ come out exact, DO come out exact.
 """
 import math as _math
 
-from . import *
-
 
 def deg_to_rad(angleInDegrees):
     "Convert degrees to radians."

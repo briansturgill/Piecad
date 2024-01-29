@@ -1,5 +1,3 @@
-from piecad import *
-
 """
 Color support in limited to coloring an object at time of save or view.
 
@@ -13,6 +11,8 @@ A tuple of RGB values in as a 3 tuple: (0, 255, 255)
 
 For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color/keywords)
 """
+
+from .validation_error import ValidationError
 
 
 _cssColors = {}

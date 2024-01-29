@@ -260,10 +260,10 @@ def extrude_chaining(
     vertex_list = _np.array(vertex_list, _np.float32)
     triangles = _np.array(triangles, _np.int32)
     mesh = _m.Mesh(vertex_list, triangles)
+
     # import trimesh
     # mesh_output = trimesh.Trimesh(vertices=vertex_list, faces=triangles)
-    # trimesh.exchange.export.export_mesh(mesh_output, "/home/brian/Downloads/mesh.glb", "glb")
-    # trimesh.exchange.export.export_mesh(mesh_output, "/home/brian/Downloads/mesh.stl", "stl")
+    # trimesh.exchange.export.export_mesh(mesh_output, "/home/brian/Downloads/mesh.obj", "obj")
 
     mo = _m.Manifold(mesh)
     if mo.is_empty():
@@ -327,6 +327,53 @@ def geodesic_sphere(radius, segments=-1):
         return Obj3d(sph)
 
     return Obj3d(sph.scale((radius, radius, radius)))
+
+
+def polyhedron(
+    vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]
+) -> Obj3d:
+    """
+    Create an Obj3d from points and a list of triangles using those points.
+
+    This is an advanced function.
+
+    If you don't already understand the "directions" below... really, try doing
+    this another way.
+
+    * Faces have to be wound counter-clockwise.
+
+    * All faces must be triangles.
+
+    * Faces are integer indices into the vertices list.
+
+    You eventually will get a message from the Manifold package saying it is not "manifold".
+
+    That isn't really helpful.
+
+    Try adding these lines just before the call to polyhedron.
+
+    ```python
+    import trimesh
+    mesh_output = trimesh.Trimesh(vertices=vertices, faces=triangles)
+    trimesh.exchange.export.export_mesh(mesh_output, "mesh.obj", "obj")
+    ```
+
+    Then use a program like `meshlab` to look at where things are not manifold.
+
+    """
+    vertices = _np.array(vertices, _np.float32)
+    triangles = _np.array(triangles, _np.int32)
+    mesh = _m.Mesh(vertices, triangles)
+
+    # import trimesh
+    # mesh_output = trimesh.Trimesh(vertices=vertices, faces=triangles)
+    # trimesh.exchange.export.export_mesh(mesh_output, "/home/brian/Downloads/mesh.obj", "obj")
+
+    mo = _m.Manifold(mesh)
+    if mo.is_empty():
+        raise ValidationError(f"Error from the Manifold CAD package: {mo.status()}.")
+
+    return Obj3d(mo)
 
 
 def revolve(obj: Obj2d, segments: int = -1, revolve_degrees: float = 360.0) -> Obj3d:

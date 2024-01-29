@@ -5,7 +5,7 @@
 import manifold3d as _m
 
 
-from . import *
+from . import Obj2d, config, hull
 from ._c import _chkGT, _chkTY, _chkGE, _chkV2
 
 from .trigonometry import cos, sin
