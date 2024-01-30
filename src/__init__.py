@@ -317,7 +317,7 @@ def set_default_segments(segments: int) -> None:
     a default value for ``segments`` of ``-1``.
     """
     global _default_segments
-    _c._chkGE("segments", segments, 3)
+    _chkGE("segments", segments, 3)
     config["DefaultSegments"] = segments
 
 

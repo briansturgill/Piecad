@@ -53,8 +53,13 @@ def save(filename: str, obj: Union[Obj3d, Obj2d]) -> None:
         mesh_output = trimesh.Trimesh(vertices=vertices, faces=mesh.tri_verts)
         if obj._color != None:
             mesh_output.visual.vertex_colors = obj._color
-        # LATER assert mesh_output.is_watertight
+        assert mesh_output.is_watertight
         trimesh.exchange.export.export_mesh(mesh_output, filename, ext)
+        # trimesh obj file export does not end with newline
+        # currently this upsets prusa_slicer
+        if ext == "obj":
+            with open(filename, "a") as f:
+                f.write("\n")
     else:  # Obj2d
         if ext != "svg":
             raise (ValidationError("Only the SVG format is supported for Obj2d."))
