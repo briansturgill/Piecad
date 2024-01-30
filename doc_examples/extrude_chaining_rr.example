@@ -5,4 +5,4 @@ l = []
 l.append((2, rr))
 l.append((0, rr_hole))
 l.append((15, None))
-out = extrude_chaining(l, use_ear_cut=False)
+out = extrude_chaining(l, tri_alg="fan")

@@ -1,0 +1,1 @@
+out = pyramid(height=15, num_sides=4, radius=10)

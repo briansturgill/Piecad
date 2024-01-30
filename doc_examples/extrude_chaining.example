@@ -4,4 +4,4 @@ for i in range(10, 4, -1):
 	if i%2 == 0:
 		s = s.rotate(45.0)
 	l.append((2, s))
-out = extrude_chaining(l, use_ear_cut=False)
+out = extrude_chaining(l, tri_alg="fan")

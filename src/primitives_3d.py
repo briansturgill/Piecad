@@ -12,8 +12,6 @@ from . import (
     Obj3d,
     circle,
     ValidationError,
-    square,
-    rectangle,
     difference,
 )
 from ._c import _chkGT, _chkTY, _chkGE
@@ -39,10 +37,7 @@ def cone(
     _chkGT("radius_low", radius_low, 0)
     _chkGE("radius_high", radius_high, 0)
     _chkGE("segments", segments, 3)
-    circ = circle(radius_low, segments)
-    factor = radius_high / radius_low
-    con = extrude_transforming(circ, height, 0, 0.0, factor, factor)
-    return con  # con already Obj3d
+    return Obj3d(_m.Manifold.cylinder(height, radius_low, radius_high, segments))
 
 
 def cube(size: float) -> Obj3d:
@@ -53,9 +48,7 @@ def cube(size: float) -> Obj3d:
     """
     if type(size) == list or type(size) == tuple:
         return cuboid(size)
-    sq = square(size)
-    cub = extrude(sq, size)
-    return cub  # cub already Obj3d
+    return Obj3d(_m.Manifold.cube((size, size, size)))
 
 
 def cuboid(size: list[float, float, float]) -> Obj3d:
@@ -66,10 +59,7 @@ def cuboid(size: list[float, float, float]) -> Obj3d:
     """
     if type(size) == float or type(size) == int:
         return cube(size)
-    x, y, z = size
-    rect = rectangle([x, y])
-    cub = extrude(rect, z)
-    return cub  # cub already Obj3d
+    return Obj3d(_m.Manifold.cube(size))
 
 
 def cylinder(height: float, radius: float, segments: int = -1) -> Obj3d:
@@ -85,9 +75,7 @@ def cylinder(height: float, radius: float, segments: int = -1) -> Obj3d:
     _chkGT("height", height, 0)
     _chkGT("radius", radius, 0)
     _chkGE("segments", segments, 3)
-    circ = circle(radius, segments)
-    cyl = extrude(circ, height)
-    return cyl  # cyl already Obj3d
+    return Obj3d(_m.Manifold.cylinder(height, radius, radius, segments))
 
 
 def extrude(obj: Obj2d, height: float) -> Obj3d:
@@ -105,7 +93,7 @@ def extrude(obj: Obj2d, height: float) -> Obj3d:
 
 
 def extrude_chaining(
-    pairs: list[tuple[float, Obj2d]], initial_z: float = 0.0, use_ear_cut=True
+    pairs: list[tuple[float, Obj2d]], initial_z: float = 0.0, tri_alg="ec"
 ) -> Obj3d:
     """
     Extrude multiple Obj2d into a single Obj3d.
@@ -116,8 +104,8 @@ def extrude_chaining(
 
     Use `initial_z` if you want it extruded starting at a different z value.
 
-    The parameter `use_ear_cut` set to `False` uses a much faster triangulation
-    algoritm (called fan) which only works on a convex shape. If you don't
+    The parameter `tri_alg` set to `fan` uses a much faster triangulation
+    algoritm  which only works on a convex shape. If you don't
     understand what this means, leave this option alone.
 
     Caps:
@@ -162,7 +150,7 @@ def extrude_chaining(
     def add_cap(h, shape, top):
         polys = shape.mo.to_polygons()
 
-        if use_ear_cut or len(polys) != 1:
+        if tri_alg == "ec" or len(polys) != 1:  # use EarCut
             vl = []
             for poly in polys:
                 for vert in poly:
@@ -189,7 +177,7 @@ def extrude_chaining(
                             v((x1, y1, h)),
                         )
                     )
-        else:  # Fan triangulation
+        elif tri_alg == "fan":  # Fan triangulation
             poly = polys[0]  # We have only one to deal with
             n = len(poly)
             chosen = poly[0]
@@ -212,6 +200,10 @@ def extrude_chaining(
                             v((chosen[0], chosen[1], h)),
                         )
                     )
+        else:
+            ValidationError(
+                f"Invalid triangulation algorithm specified: {tri_alg}, must be one of: 'ec' or 'fan'"
+            )
 
     cur_z = initial_z
     add_cap(cur_z, pairs[0][1], top=False)
@@ -321,12 +313,7 @@ def geodesic_sphere(radius, segments=-1):
     if segments == -1:
         segments = config["DefaultSegments"]
 
-    sph = _m.Manifold.sphere(1, segments)
-
-    if radius == 1:
-        return Obj3d(sph)
-
-    return Obj3d(sph.scale((radius, radius, radius)))
+    return Obj3d(_m.Manifold.sphere(radius, segments))
 
 
 def polyhedron(
@@ -335,10 +322,10 @@ def polyhedron(
     """
     Create an Obj3d from points and a list of triangles using those points.
 
-    This is an advanced function.
+    THIS IS AN ADVANCED FUNCTION.
 
-    If you don't already understand the "directions" below... really, try doing
-    this another way.
+    If you don't already understand the "directions" below... REALLY, try doing
+    what you want to do another way.
 
     * Faces have to be wound counter-clockwise.
 
@@ -362,11 +349,11 @@ def polyhedron(
 
     """
     vertices = _np.array(vertices, _np.float32)
-    triangles = _np.array(triangles, _np.int32)
-    mesh = _m.Mesh(vertices, triangles)
+    faces = _np.array(faces, _np.int32)
+    mesh = _m.Mesh(vertices, faces)
 
     # import trimesh
-    # mesh_output = trimesh.Trimesh(vertices=vertices, faces=triangles)
+    # mesh_output = trimesh.Trimesh(vertices=vertices, faces=faces)
     # trimesh.exchange.export.export_mesh(mesh_output, "/home/brian/Downloads/mesh.obj", "obj")
 
     mo = _m.Manifold(mesh)
@@ -374,6 +361,19 @@ def polyhedron(
         raise ValidationError(f"Error from the Manifold CAD package: {mo.status()}.")
 
     return Obj3d(mo)
+
+
+def pyramid(height: int, num_sides: int, radius: float) -> Obj3d:
+    """
+    Make a regular pyramid with the given height and number of sides.
+
+    The `radius` specifies the circle on which the corners of the pyramid will be built.
+
+    <iframe width="100%" height="220" src="examples/pyramid.html"></iframe>
+    """
+    return extrude_transforming(
+        circle(radius, segments=num_sides), height=height, scale_x=0.0, scale_y=0.0
+    )
 
 
 def revolve(obj: Obj2d, segments: int = -1, revolve_degrees: float = 360.0) -> Obj3d:
@@ -406,9 +406,5 @@ def sphere(radius, segments=-1):
         segments = config["DefaultSegments"]
 
     circ = circle(radius, segments).piecut(90, 270)
-    sph = revolve(circ, segments=segments)
 
-    if radius == 1:
-        return sph
-
-    return sph.scale((radius, radius, radius))
+    return revolve(circ, segments=segments)
