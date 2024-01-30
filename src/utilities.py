@@ -8,7 +8,7 @@ import json
 import queue
 import threading
 import manifold3d as _m
-import numpy as np
+import numpy as _np
 import trimesh
 from typing import Union
 
@@ -79,12 +79,12 @@ def _save_svg(filename, obj):
     txt.append("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1 Tiny//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-tiny.dtd\">")
     txt.append(f"<svg width=\"{width}{units}\" height=\"{height}{units}\" viewBox=\"0 0 {width} {height}\" fill=\"rgb({color[0]},{color[1]},{color[2]})\" xmlns=\"http://www.w3.org/2000/svg\" fill-rule=\"evenodd\">")
 
+    txt.append(f"<g><path d=\"")
+
     off_x = 0 - bb[0]
     off_y = 0 - bb[1]
     paths = obj.to_paths()
     for path in paths:
-        txt.append(f"<g><path d=\"")
-
         for i in range(len(path)):
             vert = path[i]
             x = round(vert[0] + off_x, 5)
@@ -94,7 +94,7 @@ def _save_svg(filename, obj):
             else:
                 txt.append(f"L{x} {y}")
 
-        txt.append("\"/></g>\n")
+    txt.append("\"/></g>\n")
 
     txt.append("</svg>")
 
