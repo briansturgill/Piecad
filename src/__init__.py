@@ -288,6 +288,7 @@ config = {}
 config["CADViewerEnabled"] = True
 config["CADViewDoNotSendSaves"] = False
 config["CADViewerHostAndPort"] = "127.0.0.1:8037"
+config["DefaultUnits"] = "mm"
 config["LayerResolution"] = 0.1
 config["DefaultSegments"] = 36
 """

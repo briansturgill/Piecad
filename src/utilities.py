@@ -63,6 +63,43 @@ def save(filename: str, obj: Union[Obj3d, Obj2d]) -> None:
     else:  # Obj2d
         if ext != "svg":
             raise (ValidationError("Only the SVG format is supported for Obj2d."))
+        _save_svg(filename, obj)
+
+
+def _save_svg(filename, obj):
+    txt = []
+    bb = obj.bounding_box()
+    width = round(bb[2] - bb[0], 5) 
+    height = round(bb[3] - bb[1], 5) 
+    color = obj._color
+    units = config["DefaultUnits"]
+
+    txt.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+    txt.append("<!-- Created by Piecad. -->")
+    txt.append("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1 Tiny//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-tiny.dtd\">")
+    txt.append(f"<svg width=\"{width}{units}\" height=\"{height}{units}\" viewBox=\"0 0 {width} {height}\" fill=\"rgb({color[0]},{color[1]},{color[2]})\" xmlns=\"http://www.w3.org/2000/svg\" fill-rule=\"evenodd\">")
+
+    off_x = 0 - bb[0]
+    off_y = 0 - bb[1]
+    paths = obj.to_paths()
+    for path in paths:
+        txt.append(f"<g><path d=\"")
+
+        for i in range(len(path)):
+            vert = path[i]
+            x = round(vert[0] + off_x, 5)
+            y = round(vert[1] + off_y, 5)
+            if i == 0:
+                txt.append(f"M{x} {y}")
+            else:
+                txt.append(f"L{x} {y}")
+
+        txt.append("\"/></g>\n")
+
+    txt.append("</svg>")
+
+    with open(filename, "w") as f:
+        f.write("\n".join(txt))
 
 
 _view_queue = queue.Queue()
@@ -84,7 +121,7 @@ def view(obj: Union[Obj3d, Obj2d], title: str = "") -> None:
 
     if type(obj) == Obj2d:
         color = obj.color
-        obj = Obj2d(_m.Manifold.extrude(obj, 0.1))
+        obj = Obj2d(_m.Manifold.extrude(obj.mo, 0.1))
         obj.color = color
 
     if _view_thread == None:
