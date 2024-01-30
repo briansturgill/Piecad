@@ -4,8 +4,32 @@
 
 import manifold3d as _m
 
-from . import Obj2d, Obj3d, ValidationError
-from ._c import _chkGT, _chkTY, _chkGE, _chkV2
+from . import Obj2d, Obj3d, ValidationError, _chkGOTY
+
+
+def compose(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
+    """
+    Returns a single object containing all the disjoint objects.
+
+    It is important that the objects not overlap.
+    This is for making a scene of a group of objects that can be saved as a single model.
+
+    If you want to combine two models into one model, see `union` below.
+
+    See the `decompose` method on `Obj2d` and `Obj3d` for the inverse operation.
+
+    """
+    ty = type(objs[0])
+    _chkGOTY("objs", ty)
+    if len(objs) == 0:
+        return _m.CrossSection() if ty == Obj2d else _m.Manifold()
+    for o in objs:
+        if type(o) != ty:
+            raise ValidationError("Mixed types in parameter: objs.")
+    l = []
+    for o in objs:
+        l.append(o.mo)
+    return Obj2d(_m.CrossSection.batch_boolean(l, _m.OpType.Subtract))
 
 
 def difference(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
@@ -18,9 +42,10 @@ def difference(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
 
     <iframe width="100%" height="250" src="examples/difference3d.html"></iframe>
     """
-    if len(objs) == 0:
-        return _m.CrossSection()
     ty = type(objs[0])
+    _chkGOTY("objs", ty)
+    if len(objs) == 0:
+        return _m.CrossSection() if ty == Obj2d else _m.Manifold()
     for o in objs:
         if type(o) != ty:
             raise ValidationError("Mixed types in parameter: objs.")
@@ -51,9 +76,10 @@ def hull(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
 
     <iframe width="100%" height="250" src="examples/hull3d.html"></iframe>
     """
-    if len(objs) == 0:
-        return _m.CrossSection()
     ty = type(objs[0])
+    _chkGOTY("objs", ty)
+    if len(objs) == 0:
+        return _m.CrossSection() if ty == Obj2d else _m.Manifold()
     for o in objs:
         if type(o) != ty:
             raise ValidationError("Mixed types in parameter: objs.")
@@ -79,9 +105,10 @@ def intersect(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
 
     <iframe width="100%" height="250" src="examples/intersect3d.html"></iframe>
     """
-    if len(objs) == 0:
-        return _m.CrossSection()
     ty = type(objs[0])
+    _chkGOTY("objs", ty)
+    if len(objs) == 0:
+        return _m.CrossSection() if ty == Obj2d else _m.Manifold()
     for o in objs:
         if type(o) != ty:
             raise ValidationError("Mixed types in parameter: objs.")
@@ -107,9 +134,10 @@ def union(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
 
     <iframe width="100%" height="250" src="examples/union3d.html"></iframe>
     """
-    if len(objs) == 0:
-        return _m.CrossSection()
     ty = type(objs[0])
+    _chkGOTY("objs", ty)
+    if len(objs) == 0:
+        return _m.CrossSection() if ty == Obj2d else _m.Manifold()
     for o in objs:
         if type(o) != ty:
             raise ValidationError("Mixed types in parameter: objs.")

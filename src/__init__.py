@@ -17,9 +17,6 @@ for 2D objects. It also uses
 
 """
 
-from ._c import _chkGT, _chkTY, _chkGE, _chkV2, _chkV3
-from .validation_error import ValidationError
-
 
 def version():
     "Piecad version"
@@ -213,7 +210,7 @@ class Obj2d:
         """
         Extrude this object into a Obj3d of the given height.
         """
-        return extrude(self, height)
+        return Obj3d(_m.Manifold.extrude(self.mo, height))
 
     def num_verts(self) -> int:
         """
@@ -298,13 +295,6 @@ LATER document -- get rid of set_default_segments?
 
 """
 
-from .utilities import *
-from .bulk_ops import *
-from .primitives_2d import *
-from .primitives_3d import *
-from .trigonometry import *
-from ._color import _parse_color
-
 
 def set_default_segments(segments: int) -> None:
     """
@@ -329,3 +319,62 @@ def set_default_segments(segments: int) -> None:
     global _default_segments
     _c._chkGE("segments", segments, 3)
     config["DefaultSegments"] = segments
+
+
+def _chkGE(name: str, val: object, const: object):
+    if val < const:
+        raise ValidationError(
+            f"Parameter {name} must be greater than or equal to {const}"
+        )
+
+
+def _chkGT(name: str, val: object, const: object):
+    if val <= const:
+        raise ValidationError(f"Parameter {name} must be greater than {const}")
+
+
+def _chkTY(name: str, v1: object, v2: object):
+    if type(v1) != v2:
+        raise ValidationError(f"Parameter {name} must be of type {v1}")
+
+
+def _chkV2(name: str, v1: object):
+    if type(v1) != list and type(v1) != tuple:
+        raise ValidationError(f"Parameter {name} must be of type list or tuple")
+    if len(v1) != 2:
+        raise ValidationError(f"Parameter {name} list/tuple must have length of 2.")
+
+
+def _chkV3(name: str, v1: object):
+    if type(v1) != list and type(v1) != tuple:
+        raise ValidationError(f"Parameter {name} must be of type list or tuple")
+    if len(v1) != 3:
+        raise ValidationError(f"Parameter {name} list/tuple must have length of 3.")
+
+
+def _chkGO(name: str, v1: object):
+    ty = type(v1)
+    if ty != Obj3d and ty != Obj2d:
+        raise ValidationError(f"Parameter {name} must be of type, Obj2d or Obj3d")
+
+
+def _chkGOTY(name: str, ty: object):
+    if ty != Obj3d and ty != Obj2d:
+        raise ValidationError(f"Parameter {name} must be of type, Obj2d or Obj3d")
+
+
+class ValidationError(BaseException):
+    """
+    Exception class for errors detected in arguments to **piecad**
+    functions and methods.
+    """
+
+    pass
+
+
+from .utilities import *
+from .bulk_ops import *
+from .trigonometry import *
+from .primitives_2d import *
+from .primitives_3d import *
+from ._color import _parse_color

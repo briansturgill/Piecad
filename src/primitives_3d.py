@@ -13,8 +13,10 @@ from . import (
     circle,
     ValidationError,
     difference,
+    _chkGT,
+    _chkTY,
+    _chkGE,
 )
-from ._c import _chkGT, _chkTY, _chkGE
 
 
 def cone(

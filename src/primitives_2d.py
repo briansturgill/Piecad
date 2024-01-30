@@ -5,10 +5,7 @@
 import manifold3d as _m
 
 
-from . import Obj2d, config, hull
-from ._c import _chkGT, _chkTY, _chkGE, _chkV2
-
-from .trigonometry import cos, sin
+from . import Obj2d, config, _chkGT, _chkGE, _chkV2, cos, sin
 
 
 _unit_circles = {}
@@ -92,11 +89,15 @@ def rounded_rectangle(
     _chkV2("size", size)
 
     circ = circle(radius, segments)
-    return hull(
-        circ.translate((radius, radius)),
-        circ.translate((size[0] - radius, radius)),
-        circ.translate((size[0] - radius, size[1] - radius)),
-        circ.translate((radius, size[1] - radius)),
+    return Obj2d(
+        _m.CrossSection.batch_hull(
+            [
+                circ.translate((radius, radius)).mo,
+                circ.translate((size[0] - radius, radius)).mo,
+                circ.translate((size[0] - radius, size[1] - radius)).mo,
+                circ.translate((radius, size[1] - radius)).mo,
+            ]
+        )
     )
 
     # Surprisingly, the code below is nearly three times slower than

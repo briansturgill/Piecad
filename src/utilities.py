@@ -12,8 +12,7 @@ import numpy as np
 import trimesh
 from typing import Union
 
-from . import Obj2d, Obj3d, config
-from ._c import _chkGT, _chkTY, _chkGE
+from . import Obj2d, Obj3d, config, _chkGO, ValidationError
 
 _viewer_available = config["CADViewerEnabled"]
 
@@ -40,8 +39,7 @@ def save(filename: str, obj: Union[Obj3d, Obj2d]) -> None:
 
     For 2D, only the SVG (.svg) format is available.
     """
-    if type(obj) != Obj3d and type(obj) != Obj2d:
-        raise (ValidationError("Object must be of type Obj3d or Obj2d."))
+    _chkGO("obj", obj)
     if config["CADViewDoNotSendSaves"] == False and _viewer_available:
         view(obj, filename)
     dot_idx = filename.rindex(".")
@@ -77,12 +75,11 @@ def view(obj: Union[Obj3d, Obj2d], title: str = "") -> None:
     if _viewer_available == False:
         return
 
-    if type(obj) != Obj3d and type(obj) != Obj2d:
-        raise (ValidationError("Object must be of type Obj3d or Obj2d."))
+    _chkGO("obj", obj)
 
     if type(obj) == Obj2d:
         color = obj.color
-        obj = extrude(obj, 0.1)
+        obj = Obj2d(_m.Manifold.extrude(obj, 0.1))
         obj.color = color
 
     if _view_thread == None:
