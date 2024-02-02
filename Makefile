@@ -11,4 +11,4 @@ benchmark:
 	pytest tests --benchmark-only
 
 savebenchmark:
-	pytest tests --benchmark-only --benchmark-save=`date +%F` --benchmark-name=short
+	(read -p "Benchmark Name: " -r NAME ; pytest tests --benchmark-only --benchmark-save=`date +%F`"$${NAME}" --benchmark-name=short)
