@@ -11,11 +11,16 @@ from . import (
     Obj2d,
     Obj3d,
     circle,
+    rounded_rectangle,
+    sin,
     ValidationError,
     difference,
+    union,
+    hull,
     _chkGT,
     _chkTY,
     _chkGE,
+    _chkV3,
 )
 
 
@@ -112,8 +117,10 @@ def extrude_chaining(
 
     Caps:
 
-        If `height` is zero then Obj2d is a partial cap.
-        In other words, you want to make a hole.
+        If `height` is zero then Obj2d is a full cap or a partial cap.
+        Only the first cap, which must be at index 0, is a full cap.
+
+        If you make a partial cap, you want to make a hole.
         For manifold correctness reasons you need to cap the hole bottom.
 
         Once the cap is generated, the cap is differenced from the previous shape.
@@ -121,15 +128,15 @@ def extrude_chaining(
         the following shapes.
         At least one extrusion must follow a cap.
 
-        (Caps are automatically generated at the bottom and top of the extrusion.]
+        (A cap is automatically generated at the top of the extrusion.]
 
         If you have made a partial cap, you can extrude the differenced shape/cap
         with a pair: (height, None). This is so you don't have to do the 2d
         difference that was already done.
 
-    <iframe width="100%" height="300" src="examples/extrude_chaining.html"></iframe>
-
-    <iframe width="100%" height="300" src="examples/extrude_chaining_rr.html"></iframe>
+    <iframe width="100%" height="320" src="examples/extrude_chaining.html"></iframe>
+    <br>
+    <iframe width="100%" height="330" src="examples/extrude_chaining_rr.html"></iframe>
     """
     vertex_map = {}
     vertex_list = []
@@ -146,8 +153,10 @@ def extrude_chaining(
 
     _chkGT("pairs length", len(pairs), 0)
     _chkGE("initial_z", initial_z, 0)
-    if pairs[0][0] == 0 or pairs[-1][0] == 0:
-        raise ValidationError("Caps cannnot be the first and/or last element of pairs.")
+    if pairs[0][0] != 0:
+        raise ValidationError("The first element of pairs must be a cap.")
+    if pairs[-1][0] == 0:
+        raise ValidationError("The last element of pairs cannot be a cap.")
 
     def add_cap(h, shape, top):
         polys = shape.mo.to_polygons()
@@ -211,7 +220,7 @@ def extrude_chaining(
     add_cap(cur_z, pairs[0][1], top=False)
     last = len(pairs)
     prev = pairs[0][1]
-    cur_idx = 0
+    cur_idx = 1
 
     while cur_idx < last:
         cur = pairs[cur_idx][1]
@@ -310,10 +319,10 @@ def geodesic_sphere(radius, segments=-1):
 
     <iframe width="100%" height="220" src="examples/geodesic_sphere.html"></iframe>
     """
-    _chkGT("radius", radius, 0)
-    _chkGE("radius", radius, 3)
     if segments == -1:
         segments = config["DefaultSegments"]
+    _chkGT("radius", radius, 0)
+    _chkGE("segments", segments, 3)
 
     return Obj3d(_m.Manifold.sphere(radius, segments))
 
@@ -365,6 +374,97 @@ def polyhedron(
     return Obj3d(mo)
 
 
+def project_box(
+    size: list[float, float, float], radius: float = 3.0, wall: float = 2.0
+) -> Obj3d:
+    """
+    Make a project box with the x, y, and z values given in size.
+
+    The dimensions are for the INSIDE of the box.
+
+    The INSIDE of the box will be placed at `(0, 0, 0)`.
+
+    The `radius` determines the fillet size.
+
+    The `wall` is the thickness of the box walls.
+
+    <iframe width="100%" height="220" src="examples/project_box.html"></iframe>
+    """
+    _chkV3("size", size)
+    _chkGE("wall", wall, 2.0)
+    _chkGE("radius", radius, 2.0)
+
+    l = []
+    res = config["LayerResolution"]
+    arc_segs = radius / res
+    deg_per_arc_seg = 90.0 / arc_segs
+    d = 0.0
+    end = -90.0
+    ix, iy, iz = size
+    ox, oy, oz = size
+    layer_thickness = radius / arc_segs
+    ox += wall * 2
+    oy += wall * 2
+    l.append((0, rounded_rectangle((ix, iy), radius)))
+    d += deg_per_arc_seg
+    while d < 89.9:
+        delta = wall * sin(d)
+        l.append(
+            (
+                layer_thickness,
+                rounded_rectangle(
+                    (ix + 2 * delta, iy + 2 * delta), radius + delta
+                ).translate((-delta, -delta)),
+            )
+        )
+        d += deg_per_arc_seg
+
+    l.append(
+        (
+            layer_thickness,
+            rounded_rectangle([ox, oy], radius + wall).translate((-wall, -wall)),
+        )
+    )
+    l.append((0, l[0][1]))
+    l.append((iz, None))
+
+    return extrude_chaining(l, tri_alg="fan")
+
+    # Using boolean 3d operations takes 7.5 times longer than the code above.
+    # l = []
+    # x, y, z = size
+    # res = config["LayerResolution"]
+    # arc_segs = radius / res
+    # deg_per_arc_seg = 90.0 / arc_segs
+    # d = 0.0
+    # layer_thickness = radius / arc_segs
+
+    # l.append(rounded_rectangle((x, y), radius).extrude(layer_thickness))
+    # layer_idx = 0
+    # d += deg_per_arc_seg
+    # while d < 89.9:
+    #    layer_idx += 1
+    #    delta = wall * sin(d)
+    #    l.append(
+    #        rounded_rectangle((x + 2 * delta, y + 2 * delta), radius + delta)
+    #        .extrude(layer_thickness)
+    #        .translate((-delta, -delta, layer_thickness * layer_idx))
+    #    )
+    #    d += deg_per_arc_seg
+
+    # l.append(
+    #    rounded_rectangle([x + 2 * wall, y + 2 * wall], radius + wall)
+    #    .extrude(z)
+    #    .translate((-wall, -wall, radius))
+    # )
+
+    # outside = union(*l)
+    # inside = rounded_rectangle((x, y), radius).extrude(z).translate((0, 0, radius))
+    # box = difference(outside, inside)
+
+    # return box
+
+
 def pyramid(height: int, num_sides: int, radius: float) -> Obj3d:
     """
     Make a regular pyramid with the given height and number of sides.
@@ -376,6 +476,63 @@ def pyramid(height: int, num_sides: int, radius: float) -> Obj3d:
     return extrude_transforming(
         circle(radius, segments=num_sides), height=height, scale_x=0.0, scale_y=0.0
     )
+
+
+def rounded_cuboid(
+    size: list[float, float, float], rounding_radius=4.0, segments: int = -1
+) -> Obj3d:
+    """
+    Make a rounded_cuboid with the x, y, and z values given in size.
+
+    Parameter `rounding_radius` is the size of the rounded lip at top and bottom.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    <iframe width="100%" height="220" src="examples/rounded_cuboid.html"></iframe>
+    """
+    if segments == -1:
+        segments = config["DefaultSegments"]
+    _chkGE("segments", segments, 3)
+    _chkV3("size", size)
+    if type(size) == float or type(size) == int:
+        size = (size, size, size)
+    x, y, z = size
+    sph = sphere(rounding_radius)
+    out = hull(
+        sph.translate((rounding_radius, rounding_radius, 0)),
+        sph.translate((x - rounding_radius, rounding_radius, 0)),
+        sph.translate((x - rounding_radius, y - rounding_radius, 0)),
+        sph.translate((rounding_radius, y - rounding_radius, 0)),
+        sph.translate((rounding_radius, rounding_radius, z)),
+        sph.translate((x - rounding_radius, rounding_radius, z)),
+        sph.translate((x - rounding_radius, y - rounding_radius, z)),
+        sph.translate((rounding_radius, y - rounding_radius, z)),
+    )
+    return out
+
+
+def rounded_cylinder(
+    height: float, radius: float, rounding_radius: float = 4.0, segments: int = -1
+) -> Obj3d:
+    """
+    Make a rounded cylinder of a given radius and height.
+
+    Parameter `rounding_radius` is the size of the rounded lip at top and bottom.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    <iframe width="100%" height="220" src="examples/rounded_cylinder.html"></iframe>
+    """
+    if segments == -1:
+        segments = config["DefaultSegments"]
+    _chkGE("segments", segments, 3)
+    _chkGT("radius", radius, 0)
+    rr = (
+        rounded_rectangle((2 * radius, height), rounding_radius, segments)
+        .translate((-radius, -radius))
+        .piecut(90, 270)
+    )
+    return revolve(rr, segments)
 
 
 def revolve(obj: Obj2d, segments: int = -1, revolve_degrees: float = 360.0) -> Obj3d:
@@ -402,10 +559,10 @@ def sphere(radius, segments=-1):
 
     <iframe width="100%" height="220" src="examples/sphere.html"></iframe>
     """
-    _chkGT("radius", radius, 0)
-    _chkGE("radius", radius, 3)
     if segments == -1:
         segments = config["DefaultSegments"]
+    _chkGT("radius", radius, 0)
+    _chkGE("segments", segments, 3)
 
     circ = circle(radius, segments).piecut(90, 270)
 

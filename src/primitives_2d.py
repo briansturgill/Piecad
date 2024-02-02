@@ -71,8 +71,16 @@ def rectangle(size: list[float, float]) -> Obj2d:
     return Obj2d(_m.CrossSection.square(size))
 
 
+_arc_bl = None
+_arc_br = None
+_arc_tr = None
+_arc_tl = None
+
+
 def rounded_rectangle(
-    size: list[float, float], radius: float = 0.2, segments: int = -1
+    size: list[float, float],
+    radius: float = 0.2,
+    segments: int = -1,
 ) -> Obj2d:
     """
     Create a rectangle with rounded corners.
@@ -100,22 +108,41 @@ def rounded_rectangle(
         )
     )
 
-    # Surprisingly, the code below is nearly three times slower than
-    # using hull above.
+    # Surprisingly, the code below is slightly slower than
+    # using batch_hull above. However batch_hull is faulty! LATER
+    # global _arc_bl, _arc_br, _arc_tl, _arc_tr
     # segs_per_arc = segments // 4 + 1
     # deg_per_arc = 90.0 / segs_per_arc
+
+    # def arc(deg):
+    #    l = []
+    #    last_deg = deg + 90
+    #    for i in range(0, segs_per_arc - 1):
+    #        l.append((cos(deg), sin(deg)))
+    #        deg += deg_per_arc
+    #    l.append((cos(last_deg), sin(last_deg)))
+    #    return l
+
+    # if _arc_bl == None:
+    #    _arc_bl = arc(180)  # Bottom left
+    #    _arc_br = arc(270)  # Bottom right
+    #    _arc_tr = arc(0)  # Top right
+    #    _arc_tl = arc(90)  # Top left
+
     # pts = []
     # x, y = size
-
-    # def arc(deg, rad, x_off, y_off):
-    #    for i in range(0, segs_per_arc):
-    #        pts.append((x_off + rad * cos(deg), y_off + rad * sin(deg)))
-    #        deg += deg_per_arc
-
-    # arc(180, radius, radius, radius)  # Bottom left
-    # arc(270, radius, x - radius, radius)  # Bottom right
-    # arc(0, radius, x - radius, y - radius)  # Top right
-    # arc(90, radius, radius, y - radius)  # Top left
+    # x_o = at[0]
+    # y_o = at[1]
+    # for cval, sval in _arc_bl:
+    #    pts.append((x_o + radius + (radius * cval), y_o + radius + (radius * sval)))
+    # for cval, sval in _arc_br:
+    #    pts.append((x_o + (x - radius) + (radius * cval), y_o + radius + (radius * sval)))
+    # for cval, sval in _arc_tr:
+    #    pts.append(
+    #        (x_o + (x - radius) + (radius * cval), y_o + (y - radius) + (radius * sval))
+    #    )
+    # for cval, sval in _arc_tl:
+    #    pts.append((x_o + radius + (radius * cval), y_o + (y - radius) + radius * sval))
 
     # return Obj2d(_m.CrossSection([pts], _m.FillRule.EvenOdd))
 

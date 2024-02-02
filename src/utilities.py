@@ -69,17 +69,21 @@ def save(filename: str, obj: Union[Obj3d, Obj2d]) -> None:
 def _save_svg(filename, obj):
     txt = []
     bb = obj.bounding_box()
-    width = round(bb[2] - bb[0], 5) 
-    height = round(bb[3] - bb[1], 5) 
-    color = obj._color
+    width = round(bb[2] - bb[0], 5)
+    height = round(bb[3] - bb[1], 5)
+    color = obj._color if obj._color != None else (128, 128, 128)
     units = config["DefaultUnits"]
 
-    txt.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+    txt.append('<?xml version="1.0" encoding="UTF-8"?>')
     txt.append("<!-- Created by Piecad. -->")
-    txt.append("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1 Tiny//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-tiny.dtd\">")
-    txt.append(f"<svg width=\"{width}{units}\" height=\"{height}{units}\" viewBox=\"0 0 {width} {height}\" fill=\"rgb({color[0]},{color[1]},{color[2]})\" xmlns=\"http://www.w3.org/2000/svg\" fill-rule=\"evenodd\">")
+    txt.append(
+        '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1 Tiny//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-tiny.dtd">'
+    )
+    txt.append(
+        f'<svg width="{width}{units}" height="{height}{units}" viewBox="0 0 {width} {height}" fill="rgb({color[0]},{color[1]},{color[2]})" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd">'
+    )
 
-    txt.append(f"<g><path d=\"")
+    txt.append(f'<g><path d="')
 
     off_x = 0 - bb[0]
     off_y = 0 - bb[1]
@@ -94,7 +98,7 @@ def _save_svg(filename, obj):
             else:
                 txt.append(f"L{x} {y}")
 
-    txt.append("\"/></g>\n")
+    txt.append('"/></g>\n')
 
     txt.append("</svg>")
 

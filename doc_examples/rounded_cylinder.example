@@ -1,0 +1,1 @@
+out = rounded_cylinder(18, 8, rounding_radius=3.0, segments=100)

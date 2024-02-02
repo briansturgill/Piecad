@@ -32,6 +32,18 @@ def _cuboid(s):
     return c
 
 
+def _project_box(s, rr):
+    c = project_box(s, rr)
+    c.num_verts()
+    return c
+
+
+def _rounded_cuboid(s, rr, segs):
+    c = rounded_cuboid(s, rr, segs)
+    c.num_verts()
+    return c
+
+
 def _cone(h, rl, rh, s):
     c = cone(h, rl, rh, s)
     c.num_verts()
@@ -44,6 +56,12 @@ def _cylinder(h, r, s):
     return c
 
 
+def _rounded_cylinder(h, r, rr, s):
+    c = rounded_cylinder(h, r, rr, s)
+    c.num_verts()
+    return c
+
+
 def _extrude(o, h):
     o = extrude(o, h)
     o.num_verts()
@@ -52,17 +70,17 @@ def _extrude(o, h):
 
 def _extrude_chaining(l, ta):
     o = extrude_chaining(l, tri_alg=ta)
-    print(o.num_verts())
+    o.num_verts()
     return o
 
 
 def test_cone_100(benchmark):
-    c = benchmark(_cone, 15, 10, 10, 100)
+    c = benchmark(_cone, 25, 10, 10, 100)
     assert c.num_verts() == 200
 
 
 def test_cylinder_100(benchmark):
-    c = benchmark(_cylinder, 15, 10, 100)
+    c = benchmark(_cylinder, 25, 10, 100)
     assert c.num_verts() == 200
 
 
@@ -74,6 +92,22 @@ def test_cube(benchmark):
 def test_cuboid(benchmark):
     c = benchmark(_cuboid, (15, 10, 36))
     assert c.num_verts() == 8
+
+
+def test_rounded_cuboid(benchmark):
+    c = benchmark(_rounded_cuboid, (15, 10, 36), 3.0, 100)
+    assert c.num_verts() == 728
+
+
+def test_project_box(benchmark):
+    c = benchmark(_project_box, (15, 10, 36), 3.0)
+    # 2560 uses bool3d, 1320 uses extrude_chaining
+    assert c.num_verts() == 2560 or c.num_verts() == 1320
+
+
+def test_rounded_cylinder_100(benchmark):
+    c = benchmark(_rounded_cylinder, 25, 10, 4.0, 100)
+    assert c.num_verts() == 5202
 
 
 def test_extrude(benchmark):
@@ -100,13 +134,13 @@ def test_geodesic_sphere(benchmark):
 
 def test_extrude_chaining_earcut(benchmark):
     c = circle(100)
-    o = benchmark(_extrude_chaining, [(10, c)], "ec")
+    o = benchmark(_extrude_chaining, [(0, c), (10, None)], "ec")
     assert o.num_verts() == 72
 
 
 def test_extrude_chaining_fan(benchmark):
     c = circle(100)
-    o = benchmark(_extrude_chaining, [(10, c)], "fan")
+    o = benchmark(_extrude_chaining, [(0, c), (10, None)], "fan")
     assert o.num_verts() == 72
 
 
@@ -114,6 +148,7 @@ def _sphere_from_chaining(radius, segs):
     deg_per_seg = 180.0 / segs
     hs = (3.14 * radius) / segs
     l = []
+    l.append((0, circle(radius, segs)))
     for i in range(1, segs):
         factor = sin(i * deg_per_seg)
         r = radius * factor

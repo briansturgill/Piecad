@@ -223,6 +223,35 @@ class Obj2d:
         """
         return self.mo.num_vert()
 
+    def offset(
+        self, delta: float, join_type: str, miter_limit: float = 2.0, segments: int = -1
+    ) -> Obj2d:
+        """
+        Offset (or inset) a 2D object by a given distance called `delta`.
+        A negative delta will cause an inset to be done.
+
+        Select `join_type` from `"square"`, `"round"`, or `"miter"`.
+        To understand `miter_limit`, see: [Clipper2 MiterLimit](https://www.angusj.com/clipper2/Docs/Units/Clipper.Offset/Classes/ClipperOffset/Properties/MiterLimit.htm)
+
+        For ``segments`` see the documentation of ``set_default_segments``.
+
+        """
+        if segments == -1:
+            segments = config["DefaultSegments"]
+        _chkGE("segments", segments, 3)
+
+        if join_type == "round":
+            jt = _m.JoinType.Round
+        elif join_type == "square":
+            jt = _m.JoinType.Square
+        elif join_type == "miter":
+            jt = _m.JoinType.Miter
+        else:
+            raise ValidationError(
+                'Invalid join type specified, must be one of: "round", "square", or "miter"'
+            )
+        return Obj2d(self.mo.offset(delta, jt, miter_limit, segments))
+
     def piecut(self, start_angle=0, end_angle=90) -> Obj2d:
         """
         Cut a wedge out of this object.
