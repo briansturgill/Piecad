@@ -184,4 +184,4 @@ def star(
         pts.append((inner_radius * cos(deg + ido), inner_radius * sin(deg + ido)))
         deg += deg_per_np
 
-    return polygon(pts)
+    return Obj2d(_m.CrossSection.create_from_path_unchecked(pts))

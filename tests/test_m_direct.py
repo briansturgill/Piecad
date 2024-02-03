@@ -15,8 +15,8 @@ def _circle(r, s):
     return c
 
 
-def _cylinder(h, r, s):
-    o = _m.Manifold.cylinder(h, r, r, s)
+def _cylinder(h, r, s, centered):
+    o = _m.Manifold.cylinder(h, r, r, s, centered)
     o.num_vert()
     return o
 
@@ -40,7 +40,11 @@ def test_mo_square(benchmark):
 
 
 def test_mo_cylinder_100(benchmark):
-    o = benchmark(_cylinder, 15, 10, 100)
+    o = benchmark(_cylinder, 15, 10, 100, False)
+
+
+def test_mo_cylinder_100_centered(benchmark):
+    o = benchmark(_cylinder, 15, 10, 100, True)
 
 
 def test_mo_cube(benchmark):

@@ -50,8 +50,8 @@ def _cone(h, rl, rh, s):
     return c
 
 
-def _cylinder(h, r, s):
-    c = cylinder(h, r, s)
+def _cylinder(h, r, s, center):
+    c = cylinder(h, r, s, center)
     c.num_verts()
     return c
 
@@ -86,7 +86,12 @@ def test_cone_100(benchmark):
 
 
 def test_cylinder_100(benchmark):
-    c = benchmark(_cylinder, 25, 10, 100)
+    c = benchmark(_cylinder, 25, 10, 100, False)
+    assert c.num_verts() == 200
+
+
+def test_cylinder_100_centered(benchmark):
+    c = benchmark(_cylinder, 25, 10, 100, True)
     assert c.num_verts() == 200
 
 

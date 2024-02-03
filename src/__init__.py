@@ -115,9 +115,9 @@ class Obj3d:
             pts.append((rad * cos(ang), rad * sin(ang)))
             ang = ang + 90
         pts.append((rad * cos(end_angle), rad * sin(end_angle)))
-        cutter = Obj3d(_m.Manifold.extrude(polygon(pts).mo, h)).translate(
-            [c_x, c_y, c_z - (h / 2)]
-        )
+        cutter = Obj3d(
+            _m.Manifold.extrude(_m.CrossSection.create_from_path_unchecked(pts), h)
+        ).translate([c_x, c_y, c_z - (h / 2)])
         return difference(self, cutter)
 
     def rotate(self, degrees: list[float, float, float]) -> Obj3d:
@@ -271,7 +271,7 @@ class Obj2d:
             pts.append((rad * cos(ang) + c_x, rad * sin(ang) + c_y))
             ang = ang + 90
         pts.append((rad * cos(end_angle) + c_x, rad * sin(end_angle) + c_y))
-        cutter = polygon(pts)
+        cutter = Obj2d(_m.CrossSection.create_from_path_unchecked(pts))
         return difference(self, cutter)
 
     def revolve(self, segments: int = -1, revolve_degrees: float = 360.0):
