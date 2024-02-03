@@ -81,7 +81,7 @@ def _save_svg(filename, obj):
         '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1 Tiny//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-tiny.dtd">'
     )
     txt.append(
-        f'<svg width="{width}{units}" height="{height}{units}" viewBox="0 0 {width} {height}" fill="rgb({color[0]},{color[1]},{color[2]})" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd">'
+        f'<svg width="{width}{units}" height="{height}{units}" viewBox="0 0 {width} {height}" fill="rgb({color[0]},{color[1]},{color[2]})" style="transform: rotate(180deg)" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd">'
     )
 
     txt.append(f'<g><path d="')
