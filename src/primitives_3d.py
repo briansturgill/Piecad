@@ -69,7 +69,7 @@ def cuboid(size: list[float, float, float]) -> Obj3d:
     return Obj3d(_m.Manifold.cube(size))
 
 
-def cylinder(height: float, radius: float, segments: int = -1) -> Obj3d:
+def cylinder(height: float, radius: float, segments: int = -1, center=False) -> Obj3d:
     """
     Make a cylinder of a given radius and height.
 
@@ -82,7 +82,9 @@ def cylinder(height: float, radius: float, segments: int = -1) -> Obj3d:
     _chkGT("height", height, 0)
     _chkGT("radius", radius, 0)
     _chkGE("segments", segments, 3)
-    return Obj3d(_m.Manifold.cylinder(height, radius, radius, segments))
+    return extrude_simple(
+        circle(radius, segments), height, height / 2.0 if center else 0, is_convex=True
+    )
 
 
 def extrude(obj: Obj2d, height: float) -> Obj3d:
@@ -275,6 +277,25 @@ def extrude_chaining(
     return Obj3d(mo)
 
 
+def extrude_simple(
+    obj: Obj2d, height: float, initial_z: float = 0, is_convex=False
+) -> Obj3d:
+    """
+    Create a Obj3d solid from Obj2d of given height.
+
+    The 2d object will be copied and moved up to ``height``.
+    Lines will be added creating an ``obj``-shaped 3d solid.
+
+    If `initial_z` is not zero then it is added to the `0` z points and `height` z points.
+    You can use `initial_z = -height/2.0` to cause the extrusion to be centered on `z == 0`.
+
+    <iframe width="100%" height="220" src="examples/extrude.html"></iframe>
+    """
+    _chkTY("obj", obj, Obj2d)
+    _chkGT("height", height, 0)
+    return Obj3d(_m.Manifold.extrude_simple(obj.mo, height, initial_z, is_convex))
+
+
 def extrude_transforming(
     obj: Obj2d,
     height: float,
@@ -429,40 +450,6 @@ def project_box(
     l.append((iz, None))
 
     return extrude_chaining(l, tri_alg="fan")
-
-    # Using boolean 3d operations takes 7.5 times longer than the code above.
-    # l = []
-    # x, y, z = size
-    # res = config["LayerResolution"]
-    # arc_segs = radius / res
-    # deg_per_arc_seg = 90.0 / arc_segs
-    # d = 0.0
-    # layer_thickness = radius / arc_segs
-
-    # l.append(rounded_rectangle((x, y), radius).extrude(layer_thickness))
-    # layer_idx = 0
-    # d += deg_per_arc_seg
-    # while d < 89.9:
-    #    layer_idx += 1
-    #    delta = wall * sin(d)
-    #    l.append(
-    #        rounded_rectangle((x + 2 * delta, y + 2 * delta), radius + delta)
-    #        .extrude(layer_thickness)
-    #        .translate((-delta, -delta, layer_thickness * layer_idx))
-    #    )
-    #    d += deg_per_arc_seg
-
-    # l.append(
-    #    rounded_rectangle([x + 2 * wall, y + 2 * wall], radius + wall)
-    #    .extrude(z)
-    #    .translate((-wall, -wall, radius))
-    # )
-
-    # outside = union(*l)
-    # inside = rounded_rectangle((x, y), radius).extrude(z).translate((0, 0, radius))
-    # box = difference(outside, inside)
-
-    # return box
 
 
 def pyramid(height: int, num_sides: int, radius: float) -> Obj3d:

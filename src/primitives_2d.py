@@ -81,6 +81,7 @@ def rounded_rectangle(
     size: list[float, float],
     radius: float = 0.2,
     segments: int = -1,
+    center: bool = False,
 ) -> Obj2d:
     """
     Create a rectangle with rounded corners.
@@ -96,17 +97,19 @@ def rounded_rectangle(
     _chkGE("segments", segments, 3)
     _chkV2("size", size)
 
-    circ = circle(radius, segments)
-    return Obj2d(
-        _m.CrossSection.batch_hull(
-            [
-                circ.translate((radius, radius)).mo,
-                circ.translate((size[0] - radius, radius)).mo,
-                circ.translate((size[0] - radius, size[1] - radius)).mo,
-                circ.translate((radius, size[1] - radius)).mo,
-            ]
-        )
-    )
+    return Obj2d(_m.CrossSection.rounded_rectangle(size, radius, segments, center))
+
+    # circ = circle(radius, segments)
+    # return Obj2d(
+    #     _m.CrossSection.batch_hull(
+    #         [
+    #             circ.translate((radius, radius)).mo,
+    #             circ.translate((size[0] - radius, radius)).mo,
+    #             circ.translate((size[0] - radius, size[1] - radius)).mo,
+    #             circ.translate((radius, size[1] - radius)).mo,
+    #         ]
+    #     )
+    # )
 
     # Surprisingly, the code below is slightly slower than
     # using batch_hull above. However batch_hull is faulty! LATER

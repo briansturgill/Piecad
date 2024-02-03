@@ -68,6 +68,12 @@ def _extrude(o, h):
     return o
 
 
+def _extrude_simple(o, h, c):
+    o = extrude_simple(o, h, is_convex=c)
+    o.num_verts()
+    return o
+
+
 def _extrude_chaining(l, ta):
     o = extrude_chaining(l, tri_alg=ta)
     o.num_verts()
@@ -113,6 +119,18 @@ def test_rounded_cylinder_100(benchmark):
 def test_extrude(benchmark):
     c = circle(100)
     o = benchmark(_extrude, c, 10)
+    assert o.num_verts() == 72
+
+
+def test_extrude_simple_ec(benchmark):
+    c = circle(100)
+    o = benchmark(_extrude_simple, c, 10, False)
+    assert o.num_verts() == 72
+
+
+def test_extrude_simple_fan(benchmark):
+    c = circle(100)
+    o = benchmark(_extrude_simple, c, 10, True)
     assert o.num_verts() == 72
 
 
@@ -194,3 +212,47 @@ def test_cube_from_polyhedron(benchmark):
     ]
     out = benchmark(_polyhedron, vertices, faces)
     assert out.num_verts() == 8
+
+
+def _project_box_bool3d(
+    size: list[float, float, float], radius: float = 3.0, wall: float = 2.0
+) -> Obj3d:
+    l = []
+    x, y, z = size
+    res = config["LayerResolution"]
+    arc_segs = radius / res
+    deg_per_arc_seg = 90.0 / arc_segs
+    d = 0.0
+    layer_thickness = radius / arc_segs
+
+    l.append(rounded_rectangle((x, y), radius).extrude(layer_thickness))
+    layer_idx = 0
+    d += deg_per_arc_seg
+    while d < 89.9:
+        layer_idx += 1
+        delta = wall * sin(d)
+        l.append(
+            rounded_rectangle((x + 2 * delta, y + 2 * delta), radius + delta)
+            .extrude(layer_thickness)
+            .translate((-delta, -delta, layer_thickness * layer_idx))
+        )
+        d += deg_per_arc_seg
+
+    l.append(
+        rounded_rectangle([x + 2 * wall, y + 2 * wall], radius + wall)
+        .extrude(z)
+        .translate((-wall, -wall, radius))
+    )
+
+    outside = union(*l)
+    inside = rounded_rectangle((x, y), radius).extrude(z).translate((0, 0, radius))
+    box = difference(outside, inside)
+    box.num_verts()
+
+    return box
+
+
+def test_project_box_bool3d(benchmark):
+    c = benchmark(_project_box_bool3d, (15, 10, 36), 3.0)
+    # 2560 uses bool3d, 1320 uses extrude_chaining
+    assert c.num_verts() == 2560 or c.num_verts() == 1320
