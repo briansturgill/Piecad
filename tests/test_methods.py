@@ -57,3 +57,22 @@ def test_split():
     o1, o2 = c.split(cut)
     assert o1.bounding_box() == (2.0, 0.0, 0.0, 4.0, 4.0, 4.0)
     assert o2.bounding_box() == (0.0, 0.0, 0.0, 2.0, 4.0, 4.0)
+
+
+def test_mirror_2d():
+    r = rectangle((5, 10)).translate((3, 3)).rotate(45)
+    verts = r.num_verts()
+    assert verts == r.mirror((True, False)).num_verts()
+    assert verts == r.mirror((False, True)).num_verts()
+    assert verts == r.mirror((True, True)).num_verts()
+
+
+def test_mirror_3d():
+    r = cuboid((5, 10, 15)).translate((3, 3, 3)).rotate((45, 0, 0))
+    verts = r.num_verts()
+    assert verts == r.mirror((True, False, False)).num_verts()
+    assert verts == r.mirror((False, True, False)).num_verts()
+    assert verts == r.mirror((True, True, False)).num_verts()
+    assert verts == r.mirror((True, False, True)).num_verts()
+    assert verts == r.mirror((False, True, True)).num_verts()
+    assert verts == r.mirror((True, True, True)).num_verts()

@@ -110,6 +110,29 @@ class Obj3d:
         """
         return self.mo.is_empty()
 
+    def mirror(self, axes: tuple[bool, bool, bool]):
+        """
+        Mirror this object around the given axes.
+
+        To understand this, pretend you are holding you right hand up in front of a mirror.
+        Consider the hand in mirror the original image.
+        Mirror over the x axis and you will get an image to the left that looks like a left hand.
+        Mirror over the y axis and you will get an image like the back of the hand you are holding up.
+        Mirror over the x and y axes and you will get an image like the back of a left hand.
+        For the Z axis it's the same, but each hand is upside down.
+
+        From a mathmatical standpoint, mirroring is negating all the points in each axis selected.
+
+        """
+        uv = [0, 0, 0]
+        if axes[0]:
+            uv[0] = 1
+        if axes[1]:
+            uv[1] = 1
+        if axes[2]:
+            uv[2] = 1
+        return Obj3d(self.mo.mirror(uv), self._color)
+
     def num_faces(self) -> int:
         """
         The number of faces in this object.
@@ -314,6 +337,26 @@ class Obj2d:
         o3._color = self._color
         return o3
 
+    def mirror(self, axes: tuple[bool, bool]):
+        """
+        Mirror this object around the given axes.
+
+        To understand this, pretend you are holding you right hand up in front of a mirror.
+        Consider the hand in mirror the original image, but flattened to 2D.
+        Mirror over the x axis and you will get an image to the left that looks like a left hand.
+        Mirror over the y axis and you will get an image of the right hand upside down.
+        Mirror over the x and y axes and you will get an image a left hand upside down.
+
+        From a mathmatical standpoint, mirroring is negating all the points in each axis selected.
+
+        """
+        uv = [0, 0]
+        if axes[0]:
+            uv[0] = 1
+        if axes[1]:
+            uv[1] = 1
+        return Obj2d(self.mo.mirror(uv), self._color)
+
     def num_verts(self) -> int:
         """
         The number of vertices in this object.
@@ -395,7 +438,6 @@ class Obj2d:
         Rotate this object by the given degrees.
 
         """
-        _chkTY("degrees", degrees, float)
         return Obj2d(self.mo.rotate(degrees), color=self._color)
 
     def scale(self, factors: list[float, float]) -> Obj2d:
