@@ -3,7 +3,6 @@
 """
 
 import manifold3d as _m
-import numpy as _np
 import trimesh
 
 from . import (
@@ -87,7 +86,7 @@ def cylinder(height: float, radius: float, segments: int = -1, center=False) -> 
     )
 
 
-def extrude(obj: Obj2d, height: float) -> Obj3d:
+def extrude(obj: Obj2d, height: float, is_convex: bool = False) -> Obj3d:
     """
     Create a Obj3d solid from Obj2d of given height.
 
@@ -98,7 +97,7 @@ def extrude(obj: Obj2d, height: float) -> Obj3d:
     """
     _chkTY("obj", obj, Obj2d)
     _chkGT("height", height, 0)
-    return Obj3d(_m.Manifold.extrude(obj.mo, height))
+    return Obj3d(_m.Manifold.extrude_simple(obj.mo, height, is_convex=False))
 
 
 def extrude_chaining(
@@ -262,15 +261,11 @@ def extrude_chaining(
 
     add_cap(cur_z, cur, top=True)
 
-    vertex_list = _np.array(vertex_list, _np.float32)
-    triangles = _np.array(triangles, _np.int32)
-    mesh = _m.Mesh(vertex_list, triangles)
-
     # import trimesh
     # mesh_output = trimesh.Trimesh(vertices=vertex_list, faces=triangles)
     # trimesh.exchange.export.export_mesh(mesh_output, "/home/brian/Downloads/mesh.obj", "obj")
 
-    mo = _m.Manifold(mesh)
+    mo = _m.Manifold.create_from_verts_and_faces(vertex_list, triangles)
     if mo.is_empty():
         raise ValidationError(f"Error creating Manifold: {mo.status()}.")
 
@@ -303,6 +298,8 @@ def extrude_transforming(
     twist: float = 0,
     scale_x: float = 1.0,
     scale_y=1.0,
+    initial_z=0.0,
+    is_convex=False,
 ) -> Obj3d:
     """
     Create a Obj3d solid from Obj2d of given height.
@@ -326,8 +323,14 @@ def extrude_transforming(
     _chkGE("scale_x", scale_x, 0)
     _chkGE("scale_y", scale_y, 0)
     return Obj3d(
-        _m.Manifold.extrude(
-            obj.mo, height, num_twist_divisions, twist, (scale_x, scale_y)
+        _m.Manifold.extrude_transforming(
+            obj.mo,
+            height,
+            num_twist_divisions,
+            twist,
+            (scale_x, scale_y),
+            initial_z,
+            is_convex,
         )
     )
 
@@ -380,15 +383,12 @@ def polyhedron(
     Then use a program like `meshlab` to look at where things are not manifold.
 
     """
-    vertices = _np.array(vertices, _np.float32)
-    faces = _np.array(faces, _np.int32)
-    mesh = _m.Mesh(vertices, faces)
 
     # import trimesh
     # mesh_output = trimesh.Trimesh(vertices=vertices, faces=faces)
     # trimesh.exchange.export.export_mesh(mesh_output, "/home/brian/Downloads/mesh.obj", "obj")
 
-    mo = _m.Manifold(mesh)
+    mo = _m.Manifold.create_from_verts_and_faces(vertices, faces)
     if mo.is_empty():
         raise ValidationError(f"Error from the Manifold CAD package: {mo.status()}.")
 

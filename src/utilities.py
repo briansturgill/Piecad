@@ -8,7 +8,6 @@ import json
 import queue
 import threading
 import manifold3d as _m
-import numpy as _np
 import trimesh
 from typing import Union
 

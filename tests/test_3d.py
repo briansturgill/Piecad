@@ -112,8 +112,7 @@ def test_rounded_cuboid(benchmark):
 
 def test_project_box(benchmark):
     c = benchmark(_project_box, (15, 10, 36), 3.0)
-    # 2560 uses bool3d, 1320 uses extrude_chaining
-    assert c.num_verts() == 2560 or c.num_verts() == 1320
+    assert c.num_verts() == 1360
 
 
 def test_rounded_cylinder_100(benchmark):
@@ -215,6 +214,7 @@ def test_cube_from_polyhedron(benchmark):
         (7, 3, 5),
         (7, 5, 6),
     ]
+
     out = benchmark(_polyhedron, vertices, faces)
     assert out.num_verts() == 8
 
