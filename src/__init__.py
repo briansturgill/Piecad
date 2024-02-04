@@ -161,6 +161,31 @@ class Obj3d:
         o3._color = self._color
         return o3
 
+    def project(self) -> Obj2d:
+        """
+        Return a Obj2d representing this object's "shadow" on the x-y plane.
+
+        """
+        return Obj2d(self.mo.project(), color=self._color)
+
+    def slice(self, height: float) -> Obj2d:
+        """
+        Like `project`, but a the given height.
+
+        """
+        return Obj2d(self.mo.slice(height), color=self._color)
+
+    def split(self, cutter: Obj3d) -> Obj3d:
+        """
+        This is like doing a difference and an intersect between this the cutter
+        object simultaneously. It is faster than doing the two operations separately.
+
+        Return is `(diff_obj, inter_obj)`.
+
+        """
+        ret = self.mo.split(cutter.mo)
+        return (Obj3d(ret[0], color=self._color), Obj3d(ret[1], color=self._color))
+
     def rotate(self, degrees: list[float, float, float]) -> Obj3d:
         """
         Rotate this object by the given degrees for each axis.

@@ -37,3 +37,23 @@ def test_center_2d():
     assert rr.bounding_box() == (3.0, 6.0, 13.0, 26.0)
     rr = rr.center((False, True), at=(1, 1))
     assert rr.bounding_box() == (3.0, -9.0, 13.0, 11.0)
+
+
+def test_project():
+    c = cube(4)
+    o = c.project()
+    assert o.bounding_box() == (0, 0, 4, 4)
+
+
+def test_slice():
+    c = cube(4)
+    o = c.slice(2)
+    assert o.bounding_box() == (0, 0, 4, 4)
+
+
+def test_split():
+    c = cube(4)
+    cut = cube(4).translate((2, 0, 0))
+    o1, o2 = c.split(cut)
+    assert o1.bounding_box() == (2.0, 0.0, 0.0, 4.0, 4.0, 4.0)
+    assert o2.bounding_box() == (0.0, 0.0, 0.0, 2.0, 4.0, 4.0)
