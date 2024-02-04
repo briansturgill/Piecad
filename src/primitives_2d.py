@@ -53,11 +53,27 @@ def ellipse(radii: list[float, float], segments: int = -1) -> Obj2d:
     return Obj2d(circ.scale(radii))
 
 
-def polygon(points: list[float, float]) -> Obj2d:
+import numpy as _np
+
+
+def polygon(path_or_paths: list[float, float] | list[list[float, float]]) -> Obj2d:
     """
-    Create a polygon from a single closed path of points.
+    Create a polygon from a single or multiple closed paths of points.
+
+    Paths must be wound CCW for contours (solid parts).
+    Or be wound CW for holes.
+
+    All paths (contrours and holes) must not intersect.
     """
-    return Obj2d(_m.CrossSection([points], _m.FillRule.EvenOdd))
+    ty = type(path_or_paths)
+    if ty == list or ty == tuple or ty == _np.ndarray:
+        ty = type(path_or_paths[0])
+        if ty == list or ty == tuple or ty == _np.ndarray:
+            ty = type(path_or_paths[0][0])
+            if ty == list or ty == tuple or ty == _np.ndarray:
+                return Obj2d(_m.CrossSection.create_from_paths_unchecked(path_or_paths))
+
+    return Obj2d(_m.CrossSection.create_from_path_unchecked(path_or_paths))
 
 
 def rectangle(size: list[float, float]) -> Obj2d:

@@ -241,9 +241,17 @@ def extrude_chaining(
 
         prev_polys = prev.mo.to_polygons()
         cur_polys = cur.mo.to_polygons()
+        if len(cur_polys) != len(prev_polys):
+            raise ValidationError(
+                f"At pairs index: {cur_idx}, previous shape does no match current shape."
+            )
         for i in range(0, len(cur.mo.to_polygons())):
             b = prev_polys[i]
             t = cur_polys[i]
+            if len(b) != len(b):
+                raise ValidationError(
+                    f"At pairs index: {cur_idx}, poly: {i}, previous shape does no match current shape."
+                )
             bottom_p = v((b[0][0], b[0][1], cur_z))
             top_p = v((t[0][0], t[0][1], cur_z + h))
 
