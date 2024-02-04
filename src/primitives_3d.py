@@ -538,7 +538,7 @@ def revolve(obj: Obj2d, segments: int = -1, revolve_degrees: float = 360.0) -> O
     return Obj3d(_m.Manifold.revolve(obj.mo, segments, revolve_degrees))
 
 
-def sphere(radius, segments=-1):
+def sphere(radius: float, segments: int = -1):
     """
     Create a classical sphere of a given radius.
 
@@ -552,5 +552,31 @@ def sphere(radius, segments=-1):
     _chkGE("segments", segments, 3)
 
     circ = circle(radius, segments).piecut(90, 270)
+
+    return revolve(circ, segments=segments)
+
+
+def torus(outer_radius: float, inner_radius: float, segments=-1):
+    """
+    Create a torus with the specified radii.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    <iframe width="100%" height="220" src="examples/torus.html"></iframe>
+    """
+    if segments == -1:
+        segments = config["DefaultSegments"]
+    _chkGT("outer_radius", outer_radius, 0)
+    _chkGT("inner_radius", inner_radius, 0)
+    _chkGE("segments", segments, 3)
+    if inner_radius >= outer_radius:
+        raise ValidationError(
+            "Parameter inner_radius must be smaller than outer_radius."
+        )
+
+    center_pt = outer_radius / 2.0 + inner_radius
+    circ = circle(outer_radius - inner_radius, segments).translate(
+        (center_pt, center_pt)
+    )
 
     return revolve(circ, segments=segments)

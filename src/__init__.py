@@ -46,6 +46,34 @@ class Obj3d:
         """
         return self.mo.bounding_box()
 
+    def center(
+        self,
+        axes: tuple[bool, bool, bool] = (True, True, True),
+        at: tuple[float, float, float] = (0, 0, 0),
+    ):
+        """
+        Center the object on each of the `True` axes.
+
+        Parameter `at` specifies the point to center on.
+
+        """
+        xmin, ymin, zmin, xmax, ymax, zmax = self.bounding_box()
+        mid_x = (xmax - xmin) / 2 + xmin
+        mid_y = (ymax - ymin) / 2 + ymin
+        mid_z = (zmax - zmin) / 2 + zmin
+        new_x = 0
+        new_x = 0
+        new_x = 0
+        if axes[0]:
+            new_x = at[0] - mid_x
+        if axes[1]:
+            new_y = at[0] - mid_y
+        if axes[2]:
+            new_z = at[0] - mid_z
+        o3 = self.translate((new_x, new_y, new_z))
+        o3._color = self._color
+        return o3
+
     def color(self, cspec):
         """
         Assign the given color to this object.</summary>
@@ -63,6 +91,17 @@ class Obj3d:
               For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color/keywords)
         """
         return Obj3d(self.mo, _parse_color(cspec))
+
+    def decompose(self) -> list[Obj3d]:
+        """
+        Decompose this object into a list of topologically disjoint objects.
+
+        """
+        ml = self.mo.decompose()
+        l = []
+        for m in ml:
+            l.append(Obj3d(m, color=self._color))
+        return l
 
     def is_empty(self):
         """
@@ -118,7 +157,9 @@ class Obj3d:
         cutter = Obj3d(
             _m.Manifold.extrude(_m.CrossSection.create_from_path_unchecked(pts), h)
         ).translate([c_x, c_y, c_z - (h / 2)])
-        return difference(self, cutter)
+        o3 = difference(self, cutter)
+        o3._color = self._color
+        return o3
 
     def rotate(self, degrees: list[float, float, float]) -> Obj3d:
         """
@@ -182,6 +223,29 @@ class Obj2d:
         """
         return self.mo.bounds()
 
+    def center(
+        self, axes: tuple[bool, bool] = (True, True), at: tuple[float, float] = (0, 0)
+    ):
+        """
+        Center the object on each of the `True` axes.
+
+        Parameter `at` specifies the point to center on.
+
+        """
+        xmin, ymin, xmax, ymax = self.bounding_box()
+        mid_x = (xmax - xmin) / 2 + xmin
+        mid_y = (ymax - ymin) / 2 + ymin
+        new_x = 0
+        new_x = 0
+        new_x = 0
+        if axes[0]:
+            new_x = at[0] - mid_x
+        if axes[1]:
+            new_y = at[0] - mid_y
+        o2 = self.translate((new_x, new_y))
+        o2._color = self._color
+        return o2
+
     def color(self, cspec):
         """
         Assign the given color to this object.</summary>
@@ -200,6 +264,17 @@ class Obj2d:
         """
         return Obj2d(self.mo, _parse_color(cspec))
 
+    def decompose(self) -> list[Obj2d]:
+        """
+        Decompose this object into a list of topologically disjoint objects.
+
+        """
+        ml = self.mo.decompose()
+        l = []
+        for m in ml:
+            l.append(Obj2d(m, color=self._color))
+        return l
+
     def is_empty(self):
         """
         Is this object empty?
@@ -210,7 +285,9 @@ class Obj2d:
         """
         Extrude this object into a Obj3d of the given height.
         """
-        return Obj3d(_m.Manifold.extrude(self.mo, height))
+        o3 = Obj3d(_m.Manifold.extrude(self.mo, height))
+        o3._color = self._color
+        return o3
 
     def num_verts(self) -> int:
         """
@@ -250,7 +327,9 @@ class Obj2d:
             raise ValidationError(
                 'Invalid join type specified, must be one of: "round", "square", or "miter"'
             )
-        return Obj2d(self.mo.offset(delta, jt, miter_limit, segments))
+        o2 = Obj2d(self.mo.offset(delta, jt, miter_limit, segments))
+        o2._color = self._color
+        return o2
 
     def piecut(self, start_angle=0, end_angle=90) -> Obj2d:
         """
@@ -272,7 +351,9 @@ class Obj2d:
             ang = ang + 90
         pts.append((rad * cos(end_angle) + c_x, rad * sin(end_angle) + c_y))
         cutter = Obj2d(_m.CrossSection.create_from_path_unchecked(pts))
-        return difference(self, cutter)
+        o2 = difference(self, cutter)
+        o2._color = self._color
+        return o2
 
     def revolve(self, segments: int = -1, revolve_degrees: float = 360.0):
         """
@@ -280,7 +361,9 @@ class Obj2d:
 
         For ``segments`` see the documentation of ``set_default_segments``.
         """
-        return revolve(self, segments, revolve_degrees)
+        o3 = revolve(self, segments, revolve_degrees)
+        o3._color = self._color
+        return o3
 
     def rotate(self, degrees: float) -> Obj2d:
         """

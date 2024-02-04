@@ -1,0 +1,1 @@
+out = torus(outer_radius=10, inner_radius=6, segments=100)

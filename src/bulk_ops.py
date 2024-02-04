@@ -29,7 +29,11 @@ def compose(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
     l = []
     for o in objs:
         l.append(o.mo)
-    return Obj2d(_m.CrossSection.batch_boolean(l, _m.OpType.Subtract))
+
+    if ty == Obj2d:
+        return Obj2d(_m.CrossSection.compose(l))
+    else:
+        return Obj3d(_m.Manifold.compose(l))
 
 
 def difference(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:

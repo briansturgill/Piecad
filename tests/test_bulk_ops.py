@@ -72,3 +72,23 @@ def test_union_3d(benchmark):
     c2.num_verts()
     o = benchmark(_union, c1, c2)
     assert o.num_verts() == 880
+
+
+def test_compose_decompose2d():
+    l = []
+    l.append(circle(5))
+    l.append(square(5).translate((15, 0)))
+    l.append(rounded_rectangle((5, 3)).translate((0, 15)))
+    o = compose(*l)
+    l2 = o.decompose()
+    assert len(l) == len(l2)
+
+
+def test_compose_decompose3d():
+    l = []
+    l.append(cylinder(10, 5))
+    l.append(cube(5).translate((15, 0, 0)))
+    l.append(cuboid((5, 3, 10)).translate((0, 15, 0)))
+    o = compose(*l)
+    l2 = o.decompose()
+    assert len(l) == len(l2)

@@ -12,3 +12,28 @@ def test_offset(benchmark):
     rr = rounded_rectangle((10, 10), 2.0, 36)
     c = benchmark(_offset, rr, 2, "round")
     assert c.num_verts() == 84
+
+
+def test_center_3d():
+    rr = rounded_rectangle((10, 20), 4).extrude(2)
+    rr = rr.translate((3, 6, 20))
+    assert rr.bounding_box() == (3.0, 6.0, 20.0, 13.0, 26.0, 22.0)
+    rr = rr.center((False, True, True))
+    assert rr.bounding_box() == (3.0, -10.0, -1.0, 13.0, 10.0, 1.0)
+
+
+def test_center_3d_at():
+    rr = rounded_rectangle((10, 20), 4).extrude(2)
+    rr = rr.translate((3, 6, 20))
+    assert rr.bounding_box() == (3.0, 6.0, 20.0, 13.0, 26.0, 22.0)
+    rr = rr.center((False, True, True), at=(1, 1, 1))
+    assert rr.bounding_box() == (3.0, -9.0, 0.0, 13.0, 11.0, 2.0)
+
+
+def test_center_2d():
+    rr = rounded_rectangle((10, 20), 4)
+
+    rr = rr.translate((3, 6))
+    assert rr.bounding_box() == (3.0, 6.0, 13.0, 26.0)
+    rr = rr.center((False, True), at=(1, 1))
+    assert rr.bounding_box() == (3.0, -9.0, 13.0, 11.0)
