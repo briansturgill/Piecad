@@ -8,9 +8,6 @@ import manifold3d as _m
 from . import Obj2d, config, _chkGT, _chkGE, _chkV2, cos, sin
 
 
-_unit_circles = {}
-
-
 def circle(radius: float, segments: int = -1) -> Obj2d:
     """
     Make a circle of a given radius.
@@ -22,15 +19,10 @@ def circle(radius: float, segments: int = -1) -> Obj2d:
     _chkGT("radius", radius, 0.0)
     _chkGE("segments", segments, 3)
 
-    if segments in _unit_circles:
-        circ = _unit_circles[segments]
-    else:
-        circ = _m.CrossSection.circle(1, segments)
-        _unit_circles[segments] = circ
+    return Obj2d(_m.CrossSection.circle(radius, segments))
 
-    if radius == 1:
-        return Obj2d(circ)
-    return Obj2d(circ.scale((radius, radius)))
+
+_unit_circles = {}
 
 
 def ellipse(radii: list[float, float], segments: int = -1) -> Obj2d:
