@@ -74,8 +74,8 @@ def _extrude_simple(o, h, c):
     return o
 
 
-def _extrude_chaining(l, ta):
-    o = extrude_chaining(l, tri_alg=ta)
+def _extrude_chaining(l, is_convex):
+    o = extrude_chaining(l, is_convex=is_convex)
     o.num_verts()
     return o
 
@@ -156,13 +156,13 @@ def test_geodesic_sphere(benchmark):
 
 def test_extrude_chaining_earcut(benchmark):
     c = circle(100)
-    o = benchmark(_extrude_chaining, [(0, c), (10, None)], "ec")
+    o = benchmark(_extrude_chaining, [(0, c), (10, None)], is_convex=False)
     assert o.num_verts() == 72
 
 
 def test_extrude_chaining_fan(benchmark):
     c = circle(100)
-    o = benchmark(_extrude_chaining, [(0, c), (10, None)], "fan")
+    o = benchmark(_extrude_chaining, [(0, c), (10, None)], is_convex=True)
     assert o.num_verts() == 72
 
 
@@ -177,7 +177,7 @@ def _sphere_from_chaining(radius, segs):
         h = hs * factor
         l.append((h, circle(r, segs)))
 
-    out = extrude_chaining(l, tri_alg="fan")
+    out = extrude_chaining(l, is_convex=True)
     return out
 
 

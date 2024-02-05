@@ -93,6 +93,9 @@ def extrude(obj: Obj2d, height: float, is_convex: bool = False) -> Obj3d:
     The 2d object will be copied and moved up to ``height``.
     Lines will be added creating an ``obj``-shaped 3d solid.
 
+    If parameter `is_convex` is set to `True` a much faster triangulation
+    algoritm is used, which only works on a convex shape. If you don't
+
     <iframe width="100%" height="220" src="examples/extrude.html"></iframe>
     """
     _chkTY("obj", obj, Obj2d)
@@ -101,7 +104,7 @@ def extrude(obj: Obj2d, height: float, is_convex: bool = False) -> Obj3d:
 
 
 def extrude_chaining(
-    pairs: list[tuple[float, Obj2d]], initial_z: float = 0.0, tri_alg="ec"
+    pairs: list[tuple[float, Obj2d]], initial_z: float = 0.0, is_convex: bool = False
 ) -> Obj3d:
     """
     Extrude multiple Obj2d into a single Obj3d.
@@ -112,8 +115,8 @@ def extrude_chaining(
 
     Use `initial_z` if you want it extruded starting at a different z value.
 
-    The parameter `tri_alg` set to `fan` uses a much faster triangulation
-    algoritm  which only works on a convex shape. If you don't
+    If parameter `is_convex` is set to `True` a much faster triangulation
+    algoritm is used, which only works on a convex shape. If you don't
     understand what this means, leave this option alone.
 
     Caps:
@@ -139,145 +142,14 @@ def extrude_chaining(
     <br>
     <iframe width="100%" height="330" src="examples/extrude_chaining_rr.html"></iframe>
     """
-    vertex_map = {}
-    vertex_list = []
-
-    def v(a):
-        if a in vertex_map:
-            return vertex_map[a]
-        idx = len(vertex_list)
-        vertex_list.append(a)
-        vertex_map[a] = idx
-        return idx
-
-    triangles = []
-
-    _chkGT("pairs length", len(pairs), 0)
-    _chkGE("initial_z", initial_z, 0)
-    if pairs[0][0] != 0:
-        raise ValidationError("The first element of pairs must be a cap.")
-    if pairs[-1][0] == 0:
-        raise ValidationError("The last element of pairs cannot be a cap.")
-
-    def add_cap(h, shape, top):
-        polys = shape.mo.to_polygons()
-
-        if tri_alg == "ec" or len(polys) != 1:  # use EarCut
-            vl = []
-            for poly in polys:
-                for vert in poly:
-                    vl.append(vert)
-            tris = _m.triangulate(polys)
-            for t in tris:
-                i1, i2, i3 = t
-                x1, y1 = vl[i1]
-                x2, y2 = vl[i2]
-                x3, y3 = vl[i3]
-                if top:
-                    triangles.append(
-                        (
-                            v((x1, y1, h)),
-                            v((x2, y2, h)),
-                            v((x3, y3, h)),
-                        )
-                    )
-                else:  # Bottom caps are reversed.
-                    triangles.append(
-                        (
-                            v((x3, y3, h)),
-                            v((x2, y2, h)),
-                            v((x1, y1, h)),
-                        )
-                    )
-        elif tri_alg == "fan":  # Fan triangulation
-            poly = polys[0]  # We have only one to deal with
-            n = len(poly)
-            chosen = poly[0]
-            for i in range(1, n - 1):
-                cur = poly[i]
-                next = poly[i + 1]
-                if top:
-                    triangles.append(
-                        (
-                            v((chosen[0], chosen[1], h)),
-                            v((cur[0], cur[1], h)),
-                            v((next[0], next[1], h)),
-                        )
-                    )
-                else:  # Bottom caps are clockwise.
-                    triangles.append(
-                        (
-                            v((next[0], next[1], h)),
-                            v((cur[0], cur[1], h)),
-                            v((chosen[0], chosen[1], h)),
-                        )
-                    )
+    l = []
+    for h, obj in pairs:
+        if obj == None:
+            l.append((h, _m.CrossSection()))
         else:
-            ValidationError(
-                f"Invalid triangulation algorithm specified: {tri_alg}, must be one of: 'ec' or 'fan'"
-            )
+            l.append((h, obj.mo))
 
-    cur_z = initial_z
-    add_cap(cur_z, pairs[0][1], top=False)
-    last = len(pairs)
-    prev = pairs[0][1]
-    cur_idx = 1
-
-    while cur_idx < last:
-        cur = pairs[cur_idx][1]
-        if cur == None:
-            # This means to extrude the shape from the previous shape.
-            # Usually this is done after a partial cap and you want
-            # to extrude the difference done for the partial cap.
-            cur = prev
-
-        h = pairs[cur_idx][0]
-
-        if h == 0:  # A partial cap.
-            add_cap(cur_z, cur, top=True)
-            prev = difference(prev, cur)
-            cur_idx += 1
-            continue
-
-        prev_polys = prev.mo.to_polygons()
-        cur_polys = cur.mo.to_polygons()
-        if len(cur_polys) != len(prev_polys):
-            raise ValidationError(
-                f"At pairs index: {cur_idx}, previous shape does no match current shape."
-            )
-        for i in range(0, len(cur.mo.to_polygons())):
-            b = prev_polys[i]
-            t = cur_polys[i]
-            if len(b) != len(b):
-                raise ValidationError(
-                    f"At pairs index: {cur_idx}, poly: {i}, previous shape does no match current shape."
-                )
-            bottom_p = v((b[0][0], b[0][1], cur_z))
-            top_p = v((t[0][0], t[0][1], cur_z + h))
-
-            _len = len(b)
-            for i in range(0, _len):
-                next_bottom_p = v((b[(i + 1) % _len][0], b[(i + 1) % _len][1], cur_z))
-                next_top_p = v((t[(i + 1) % _len][0], t[(i + 1) % _len][1], cur_z + h))
-                triangles.append((bottom_p, next_bottom_p, next_top_p))
-                triangles.append((bottom_p, next_top_p, top_p))
-                bottom_p = next_bottom_p
-                top_p = next_top_p
-        prev = cur
-        cur_z += h
-        cur_idx += 1
-
-    add_cap(cur_z, cur, top=True)
-
-    # import trimesh
-    # mesh_output = trimesh.Trimesh(vertices=vertex_list, faces=triangles)
-    # trimesh.exchange.export.export_mesh(mesh_output, "/home/brian/Downloads/mesh.obj", "obj")
-
-    mo = _m.Manifold.create_from_verts_and_faces(vertex_list, triangles)
-    if mo.is_empty():
-        raise ValidationError(f"Error creating Manifold: {mo.status()}.")
-
-    return Obj3d(mo)
+    return Obj3d(_m.Manifold.extrude_chaining(l, initial_z, is_convex))
 
 
 def extrude_simple(
@@ -291,6 +163,9 @@ def extrude_simple(
 
     If `initial_z` is not zero then it is added to the `0` z points and `height` z points.
     You can use `initial_z = -height/2.0` to cause the extrusion to be centered on `z == 0`.
+
+    If parameter `is_convex` is set to `True` a much faster triangulation
+    algoritm is used, which only works on a convex shape. If you don't
 
     <iframe width="100%" height="220" src="examples/extrude.html"></iframe>
     """
@@ -321,6 +196,12 @@ def extrude_transforming(
     Parameter `twist` will cause a circular rotation for each `num_twist_divisions`.
 
     Scale_x and scale_y is also applied at each division.
+
+    If `initial_z` is not zero then it is added to the `0` z points and `height` z points.
+    You can use `initial_z = -height/2.0` to cause the extrusion to be centered on `z == 0`.
+
+    If parameter `is_convex` is set to `True` a much faster triangulation
+    algoritm is used, which only works on a convex shape. If you don't
 
     <iframe width="100%" height="250" src="examples/extrude_transforming.html"></iframe>
     """
@@ -457,7 +338,7 @@ def project_box(
     l.append((0, l[0][1]))
     l.append((iz, None))
 
-    return extrude_chaining(l, tri_alg="fan")
+    return extrude_chaining(l, is_convex=True)
 
 
 def pyramid(height: int, num_sides: int, radius: float) -> Obj3d:
