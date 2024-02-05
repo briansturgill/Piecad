@@ -121,21 +121,21 @@ def test_rounded_cylinder_100(benchmark):
 
 
 def test_extrude(benchmark):
-    c = circle(100)
-    o = benchmark(_extrude, c, 10)
-    assert o.num_verts() == 72
+    c = circle(10, 100)
+    o = benchmark(_extrude, c, 25)
+    assert o.num_verts() == 200
 
 
 def test_extrude_simple_ec(benchmark):
-    c = circle(100)
-    o = benchmark(_extrude_simple, c, 10, False)
-    assert o.num_verts() == 72
+    c = circle(10, 100)
+    o = benchmark(_extrude_simple, c, 25, False)
+    assert o.num_verts() == 200
 
 
 def test_extrude_simple_fan(benchmark):
-    c = circle(100)
-    o = benchmark(_extrude_simple, c, 10, True)
-    assert o.num_verts() == 72
+    c = circle(10, 100)
+    o = benchmark(_extrude_simple, c, 25, True)
+    assert o.num_verts() == 200
 
 
 def test_revolve():
@@ -155,15 +155,15 @@ def test_geodesic_sphere(benchmark):
 
 
 def test_extrude_chaining_earcut(benchmark):
-    c = circle(100)
-    o = benchmark(_extrude_chaining, [(0, c), (10, None)], is_convex=False)
-    assert o.num_verts() == 72
+    c = circle(10, 100)
+    o = benchmark(_extrude_chaining, [(0, c), (25, None)], is_convex=False)
+    assert o.num_verts() == 200
 
 
 def test_extrude_chaining_fan(benchmark):
-    c = circle(100)
-    o = benchmark(_extrude_chaining, [(0, c), (10, None)], is_convex=True)
-    assert o.num_verts() == 72
+    c = circle(10, 100)
+    o = benchmark(_extrude_chaining, [(0, c), (25, None)], is_convex=True)
+    assert o.num_verts() == 200
 
 
 def _sphere_from_chaining(radius, segs):
