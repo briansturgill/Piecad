@@ -244,7 +244,6 @@ import math as _math
 
 
 def _sphere_from_chaining(radius, segs):
-    segs = ((segs + 3) // 4) * 4
     deg_per_seg = 180.0 / segs
     hs = (_math.pi * radius) / segs
     l = []
