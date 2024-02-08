@@ -1,0 +1,1 @@
+out = extrude_simple(star(6, 4), 10, True)
