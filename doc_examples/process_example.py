@@ -18,6 +18,7 @@ example_html = f"tmp/{example_name}.html"
 
 template = f"""
 <html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
 <style>
 body {{

@@ -1,9 +1,0 @@
-l = []
-rr = rounded_rectangle([20, 24], 4)
-rr_hole = rounded_rectangle([16, 20], 2).translate((2, 2))
-l = []
-l.append((0, rr))
-l.append((2, None))
-l.append((0, rr_hole))
-l.append((15, None))
-out = extrude_chaining(l, is_convex=True)

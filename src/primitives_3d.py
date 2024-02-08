@@ -24,7 +24,11 @@ from . import (
 
 
 def cone(
-    height: float, radius_low: float, radius_high: float = 0.2, segments: int = -1
+    height: float,
+    radius_low: float,
+    radius_high: float = 0.2,
+    segments: int = -1,
+    center: bool = False,
 ) -> Obj3d:
     """
     Make a cone with given radii and height.
@@ -35,6 +39,10 @@ def cone(
     don't 3d print very well. If the model is not to be printed,
     by all means set it to 0.
 
+    By default, the cone bottom is centered at `(0,0,0)`.
+    When `center` is `True`, the cone will be centered on `(0,0,0)`.
+    (In other words, the bottom of the cone will be at `(0,0,-height/2.0`.)
+
     <iframe width="100%" height="220" src="examples/cone.html"></iframe>
     """
     if segments == -1:
@@ -43,29 +51,37 @@ def cone(
     _chkGT("radius_low", radius_low, 0)
     _chkGE("radius_high", radius_high, 0)
     _chkGE("segments", segments, 3)
-    return Obj3d(_m.Manifold.cylinder(height, radius_low, radius_high, segments))
+    return Obj3d(
+        _m.Manifold.cylinder(height, radius_low, radius_high, segments, center)
+    )
 
 
-def cube(size: float) -> Obj3d:
+def cube(size: float, center: bool = False) -> Obj3d:
     """
     Make a cube of with sides of the given size.
 
-    <iframe width="100%" height="220" src="examples/cube.html"></iframe>
+    By default, the bottom front left corner of the cube will be at `(0,0,0)`.
+    When `center` is `True` it will cause the cube to be centered at `(0,0,0)`.
+
     """
+    # Too many models on one page. <iframe width="100%" height="220" src="examples/cube.html"></iframe>
     if type(size) == list or type(size) == tuple:
-        return cuboid(size)
-    return Obj3d(_m.Manifold.cube((size, size, size)))
+        return cuboid(size, center)
+    return Obj3d(_m.Manifold.cube((size, size, size), center))
 
 
-def cuboid(size: list[float, float, float]) -> Obj3d:
+def cuboid(size: list[float, float, float], center: bool = False) -> Obj3d:
     """
     Make a cuboid with the x, y, and z values given in size.
 
-    <iframe width="100%" height="220" src="examples/cuboid.html"></iframe>
+    By default, the bottom front left corner of the cuboid will be at `(0,0,0)`.
+    When `center` is `True` it will cause the cube to be centered at `(0,0,0)`.
+
     """
+    # Too many models on one page. <iframe width="100%" height="220" src="examples/cuboid.html"></iframe>
     if type(size) == float or type(size) == int:
         return cube(size)
-    return Obj3d(_m.Manifold.cube(size))
+    return Obj3d(_m.Manifold.cube(size, center))
 
 
 def cylinder(height: float, radius: float, segments: int = -1, center=False) -> Obj3d:
@@ -73,6 +89,10 @@ def cylinder(height: float, radius: float, segments: int = -1, center=False) -> 
     Make a cylinder of a given radius and height.
 
     For ``segments`` see the documentation of ``set_default_segments``.
+
+    By default, the cylinder bottom is centered at `(0,0,0)`.
+    When `center` is `True`, the cylinder will centered on `(0,0,0)`.
+    (In other words, the bottom of the cylinder will be at `(0,0,-height/2.0`.)
 
     <iframe width="100%" height="220" src="examples/cylinder.html"></iframe>
     """
@@ -82,7 +102,10 @@ def cylinder(height: float, radius: float, segments: int = -1, center=False) -> 
     _chkGT("radius", radius, 0)
     _chkGE("segments", segments, 3)
     return extrude_simple(
-        circle(radius, segments), height, height / 2.0 if center else 0, is_convex=True
+        circle(radius, segments),
+        height,
+        initial_z=-height / 2.0 if center else 0,
+        is_convex=True,
     )
 
 
@@ -103,53 +126,77 @@ def extrude(obj: Obj2d, height: float, is_convex: bool = False) -> Obj3d:
     return Obj3d(_m.Manifold.extrude_simple(obj.mo, height, is_convex=False))
 
 
+class ECType:
+    """
+    Defines the types of instructions allowed in an `extrude_chaining` tuple list.
+
+    """
+
+    Shape = _m.ECType.Shape
+    FullCap = _m.ECType.FullCap
+    PartialCap = _m.ECType.PartialCap
+
+
+_emptyCS = _m.CrossSection()
+
+
 def extrude_chaining(
-    pairs: list[tuple[float, Obj2d]], initial_z: float = 0.0, is_convex: bool = False
+    tuples: list[tuple[float, Obj2d]], is_convex: bool = False
 ) -> Obj3d:
     """
     Extrude multiple Obj2d into a single Obj3d.
 
-    ALL Obj2ds MUST HAVE THE NUMBER OF POINTS. (But, see Caps below.)
+    ALL Obj2ds MUST HAVE THE SAME NUMBER OF POINTS. (But, see Caps below.)
 
-    Input list is a list of pairs: `[[height, Obj2d], ...]`.
+    Parameter `tuples` is a list of tuples: `[[height, Obj2d, ECType], ...]`.
+    This list controls an extrusion, that includes holes.
+    The list contains caps and shapes. Shapes are 2d objects.
+    If the shape is `None, then the previous shape is used.
 
-    Use `initial_z` if you want it extruded starting at a different z value.
-
-    If parameter `is_convex` is set to `True` a much faster triangulation
-    algoritm is used, which only works on a convex shape. If you don't
-    understand what this means, leave this option alone.
+    The `height` is cumulative. You are always specifing the exact current height
+    in the current object. This is done so that you can have numerically robust
+    dimensions in your object. If relative heights were used, extuding something
+    like a sphere is would end up with a sphere that's height was not precisely
+    the desired height.
 
     Caps:
 
-        If `height` is zero then Obj2d is a full cap or a partial cap.
-        Only the first cap, which must be at index 0, is a full cap.
+        There are two types, a full cap and a partial cap.
+
+        Only the first and last caps, which must be at index 0 and len(tuples)-1, are a full cap.
+        They simply enclose the object to meet the definition of manifold.
 
         If you make a partial cap, you want to make a hole.
         For manifold correctness reasons you need to cap the hole bottom.
+        This cap is a partial cap.
 
         Once the cap is generated, the cap is differenced from the previous shape.
         This is the new previous shape and will determine the number of points needed in
         the following shapes.
         At least one extrusion must follow a cap.
 
-        (A cap is automatically generated at the top of the extrusion.]
-
         If you have made a partial cap, you can extrude the differenced shape/cap
         with a pair: (height, None). This is so you don't have to do the 2d
         difference that was already done.
 
-    <iframe width="100%" height="320" src="examples/extrude_chaining.html"></iframe>
-    <br>
-    <iframe width="100%" height="330" src="examples/extrude_chaining_rr.html"></iframe>
+    If parameter `is_convex` is set to `True` a much faster triangulation
+    algoritm is used, which only works on a convex shape. If you don't
+    understand what this means, leave this option alone.
+
+    <iframe width="100%" height="360" src="examples/extrude_chaining.html"></iframe>
     """
     l = []
-    for h, obj in pairs:
+    idx = 0
+    for h, obj, ty in tuples:
         if obj == None:
-            l.append((h, _m.CrossSection()))
+            l.append((h, _emptyCS, ty))
         else:
-            l.append((h, obj.mo))
+            if obj.is_empty():
+                raise ValidationError(f"Object at index {idx} cannot be empty.")
+            l.append((h, obj.mo, ty))
+        idx += 1
 
-    return Obj3d(_m.Manifold.extrude_chaining(l, initial_z, is_convex))
+    return Obj3d(_m.Manifold.extrude_chaining(l, is_convex))
 
 
 def extrude_simple(
@@ -167,7 +214,7 @@ def extrude_simple(
     If parameter `is_convex` is set to `True` a much faster triangulation
     algoritm is used, which only works on a convex shape. If you don't
 
-    <iframe width="100%" height="220" src="examples/extrude.html"></iframe>
+    <iframe width="100%" height="220" src="examples/extrude_simple.html"></iframe>
     """
     _chkTY("obj", obj, Obj2d)
     _chkGT("height", height, 0)
@@ -203,7 +250,7 @@ def extrude_transforming(
     If parameter `is_convex` is set to `True` a much faster triangulation
     algoritm is used, which only works on a convex shape. If you don't
 
-    <iframe width="100%" height="250" src="examples/extrude_transforming.html"></iframe>
+    <iframe width="100%" height="270" src="examples/extrude_transforming.html"></iframe>
     """
     _chkTY("obj", obj, Obj2d)
     _chkGT("height", height, 0)
@@ -308,35 +355,43 @@ def project_box(
     res = config["LayerResolution"]
     arc_segs = radius / res
     deg_per_arc_seg = 90.0 / arc_segs
-    d = 0.0
+    deg = 0.0
     end = -90.0
     ix, iy, iz = size
     ox, oy, oz = size
     layer_thickness = radius / arc_segs
+    cur_z = -radius
     ox += wall * 2
     oy += wall * 2
-    l.append((0, rounded_rectangle((ix, iy), radius)))
-    d += deg_per_arc_seg
-    while d < 89.9:
-        delta = wall * sin(d)
+    l.append((-radius, rounded_rectangle((ix, iy), radius), ECType.FullCap))
+    deg += deg_per_arc_seg
+    while deg < 89.9:
+        delta = wall * sin(deg)
         l.append(
             (
-                layer_thickness,
+                cur_z,
                 rounded_rectangle(
                     (ix + 2 * delta, iy + 2 * delta), radius + delta
                 ).translate((-delta, -delta)),
+                ECType.Shape,
             )
         )
-        d += deg_per_arc_seg
+        deg += deg_per_arc_seg
+        cur_z += layer_thickness
 
+    cur_z = 0.0
     l.append(
         (
-            layer_thickness,
-            rounded_rectangle([ox, oy], radius + wall).translate((-wall, -wall)),
+            cur_z,
+            rounded_rectangle((ox, oy), radius + wall).translate((-wall, -wall)),
+            ECType.Shape,
         )
     )
-    l.append((0, l[0][1]))
-    l.append((iz, None))
+
+    l.append((cur_z, l[0][1], ECType.PartialCap))
+    cur_z += iz
+    l.append((cur_z, None, ECType.Shape))
+    l.append((cur_z, None, ECType.FullCap))
 
     return extrude_chaining(l, is_convex=True)
 
@@ -350,12 +405,15 @@ def pyramid(height: int, num_sides: int, radius: float) -> Obj3d:
     <iframe width="100%" height="220" src="examples/pyramid.html"></iframe>
     """
     return extrude_transforming(
-        circle(radius, segments=num_sides), height=height, scale_x=0.0, scale_y=0.0
+        circle(radius, segments=num_sides), height=height, scale_x=0, scale_y=0
     )
 
 
 def rounded_cuboid(
-    size: list[float, float, float], rounding_radius=4.0, segments: int = -1
+    size: list[float, float, float],
+    rounding_radius=4.0,
+    segments: int = -1,
+    center: bool = False,
 ) -> Obj3d:
     """
     Make a rounded_cuboid with the x, y, and z values given in size.
@@ -363,6 +421,9 @@ def rounded_cuboid(
     Parameter `rounding_radius` is the size of the rounded lip at top and bottom.
 
     For ``segments`` see the documentation of ``set_default_segments``.
+
+    By default, the bottom front left corner of the rounded cuboid will be at `(0,0,0)`.
+    When `center` is `True` it will cause the rounded cuboid to be centered at `(0,0,0)`.
 
     <iframe width="100%" height="220" src="examples/rounded_cuboid.html"></iframe>
     """
@@ -373,22 +434,73 @@ def rounded_cuboid(
     if type(size) == float or type(size) == int:
         size = (size, size, size)
     x, y, z = size
-    sph = sphere(rounding_radius)
+    x_off = -x / 2.0 if center else 0.0
+    y_off = -y / 2.0 if center else 0.0
+    z_off = -z / 2.0 if center else 0.0
+    sph = sphere(rounding_radius, segments=segments)
     out = hull(
-        sph.translate((rounding_radius, rounding_radius, 0)),
-        sph.translate((x - rounding_radius, rounding_radius, 0)),
-        sph.translate((x - rounding_radius, y - rounding_radius, 0)),
-        sph.translate((rounding_radius, y - rounding_radius, 0)),
-        sph.translate((rounding_radius, rounding_radius, z)),
-        sph.translate((x - rounding_radius, rounding_radius, z)),
-        sph.translate((x - rounding_radius, y - rounding_radius, z)),
-        sph.translate((rounding_radius, y - rounding_radius, z)),
+        sph.translate(
+            (rounding_radius + x_off, rounding_radius + y_off, rounding_radius + z_off)
+        ),
+        sph.translate(
+            (
+                x - rounding_radius + x_off,
+                rounding_radius + y_off,
+                rounding_radius + z_off,
+            )
+        ),
+        sph.translate(
+            (
+                x - rounding_radius + x_off,
+                y - rounding_radius + y_off,
+                rounding_radius + z_off,
+            )
+        ),
+        sph.translate(
+            (
+                rounding_radius + x_off,
+                y - rounding_radius + y_off,
+                rounding_radius + z_off,
+            )
+        ),
+        sph.translate(
+            (
+                rounding_radius + x_off,
+                rounding_radius + y_off,
+                z - rounding_radius + z_off,
+            )
+        ),
+        sph.translate(
+            (
+                x - rounding_radius + x_off,
+                rounding_radius + y_off,
+                z - rounding_radius + z_off,
+            )
+        ),
+        sph.translate(
+            (
+                x - rounding_radius + x_off,
+                y - rounding_radius + y_off,
+                z - rounding_radius + z_off,
+            )
+        ),
+        sph.translate(
+            (
+                rounding_radius + x_off,
+                y - rounding_radius + y_off,
+                z - rounding_radius + z_off,
+            )
+        ),
     )
     return out
 
 
 def rounded_cylinder(
-    height: float, radius: float, rounding_radius: float = 4.0, segments: int = -1
+    height: float,
+    radius: float,
+    rounding_radius: float = 4.0,
+    segments: int = -1,
+    center: bool = False,
 ) -> Obj3d:
     """
     Make a rounded cylinder of a given radius and height.
@@ -396,6 +508,10 @@ def rounded_cylinder(
     Parameter `rounding_radius` is the size of the rounded lip at top and bottom.
 
     For ``segments`` see the documentation of ``set_default_segments``.
+
+    By default, the rounded cylinder bottom is centered at `(0,0,0)`.
+    When `center` is `True`, the rounded cylinder will centered on `(0,0,0)`.
+    (In other words, the bottom of the rounded cylinder will be at `(0,0,-height/2.0`.)
 
     <iframe width="100%" height="220" src="examples/rounded_cylinder.html"></iframe>
     """
@@ -405,10 +521,13 @@ def rounded_cylinder(
     _chkGT("radius", radius, 0)
     rr = (
         rounded_rectangle((2 * radius, height), rounding_radius, segments)
-        .translate((-radius, -radius))
+        .translate((-radius, 0))
         .piecut(90, 270)
     )
-    return revolve(rr, segments)
+    o3 = revolve(rr, segments)
+    if center:
+        o3 = o3.translate((0, 0, -height / 2.0))
+    return o3
 
 
 def revolve(obj: Obj2d, segments: int = -1, revolve_degrees: float = 360.0) -> Obj3d:
@@ -440,7 +559,7 @@ def sphere(radius: float, segments: int = -1):
     _chkGT("radius", radius, 0)
     _chkGE("segments", segments, 3)
 
-    circ = circle(radius, segments).piecut(90, 270)
+    circ = circle(radius, segments * 2).piecut(90, 270)
 
     return revolve(circ, segments=segments)
 
@@ -463,9 +582,8 @@ def torus(outer_radius: float, inner_radius: float, segments=-1):
             "Parameter inner_radius must be smaller than outer_radius."
         )
 
-    center_pt = outer_radius / 2.0 + inner_radius
     circ = circle(outer_radius - inner_radius, segments).translate(
-        (center_pt, center_pt)
+        (inner_radius, outer_radius)
     )
 
-    return revolve(circ, segments=segments)
+    return revolve(circ, segments=segments).translate((0, 0, -outer_radius))

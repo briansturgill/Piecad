@@ -1,8 +1,10 @@
 l = []
-l.append((0, square(10)))
-for i in range(10, 4, -1):
-	s = square(i).translate((-i/2.0, -i/2.0))
-	if i%2 == 0:
-		s = s.rotate(45.0)
-	l.append((2, s))
+rr = rounded_rectangle([20, 24], 4)
+rr_hole = rounded_rectangle([16, 20], 2).translate((2, 2))
+l = []
+l.append((0, rr, ECType.FullCap))
+l.append((2, None, ECType.Shape))
+l.append((2, rr_hole, ECType.PartialCap))
+l.append((15, None, ECType.Shape))
+l.append((15, None, ECType.FullCap))
 out = extrude_chaining(l, is_convex=True)

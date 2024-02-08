@@ -13,6 +13,8 @@ def circle(radius: float, segments: int = -1) -> Obj2d:
     Make a circle of a given radius.
 
     For ``segments`` see the documentation of ``set_default_segments``.
+
+    Circles are created with the center at `(0,0)`
     """
     if segments == -1:
         segments = config["DefaultSegments"]
@@ -30,6 +32,8 @@ def ellipse(radii: list[float, float], segments: int = -1) -> Obj2d:
     Make an ellipse with the given radii.
 
     For ``segments`` see the documentation of ``set_default_segments``.
+
+    Ellipses are created with the center at `(0,0)`
     """
     if segments == -1:
         segments = config["DefaultSegments"]
@@ -68,15 +72,18 @@ def polygon(path_or_paths: list[float, float] | list[list[float, float]]) -> Obj
     return Obj2d(_m.CrossSection.create_from_path_unchecked(path_or_paths))
 
 
-def rectangle(size: list[float, float]) -> Obj2d:
+def rectangle(size: list[float, float], center: bool = False) -> Obj2d:
     """
     Make a rectangle of a given size.
+
+    By default, the bottom left corner of the rectangle will be at `(0,0)`.
+    When `center` is `True` it will cause the rectangle to be centered at `(0,0)`.
     """
     if type(size) == float or type(size) == int:
         return square(size)
     _chkV2("size", size)
 
-    return Obj2d(_m.CrossSection.square(size))
+    return Obj2d(_m.CrossSection.square(size, center))
 
 
 _arc_bl = None
@@ -99,6 +106,9 @@ def rounded_rectangle(
 
     For ``segments`` see the documentation of ``set_default_segments``.
     Each corner will be given approximately 1/4 of segments.
+
+    By default, the bottom left corner of the square will be at `(0,0)`.
+    When `center` is `True` it will cause the square to be centered at `(0,0)`.
     """
     if segments == -1:
         segments = config["DefaultSegments"]
@@ -107,67 +117,20 @@ def rounded_rectangle(
 
     return Obj2d(_m.CrossSection.rounded_rectangle(size, radius, segments, center))
 
-    # circ = circle(radius, segments)
-    # return Obj2d(
-    #     _m.CrossSection.batch_hull(
-    #         [
-    #             circ.translate((radius, radius)).mo,
-    #             circ.translate((size[0] - radius, radius)).mo,
-    #             circ.translate((size[0] - radius, size[1] - radius)).mo,
-    #             circ.translate((radius, size[1] - radius)).mo,
-    #         ]
-    #     )
-    # )
 
-    # Surprisingly, the code below is slightly slower than
-    # using batch_hull above. However batch_hull is faulty! LATER
-    # global _arc_bl, _arc_br, _arc_tl, _arc_tr
-    # segs_per_arc = segments // 4 + 1
-    # deg_per_arc = 90.0 / segs_per_arc
-
-    # def arc(deg):
-    #    l = []
-    #    last_deg = deg + 90
-    #    for i in range(0, segs_per_arc - 1):
-    #        l.append((cos(deg), sin(deg)))
-    #        deg += deg_per_arc
-    #    l.append((cos(last_deg), sin(last_deg)))
-    #    return l
-
-    # if _arc_bl == None:
-    #    _arc_bl = arc(180)  # Bottom left
-    #    _arc_br = arc(270)  # Bottom right
-    #    _arc_tr = arc(0)  # Top right
-    #    _arc_tl = arc(90)  # Top left
-
-    # pts = []
-    # x, y = size
-    # x_o = at[0]
-    # y_o = at[1]
-    # for cval, sval in _arc_bl:
-    #    pts.append((x_o + radius + (radius * cval), y_o + radius + (radius * sval)))
-    # for cval, sval in _arc_br:
-    #    pts.append((x_o + (x - radius) + (radius * cval), y_o + radius + (radius * sval)))
-    # for cval, sval in _arc_tr:
-    #    pts.append(
-    #        (x_o + (x - radius) + (radius * cval), y_o + (y - radius) + (radius * sval))
-    #    )
-    # for cval, sval in _arc_tl:
-    #    pts.append((x_o + radius + (radius * cval), y_o + (y - radius) + radius * sval))
-
-    # return Obj2d(_m.CrossSection([pts], _m.FillRule.EvenOdd))
-
-
-def square(size: float) -> Obj2d:
+def square(size: float, center: bool = False) -> Obj2d:
     """
     Make a square of a given size.
+
+    By default, the bottom left corner of the square will be at `(0,0)`.
+    When `center` is `True` it will cause the square to be centered at `(0,0)`.
     """
     if type(size) == list or type(size) == tuple:
         return rectangle(size)
 
     _chkGT("size", size, 0)
 
-    return Obj2d(_m.CrossSection.square((size, size)))
+    return Obj2d(_m.CrossSection.square((size, size), center))
 
 
 def star(
@@ -177,6 +140,8 @@ def star(
     Make a regular star of a given number of points.
 
     If `inner_radius` is `0.0` then it will be calculated based on outer_radius.
+
+    Stars are created with the center at `(0,0)`
     """
     pts = []
     deg_per_np = 360.0 / num_points

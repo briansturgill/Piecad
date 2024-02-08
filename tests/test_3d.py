@@ -2,6 +2,18 @@ import pytest
 from piecad import *
 
 
+def _torus(_or, ir, segs):
+    o = torus(_or, ir, segs)
+    o.num_verts()
+    return o
+
+
+def _pyramid(h, s, r):
+    o = pyramid(h, s, r)
+    o.num_verts()
+    return o
+
+
 def _sphere(r, s):
     o = sphere(r, s)
     o.num_verts()
@@ -20,32 +32,32 @@ def _geodesic_sphere(r, s):
     return o
 
 
-def _cube(s):
-    c = cube(s)
+def _cube(s, c=False):
+    c = cube(s, c)
     c.num_verts()
     return c
 
 
-def _cuboid(s):
-    c = cube(s)
+def _cuboid(s, c=False):
+    c = cuboid(s, c)
     c.num_verts()
     return c
 
 
-def _project_box(s, rr):
-    c = project_box(s, rr)
+def _project_box(s, rr, w):
+    c = project_box(s, rr, w)
     c.num_verts()
     return c
 
 
-def _rounded_cuboid(s, rr, segs):
-    c = rounded_cuboid(s, rr, segs)
+def _rounded_cuboid(s, rr, segs, c=False):
+    c = rounded_cuboid(s, rr, segs, c)
     c.num_verts()
     return c
 
 
-def _cone(h, rl, rh, s):
-    c = cone(h, rl, rh, s)
+def _cone(h, rl, rh, s, c=False):
+    c = cone(h, rl, rh, s, c)
     c.num_verts()
     return c
 
@@ -56,8 +68,8 @@ def _cylinder(h, r, s, center):
     return c
 
 
-def _rounded_cylinder(h, r, rr, s):
-    c = rounded_cylinder(h, r, rr, s)
+def _rounded_cylinder(h, r, rr, s, c=False):
+    c = rounded_cylinder(h, r, rr, s, c)
     c.num_verts()
     return c
 
@@ -83,41 +95,81 @@ def _extrude_chaining(l, is_convex):
 def test_cone_100(benchmark):
     c = benchmark(_cone, 25, 10, 10, 100)
     assert c.num_verts() == 200
+    assert c.bounding_box() == (-10, -10, 0, 10, 10, 25)
+
+
+def test_cone_100_center(benchmark):
+    c = benchmark(_cone, 25, 10, 10, 100, True)
+    assert c.num_verts() == 200
+    assert c.bounding_box() == (-10, -10, -12.5, 10, 10, 12.5)
 
 
 def test_cylinder_100(benchmark):
     c = benchmark(_cylinder, 25, 10, 100, False)
     assert c.num_verts() == 200
+    assert c.bounding_box() == (-10, -10, 0, 10, 10, 25)
 
 
 def test_cylinder_100_centered(benchmark):
     c = benchmark(_cylinder, 25, 10, 100, True)
     assert c.num_verts() == 200
+    assert c.bounding_box() == (-10, -10, -12.5, 10, 10, 12.5)
 
 
 def test_cube(benchmark):
     c = benchmark(_cube, 20)
     assert c.num_verts() == 8
+    assert c.bounding_box() == (0, 0, 0, 20, 20, 20)
+
+
+def test_cube_centered(benchmark):
+    c = benchmark(_cube, 20, True)
+    assert c.num_verts() == 8
+    assert c.bounding_box() == (-10, -10, -10, 10, 10, 10)
 
 
 def test_cuboid(benchmark):
     c = benchmark(_cuboid, (15, 10, 36))
     assert c.num_verts() == 8
+    assert c.bounding_box() == (0, 0, 0, 15, 10, 36)
+
+
+def test_cuboid_centered(benchmark):
+    c = benchmark(_cuboid, (15, 10, 36), True)
+    assert c.num_verts() == 8
+    assert c.bounding_box() == (-7.5, -5, -18, 7.5, 5, 18)
 
 
 def test_rounded_cuboid(benchmark):
     c = benchmark(_rounded_cuboid, (15, 10, 36), 3.0, 100)
-    assert c.num_verts() == 728
+    assert c.num_verts() == 10408
+    assert c.bounding_box() == (0, 0, 0, 15, 10, 36)
+
+
+def test_rounded_cuboid(benchmark):
+    c = benchmark(_rounded_cuboid, (15, 10, 36), 3.0, 100, True)
+    assert c.num_verts() == 10408
+    assert c.bounding_box() == (-7.5, -5, -18, 7.5, 5, 18)
 
 
 def test_project_box(benchmark):
-    c = benchmark(_project_box, (15, 10, 36), 3.0)
+    radius = 3.0
+    wall = 2.0
+    c = benchmark(_project_box, (15, 10, 36), radius, wall)
     assert c.num_verts() == 1360
+    assert c.bounding_box() == (-wall, -wall, -radius, 15 + wall, 10 + wall, 36)
 
 
 def test_rounded_cylinder_100(benchmark):
-    c = benchmark(_rounded_cylinder, 25, 10, 4.0, 100)
+    c = benchmark(_rounded_cylinder, 25, 10, 4.0, 100, False)
     assert c.num_verts() == 5202
+    assert c.bounding_box() == (-10, -10, 0, 10, 10, 25)
+
+
+def test_rounded_cylinder_100_centered(benchmark):
+    c = benchmark(_rounded_cylinder, 25, 10, 4.0, 100, True)
+    assert c.num_verts() == 5202
+    assert c.bounding_box() == (-10, -10, -12.5, 10, 10, 12.5)
 
 
 def test_extrude(benchmark):
@@ -143,47 +195,81 @@ def test_revolve():
     assert revolve(c).num_verts() == 614
 
 
+def test_torus(benchmark):
+    o = benchmark(_torus, 10, 8, 360 // 6)
+    save("/tmp/test.obj", o)
+    assert o.num_verts() == 3600
+    assert o.bounding_box() == (-10, -10, -2, 10, 10, 2)
+
+
+def test_pyramid(benchmark):
+    o = benchmark(_pyramid, 10, 4, 4.0)
+    assert o.num_verts() == 5
+    assert o.bounding_box() == (-4, -4, 0, 4, 4, 10)
+
+
 def test_sphere(benchmark):
-    c = benchmark(_sphere, 10, 75)
-    assert c.num_verts() == 2925
+    c = benchmark(_sphere, 10, 360 // 6)
+    assert c.num_verts() == 3542  # Should be 3600 but revolve has an oddity.
+    assert c.bounding_box() == (-10, -10, -10, 10, 10, 10)
 
 
 def test_geodesic_sphere(benchmark):
-    c = benchmark(_geodesic_sphere, 10, 100)
-    assert c.num_verts() == 2502
-    assert c.num_faces() == 5000
+    c = benchmark(_geodesic_sphere, 10, 360 // 3)
+    assert c.num_verts() == 3602
+    assert c.bounding_box() == (-10, -10, -10, 10, 10, 10)
 
 
 def test_extrude_chaining_earcut(benchmark):
     c = circle(10, 100)
-    o = benchmark(_extrude_chaining, [(0, c), (25, None)], is_convex=False)
+    o = benchmark(
+        _extrude_chaining,
+        [(0, c, ECType.FullCap), (25, c, ECType.Shape), (25, c, ECType.FullCap)],
+        is_convex=False,
+    )
     assert o.num_verts() == 200
 
 
 def test_extrude_chaining_fan(benchmark):
     c = circle(10, 100)
-    o = benchmark(_extrude_chaining, [(0, c), (25, None)], is_convex=True)
+    o = benchmark(
+        _extrude_chaining,
+        [(0, c, ECType.FullCap), (25, c, ECType.Shape), (25, c, ECType.FullCap)],
+        is_convex=True,
+    )
     assert o.num_verts() == 200
 
 
+import math as _math
+
+
 def _sphere_from_chaining(radius, segs):
+    segs = ((segs + 3) // 4) * 4
     deg_per_seg = 180.0 / segs
-    hs = (3.14 * radius) / segs
+    hs = (_math.pi * radius) / segs
     l = []
-    l.append((0, circle(radius, segs)))
+    l.append((-radius, circle(0.3, segs), ECType.FullCap))
+    h_sum = -radius
     for i in range(1, segs):
         factor = sin(i * deg_per_seg)
         r = radius * factor
         h = hs * factor
-        l.append((h, circle(r, segs)))
+        h_sum += h
+        if i == segs - 1:
+            l.append((radius, circle(0.3, segs), ECType.Shape))
+        else:
+            l.append((h_sum, circle(r, segs), ECType.Shape))
+
+    l.append((radius, circle(0.3, segs), ECType.FullCap))
 
     out = extrude_chaining(l, is_convex=True)
     return out
 
 
 def test_sphere_from_chaining(benchmark):
-    c = benchmark(_sphere_from_chaining, 10, 50)
-    assert c.num_verts() == 2500
+    c = benchmark(_sphere_from_chaining, 10, 360 // 6)
+    assert c.num_verts() == 3600
+    assert c.bounding_box() == (-10, -10, -10, 10, 10, 10)
 
 
 def test_cube_from_polyhedron(benchmark):

@@ -473,12 +473,28 @@ config["DefaultUnits"] = "mm"
 config["LayerResolution"] = 0.1
 config["DefaultSegments"] = 36
 """
-LATER document -- get rid of set_default_segments?
+Global Configuration Values
+
+| :--- | :--- |
+|CADViewerEnabled      | Use CADViewer if view or save is used.
+|CADViewDoNotSendSaves | Use CADViewer only with view.
+|CADViewerHostAndPort  | Hostname_or_Address:Port used by CADViewer
+|LayerResolution       | Resolution your output can be printed/made at.
+|                      | If you have multiple resolutions, choose the smallest one.
+
+```python
+config["CADViewerEnabled"] = True
+config["CADViewDoNotSendSaves"] = False
+config["CADViewerHostAndPort"] = "127.0.0.1:8037"
+config["LayerResolution"] = 0.1
+```
+
+This is just a Python dict, set them like the defaults shown above.
 
 """
 
 
-def set_default_segments(segments: int) -> None:
+def set_default_segments(segments: int = 36) -> None:
     """
     Set the default value for the number of circular segments to use.
 
@@ -490,9 +506,11 @@ def set_default_segments(segments: int) -> None:
     can be useful.
     In most cases a higher number is desired as it produces objects
     that look truly round.
-    I've never found a reason to use more than 100, and have chosen 36
-    as being quite reasonable as a default.
-    For finer work (I 3D print a lot), I find 50 is better.
+
+    The default value of `segments` 36.
+
+    If you need a circular objects primary axes to have exact values (at the
+    90 degree marks), chose a `segments` value that is a multiple of 4.
 
     In circular functions, if the value passed in for ``segments`` is ``-1``, then
     the ``default_segments`` value is used. Thus circular functions have

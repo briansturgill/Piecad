@@ -15,20 +15,20 @@ def _star(np, r):
     return o
 
 
-def _square(s):
-    o = square(s)
+def _square(s, c=False):
+    o = square(s, c)
     o.num_verts()
     return o
 
 
-def _rectangle(t):
-    o = rectangle(t)
+def _rectangle(t, c=False):
+    o = rectangle(t, c)
     o.num_verts()
     return o
 
 
-def _rounded_rectangle(t, r, s):
-    o = rounded_rectangle(t, r, s)
+def _rounded_rectangle(t, r, s, c=False):
+    o = rounded_rectangle(t, r, s, c)
     o.num_verts()
     return o
 
@@ -45,49 +45,76 @@ def _circle(r, s):
     return c
 
 
-def test_circle_10(benchmark):
-    o = benchmark(_circle, 3, 10)
-    assert o.num_verts() == 10
+def test_circle_12(benchmark):
+    o = benchmark(_circle, 3, 12)
+    assert o.num_verts() == 12
+    assert o.bounding_box() == (-3, -3, 3, 3)
 
 
 def test_circle_100(benchmark):
     o = benchmark(_circle, 3, 100)
     assert o.num_verts() == 100
+    assert o.bounding_box() == (-3, -3, 3, 3)
 
 
-def test_ellipse_10(benchmark):
-    o = benchmark(_ellipse, (3, 12), 10)
-    assert o.num_verts() == 10
+def test_ellipse_12(benchmark):
+    o = benchmark(_ellipse, (3, 12), 12)
+    assert o.num_verts() == 12
+    assert o.bounding_box() == (-3, -12, 3, 12)
 
 
 def test_ellipse_100(benchmark):
     o = benchmark(_ellipse, (3, 12), 100)
     assert o.num_verts() == 100
+    assert o.bounding_box() == (-3, -12, 3, 12)
 
 
 def test_square(benchmark):
     o = benchmark(_square, 10)
     assert o.num_verts() == 4
+    assert o.bounding_box() == (0, 0, 10, 10)
+
+
+def test_square_centered(benchmark):
+    o = benchmark(_square, 10, True)
+    assert o.num_verts() == 4
+    assert o.bounding_box() == (-5, -5, 5, 5)
 
 
 def test_rectangle(benchmark):
     o = benchmark(_rectangle, [10, 10])
     assert o.num_verts() == 4
+    assert o.bounding_box() == (0, 0, 10, 10)
 
 
 def test_rectangle2(benchmark):
     o = benchmark(_rectangle, (10, 10))  # Check list vs tuple
     assert o.num_verts() == 4
+    assert o.bounding_box() == (0, 0, 10, 10)
+
+
+def test_rectangle_centered(benchmark):
+    o = benchmark(_rectangle, [10, 10], True)
+    assert o.num_verts() == 4
+    assert o.bounding_box() == (-5, -5, 5, 5)
 
 
 def test_rounded_rectangle(benchmark):
     o = benchmark(_rounded_rectangle, (10, 10), 2.0, 36)
     assert o.num_verts() == 40
+    assert o.bounding_box() == (0, 0, 10, 10)
+
+
+def test_rounded_rectangle_centered(benchmark):
+    o = benchmark(_rounded_rectangle, (10, 10), 2.0, 36, True)
+    assert o.num_verts() == 40
+    assert o.bounding_box() == (-5, -5, 5, 5)
 
 
 def test_star(benchmark):
-    o = benchmark(_star, 5, 20)
-    assert o.num_verts() == 10
+    o = benchmark(_star, 8, 20)
+    assert o.num_verts() == 16
+    assert o.bounding_box() == (-20, -20, 20, 20)
 
 
 # For this last 2 functions, we are trying to see if winding makes a speed difference

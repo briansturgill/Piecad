@@ -1,1 +1,1 @@
-out = star(5, 4).extrude(10)
+out = extrude(star(5, 4), 10, True)
