@@ -151,11 +151,11 @@ def extrude_chaining(
     Parameter `tuples` is a list of tuples: `[[height, Obj2d, ECType], ...]`.
     This list controls an extrusion, that includes holes.
     The list contains caps and shapes. Shapes are 2d objects.
-    If the shape is `None, then the previous shape is used.
+    If the shape is `None`, then the previous shape is used.
 
     The `height` is cumulative. You are always specifing the exact current height
-    in the current object. This is done so that you can have numerically robust
-    dimensions in your object. If relative heights were used, extuding something
+    to be output for the current object. This is done so that you can have numerically
+    robust dimensions in your object. If relative heights were used, extuding something
     like a sphere is would end up with a sphere that's height was not precisely
     the desired height.
 
