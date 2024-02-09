@@ -78,4 +78,5 @@ with open(example_creator, "w") as f:
     f.write("out = out.color(\"khaki\")\n")
     f.write(f"save(\"{example_model}\", out)\n")
 
-os.system(f"python {example_creator}")
+ret = os.system(f"python {example_creator}")
+sys.exit(0 if ret == 0 else 1)

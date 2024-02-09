@@ -126,32 +126,17 @@ def extrude(obj: Obj2d, height: float, is_convex: bool = False) -> Obj3d:
     return Obj3d(_m.Manifold.extrude_simple(obj.mo, height, is_convex=False))
 
 
-class ECType:
-    """
-    Defines the types of instructions allowed in an `extrude_chaining` tuple list.
-
-    """
-
-    Shape = _m.ECType.Shape
-    FullCap = _m.ECType.FullCap
-    PartialCap = _m.ECType.PartialCap
-
-
-_emptyCS = _m.CrossSection()
-
-
 def extrude_chaining(
-    tuples: list[tuple[float, Obj2d]], is_convex: bool = False
+    pairs: list[tuple[float, Obj2d]], is_convex: bool = False
 ) -> Obj3d:
     """
-    Extrude multiple Obj2d into a single Obj3d.
+    Extrude multiple 2d objects into a single 3d Object.
 
-    ALL Obj2ds MUST HAVE THE SAME NUMBER OF POINTS. (But, see Caps below.)
+    ALL 2D OBJECTS MUST HAVE THE SAME NUMBER OF POINTS.
 
-    Parameter `tuples` is a list of tuples: `[[height, Obj2d, ECType], ...]`.
-    This list controls an extrusion, that includes holes.
-    The list contains caps and shapes. Shapes are 2d objects.
-    If the shape is `None`, then the previous shape is used.
+    Parameter `pairs` is a list of pairs: `[[height, Obj2d], ...]`.
+    This list controls an extrusion of 2d shapes chained together
+    into one 3d object.
 
     The `height` is cumulative. You are always specifing the exact current height
     to be output for the current object. This is done so that you can have numerically
@@ -159,41 +144,22 @@ def extrude_chaining(
     like a sphere is would end up with a sphere that's height was not precisely
     the desired height.
 
-    Caps:
-
-        There are two types, a full cap and a partial cap.
-
-        Only the first and last caps, which must be at index 0 and len(tuples)-1, are a full cap.
-        They simply enclose the object to meet the definition of manifold.
-
-        If you make a partial cap, you want to make a hole.
-        For manifold correctness reasons you need to cap the hole bottom.
-        This cap is a partial cap.
-
-        Once the cap is generated, the cap is differenced from the previous shape.
-        This is the new previous shape and will determine the number of points needed in
-        the following shapes.
-        At least one extrusion must follow a cap.
-
-        If you have made a partial cap, you can extrude the differenced shape/cap
-        with a pair: (height, None). This is so you don't have to do the 2d
-        difference that was already done.
-
     If parameter `is_convex` is set to `True` a much faster triangulation
     algoritm is used, which only works on a convex shape. If you don't
     understand what this means, leave this option alone.
 
-    <iframe width="100%" height="360" src="examples/extrude_chaining.html"></iframe>
+    Caps are automatically generated from the first and last shapes.
+
+    <iframe width="100%" height="500" src="examples/extrude_chaining.html"></iframe>
     """
     l = []
+    if len(pairs) < 2:
+        raise ValidationError("The pairs list must have at least two elements.")
     idx = 0
-    for h, obj, ty in tuples:
-        if obj == None:
-            l.append((h, _emptyCS, ty))
-        else:
-            if obj.is_empty():
-                raise ValidationError(f"Object at index {idx} cannot be empty.")
-            l.append((h, obj.mo, ty))
+    for h, obj in pairs:
+        if obj == None or obj.is_empty():
+            raise ValidationError(f"Object at index {idx} cannot be empty or None.")
+        l.append((h, obj.mo))
         idx += 1
 
     return Obj3d(_m.Manifold.extrude_chaining(l, is_convex))
@@ -363,7 +329,7 @@ def project_box(
     cur_z = -radius
     ox += wall * 2
     oy += wall * 2
-    l.append((-radius, rounded_rectangle((ix, iy), radius), ECType.FullCap))
+    l.append((-radius, rounded_rectangle((ix, iy), radius)))
     deg += deg_per_arc_seg
     while deg < 89.9:
         delta = wall * sin(deg)
@@ -373,7 +339,6 @@ def project_box(
                 rounded_rectangle(
                     (ix + 2 * delta, iy + 2 * delta), radius + delta
                 ).translate((-delta, -delta)),
-                ECType.Shape,
             )
         )
         deg += deg_per_arc_seg
@@ -384,16 +349,17 @@ def project_box(
         (
             cur_z,
             rounded_rectangle((ox, oy), radius + wall).translate((-wall, -wall)),
-            ECType.Shape,
         )
     )
 
-    l.append((cur_z, l[0][1], ECType.PartialCap))
     cur_z += iz
-    l.append((cur_z, None, ECType.Shape))
-    l.append((cur_z, None, ECType.FullCap))
+    l.append(
+        (cur_z, rounded_rectangle((ox, oy), radius + wall).translate((-wall, -wall)))
+    )
 
-    return extrude_chaining(l, is_convex=True)
+    o = extrude_chaining(l, is_convex=True)
+    rr = rounded_rectangle((ix, iy), radius).extrude(iz)
+    return difference(o, rr)
 
 
 def pyramid(height: int, num_sides: int, radius: float) -> Obj3d:
@@ -581,9 +547,7 @@ def torus(outer_radius: float, inner_radius: float, segments=-1):
         raise ValidationError(
             "Parameter inner_radius must be smaller than outer_radius."
         )
+    sz = (outer_radius - inner_radius) / 2.0
+    circ = circle(sz, segments).translate((outer_radius - sz, outer_radius - sz))
 
-    circ = circle(outer_radius - inner_radius, segments).translate(
-        (inner_radius, outer_radius)
-    )
-
-    return revolve(circ, segments=segments).translate((0, 0, -outer_radius))
+    return revolve(circ, segments=segments).translate((0, 0, -outer_radius + sz))

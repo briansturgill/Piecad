@@ -156,7 +156,7 @@ def test_project_box(benchmark):
     radius = 3.0
     wall = 2.0
     c = benchmark(_project_box, (15, 10, 36), radius, wall)
-    assert c.num_verts() == 1360
+    assert c.num_verts() == 1320
     assert c.bounding_box() == (-wall, -wall, -radius, 15 + wall, 10 + wall, 36)
 
 
@@ -196,8 +196,7 @@ def test_revolve():
 
 
 def test_torus(benchmark):
-    o = benchmark(_torus, 10, 8, 360 // 6)
-    save("/tmp/test.obj", o)
+    o = benchmark(_torus, 10, 6, 360 // 6)
     assert o.num_verts() == 3600
     assert o.bounding_box() == (-10, -10, -2, 10, 10, 2)
 
@@ -224,7 +223,7 @@ def test_extrude_chaining_earcut(benchmark):
     c = circle(10, 100)
     o = benchmark(
         _extrude_chaining,
-        [(0, c, ECType.FullCap), (25, c, ECType.Shape), (25, c, ECType.FullCap)],
+        [(0, c), (25, c)],
         is_convex=False,
     )
     assert o.num_verts() == 200
@@ -234,7 +233,7 @@ def test_extrude_chaining_fan(benchmark):
     c = circle(10, 100)
     o = benchmark(
         _extrude_chaining,
-        [(0, c, ECType.FullCap), (25, c, ECType.Shape), (25, c, ECType.FullCap)],
+        [(0, c), (25, c)],
         is_convex=True,
     )
     assert o.num_verts() == 200
@@ -247,7 +246,7 @@ def _sphere_from_chaining(radius, segs):
     deg_per_seg = 180.0 / segs
     hs = (_math.pi * radius) / segs
     l = []
-    l.append((-radius, circle(0.3, segs), ECType.FullCap))
+    l.append((-radius, circle(0.3, segs)))
     h_sum = -radius
     for i in range(1, segs):
         factor = sin(i * deg_per_seg)
@@ -255,11 +254,9 @@ def _sphere_from_chaining(radius, segs):
         h = hs * factor
         h_sum += h
         if i == segs - 1:
-            l.append((radius, circle(0.3, segs), ECType.Shape))
+            l.append((radius, circle(0.3, segs)))
         else:
-            l.append((h_sum, circle(r, segs), ECType.Shape))
-
-    l.append((radius, circle(0.3, segs), ECType.FullCap))
+            l.append((h_sum, circle(r, segs)))
 
     out = extrude_chaining(l, is_convex=True)
     return out
