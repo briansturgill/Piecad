@@ -94,7 +94,7 @@ _arc_tl = None
 
 def rounded_rectangle(
     size: list[float, float],
-    radius: float = 0.2,
+    rounding_radius: float = 0.2,
     segments: int = -1,
     center: bool = False,
 ) -> Obj2d:
@@ -102,7 +102,7 @@ def rounded_rectangle(
     Create a rectangle with rounded corners.
 
     The `rounded_rectangele` will have dimensions of `size` dimensions and with
-    corners of `radius`.
+    corners of `rounding_radius`.
 
     For ``segments`` see the documentation of ``set_default_segments``.
     Each corner will be given approximately 1/4 of segments.
@@ -114,8 +114,9 @@ def rounded_rectangle(
         segments = config["DefaultSegments"]
     _chkGE("segments", segments, 3)
     _chkV2("size", size)
+    _chkGT("rounding_radius", rounding_radius, 0)
 
-    return Obj2d(_m.CrossSection.rounded_rectangle(size, radius, segments, center))
+    return Obj2d(_m.CrossSection.rounded_rectangle(size, rounding_radius, segments, center))
 
 
 def square(size: float, center: bool = False) -> Obj2d:
@@ -141,7 +142,7 @@ def star(
 
     If `inner_radius` is `0.0` then it will be calculated based on outer_radius.
 
-    Stars are created with the center at `(0,0)`
+    Stars are created with the center at `(0,0)`.
     """
     pts = []
     deg_per_np = 360.0 / num_points

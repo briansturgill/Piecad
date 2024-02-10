@@ -298,7 +298,7 @@ def polyhedron(
 
 
 def project_box(
-    size: list[float, float, float], radius: float = 3.0, wall: float = 2.0
+    size: list[float, float, float], rounding_radius: float = 3.0, wall: float = 2.0
 ) -> Obj3d:
     """
     Make a project box with the x, y, and z values given in size.
@@ -307,7 +307,7 @@ def project_box(
 
     The INSIDE of the box will be placed at `(0, 0, 0)`.
 
-    The `radius` determines the fillet size.
+    The `rounding_radius` determines the fillet size.
 
     The `wall` is the thickness of the box walls.
 
@@ -315,21 +315,21 @@ def project_box(
     """
     _chkV3("size", size)
     _chkGE("wall", wall, 2.0)
-    _chkGE("radius", radius, 2.0)
+    _chkGE("rounding_radius", rounding_radius, 2.0)
 
     l = []
     res = config["LayerResolution"]
-    arc_segs = radius / res
+    arc_segs = rounding_radius / res
     deg_per_arc_seg = 90.0 / arc_segs
     deg = 0.0
     end = -90.0
     ix, iy, iz = size
     ox, oy, oz = size
-    layer_thickness = radius / arc_segs
-    cur_z = -radius
+    layer_thickness = rounding_radius / arc_segs
+    cur_z = -rounding_radius
     ox += wall * 2
     oy += wall * 2
-    l.append((-radius, rounded_rectangle((ix, iy), radius)))
+    l.append((-rounding_radius, rounded_rectangle((ix, iy), rounding_radius)))
     deg += deg_per_arc_seg
     while deg < 89.9:
         delta = wall * sin(deg)
@@ -337,7 +337,7 @@ def project_box(
             (
                 cur_z,
                 rounded_rectangle(
-                    (ix + 2 * delta, iy + 2 * delta), radius + delta
+                    (ix + 2 * delta, iy + 2 * delta), rounding_radius + delta
                 ).translate((-delta, -delta)),
             )
         )
@@ -348,17 +348,17 @@ def project_box(
     l.append(
         (
             cur_z,
-            rounded_rectangle((ox, oy), radius + wall).translate((-wall, -wall)),
+            rounded_rectangle((ox, oy), rounding_radius + wall).translate((-wall, -wall)),
         )
     )
 
     cur_z += iz
     l.append(
-        (cur_z, rounded_rectangle((ox, oy), radius + wall).translate((-wall, -wall)))
+        (cur_z, rounded_rectangle((ox, oy), rounding_radius + wall).translate((-wall, -wall)))
     )
 
     o = extrude_chaining(l, is_convex=True)
-    rr = rounded_rectangle((ix, iy), radius).extrude(iz)
+    rr = rounded_rectangle((ix, iy), rounding_radius).extrude(iz)
     return difference(o, rr)
 
 
@@ -551,3 +551,6 @@ def torus(outer_radius: float, inner_radius: float, segments=-1):
     circ = circle(sz, segments).translate((outer_radius - sz, outer_radius - sz))
 
     return revolve(circ, segments=segments).translate((0, 0, -outer_radius + sz))
+
+
+Look over API consistency... for example, height.
