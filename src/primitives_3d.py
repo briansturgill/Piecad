@@ -433,7 +433,7 @@ def pyramid(height: int, num_sides: int, radius: float) -> Obj3d:
 
 def rounded_cuboid(
     size: list[float, float, float],
-    rounding_radius=4.0,
+    rounding_radius=2.0,
     segments: int = -1,
     center: bool = False,
 ) -> Obj3d:
