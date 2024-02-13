@@ -10,10 +10,53 @@ import threading
 import manifold3d as _m
 import trimesh
 from typing import Union
+import inspect
+import os.path
+
+
+def _info_str(tag):  # Must be called from inside another function.
+    csf = inspect.stack()[2]
+    info = inspect.getframeinfo(csf[0])
+    str = f"{tag}@{os.path.basename(info.filename)}:{info.lineno}"
+    return str
+
 
 from . import Obj2d, Obj3d, config, _chkGO, ValidationError
 
 _viewer_available = config["CADViewerEnabled"]
+
+
+def load(filename: str) -> Obj3d | Obj2d:
+    """
+    Load a 3d object from a file.
+
+    The format read from `filename` is determined by the file's extention.
+
+    The available formats for 3D are:
+
+    | Type        | Extension    |
+    |:------------|:------------:|
+    | 3MF         |   .3mf       |
+    | GLB         |   .glb       |
+    | GLTF        |   .gltf      |
+    | OBJ         |   .obj       |
+    | PLY         |   .ply       |
+    | STL         |   .stl_ascii |
+    | STL binary  |   .stl       |
+
+    \\(See [https://github/mikedh/trimesh] for more formats.\\)
+
+    Currently 2d objects are not supported.
+    """
+    dot_idx = filename.rindex(".")
+    ext = filename[dot_idx + 1 :]
+    mesh = trimesh.exchange.load.load(filename, ext, force="mesh")
+    if type(mesh) == trimesh.path.Path2D:
+        raise ValidationError("Currently 2d objects are no supported.")
+    else:
+        o = Obj3d(_m.Manifold.create_from_verts_and_faces(mesh.vertices, mesh.faces))
+
+    return o
 
 
 def save(filename: str, obj: Union[Obj3d, Obj2d]) -> None:
@@ -40,7 +83,7 @@ def save(filename: str, obj: Union[Obj3d, Obj2d]) -> None:
     """
     _chkGO("obj", obj)
     if config["CADViewDoNotSendSaves"] == False and _viewer_available:
-        view(obj, filename)
+        view(obj, f"{_info_str('save')} - {os.path.basename(filename)}")
     dot_idx = filename.rindex(".")
     ext = filename[dot_idx + 1 :]
     if type(obj) == Obj3d:
@@ -116,17 +159,19 @@ def view(obj: Union[Obj3d, Obj2d], title: str = "") -> None:
 
     Returns obj unchanged... so that it works well in return statements.
     """
-
     global _view_thread
     if _viewer_available == False:
         return
 
     _chkGO("obj", obj)
 
+    if title == "":
+        title = _info_str("view")
+
     if type(obj) == Obj2d:
-        color = obj.color
+        color = obj._color
         obj = Obj2d(_m.Manifold.extrude(obj.mo, 0.1))
-        obj.color = color
+        obj._color = color
 
     if _view_thread == None:
         _view_thread = threading.Thread(target=_view_handler, daemon=True)
@@ -141,12 +186,12 @@ def view(obj: Union[Obj3d, Obj2d], title: str = "") -> None:
     faces = mesh.tri_verts
     view_data = {}
     view_data["title"] = title
-    view_data["color"] = [210, 180, 140]  # LATER make better, use Color
+    view_data["color"] = [210, 180, 140] if obj._color == None else obj._color
     view_data["vertices"] = vertices.tolist()
     fl = faces.tolist()
-    for one in fl:
-        one.insert(0, len(one))
-    fl.insert(0, len(fl))
+    # for one in fl:
+    #    one.insert(0, len(one))
+    # fl.insert(0, len(fl))
     view_data["faces"] = fl
     _view_queue.put(view_data)
     return obj
@@ -177,4 +222,3 @@ def _view_handler():
         conn.request("POST", "/", content)
         response = conn.getresponse()
         content = None
-        print(response.status)

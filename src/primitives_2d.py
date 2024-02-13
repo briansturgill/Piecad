@@ -116,7 +116,9 @@ def rounded_rectangle(
     _chkV2("size", size)
     _chkGT("rounding_radius", rounding_radius, 0)
 
-    return Obj2d(_m.CrossSection.rounded_rectangle(size, rounding_radius, segments, center))
+    return Obj2d(
+        _m.CrossSection.rounded_rectangle(size, rounding_radius, segments, center)
+    )
 
 
 def square(size: float, center: bool = False) -> Obj2d:

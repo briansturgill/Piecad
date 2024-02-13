@@ -148,7 +148,7 @@ def test_rounded_cuboid(benchmark):
 
 def test_rounded_cuboid(benchmark):
     c = benchmark(_rounded_cuboid, (15, 10, 36), 3.0, 100, True)
-    assert c.num_verts() == 10408
+    assert c.num_verts() == 10296
     assert c.bounding_box() == (-7.5, -5, -18, 7.5, 5, 18)
 
 
@@ -209,7 +209,7 @@ def test_pyramid(benchmark):
 
 def test_sphere(benchmark):
     c = benchmark(_sphere, 10, 360 // 6)
-    assert c.num_verts() == 3542  # Should be 3600 but revolve has an oddity.
+    assert c.num_verts() == 3600
     assert c.bounding_box() == (-10, -10, -10, 10, 10, 10)
 
 
@@ -240,32 +240,6 @@ def test_extrude_chaining_fan(benchmark):
 
 
 import math as _math
-
-
-def _sphere_from_chaining(radius, segs):
-    deg_per_seg = 180.0 / segs
-    hs = (_math.pi * radius) / segs
-    l = []
-    l.append((-radius, circle(0.3, segs)))
-    h_sum = -radius
-    for i in range(1, segs):
-        factor = sin(i * deg_per_seg)
-        r = radius * factor
-        h = hs * factor
-        h_sum += h
-        if i == segs - 1:
-            l.append((radius, circle(0.3, segs)))
-        else:
-            l.append((h_sum, circle(r, segs)))
-
-    out = extrude_chaining(l, is_convex=True)
-    return out
-
-
-def test_sphere_from_chaining(benchmark):
-    c = benchmark(_sphere_from_chaining, 10, 360 // 6)
-    assert c.num_verts() == 3600
-    assert c.bounding_box() == (-10, -10, -10, 10, 10, 10)
 
 
 def test_cube_from_polyhedron(benchmark):

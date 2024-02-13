@@ -1,1 +1,1 @@
-out = sphere(17)
+out = sphere(17, 100)

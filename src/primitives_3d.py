@@ -3,13 +3,14 @@
 """
 
 import manifold3d as _m
-import trimesh
+import math as _math
 
 from . import (
     config,
     Obj2d,
     Obj3d,
     circle,
+    ellipse,
     rounded_rectangle,
     sin,
     ValidationError,
@@ -20,6 +21,7 @@ from . import (
     _chkTY,
     _chkGE,
     _chkV3,
+    _chkV2,
 )
 
 
@@ -93,8 +95,6 @@ def cylinder(height: float, radius: float, segments: int = -1, center=False) -> 
     By default, the cylinder bottom is centered at `(0,0,0)`.
     When `center` is `True`, the cylinder will centered on `(0,0,0)`.
     (In other words, the bottom of the cylinder will be at `(0,0,-height/2.0`.)
-
-    <iframe width="100%" height="220" src="examples/cylinder.html"></iframe>
     """
     if segments == -1:
         segments = config["DefaultSegments"]
@@ -103,6 +103,54 @@ def cylinder(height: float, radius: float, segments: int = -1, center=False) -> 
     _chkGE("segments", segments, 3)
     return extrude_simple(
         circle(radius, segments),
+        height,
+        initial_z=-height / 2.0 if center else 0,
+        is_convex=True,
+    )
+
+
+def ellipsoid(
+    radii: tuple[float, float, float], segments: int = -1, center=False
+) -> Obj3d:
+    """
+    Make an ellipsoid which is elliptical on all three radii.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    The ellipsoid is centered at `(0,0,0)`.
+
+    <iframe width="100%" height="220" src="examples/ellipsoid.html"></iframe>
+    """
+    if segments == -1:
+        segments = config["DefaultSegments"]
+    _chkV3("radius", radii)
+    _chkGE("segments", segments, 3)
+
+    return sphere(1, segments=segments).scale(radii)
+
+
+def elliptical_cylinder(
+    height: float, radii: tuple[float, float], segments: int = -1, center=False
+) -> Obj3d:
+    """
+    Make a elliptically shaped cylinder of given radii and height.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    By default, the elliptical cylinder bottom is centered at `(0,0,0)`.
+    When `center` is `True`, the cylinder will centered on `(0,0,0)`.
+    (In other words, the bottom of the elliptical cylinder will be at `(0,0,-height/2.0`.)
+
+    <iframe width="100%" height="220" src="examples/elliptical_cylinder.html"></iframe>
+    """
+    if segments == -1:
+        segments = config["DefaultSegments"]
+    _chkGT("height", height, 0)
+    _chkV2("radii", radii)
+    _chkGE("segments", segments, 3)
+
+    return extrude_simple(
+        ellipse(radii, segments),
         height,
         initial_z=-height / 2.0 if center else 0,
         is_convex=True,
@@ -348,13 +396,20 @@ def project_box(
     l.append(
         (
             cur_z,
-            rounded_rectangle((ox, oy), rounding_radius + wall).translate((-wall, -wall)),
+            rounded_rectangle((ox, oy), rounding_radius + wall).translate(
+                (-wall, -wall)
+            ),
         )
     )
 
     cur_z += iz
     l.append(
-        (cur_z, rounded_rectangle((ox, oy), rounding_radius + wall).translate((-wall, -wall)))
+        (
+            cur_z,
+            rounded_rectangle((ox, oy), rounding_radius + wall).translate(
+                (-wall, -wall)
+            ),
+        )
     )
 
     o = extrude_chaining(l, is_convex=True)
@@ -522,12 +577,25 @@ def sphere(radius: float, segments: int = -1):
     """
     if segments == -1:
         segments = config["DefaultSegments"]
-    _chkGT("radius", radius, 0)
+    _chkGE("radius", radius, 0)
     _chkGE("segments", segments, 3)
+    deg_per_seg = 180.0 / segments
+    hs = (_math.pi * radius) / segments
+    l = []
+    l.append((-radius, circle(0.1, segments)))
+    h_sum = -radius
+    for i in range(1, segments):
+        factor = sin(i * deg_per_seg)
+        r = radius * factor
+        h = hs * factor
+        h_sum += h
+        if i == segments - 1:
+            l.append((radius, circle(0.1, segments)))
+        else:
+            l.append((h_sum, circle(r, segments)))
 
-    circ = circle(radius, segments * 2).piecut(90, 270)
-
-    return revolve(circ, segments=segments)
+    out = extrude_chaining(l, is_convex=True)
+    return out
 
 
 def torus(outer_radius: float, inner_radius: float, segments=-1):
@@ -551,6 +619,3 @@ def torus(outer_radius: float, inner_radius: float, segments=-1):
     circ = circle(sz, segments).translate((outer_radius - sz, outer_radius - sz))
 
     return revolve(circ, segments=segments).translate((0, 0, -outer_radius + sz))
-
-
-Look over API consistency... for example, height.
