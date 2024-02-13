@@ -44,8 +44,8 @@ def _cuboid(s, c=False):
     return c
 
 
-def _project_box(s, rr, w):
-    c = project_box(s, rr, w)
+def _project_box(s, rr, segs):
+    c = project_box(s, rr, segs)
     c.num_verts()
     return c
 
@@ -142,22 +142,22 @@ def test_cuboid_centered(benchmark):
 
 def test_rounded_cuboid(benchmark):
     c = benchmark(_rounded_cuboid, (15, 10, 36), 3.0, 100)
-    assert c.num_verts() == 10408
+    assert c.num_verts() == 6448
     assert c.bounding_box() == (0, 0, 0, 15, 10, 36)
 
 
-def test_rounded_cuboid(benchmark):
+def test_rounded_cuboid_centered(benchmark):
     c = benchmark(_rounded_cuboid, (15, 10, 36), 3.0, 100, True)
-    assert c.num_verts() == 10296
+    assert c.num_verts() == 6448
     assert c.bounding_box() == (-7.5, -5, -18, 7.5, 5, 18)
 
 
 def test_project_box(benchmark):
     radius = 3.0
-    wall = 2.0
-    c = benchmark(_project_box, (15, 10, 36), radius, wall)
-    assert c.num_verts() == 1320
-    assert c.bounding_box() == (-wall, -wall, -radius, 15 + wall, 10 + wall, 36)
+    segs = 100
+    c = benchmark(_project_box, (15, 10, 36), radius, 100)
+    assert c.num_verts() == 3536
+    assert c.bounding_box() == (-radius, -radius, -radius, 15 + radius, 10 + radius, 36)
 
 
 def test_rounded_cylinder_100(benchmark):

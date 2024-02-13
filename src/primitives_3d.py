@@ -12,11 +12,10 @@ from . import (
     circle,
     ellipse,
     rounded_rectangle,
+    cos,
     sin,
     ValidationError,
     difference,
-    union,
-    hull,
     _chkGT,
     _chkTY,
     _chkGE,
@@ -346,7 +345,7 @@ def polyhedron(
 
 
 def project_box(
-    size: list[float, float, float], rounding_radius: float = 3.0, wall: float = 2.0
+    size: list[float, float, float], rounding_radius: float = 2.0, segments: int = -1
 ) -> Obj3d:
     """
     Make a project box with the x, y, and z values given in size.
@@ -357,12 +356,16 @@ def project_box(
 
     The `rounding_radius` determines the fillet size.
 
-    The `wall` is the thickness of the box walls.
+    For ``segments`` see the documentation of ``set_default_segments``.
+    The segments value applies only to the segments in the rounded_rectangles that make up the box.
+    Layer segments are determined by `config["LayerResolution"]`.
 
     <iframe width="100%" height="220" src="examples/project_box.html"></iframe>
     """
+    if segments == -1:
+        segments = config["DefaultSegments"]
+    _chkGE("segments", segments, 3)
     _chkV3("size", size)
-    _chkGE("wall", wall, 2.0)
     _chkGE("rounding_radius", rounding_radius, 2.0)
 
     l = []
@@ -370,51 +373,49 @@ def project_box(
     arc_segs = rounding_radius / res
     deg_per_arc_seg = 90.0 / arc_segs
     deg = 0.0
-    end = -90.0
     ix, iy, iz = size
     ox, oy, oz = size
-    layer_thickness = rounding_radius / arc_segs
-    cur_z = -rounding_radius
-    ox += wall * 2
-    oy += wall * 2
-    l.append((-rounding_radius, rounded_rectangle((ix, iy), rounding_radius)))
+    ox += rounding_radius * 2
+    oy += rounding_radius * 2
+    smallest_rr = rounding_radius + sin(deg_per_arc_seg) / 2.0
+    l.append((-rounding_radius, rounded_rectangle((ix, iy), smallest_rr, segments)))
     deg += deg_per_arc_seg
-    while deg < 89.9:
-        delta = wall * sin(deg)
+    while deg < 90.0:
+        delta = rounding_radius * sin(deg)
+        cur_z = -rounding_radius * cos(deg)
         l.append(
             (
                 cur_z,
                 rounded_rectangle(
-                    (ix + 2 * delta, iy + 2 * delta), rounding_radius + delta
+                    (ix + 2 * delta, iy + 2 * delta), rounding_radius + delta, segments
                 ).translate((-delta, -delta)),
             )
         )
         deg += deg_per_arc_seg
-        cur_z += layer_thickness
 
     cur_z = 0.0
     l.append(
         (
             cur_z,
-            rounded_rectangle((ox, oy), rounding_radius + wall).translate(
-                (-wall, -wall)
-            ),
+            rounded_rectangle(
+                (ox, oy), rounding_radius + rounding_radius, segments
+            ).translate((-rounding_radius, -rounding_radius)),
         )
     )
 
-    cur_z += iz
+    cur_z = oz
     l.append(
         (
             cur_z,
-            rounded_rectangle((ox, oy), rounding_radius + wall).translate(
-                (-wall, -wall)
-            ),
+            rounded_rectangle(
+                (ox, oy), rounding_radius + rounding_radius, segments
+            ).translate((-rounding_radius, -rounding_radius)),
         )
     )
 
     o = extrude_chaining(l, is_convex=True)
-    rr = rounded_rectangle((ix, iy), rounding_radius).extrude(iz)
-    return difference(o, rr)
+    io = rounded_rectangle((ix, iy), rounding_radius, segments).extrude(iz)
+    return difference(o, io)
 
 
 def pyramid(height: int, num_sides: int, radius: float) -> Obj3d:
@@ -451,69 +452,68 @@ def rounded_cuboid(
     if segments == -1:
         segments = config["DefaultSegments"]
     _chkGE("segments", segments, 3)
+    _chkGE("rounding_radius", rounding_radius, 0)
     _chkV3("size", size)
     if type(size) == float or type(size) == int:
         size = (size, size, size)
+    l = []
+    res = config["LayerResolution"]
+    arc_segs = rounding_radius / res
+    deg_per_arc_seg = 90.0 / arc_segs
+    deg = 0.0
+    cur_z = 0
     x, y, z = size
-    x_off = -x / 2.0 if center else 0.0
-    y_off = -y / 2.0 if center else 0.0
-    z_off = -z / 2.0 if center else 0.0
-    sph = sphere(rounding_radius, segments=segments)
-    out = hull(
-        sph.translate(
-            (rounding_radius + x_off, rounding_radius + y_off, rounding_radius + z_off)
-        ),
-        sph.translate(
-            (
-                x - rounding_radius + x_off,
-                rounding_radius + y_off,
-                rounding_radius + z_off,
-            )
-        ),
-        sph.translate(
-            (
-                x - rounding_radius + x_off,
-                y - rounding_radius + y_off,
-                rounding_radius + z_off,
-            )
-        ),
-        sph.translate(
-            (
-                rounding_radius + x_off,
-                y - rounding_radius + y_off,
-                rounding_radius + z_off,
-            )
-        ),
-        sph.translate(
-            (
-                rounding_radius + x_off,
-                rounding_radius + y_off,
-                z - rounding_radius + z_off,
-            )
-        ),
-        sph.translate(
-            (
-                x - rounding_radius + x_off,
-                rounding_radius + y_off,
-                z - rounding_radius + z_off,
-            )
-        ),
-        sph.translate(
-            (
-                x - rounding_radius + x_off,
-                y - rounding_radius + y_off,
-                z - rounding_radius + z_off,
-            )
-        ),
-        sph.translate(
-            (
-                rounding_radius + x_off,
-                y - rounding_radius + y_off,
-                z - rounding_radius + z_off,
-            )
-        ),
+    rr = rounding_radius
+    ix = x - 2 * rr
+    iy = y - 2 * rr
+    smallest_rr = sin(deg_per_arc_seg) / 2.0
+    l.append(
+        (cur_z, rounded_rectangle((ix, iy), smallest_rr, segments).translate((rr, rr)))
     )
-    return out
+    deg += deg_per_arc_seg
+    while deg < 90.0:
+        delta = rr * sin(deg)
+        cur_z = rr - rr * cos(deg)
+        l.append(
+            (
+                cur_z,
+                rounded_rectangle(
+                    (ix + 2 * delta, iy + 2 * delta), delta, segments
+                ).translate((rr - delta, rr - delta)),
+            )
+        )
+        deg += deg_per_arc_seg
+
+    cur_z = rr
+    l.append((cur_z, rounded_rectangle((x, y), rr, segments)))
+
+    cur_z = z - rr
+    l.append((cur_z, rounded_rectangle((x, y), rr, segments)))
+
+    deg = 90.0
+    deg -= deg_per_arc_seg
+    while deg > 0.0:
+        delta = rr * sin(deg)
+        cur_z = z - rr + rr * cos(deg)
+        l.append(
+            (
+                cur_z,
+                rounded_rectangle(
+                    ((ix) + 2 * delta, (iy) + 2 * delta), delta, segments
+                ).translate((rr - delta, rr - delta)),
+            )
+        )
+        deg -= deg_per_arc_seg
+
+    cur_z = z
+    l.append(
+        (cur_z, rounded_rectangle((ix, iy), smallest_rr, segments).translate((rr, rr)))
+    )
+
+    o = extrude_chaining(l, is_convex=True)
+    if center:
+        o = o.translate((-x / 2.0, -y / 2.0, -z / 2.0))
+    return o
 
 
 def rounded_cylinder(
