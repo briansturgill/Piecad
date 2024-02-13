@@ -550,49 +550,6 @@ def rounded_cylinder(
         o3 = o3.translate((0, 0, -height / 2.0))
     return o3
 
-    # This next is slower than using revolve.
-    #if segments == -1:
-    #    segments = config["DefaultSegments"]
-    #_chkGE("segments", segments, 3)
-    #_chkGT("rounding_radius", rounding_radius, 0)
-    #_chkGT("height", height, 0)
-    #_chkGT("radius", radius, 0)
-    #initial_z = -height/2.0 if center else 0.0
-    #l = []
-    #res = config["LayerResolution"]
-    #arc_segs = rounding_radius / res
-    #deg_per_arc_seg = 90.0 / arc_segs
-    #deg = 0.0
-    #cur_z = initial_z
-    #rr = rounding_radius
-    #l.append((cur_z, circle(radius-rr, segments)))
-    #deg += deg_per_arc_seg
-    #while deg < 90.0:
-    #    delta = rr * sin(deg)
-    #    cur_z = rr - rr * cos(deg)
-    #    l.append((cur_z, circle(radius-rr+delta, segments)))
-    #    deg += deg_per_arc_seg
-
-    #cur_z = rr + initial_z
-    #l.append((cur_z, circle(radius, segments)))
-
-    #cur_z = height - rr + initial_z
-    #l.append((cur_z, circle(radius, segments)))
-
-    #deg = 90.0
-    #deg -= deg_per_arc_seg
-    #while deg > 0.0:
-    #    delta = rr * sin(deg)
-    #    cur_z = height - rr + initial_z + rr * cos(deg)
-    #    l.append((cur_z, circle(radius-rr+delta, segments)))
-    #    deg -= deg_per_arc_seg
-
-    #cur_z = height + initial_z
-    #l.append((cur_z, circle(radius-rr, segments)))
-
-    #o = extrude_chaining(l, is_convex=True)
-    #return o
-
 
 def revolve(obj: Obj2d, segments: int = -1, revolve_degrees: float = 360.0) -> Obj3d:
     """
