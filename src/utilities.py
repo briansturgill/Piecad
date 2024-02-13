@@ -83,7 +83,7 @@ def save(filename: str, obj: Union[Obj3d, Obj2d]) -> None:
     """
     _chkGO("obj", obj)
     if config["CADViewDoNotSendSaves"] == False and _viewer_available:
-        view(obj, f"{_info_str('save')} - {os.path.basename(filename)}")
+        view(obj, f"{_info_str('save')} - {filename}")
     dot_idx = filename.rindex(".")
     ext = filename[dot_idx + 1 :]
     if type(obj) == Obj3d:
