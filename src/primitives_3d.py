@@ -582,7 +582,8 @@ def sphere(radius: float, segments: int = -1):
     deg_per_seg = 180.0 / segments
     hs = (_math.pi * radius) / segments
     l = []
-    l.append((-radius, circle(0.1, segments)))
+    smallest_rr = radius * sin(deg_per_seg) / 2.0
+    l.append((-radius, circle(smallest_rr, segments)))
     h_sum = -radius
     for i in range(1, segments):
         factor = sin(i * deg_per_seg)
@@ -590,7 +591,7 @@ def sphere(radius: float, segments: int = -1):
         h = hs * factor
         h_sum += h
         if i == segments - 1:
-            l.append((radius, circle(0.1, segments)))
+            l.append((radius, circle(smallest_rr, segments)))
         else:
             l.append((h_sum, circle(r, segments)))
 
