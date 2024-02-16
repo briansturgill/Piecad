@@ -4,6 +4,7 @@ Trigonometry functions that use and return degrees.
 They also take pains to make sure commonly used angles that should
 come out exact, DO come out exact.
 """
+
 import math as _math
 
 

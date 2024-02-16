@@ -1,0 +1,5 @@
+ pip install trimesh
+ pip install pytest
+ pip install pytest.benchmark
+ pip install black
+ pip install pdoc3
