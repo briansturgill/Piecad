@@ -239,8 +239,7 @@ def extrude_transforming(
     height: float,
     num_twist_divisions: int = 0,
     twist: float = 0,
-    scale_x: float = 1.0,
-    scale_y=1.0,
+    scale: tuple[float, float] = (1.0, 1.0),
     initial_z=0.0,
     is_convex=False,
 ) -> Obj3d:
@@ -255,7 +254,7 @@ def extrude_transforming(
 
     Parameter `twist` will cause a circular rotation for each `num_twist_divisions`.
 
-    Scale_x and scale_y is also applied at each division.
+    Parammeter `scale` specifes scaling factors applied at each division.
 
     If `initial_z` is not zero then it is added to the `0` z points and `height` z points.
     You can use `initial_z = -height/2.0` to cause the extrusion to be centered on `z == 0`.
@@ -269,15 +268,14 @@ def extrude_transforming(
     _chkGT("height", height, 0)
     _chkGE("num_twist_divisions", num_twist_divisions, 0)
     _chkGE("twist", twist, 0)
-    _chkGE("scale_x", scale_x, 0)
-    _chkGE("scale_y", scale_y, 0)
+    _chkV2("scale", scale)
     return Obj3d(
         _m.Manifold.extrude_transforming(
             obj.mo,
             height,
             num_twist_divisions,
             twist,
-            (scale_x, scale_y),
+            scale,
             initial_z,
             is_convex,
         )
@@ -427,7 +425,7 @@ def pyramid(height: int, num_sides: int, radius: float) -> Obj3d:
     <iframe width="100%" height="220" src="examples/pyramid.html"></iframe>
     """
     return extrude_transforming(
-        circle(radius, segments=num_sides), height=height, scale_x=0, scale_y=0
+        circle(radius, segments=num_sides), height=height, scale=(0, 0)
     )
 
 

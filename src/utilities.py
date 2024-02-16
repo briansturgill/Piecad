@@ -130,7 +130,7 @@ def _save_svg(filename, obj):
 
     off_x = 0 - bb[0]
     off_y = 0 - bb[1]
-    paths = obj.to_paths()
+    paths = obj.to_polygons()
     for path in paths:
         for i in range(len(path)):
             vert = path[i]

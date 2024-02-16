@@ -230,7 +230,7 @@ class Obj3d:
 
     def to_verts_and_faces(
         self,
-    ) -> tuple(list(list[float, float, float]), list(list[int, int, int])):
+    ) -> tuple[list[list[float, float, float]], list[list[int, int, int]]]:
         """
         Return a pair containg a list of vertices and a list of faces for this object.
 
@@ -451,7 +451,7 @@ class Obj2d:
         _chkV2("factors", factors)
         return Obj2d(self.mo.scale(factors), color=self._color)
 
-    def to_paths(self) -> list(list[float, float]):
+    def to_polygons(self) -> list[list[float, float]]:
         """
         Return a lists of paths, each of which is a list of vertices that make up this object.
         """
