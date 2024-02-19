@@ -1,1 +1,1 @@
-out = extrude(star(5, 4), 10, True)
+out = extrude(star(5, 4), 10)

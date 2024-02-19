@@ -177,11 +177,9 @@ class Obj3d:
             pts.append((rad * cos(ang), rad * sin(ang)))
             ang = ang + 90
         pts.append((rad * cos(end_angle), rad * sin(end_angle)))
-        cutter = Obj3d(
-            _m.Manifold.extrude_simple(
-                _m.CrossSection.create_from_path_unchecked(pts), h
-            )
-        ).translate([c_x, c_y, c_z - (h / 2)])
+        cutter = Obj3d(_m.Manifold.extrude(_m.CrossSection([pts]), h)).translate(
+            [c_x, c_y, c_z - (h / 2)]
+        )
         o3 = difference(self, cutter)
         o3._color = self._color
         return o3
@@ -331,11 +329,11 @@ class Obj2d:
         """
         return self.mo.is_empty()
 
-    def extrude(self, height: int, is_convex: bool = False):
+    def extrude(self, height: int):
         """
         Extrude this object into a Obj3d of the given height.
         """
-        o3 = Obj3d(_m.Manifold.extrude_simple(self.mo, height, is_convex=False))
+        o3 = Obj3d(_m.Manifold.extrude(self.mo, height))
         o3._color = self._color
         return o3
 
@@ -420,7 +418,7 @@ class Obj2d:
             pts.append((rad * cos(ang) + c_x, rad * sin(ang) + c_y))
             ang = ang + 90
         pts.append((rad * cos(end_angle) + c_x, rad * sin(end_angle) + c_y))
-        cutter = Obj2d(_m.CrossSection.create_from_path_unchecked(pts))
+        cutter = Obj2d(_m.CrossSection([pts]))
         o2 = difference(self, cutter)
         o2._color = self._color
         return o2

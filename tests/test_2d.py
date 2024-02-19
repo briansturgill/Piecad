@@ -163,12 +163,12 @@ pts = [
 
 
 def test_polygon(benchmark):
-    c = benchmark(_polygon, pts)
+    c = benchmark(_polygon, [pts])
 
 
 def test_polygon_rev(benchmark):
     rev = pts.reverse()
-    c = benchmark(_polygon, pts)
+    c = benchmark(_polygon, [pts])
 
 
 def _rounded_rectangle_hull(

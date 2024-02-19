@@ -80,12 +80,6 @@ def _extrude(o, h):
     return o
 
 
-def _extrude_simple(o, h, c):
-    o = extrude_simple(o, h, is_convex=c)
-    o.num_verts()
-    return o
-
-
 def _extrude_chaining(l, is_convex):
     o = extrude_chaining(l, is_convex=is_convex)
     o.num_verts()
@@ -178,18 +172,6 @@ def test_extrude(benchmark):
     assert o.num_verts() == 200
 
 
-def test_extrude_simple_ec(benchmark):
-    c = circle(10, 100)
-    o = benchmark(_extrude_simple, c, 25, False)
-    assert o.num_verts() == 200
-
-
-def test_extrude_simple_fan(benchmark):
-    c = circle(10, 100)
-    o = benchmark(_extrude_simple, c, 25, True)
-    assert o.num_verts() == 200
-
-
 def test_revolve():
     c = circle(10)
     assert revolve(c).num_verts() == 614
@@ -209,7 +191,7 @@ def test_pyramid(benchmark):
 
 def test_sphere(benchmark):
     c = benchmark(_sphere, 10, 360 // 6)
-    assert c.num_verts() == 3600
+    assert c.num_verts() == 3540
     assert c.bounding_box() == (-10, -10, -10, 10, 10, 10)
 
 

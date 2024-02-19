@@ -4,6 +4,7 @@
 
 import manifold3d as _m
 import math as _math
+import numpy as _np
 
 from . import (
     config,
@@ -100,12 +101,7 @@ def cylinder(height: float, radius: float, segments: int = -1, center=False) -> 
     _chkGT("height", height, 0)
     _chkGT("radius", radius, 0)
     _chkGE("segments", segments, 3)
-    return extrude_simple(
-        circle(radius, segments),
-        height,
-        initial_z=-height / 2.0 if center else 0,
-        is_convex=True,
-    )
+    return Obj3d(_m.Manifold.cylinder(height, radius, radius, segments, center))
 
 
 def ellipsoid(
@@ -148,29 +144,24 @@ def elliptical_cylinder(
     _chkV2("radii", radii)
     _chkGE("segments", segments, 3)
 
-    return extrude_simple(
-        ellipse(radii, segments),
-        height,
-        initial_z=-height / 2.0 if center else 0,
-        is_convex=True,
-    )
+    ecyl = extrude(ellipse(radii, segments), height)
+    if center:
+        ecyl = ecyl.translate((0, 0, -height / 2.0))
+    return ecyl
 
 
-def extrude(obj: Obj2d, height: float, is_convex: bool = False) -> Obj3d:
+def extrude(obj: Obj2d, height: float) -> Obj3d:
     """
     Create a Obj3d solid from Obj2d of given height.
 
     The 2d object will be copied and moved up to ``height``.
     Lines will be added creating an ``obj``-shaped 3d solid.
 
-    If parameter `is_convex` is set to `True` a much faster triangulation
-    algoritm is used, which only works on a convex shape. If you don't
-
     <iframe width="100%" height="220" src="examples/extrude.html"></iframe>
     """
     _chkTY("obj", obj, Obj2d)
     _chkGT("height", height, 0)
-    return Obj3d(_m.Manifold.extrude_simple(obj.mo, height, is_convex=False))
+    return Obj3d(_m.Manifold.extrude(obj.mo, height))
 
 
 def extrude_chaining(
@@ -199,39 +190,130 @@ def extrude_chaining(
 
     <iframe width="100%" height="500" src="examples/extrude_chaining.html"></iframe>
     """
-    l = []
-    if len(pairs) < 2:
-        raise ValidationError("The pairs list must have at least two elements.")
-    idx = 0
-    for h, obj in pairs:
-        if obj == None or obj.is_empty():
-            raise ValidationError(f"Object at index {idx} cannot be empty or None.")
-        l.append((h, obj.mo))
-        idx += 1
+    vertex_map = {}
+    vertex_list = []
 
-    return Obj3d(_m.Manifold.extrude_chaining(l, is_convex))
+    def v(a):
+        if a in vertex_map:
+            return vertex_map[a]
+        idx = len(vertex_list)
+        vertex_list.append(a)
+        vertex_map[a] = idx
+        return idx
 
+    triangles = []
 
-def extrude_simple(
-    obj: Obj2d, height: float, initial_z: float = 0, is_convex=False
-) -> Obj3d:
-    """
-    Create a Obj3d solid from Obj2d of given height.
+    _chkGT("pairs length", len(pairs), 0)
 
-    The 2d object will be copied and moved up to ``height``.
-    Lines will be added creating an ``obj``-shaped 3d solid.
+    def add_cap(h, shape, top):
+        polys = shape.mo.to_polygons()
 
-    If `initial_z` is not zero then it is added to the `0` z points and `height` z points.
-    You can use `initial_z = -height/2.0` to cause the extrusion to be centered on `z == 0`.
+        if not is_convex and len(polys) != 1:
+            vl = []
+            for poly in polys:
+                for vert in poly:
+                    vl.append(vert)
+            tris = _m.triangulate(polys)
+            for t in tris:
+                i1, i2, i3 = t
+                x1, y1 = vl[i1]
+                x2, y2 = vl[i2]
+                x3, y3 = vl[i3]
+                if top:
+                    triangles.append(
+                        (
+                            v((x1, y1, h)),
+                            v((x2, y2, h)),
+                            v((x3, y3, h)),
+                        )
+                    )
+                else:  # Bottom caps are reversed.
+                    triangles.append(
+                        (
+                            v((x3, y3, h)),
+                            v((x2, y2, h)),
+                            v((x1, y1, h)),
+                        )
+                    )
+        else:  # Fan triangulation
+            poly = polys[0]  # We have only one to deal with
+            n = len(poly)
+            chosen = poly[0]
+            for i in range(1, n - 1):
+                cur = poly[i]
+                next = poly[i + 1]
+                if top:
+                    triangles.append(
+                        (
+                            v((chosen[0], chosen[1], h)),
+                            v((cur[0], cur[1], h)),
+                            v((next[0], next[1], h)),
+                        )
+                    )
+                else:  # Bottom caps are clockwise.
+                    triangles.append(
+                        (
+                            v((next[0], next[1], h)),
+                            v((cur[0], cur[1], h)),
+                            v((chosen[0], chosen[1], h)),
+                        )
+                    )
 
-    If parameter `is_convex` is set to `True` a much faster triangulation
-    algoritm is used, which only works on a convex shape. If you don't
+    cur_z = pairs[0][0]
+    add_cap(cur_z, pairs[0][1], top=False)
+    last = len(pairs)
+    prev = pairs[0][1]
+    prev_z = cur_z
+    cur_idx = 1
 
-    <iframe width="100%" height="220" src="examples/extrude_simple.html"></iframe>
-    """
-    _chkTY("obj", obj, Obj2d)
-    _chkGT("height", height, 0)
-    return Obj3d(_m.Manifold.extrude_simple(obj.mo, height, initial_z, is_convex))
+    while cur_idx < last:
+        cur = pairs[cur_idx][1]
+        cur_z = pairs[cur_idx][0]
+        # if cur == None:
+        # This means to extrude the shape from the previous shape.
+        # Usually this is done after a partial cap and you want
+        # to extrude the difference done for the partial cap.
+        # cur = prev
+
+        # if h == 0:  # A partial cap.
+        #    add_cap(cur_z, cur, top=True)
+        #    prev = difference(prev, cur)
+        #    cur_idx += 1
+        #    continue
+
+        prev_polys = prev.mo.to_polygons()
+        cur_polys = cur.mo.to_polygons()
+        for i in range(0, len(cur.mo.to_polygons())):
+            b = prev_polys[i]
+            t = cur_polys[i]
+            bottom_p = v((b[0][0], b[0][1], prev_z))
+            top_p = v((t[0][0], t[0][1], cur_z))
+
+            _len = len(b)
+            for i in range(0, _len):
+                next_bottom_p = v((b[(i + 1) % _len][0], b[(i + 1) % _len][1], prev_z))
+                next_top_p = v((t[(i + 1) % _len][0], t[(i + 1) % _len][1], cur_z))
+                triangles.append((bottom_p, next_bottom_p, next_top_p))
+                triangles.append((bottom_p, next_top_p, top_p))
+                bottom_p = next_bottom_p
+                top_p = next_top_p
+        prev = cur
+        prev_z = cur_z
+        cur_idx += 1
+
+    add_cap(cur_z, cur, top=True)
+
+    vertex_list = _np.array(vertex_list, _np.float32)
+    triangles = _np.array(triangles, _np.uint32)
+    mesh = _m.Mesh(vertex_list, triangles)
+    # import trimesh
+    # mesh_output = trimesh.Trimesh(vertices=vertex_list, faces=triangles)
+    # trimesh.exchange.export.export_mesh(mesh_output, "/home/brian/Downloads/mesh.glb", "glb")
+    # trimesh.exchange.export.export_mesh(mesh_output, "/home/brian/Downloads/mesh.stl", "stl")
+    mo = _m.Manifold(mesh)
+    if mo.is_empty():
+        raise ValidationError(f"Error creating Manifold: {mo.status()}.")
+    return Obj3d(mo)
 
 
 def extrude_transforming(
@@ -240,8 +322,6 @@ def extrude_transforming(
     num_twist_divisions: int = 0,
     twist: float = 0,
     scale: tuple[float, float] = (1.0, 1.0),
-    initial_z=0.0,
-    is_convex=False,
 ) -> Obj3d:
     """
     Create a Obj3d solid from Obj2d of given height.
@@ -256,12 +336,6 @@ def extrude_transforming(
 
     Parammeter `scale` specifes scaling factors applied at each division.
 
-    If `initial_z` is not zero then it is added to the `0` z points and `height` z points.
-    You can use `initial_z = -height/2.0` to cause the extrusion to be centered on `z == 0`.
-
-    If parameter `is_convex` is set to `True` a much faster triangulation
-    algoritm is used, which only works on a convex shape. If you don't
-
     <iframe width="100%" height="270" src="examples/extrude_transforming.html"></iframe>
     """
     _chkTY("obj", obj, Obj2d)
@@ -270,14 +344,12 @@ def extrude_transforming(
     _chkGE("twist", twist, 0)
     _chkV2("scale", scale)
     return Obj3d(
-        _m.Manifold.extrude_transforming(
+        _m.Manifold.extrude(
             obj.mo,
             height,
             num_twist_divisions,
             twist,
             scale,
-            initial_z,
-            is_convex,
         )
     )
 
@@ -330,15 +402,15 @@ def polyhedron(
     Then use a program like `meshlab` to look at where things are not manifold.
 
     """
-
+    vertices = _np.array(vertices, _np.float32)
+    faces = _np.array(faces, _np.uint32)
+    mesh = _m.Mesh(vertices, faces)
     # import trimesh
     # mesh_output = trimesh.Trimesh(vertices=vertices, faces=faces)
-    # trimesh.exchange.export.export_mesh(mesh_output, "/home/brian/Downloads/mesh.obj", "obj")
-
-    mo = _m.Manifold.create_from_verts_and_faces(vertices, faces)
+    # trimesh.exchange.export.export_mesh(mesh_output, "/tmp/mesh.obj", "obj")
+    mo = _m.Manifold(mesh)
     if mo.is_empty():
-        raise ValidationError(f"Error from the Manifold CAD package: {mo.status()}.")
-
+        raise ValidationError(f"Error creating Manifold: {mo.status()}.")
     return Obj3d(mo)
 
 
