@@ -101,7 +101,10 @@ def cylinder(height: float, radius: float, segments: int = -1, center=False) -> 
     _chkGT("height", height, 0)
     _chkGT("radius", radius, 0)
     _chkGE("segments", segments, 3)
-    return Obj3d(_m.Manifold.cylinder(height, radius, radius, segments, center))
+    cyl = circle(radius, segments).extrude(height)
+    if center:
+        cyl = cyl.translate((0, 0, -height / 2.0))
+    return cyl
 
 
 def ellipsoid(
@@ -649,24 +652,10 @@ def sphere(radius: float, segments: int = -1):
         segments = config["DefaultSegments"]
     _chkGE("radius", radius, 0)
     _chkGE("segments", segments, 3)
-    deg_per_seg = 180.0 / segments
-    hs = (_math.pi * radius) / segments
-    l = []
-    smallest_rr = radius * sin(deg_per_seg) / 2.0
-    l.append((-radius, circle(smallest_rr, segments)))
-    h_sum = -radius
-    for i in range(1, segments):
-        factor = sin(i * deg_per_seg)
-        r = radius * factor
-        h = hs * factor
-        h_sum += h
-        if i == segments - 1:
-            l.append((radius, circle(smallest_rr, segments)))
-        else:
-            l.append((h_sum, circle(r, segments)))
 
-    out = extrude_chaining(l, is_convex=True)
-    return out
+    circ = circle(radius, 2 * segments).piecut(90, 270)
+
+    return revolve(circ, segments=segments)
 
 
 def torus(outer_radius: float, inner_radius: float, segments=-1):

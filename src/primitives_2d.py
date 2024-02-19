@@ -8,6 +8,9 @@ import manifold3d as _m
 from . import Obj2d, config, _chkGT, _chkGE, _chkV2, cos, sin
 
 
+_unit_circles = {}
+
+
 def circle(radius: float, segments: int = -1) -> Obj2d:
     """
     Make a circle of a given radius.
@@ -21,10 +24,13 @@ def circle(radius: float, segments: int = -1) -> Obj2d:
     _chkGT("radius", radius, 0.0)
     _chkGE("segments", segments, 3)
 
-    return Obj2d(_m.CrossSection.circle(radius, segments))
+    if segments in _unit_circles:
+        circ = _unit_circles[segments]
+    else:
+        circ = _m.CrossSection.circle(1, segments)
+        _unit_circles[segments] = circ
 
-
-_unit_circles = {}
+    return Obj2d(circ.scale((radius, radius)))
 
 
 def ellipse(radii: list[float, float], segments: int = -1) -> Obj2d:
@@ -106,51 +112,71 @@ def rounded_rectangle(
     _chkV2("size", size)
     _chkGT("rounding_radius", rounding_radius, 0)
 
-    segs_per_arc = segments // 4 + 1
-    deg_per_arc = 90.0 / segs_per_arc
-    pts = []
-    x, y = size
-
-    def make_arc_trig_vals(deg):
-        end = deg + 90
-        l = []
-        for i in range(0, segs_per_arc - 1):
-            l.append((cos(deg), sin(deg)))
-            deg += deg_per_arc
-
-        l.append((cos(end), sin(end)))
-        return l
-
-    if segments in _arc_trig_vals_map:
-        arc_trig_vals = _arc_trig_vals_map[segments]
-    else:
-        arc_trig_vals = (
-            make_arc_trig_vals(180),  # Bottom left
-            make_arc_trig_vals(270),  # Bottom right
-            make_arc_trig_vals(0),  # Top right
-            make_arc_trig_vals(90),  # Top left
-        )
-        _arc_trig_vals_map[segments] = arc_trig_vals
-
     rr = rounding_radius
+    circ = circle(rr, segments)
 
-    pts = []
+    x = size[0]
+    y = size[1]
+
     c_x_off = -x / 2.0 if center else 0.0
     c_y_off = -y / 2.0 if center else 0.0
 
-    def arc(tvals, rad, x_off, y_off):
-        x_off += c_x_off
-        y_off += c_y_off
-        for c, s in tvals:
-            pts.append((x_off + rad * c, y_off + rad * s))
+    return Obj2d(
+        _m.CrossSection.batch_hull(
+            [
+                circ.translate((c_x_off + rr, c_y_off + rr)).mo,
+                circ.translate((c_x_off + size[0] - rr, c_y_off + rr)).mo,
+                circ.translate((c_x_off + size[0] - rr, c_y_off + size[1] - rr)).mo,
+                circ.translate((c_x_off + rr, c_y_off + size[1] - rr)).mo,
+            ]
+        )
+    )
 
-    bl, br, tr, tl = arc_trig_vals
-    arc(bl, rr, rr, rr)  # Bottom left
-    arc(br, rr, x - rr, rr)  # Bottom right
-    arc(tr, rr, x - rr, y - rr)  # Top right
-    arc(tl, rr, rr, y - rr)  # Top left
+    # segs_per_arc = segments // 4 + 1
+    # deg_per_arc = 90.0 / segs_per_arc
+    # pts = []
+    # x, y = size
 
-    return Obj2d(_m.CrossSection([pts], _m.FillRule.EvenOdd))
+    # def make_arc_trig_vals(deg):
+    #    end = deg + 90
+    #    l = []
+    #    for i in range(0, segs_per_arc - 1):
+    #        l.append((cos(deg), sin(deg)))
+    #        deg += deg_per_arc
+
+    #    l.append((cos(end), sin(end)))
+    #    return l
+
+    # if segments in _arc_trig_vals_map:
+    #    arc_trig_vals = _arc_trig_vals_map[segments]
+    # else:
+    #    arc_trig_vals = (
+    #        make_arc_trig_vals(180),  # Bottom left
+    #        make_arc_trig_vals(270),  # Bottom right
+    #        make_arc_trig_vals(0),  # Top right
+    #        make_arc_trig_vals(90),  # Top left
+    #    )
+    #    _arc_trig_vals_map[segments] = arc_trig_vals
+
+    # rr = rounding_radius
+
+    # pts = []
+    # c_x_off = -x / 2.0 if center else 0.0
+    # c_y_off = -y / 2.0 if center else 0.0
+
+    # def arc(tvals, rad, x_off, y_off):
+    #    x_off += c_x_off
+    #    y_off += c_y_off
+    #    for c, s in tvals:
+    #        pts.append((x_off + rad * c, y_off + rad * s))
+
+    # bl, br, tr, tl = arc_trig_vals
+    # arc(bl, rr, rr, rr)  # Bottom left
+    # arc(br, rr, x - rr, rr)  # Bottom right
+    # arc(tr, rr, x - rr, y - rr)  # Top right
+    # arc(tl, rr, rr, y - rr)  # Top left
+
+    # return Obj2d(_m.CrossSection([pts], _m.FillRule.EvenOdd))
 
 
 def square(size: float, center: bool = False) -> Obj2d:

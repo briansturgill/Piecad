@@ -191,7 +191,7 @@ def test_pyramid(benchmark):
 
 def test_sphere(benchmark):
     c = benchmark(_sphere, 10, 360 // 6)
-    assert c.num_verts() == 3540
+    assert c.num_verts() == 3542
     assert c.bounding_box() == (-10, -10, -10, 10, 10, 10)
 
 

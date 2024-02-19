@@ -169,27 +169,3 @@ def test_polygon(benchmark):
 def test_polygon_rev(benchmark):
     rev = pts.reverse()
     c = benchmark(_polygon, [pts])
-
-
-def _rounded_rectangle_hull(
-    size: list[float, float],
-    radius: float = 0.2,
-    segments: int = -1,
-    center: bool = False,
-) -> Obj2d:
-    circ = circle(radius, segments)
-    return Obj2d(
-        _m.CrossSection.batch_hull(
-            [
-                circ.translate((radius, radius)).mo,
-                circ.translate((size[0] - radius, radius)).mo,
-                circ.translate((size[0] - radius, size[1] - radius)).mo,
-                circ.translate((radius, size[1] - radius)).mo,
-            ]
-        )
-    )
-
-
-def test_rounded_rectangle_hull(benchmark):
-    o = benchmark(_rounded_rectangle_hull, (10, 10), 2.0, 36)
-    assert o.num_verts() == 40
