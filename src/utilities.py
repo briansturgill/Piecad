@@ -222,3 +222,28 @@ def _view_handler():
         conn.request("POST", "/", content)
         response = conn.getresponse()
         content = None
+
+
+def winding(lv: list[tuple[float, float]]) -> str:
+    """
+    String description of winding of a 2D polygon.
+
+    Returns one of `"cw"`, `"ccw"`, `"zero"` or `"too small"`.
+    """
+
+    def wstr(winding):
+        if winding > 0:
+            return "cw"
+        if winding < 0:
+            return "ccw"
+        return "zero"
+
+    length = len(lv)
+    if length < 3:
+        return "too small"
+    winding = 0.0
+    for i in range(0, length):
+        winding += (lv[(i + 1) % length][0] - lv[i][0]) * (
+            lv[(i + 1) % length][1] + lv[i][1]
+        )
+    return wstr(winding)

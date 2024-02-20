@@ -17,6 +17,7 @@ from . import (
     sin,
     ValidationError,
     difference,
+    winding,
     _chkGT,
     _chkTY,
     _chkGE,
@@ -211,7 +212,7 @@ def extrude_chaining(
     def add_cap(h, shape, top):
         polys = shape.mo.to_polygons()
 
-        if not is_convex and len(polys) != 1:
+        if not is_convex or len(polys) != 1:
             vl = []
             for poly in polys:
                 for vert in poly:
@@ -272,20 +273,10 @@ def extrude_chaining(
     while cur_idx < last:
         cur = pairs[cur_idx][1]
         cur_z = pairs[cur_idx][0]
-        # if cur == None:
-        # This means to extrude the shape from the previous shape.
-        # Usually this is done after a partial cap and you want
-        # to extrude the difference done for the partial cap.
-        # cur = prev
-
-        # if h == 0:  # A partial cap.
-        #    add_cap(cur_z, cur, top=True)
-        #    prev = difference(prev, cur)
-        #    cur_idx += 1
-        #    continue
 
         prev_polys = prev.mo.to_polygons()
         cur_polys = cur.mo.to_polygons()
+
         for i in range(0, len(cur.mo.to_polygons())):
             b = prev_polys[i]
             t = cur_polys[i]
@@ -311,8 +302,7 @@ def extrude_chaining(
     mesh = _m.Mesh(vertex_list, triangles)
     # import trimesh
     # mesh_output = trimesh.Trimesh(vertices=vertex_list, faces=triangles)
-    # trimesh.exchange.export.export_mesh(mesh_output, "/home/brian/Downloads/mesh.glb", "glb")
-    # trimesh.exchange.export.export_mesh(mesh_output, "/home/brian/Downloads/mesh.stl", "stl")
+    # trimesh.exchange.export.export_mesh(mesh_output, "/tmp/test.obj", "obj")
     mo = _m.Manifold(mesh)
     if mo.is_empty():
         raise ValidationError(f"Error creating Manifold: {mo.status()}.")
@@ -442,25 +432,26 @@ def project_box(
     _chkGE("rounding_radius", rounding_radius, 2.0)
 
     l = []
+    rr = rounding_radius
     res = config["LayerResolution"]
-    arc_segs = rounding_radius / res
+    arc_segs = rr / res
     deg_per_arc_seg = 90.0 / arc_segs
     deg = 0.0
     ix, iy, iz = size
     ox, oy, oz = size
-    ox += rounding_radius * 2
-    oy += rounding_radius * 2
-    smallest_rr = rounding_radius + sin(deg_per_arc_seg) / 2.0
-    l.append((-rounding_radius, rounded_rectangle((ix, iy), smallest_rr, segments)))
+    ox += rr * 2
+    oy += rr * 2
+    smallest_rr = rr + sin(deg_per_arc_seg) / 2.0
+    l.append((-rr, rounded_rectangle((ix, iy), smallest_rr, segments)))
     deg += deg_per_arc_seg
     while deg < 90.0:
-        delta = rounding_radius * sin(deg)
-        cur_z = -rounding_radius * cos(deg)
+        delta = rr * sin(deg)
+        cur_z = -rr * cos(deg)
         l.append(
             (
                 cur_z,
                 rounded_rectangle(
-                    (ix + 2 * delta, iy + 2 * delta), rounding_radius + delta, segments
+                    (ix + 2 * delta, iy + 2 * delta), rr + delta, segments
                 ).translate((-delta, -delta)),
             )
         )
@@ -468,27 +459,18 @@ def project_box(
 
     cur_z = 0.0
     l.append(
-        (
-            cur_z,
-            rounded_rectangle(
-                (ox, oy), rounding_radius + rounding_radius, segments
-            ).translate((-rounding_radius, -rounding_radius)),
-        )
+        (cur_z, rounded_rectangle((ox, oy), rr + rr, segments).translate((-rr, -rr)))
     )
 
     cur_z = oz
     l.append(
-        (
-            cur_z,
-            rounded_rectangle(
-                (ox, oy), rounding_radius + rounding_radius, segments
-            ).translate((-rounding_radius, -rounding_radius)),
-        )
+        (cur_z, rounded_rectangle((ox, oy), rr + rr, segments).translate((-rr, -rr)))
     )
 
     o = extrude_chaining(l, is_convex=True)
-    io = rounded_rectangle((ix, iy), rounding_radius, segments).extrude(iz)
+    io = rounded_rectangle((ix, iy), rr, segments).extrude(iz)
     return difference(o, io)
+    return o
 
 
 def pyramid(height: int, num_sides: int, radius: float) -> Obj3d:
