@@ -240,6 +240,30 @@ class Obj3d:
             vertices = mesh.vert_properties
         return (vertices, mesh.tri_verts)
 
+    def transform(
+        self,
+        matrix3x4: tuple[
+            tuple[float, float, float, float],
+            tuple[float, float, float, float],
+            tuple[float, float, float, float],
+            tuple[float, float, float, float],
+        ],
+    ) -> Obj3d:
+        """
+        Transform this object with the given affine transformaton matrix.
+
+        If you don't know what this is, you probably don't need it.
+        """
+        if (
+            len(matrix3x4) != 3
+            or len(matrix3x4[0]) != 4
+            or len(matrix3x4[1]) != 4
+            or len(matrix3x4[2]) != 4
+        ):
+            raise ValueError("Improperly sized 3x4 matrix.")
+
+        return Obj3d(self.mo.transform(matrix3x4), color=self._color)
+
     def translate(self, offsets: list[float, float, float]) -> Obj3d:
         """
         Translate (move) this object by the given offsets.
@@ -454,6 +478,19 @@ class Obj2d:
         Return a lists of paths, each of which is a list of vertices that make up this object.
         """
         return self.mo.to_polygons()
+
+    def transform(
+        self, matrix2x3: tuple[tuple[float, float, float], tuple[float, float, float]]
+    ) -> Obj3d:
+        """
+        Transform this object with the given affine transformaton matrix.
+
+        If you don't know what this is, you probably don't need it.
+        """
+        if len(matrix2x3) != 2 or len(matrix2x3[0]) != 3 or len(matrix2x3[1]) != 3:
+            raise ValueError("Improperly sized 2x3 matrix.")
+
+        return Obj2d(self.mo.transform(matrix2x3), color=self._color)
 
     def translate(self, offsets: list[float, float]) -> Obj2d:
         """

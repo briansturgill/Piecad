@@ -76,3 +76,15 @@ def test_mirror_3d():
     assert verts == r.mirror((True, False, True)).num_verts()
     assert verts == r.mirror((False, True, True)).num_verts()
     assert verts == r.mirror((True, True, True)).num_verts()
+
+
+def test_transfrom_2d():
+    c = circle(2)
+    c2 = c.transform([[1, 0, 0], [0, 1, 0]])
+    assert c2.num_verts() == c2.num_verts()
+
+
+def test_transfrom_3d():
+    c = cube(2)
+    c2 = c.transform([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]])
+    assert c2.num_verts() == c2.num_verts()
