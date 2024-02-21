@@ -194,9 +194,7 @@ def square(size: float, center: bool = False) -> Obj2d:
     return Obj2d(_m.CrossSection.square((size, size), center))
 
 
-def star(
-    num_points: int, outer_radius: float, inner_radius: float = 0.0
-) -> Obj2d:
+def star(num_points: int, outer_radius: float, inner_radius: float = 0.0) -> Obj2d:
     """
     Make a regular star of a given number of points.
 
