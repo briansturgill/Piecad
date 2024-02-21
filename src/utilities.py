@@ -147,7 +147,7 @@ def _save_svg(filename, *objs):
 
     off_x = 0 - bb[0]
     off_y = 0 - bb[1]
-    y_size = bb[3]-bb[1]
+    y_size = bb[3] - bb[1]
     for obj in objs:
         color = obj._color if obj._color != None else (128, 128, 128)
         txt.append(f'<g><path fill="rgb({color[0]},{color[1]},{color[2]})" d="')
