@@ -465,7 +465,6 @@ class Obj2d:
 
 config = {}
 config["CADViewerEnabled"] = True
-config["CADViewDoNotSendSaves"] = False
 config["CADViewerHostAndPort"] = "127.0.0.1:8037"
 config["DefaultUnits"] = "mm"
 config["LayerResolution"] = 0.1
@@ -474,15 +473,13 @@ config["DefaultSegments"] = 36
 Global Configuration Values
 
 | :--- | :--- |
-|CADViewerEnabled      | Use CADViewer if view or save is used.
-|CADViewDoNotSendSaves | Use CADViewer only with view.
+|CADViewerEnabled      | Use CADViewer if view is used.
 |CADViewerHostAndPort  | Hostname_or_Address:Port used by CADViewer
 |LayerResolution       | Resolution your output can be printed/made at.
 |                      | If you have multiple resolutions, choose the smallest one.
 
 ```python
 config["CADViewerEnabled"] = True
-config["CADViewDoNotSendSaves"] = False
 config["CADViewerHostAndPort"] = "127.0.0.1:8037"
 config["LayerResolution"] = 0.1
 ```

@@ -9,7 +9,6 @@ import queue
 import threading
 import manifold3d as _m
 import trimesh
-from typing import Union
 import inspect
 import os.path
 
@@ -21,7 +20,7 @@ def _info_str(tag):  # Must be called from inside another function.
     return str
 
 
-from . import Obj2d, Obj3d, config, _chkGO, ValidationError
+from . import Obj2d, Obj3d, config, _chkTY, _chkGE, _chkGO, ValidationError
 
 _viewer_available = config["CADViewerEnabled"]
 
@@ -59,7 +58,7 @@ def load(filename: str) -> Obj3d | Obj2d:
     return o
 
 
-def save(filename: str, obj: Union[Obj3d, Obj2d]) -> None:
+def save(filename: str, *objs: Obj3d | Obj2d) -> None:
     """
     Save a 3d or 2d object in a file suitable for printing, etc.
 
@@ -81,23 +80,38 @@ def save(filename: str, obj: Union[Obj3d, Obj2d]) -> None:
 
     For 2D, only the SVG (.svg) format is available.
     """
-    _chkGO("obj", obj)
-    if config["CADViewDoNotSendSaves"] == False and _viewer_available:
-        view(obj, f"{_info_str('save')} - {filename}")
+    _chkGE("len(objs)", len(objs), 1)
     dot_idx = filename.rindex(".")
     ext = filename[dot_idx + 1 :]
-    if type(obj) == Obj3d:
-        mesh = obj.mo.to_mesh()
-        if mesh.vert_properties.shape[1] > 3:
-            vertices = mesh.vert_properties[:, :3]
+    if type(objs[0]) == Obj3d:
+        if len(objs) == 1:
+            obj = objs[0]
+            mesh = obj.mo.to_mesh()
+            if mesh.vert_properties.shape[1] > 3:
+                vertices = mesh.vert_properties[:, :3]
+            else:
+                vertices = mesh.vert_properties
+            mesh_output = trimesh.Trimesh(vertices=vertices, faces=mesh.tri_verts)
+            if obj._color != None:
+                mesh_output.visual.vertex_colors = obj._color
+            if not mesh_output.is_watertight:
+                print("WARNING: output mesh is not watertight")
+            trimesh.exchange.export.export_mesh(mesh_output, filename, ext)
         else:
-            vertices = mesh.vert_properties
-        mesh_output = trimesh.Trimesh(vertices=vertices, faces=mesh.tri_verts)
-        if obj._color != None:
-            mesh_output.visual.vertex_colors = obj._color
-        if not mesh_output.is_watertight:
-            print("WARNING: output mesh is not watertight")
-        trimesh.exchange.export.export_mesh(mesh_output, filename, ext)
+            scene = trimesh.Scene()
+            for obj in objs:
+                mesh = obj.mo.to_mesh()
+                if mesh.vert_properties.shape[1] > 3:
+                    vertices = mesh.vert_properties[:, :3]
+                else:
+                    vertices = mesh.vert_properties
+                mesh_output = trimesh.Trimesh(vertices=vertices, faces=mesh.tri_verts)
+                if obj._color != None:
+                    mesh_output.visual.vertex_colors = obj._color
+                if not mesh_output.is_watertight:
+                    print("WARNING: output mesh is not watertight")
+                scene.add_geometry(mesh_output)
+            trimesh.exchange.export.export_scene(scene, filename, ext)
         # trimesh obj file export does not end with newline
         # currently this upsets prusa_slicer
         if ext == "obj":
@@ -106,15 +120,20 @@ def save(filename: str, obj: Union[Obj3d, Obj2d]) -> None:
     else:  # Obj2d
         if ext != "svg":
             raise (ValidationError("Only the SVG format is supported for Obj2d."))
-        _save_svg(filename, obj)
+        _save_svg(filename, *objs)
 
 
-def _save_svg(filename, obj):
+def _save_svg(filename, *objs):
     txt = []
-    bb = obj.bounding_box()
+    bb = [0.0, 0.0, 0.0, 0.0]
+    for obj in objs:
+        obb = obj.bounding_box()
+        bb[0] = min(obb[0], bb[0])
+        bb[1] = min(obb[1], bb[1])
+        bb[2] = max(obb[2], bb[2])
+        bb[3] = max(obb[3], bb[3])
     width = round(bb[2] - bb[0], 5)
     height = round(bb[3] - bb[1], 5)
-    color = obj._color if obj._color != None else (128, 128, 128)
     units = config["DefaultUnits"]
 
     txt.append('<?xml version="1.0" encoding="UTF-8"?>')
@@ -123,25 +142,27 @@ def _save_svg(filename, obj):
         '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1 Tiny//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-tiny.dtd">'
     )
     txt.append(
-        f'<svg width="{width}{units}" height="{height}{units}" viewBox="0 0 {width} {height}" fill="rgb({color[0]},{color[1]},{color[2]})" style="transform: rotate(180deg)" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd">'
+        f'<svg width="{width}{units}" height="{height}{units}" viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd">'
     )
-
-    txt.append(f'<g><path d="')
 
     off_x = 0 - bb[0]
     off_y = 0 - bb[1]
-    paths = obj.to_polygons()
-    for path in paths:
-        for i in range(len(path)):
-            vert = path[i]
-            x = round(vert[0] + off_x, 5)
-            y = round(vert[1] + off_y, 5)
-            if i == 0:
-                txt.append(f"M{x} {y}")
-            else:
-                txt.append(f"L{x} {y}")
+    y_size = bb[3]-bb[1]
+    for obj in objs:
+        color = obj._color if obj._color != None else (128, 128, 128)
+        txt.append(f'<g><path fill="rgb({color[0]},{color[1]},{color[2]})" d="')
+        paths = obj.to_polygons()
+        for path in paths:
+            for i in range(len(path)):
+                vert = path[i]
+                x = round(vert[0] + off_x, 5)
+                y = round(y_size - (vert[1] + off_y), 5)
+                if i == 0:
+                    txt.append(f"M{x} {y}")
+                else:
+                    txt.append(f"L{x} {y}")
 
-    txt.append('"/></g>\n')
+        txt.append('"/></g>\n')
 
     txt.append("</svg>")
 
@@ -153,7 +174,7 @@ _view_queue = queue.Queue()
 _view_thread = None
 
 
-def view(obj: Union[Obj3d, Obj2d], title: str = "") -> None:
+def view(obj: Obj3d | Obj2d, title: str = "") -> None:
     """
     Use CADView protocol to display the geometry object.
 
