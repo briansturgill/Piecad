@@ -195,7 +195,7 @@ def square(size: float, center: bool = False) -> Obj2d:
 
 
 def star(
-    num_points: int, outer_radius: float = 10.0, inner_radius: float = 0.0
+    num_points: int, outer_radius: float, inner_radius: float = 0.0
 ) -> Obj2d:
     """
     Make a regular star of a given number of points.
@@ -204,6 +204,9 @@ def star(
 
     Stars are created with the center at `(0,0)`.
     """
+    _chkGE("num_points", num_points, 3)
+    _chkGT("outer_radius", outer_radius, 0.0)
+    _chkGE("inner_radius", inner_radius, 0.0)
     pts = []
     deg_per_np = 360.0 / num_points
     ido = deg_per_np / 2.0  # inner_degree_offset
