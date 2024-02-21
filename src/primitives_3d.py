@@ -194,108 +194,87 @@ def extrude_chaining(
 
     <iframe width="100%" height="500" src="examples/extrude_chaining.html"></iframe>
     """
-    vertex_map = {}
     vertex_list = []
-
-    def v(a):
-        if a in vertex_map:
-            return vertex_map[a]
-        idx = len(vertex_list)
-        vertex_list.append(a)
-        vertex_map[a] = idx
-        return idx
-
     triangles = []
 
-    _chkGT("pairs length", len(pairs), 0)
+    _chkGT("pairs length", len(pairs), 1)
 
-    def add_cap(h, shape, top):
-        polys = shape.mo.to_polygons()
+    def add_cap(v_off, polys, top):
 
         if not is_convex or len(polys) != 1:
-            vl = []
-            for poly in polys:
-                for vert in poly:
-                    vl.append(vert)
             tris = _m.triangulate(polys)
             for t in tris:
-                i1, i2, i3 = t
-                x1, y1 = vl[i1]
-                x2, y2 = vl[i2]
-                x3, y3 = vl[i3]
                 if top:
-                    triangles.append(
-                        (
-                            v((x1, y1, h)),
-                            v((x2, y2, h)),
-                            v((x3, y3, h)),
-                        )
-                    )
+                    triangles.append((t[0] + v_off, t[1] + v_off, t[2] + v_off))
                 else:  # Bottom caps are reversed.
-                    triangles.append(
-                        (
-                            v((x3, y3, h)),
-                            v((x2, y2, h)),
-                            v((x1, y1, h)),
-                        )
-                    )
+                    triangles.append((t[2] + v_off, t[1] + v_off, t[0] + v_off))
         else:  # Fan triangulation
-            poly = polys[0]  # We have only one to deal with
-            n = len(poly)
-            chosen = poly[0]
+            n = len(poly)  # We have only one to deal with
+            chosen = 0
             for i in range(1, n - 1):
-                cur = poly[i]
-                next = poly[i + 1]
+                cur = i
+                next = i + 1
                 if top:
-                    triangles.append(
-                        (
-                            v((chosen[0], chosen[1], h)),
-                            v((cur[0], cur[1], h)),
-                            v((next[0], next[1], h)),
-                        )
-                    )
+                    triangles.append((chosen + v_off, cur + v_off, next + v_off))
                 else:  # Bottom caps are clockwise.
-                    triangles.append(
-                        (
-                            v((next[0], next[1], h)),
-                            v((cur[0], cur[1], h)),
-                            v((chosen[0], chosen[1], h)),
-                        )
-                    )
+                    triangles.append((next + v_off, cur + v_off, chosen + v_off))
 
-    cur_z = pairs[0][0]
-    add_cap(cur_z, pairs[0][1], top=False)
+    v_offs = []
+    v_offs.append(0)
+    cs_polys = []
+    for h, cs in pairs:
+        polys = cs.to_polygons()
+        cs_polys.append(polys)
+        for poly in polys:
+            for vert in poly:
+                vertex_list.append((vert[0], vert[1], h))
+        v_offs.append(len(vertex_list))
+    v_offs.pop()
+
+    prev_polys = cs_polys[0]
+    prev_vo = 0
+    add_cap(prev_vo, prev_polys, top=False)
     last = len(pairs)
-    prev = pairs[0][1]
-    prev_z = cur_z
     cur_idx = 1
 
     while cur_idx < last:
-        cur = pairs[cur_idx][1]
-        cur_z = pairs[cur_idx][0]
+        cur_polys = cs_polys[cur_idx]
+        cur_vo = v_offs[cur_idx]
 
-        prev_polys = prev.mo.to_polygons()
-        cur_polys = cur.mo.to_polygons()
+        if len(cur_polys) != len(prev_polys):
+            raise ValidationError(
+                f"At pairs index: {cur_idx}, previous shape does not match current shape"
+            )
 
-        for i in range(0, len(cur.mo.to_polygons())):
+        for i in range(0, len(cur_polys)):
             b = prev_polys[i]
             t = cur_polys[i]
-            bottom_p = v((b[0][0], b[0][1], prev_z))
-            top_p = v((t[0][0], t[0][1], cur_z))
 
+            if len(b) != len(t):
+                raise ValidationError(
+                    f"At pairs index: {cur_idx}, poly: {i}, previous shape does not match current shape"
+                )
+
+            bottom_p = 0 + prev_vo
+            top_p = 0 + cur_vo
             _len = len(b)
-            for i in range(0, _len):
-                next_bottom_p = v((b[(i + 1) % _len][0], b[(i + 1) % _len][1], prev_z))
-                next_top_p = v((t[(i + 1) % _len][0], t[(i + 1) % _len][1], cur_z))
+
+            for j in range(0, _len):
+                next_bottom_p = ((j + 1) % _len) + prev_vo
+                next_top_p = ((j + 1) % _len) + cur_vo
                 triangles.append((bottom_p, next_bottom_p, next_top_p))
                 triangles.append((bottom_p, next_top_p, top_p))
                 bottom_p = next_bottom_p
                 top_p = next_top_p
-        prev = cur
-        prev_z = cur_z
+
+            prev_vo = cur_vo
+            cur_vo += _len
+
+        prev_polys = cur_polys
+        prev_vo = v_offs[cur_idx]
         cur_idx += 1
 
-    add_cap(cur_z, cur, top=True)
+    add_cap(prev_vo, prev_polys, top=True)
 
     vertex_list = _np.array(vertex_list, _np.float32)
     triangles = _np.array(triangles, _np.uint32)
