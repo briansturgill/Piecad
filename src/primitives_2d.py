@@ -5,7 +5,11 @@
 import manifold3d as _m
 
 
-from . import Obj2d, config, _chkGT, _chkGE, _chkV2, cos, sin
+from . import Obj2d, config, _chkGT, _chkGE, _chkV2, cos, sin, ValidationError
+
+from ._poly_point_isect import (
+    isect_segments_include_segments as _isect_segments_include_segments,
+)
 
 
 _unit_circles = {}
@@ -58,15 +62,51 @@ def ellipse(radii: list[float, float], segments: int = -1) -> Obj2d:
 import numpy as _np
 
 
-def polygon(paths: list[list[float, float]]) -> Obj2d:
+def polygon(paths: list[list[tuple[float, float]]], check=True) -> Obj2d:
     """
     Create a polygon from a single or multiple closed paths of points.
 
-    Paths must be wound CCW for contours (solid parts).
-    Or be wound CW for holes.
+    Polygons follow the even/odd fill rule, meaning:
+    * You can have multiple outer shapes.
+    * Outer shapes can have holes.
+    * Holes can have inner shapes.
+    * And so on.
 
-    All paths (contrours and holes) must not intersect.
+    Holes can only occur inside a shape.
+    A shape is either and outer shape or is inside a hole.
+
+    Inside means fully contained inside. No intersections are allowed.
+
+    By default, we check for self-intersection.
+    It is an expensive check, if you are confident you will have
+    no self intersectons, set `check` to `False`.
+
+    Be aware that if you set `check` to `False` that the underlying Clipper2
+    library will attempt to "repair" any self-intersections.
+    The "repair" is likely to cause a failed 3D print.
+
+    All paths (shapes and holes) must not intersect.
+
+    <iframe width="100%" height="280" src="examples/polygon.html"></iframe>
     """
+    if check:
+        segments = []
+        for path in paths:
+            n = len(path)
+            for i in range(0, n):
+                segments.append((path[i], path[(i + 1) % n]))
+
+        isects = _isect_segments_include_segments(segments)
+
+        if len(isects) > 0:
+            txt = []
+            txt.append("ERROR: your polygon path(s) have self-intersection(s).\n")
+            txt.append(
+                "Intersections format: (Intersection_point, [(Segment1), (Segment2)])\n"
+            )
+            for isect in isects:
+                txt.append(repr(isect) + "\n")
+            raise ValidationError("".join(txt))
 
     return Obj2d(_m.CrossSection(paths, _m.FillRule.EvenOdd))
 
