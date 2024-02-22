@@ -221,24 +221,24 @@ def extrude_chaining(
 
     v_offs = []
     v_offs.append(0)
-    cs_polys = []
-    for h, cs in pairs:
-        polys = cs.to_paths()
-        cs_polys.append(polys)
+    o2d_polys = []
+    for h, o2d in pairs:
+        polys = o2d.to_paths()
+        o2d_polys.append(polys)
         for poly in polys:
             for vert in poly:
                 vertex_list.append((vert[0], vert[1], h))
         v_offs.append(len(vertex_list))
     v_offs.pop()
 
-    prev_polys = cs_polys[0]
+    prev_polys = o2d_polys[0]
     prev_vo = 0
     add_cap(prev_vo, prev_polys, top=False)
     last = len(pairs)
     cur_idx = 1
 
     while cur_idx < last:
-        cur_polys = cs_polys[cur_idx]
+        cur_polys = o2d_polys[cur_idx]
         cur_vo = v_offs[cur_idx]
 
         if len(cur_polys) != len(prev_polys):
