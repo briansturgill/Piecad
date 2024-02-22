@@ -1,1 +1,1 @@
-out = project_box((45, 30, 20))
+out = project_box((45, 30, 20), rounding_radius=4.0, segments=48)

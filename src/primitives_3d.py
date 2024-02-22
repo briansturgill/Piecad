@@ -387,7 +387,11 @@ def polyhedron(
 
 
 def project_box(
-    size: list[float, float, float], rounding_radius: float = 2.0, segments: int = -1
+    size: list[float, float, float],
+    rounding_radius: float = 2.0,
+    segments: int = -1,
+    wall: float = 2.0,
+    bottom: str = "bevel",
 ) -> Obj3d:
     """
     Make a project box with the x, y, and z values given in size.
@@ -396,11 +400,23 @@ def project_box(
 
     The INSIDE of the box will be placed at `(0, 0, 0)`.
 
-    The `rounding_radius` determines the fillet size.
+    The `rounding_radius` determines the rounding size.
 
     For ``segments`` see the documentation of ``set_default_segments``.
     The segments value applies only to the segments in the rounded_rectangles that make up the box.
     Layer segments are determined by `config["LayerResolution"]`.
+
+    By default (`bottom` is `"bevel"`), the box has a beveled (also called chamfered) bottom edge.
+    Parameter `rounded_radius` will only be used in the x and y axes.
+    This 3d prints better than a rounded edge.
+
+    If `bottom` is `"round"` then a circular bottome edge is used.
+    Parameter `rounded_radius` will only be used in the x, y and z axes, giving spherical corners.
+    Note that in 3d printing rounded bottoms tend to not print well.
+    One should consider printing with supports.
+
+    If `bottom` is `"flat"` then a flat bottom of height `wall` is used.
+    Parameter `rounded_radius` will only be used in the x and y axes.
 
     <iframe width="100%" height="220" src="examples/project_box.html"></iframe>
     """
@@ -409,6 +425,9 @@ def project_box(
     _chkGE("segments", segments, 3)
     _chkV3("size", size)
     _chkGE("rounding_radius", rounding_radius, 2.0)
+    _chkGE("wall", wall, 2.0)
+    if wall > rounding_radius:
+        raise ValidationError("Parameter wall must be <= rounding_radius.")
 
     l = []
     rr = rounding_radius
@@ -416,40 +435,75 @@ def project_box(
     arc_segs = rr / res
     deg_per_arc_seg = 90.0 / arc_segs
     deg = 0.0
+    iota = rounding_radius - wall
     ix, iy, iz = size
+    ix -= iota * 2
+    iy -= iota * 2
     ox, oy, oz = size
-    ox += rr * 2
-    oy += rr * 2
-    smallest_rr = rr + sin(deg_per_arc_seg) / 2.0
-    l.append((-rr, rounded_rectangle((ix, iy), smallest_rr, segments)))
-    deg += deg_per_arc_seg
-    while deg < 90.0:
-        delta = rr * sin(deg)
-        cur_z = -rr * cos(deg)
+    ox += wall * 2
+    oy += wall * 2
+
+    if bottom != "flat":
+        cur_z = -rr
+        smallest_rr = rr + sin(deg_per_arc_seg) / 2.0
+        l.append(
+            (
+                -rr,
+                rounded_rectangle((ix, iy), smallest_rr, segments).translate(
+                    (iota, iota)
+                ),
+            )
+        )
+    else:
+        cur_z = -wall
         l.append(
             (
                 cur_z,
-                rounded_rectangle(
-                    (ix + 2 * delta, iy + 2 * delta), rr + delta, segments
-                ).translate((-delta, -delta)),
+                rounded_rectangle((ox, oy), wall + rr, segments).translate(
+                    (-rr + iota, -rr + iota)
+                ),
             )
         )
+
+    if bottom == "round":
         deg += deg_per_arc_seg
+        while deg < 90.0:
+            delta = rr * sin(deg)
+            cur_z = -rr * cos(deg)
+            l.append(
+                (
+                    cur_z,
+                    rounded_rectangle(
+                        (ix + 2 * delta, iy + 2 * delta), rr + delta - iota, segments
+                    ).translate((-delta + iota, -delta + iota)),
+                )
+            )
+            deg += deg_per_arc_seg
 
     cur_z = 0.0
     l.append(
-        (cur_z, rounded_rectangle((ox, oy), rr + rr, segments).translate((-rr, -rr)))
+        (
+            cur_z,
+            rounded_rectangle((ox, oy), wall + rr, segments).translate(
+                (-rr + iota, -rr + iota)
+            ),
+        )
     )
 
     cur_z = oz
     l.append(
-        (cur_z, rounded_rectangle((ox, oy), rr + rr, segments).translate((-rr, -rr)))
+        (
+            cur_z,
+            rounded_rectangle((ox, oy), wall + rr, segments).translate(
+                (-rr + iota, -rr + iota)
+            ),
+        )
     )
 
     o = extrude_chaining(l, is_convex=True)
-    io = rounded_rectangle((ix, iy), rr, segments).extrude(iz)
+    x, y, z = size
+    io = rounded_rectangle((x, y), rr, segments).extrude(z)
     return difference(o, io)
-    return o
 
 
 def pyramid(height: int, num_sides: int, radius: float) -> Obj3d:

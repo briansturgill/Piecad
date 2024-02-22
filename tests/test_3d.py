@@ -44,8 +44,8 @@ def _cuboid(s, c=False):
     return c
 
 
-def _project_box(s, rr, segs):
-    c = project_box(s, rr, segs)
+def _project_box(s, rr, segs, w, bottom):
+    c = project_box(s, rr, segs, w, bottom)
     c.num_verts()
     return c
 
@@ -146,12 +146,31 @@ def test_rounded_cuboid_centered(benchmark):
     assert c.bounding_box() == (-7.5, -5, -18, 7.5, 5, 18)
 
 
-def test_project_box(benchmark):
+def test_project_box_flat(benchmark):
     radius = 3.0
+    wall = 2.0
     segs = 100
-    c = benchmark(_project_box, (15, 10, 36), radius, 100)
+    c = benchmark(_project_box, (15, 10, 36), radius, 100, wall, bottom="flat")
+    assert c.num_verts() == 416
+    assert c.bounding_box() == (-wall, -wall, -wall, 15 + wall, 10 + wall, 36)
+
+
+def test_project_box_beveled(benchmark):
+    radius = 3.0
+    wall = 2.0
+    segs = 100
+    c = benchmark(_project_box, (15, 10, 36), radius, 100, wall, bottom="bevel")
+    assert c.num_verts() == 520
+    assert c.bounding_box() == (-wall, -wall, -radius, 15 + wall, 10 + wall, 36)
+
+
+def test_project_box_rounded(benchmark):
+    radius = 3.0
+    wall = 2.0
+    segs = 100
+    c = benchmark(_project_box, (15, 10, 36), radius, 100, wall, bottom="round")
     assert c.num_verts() == 3536
-    assert c.bounding_box() == (-radius, -radius, -radius, 15 + radius, 10 + radius, 36)
+    assert c.bounding_box() == (-wall, -wall, -radius, 15 + wall, 10 + wall, 36)
 
 
 def test_rounded_cylinder_100(benchmark):
