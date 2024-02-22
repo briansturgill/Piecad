@@ -151,7 +151,7 @@ def _save_svg(filename, *objs):
     for obj in objs:
         color = obj._color if obj._color != None else (128, 128, 128)
         txt.append(f'<g><path fill="rgb({color[0]},{color[1]},{color[2]})" d="')
-        paths = obj.to_polygons()
+        paths = obj.to_paths()
         for path in paths:
             for i in range(len(path)):
                 vert = path[i]

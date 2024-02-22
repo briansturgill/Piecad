@@ -1,6 +1,3 @@
-from __future__ import annotations
-import manifold3d as _m
-
 """
 "Easy as Pie" CAD (Piecad)
 
@@ -11,16 +8,22 @@ but the functional language it uses was often a hinderance and its speed
 was poor.
 
 Piecad is based on [Manifold](https://github.com/elalish/manifold).
-Manifold incorporates [Clipper2](https://github.com/AngusJohnson/Clipper2)
-for 2D objects. It also uses
-[`quickhull`](https://github.com/akuukka/quickhull) for 3d convex hulls.
+Manifold incorporates [Clipper2](https://github.com/AngusJohnson/Clipper2) for 2D objects.
+It also uses [`quickhull`](https://github.com/akuukka/quickhull) for 3d convex hulls.
+You can see Manifold's web site for other packages that are used.
+
+Piecad also uses [isect_segments-bentley_ottmann](https://github.com/ideasman42/isect_segments-bentley_ottmann)
+to check for polygon self intersections.
 
 """
+
+from __future__ import annotations
+import manifold3d as _m
 
 
 def version():
     "Piecad version"
-    return "0.2.0"
+    return "0.8.0"
 
 
 class Obj3d:
@@ -31,7 +34,9 @@ class Obj3d:
         mo The Manifold::Manifold object used by manifold3d.
     """
 
-    def __init__(self, o: object, color=None):
+    def __init__(self, o: object = None, color=None):
+        if o == None:
+            o = _m.Manifold()
         self.mo = o
         self._color = color
 
@@ -280,7 +285,9 @@ class Obj2d:
         mo The Manifold::CrossSection object used by manifold3d.
     """
 
-    def __init__(self, o: object, color=None):
+    def __init__(self, o: object = None, color=None):
+        if o == None:
+            o = _m.CrossSection()
         self.mo = o
         self._color = color
 
@@ -473,7 +480,7 @@ class Obj2d:
         _chkV2("factors", factors)
         return Obj2d(self.mo.scale(factors), color=self._color)
 
-    def to_polygons(self) -> list[list[float, float]]:
+    def to_paths(self) -> list[list[float, float]]:
         """
         Return a lists of paths, each of which is a list of vertices that make up this object.
         """

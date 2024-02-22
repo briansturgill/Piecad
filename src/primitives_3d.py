@@ -223,7 +223,7 @@ def extrude_chaining(
     v_offs.append(0)
     cs_polys = []
     for h, cs in pairs:
-        polys = cs.to_polygons()
+        polys = cs.to_paths()
         cs_polys.append(polys)
         for poly in polys:
             for vert in poly:
