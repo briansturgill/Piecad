@@ -161,7 +161,7 @@ def test_project_box_beveled(benchmark):
     segs = 100
     c = benchmark(_project_box, (15, 10, 36), radius, 100, wall, bottom="bevel")
     assert c.num_verts() == 520
-    assert c.bounding_box() == (-wall, -wall, -radius, 15 + wall, 10 + wall, 36)
+    assert c.bounding_box() == (-wall, -wall, -wall, 15 + wall, 10 + wall, 36)
 
 
 def test_project_box_rounded(benchmark):

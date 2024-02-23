@@ -442,8 +442,9 @@ def project_box(
     ox, oy, oz = size
     ox += wall * 2
     oy += wall * 2
+    x, y, z = size
 
-    if bottom != "flat":
+    if bottom == "round":
         cur_z = -rr
         smallest_rr = rr + sin(deg_per_arc_seg) / 2.0
         l.append(
@@ -454,6 +455,9 @@ def project_box(
                 ),
             )
         )
+    elif bottom == "bevel":
+        cur_z = -wall
+        l.append((cur_z, rounded_rectangle((x, y), rr, segments)))
     else:
         cur_z = -wall
         l.append(
@@ -501,7 +505,6 @@ def project_box(
     )
 
     o = extrude_chaining(l, is_convex=True)
-    x, y, z = size
     io = rounded_rectangle((x, y), rr, segments).extrude(z)
     return difference(o, io)
 
