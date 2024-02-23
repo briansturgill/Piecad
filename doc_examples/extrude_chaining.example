@@ -4,7 +4,7 @@ def sphere_from_chaining(radius, segs):
     l = []
     l.append((-radius, circle(0.3, segs)))
     h_sum = -radius
-    for i in range(1, segs-1):
+    for i in range(1, segs - 1):
         factor = sin(i * deg_per_seg)
         r = radius * factor
         h = hs * factor
@@ -14,4 +14,6 @@ def sphere_from_chaining(radius, segs):
 
     s = extrude_chaining(l, is_convex=True)
     return s
+
+
 out = sphere_from_chaining(10, 60)

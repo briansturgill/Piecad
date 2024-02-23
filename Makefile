@@ -1,6 +1,9 @@
 
-all: test
-	black piecad/*.py tests/*.py
+all: test docs
+
+docs:
+	black piecad/*.py tests/*.py doc_examples/*.example
+	rm -rf html/piecad
 	pdoc3 --html piecad --force
 	(cd doc_examples; ./mk_doc_examples)
 

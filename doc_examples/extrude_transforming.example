@@ -1,5 +1,4 @@
 o2 = difference(
-    rounded_rectangle([10, 9], 2),
-		rounded_rectangle([8, 7], 1).translate([1, 1])).translate((-5, -4))
-out = extrude_transforming(
-    o2, 16, num_twist_divisions=100, twist=180, scale=(2, 2))
+    rounded_rectangle([10, 9], 2), rounded_rectangle([8, 7], 1).translate([1, 1])
+).translate((-5, -4))
+out = extrude_transforming(o2, 16, num_twist_divisions=100, twist=180, scale=(2, 2))
