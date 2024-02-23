@@ -7,6 +7,9 @@ fi
 if [ ! -d $examples ]; then
 	mkdir $examples
 fi
+if [ ! -L tmp/piecad ]; then
+	ln -s ../../piecad tmp/piecad
+fi
 for f in *.example; do
 	echo $f
 	python process_example.py $f
@@ -14,7 +17,7 @@ for f in *.example; do
 		exit $?
 	fi
 done
-
 mv tmp/*.glb $models
 mv tmp/*.html $examples
 rm tmp/*.py
+rm tmp/piecad

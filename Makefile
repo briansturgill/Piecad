@@ -1,6 +1,6 @@
 
 all: test
-	black src/*.py tests/*.py
+	black piecad/*.py tests/*.py
 	pdoc3 --html piecad --force
 	(cd doc_examples; ./mk_doc_examples)
 

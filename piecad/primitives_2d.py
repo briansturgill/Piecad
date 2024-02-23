@@ -70,22 +70,27 @@ def polygon(paths: list[list[tuple[float, float]]], check=True) -> Obj2d:
     * You can have multiple outer shapes.
     * Outer shapes can have holes.
     * Holes can have inner shapes.
+    * Inner shapes can have holes
     * And so on.
 
     Holes can only occur inside a shape.
-    A shape is either and outer shape or is inside a hole.
+    A shape is either an outer shape or is inside a hole.
 
     Inside means fully contained inside. No intersections are allowed.
 
     By default, we check for self-intersection.
     It is an expensive check, if you are confident you will have
-    no self intersectons, set `check` to `False`.
+    no self-intersectons, set `check` to `False`.
 
     Be aware that if you set `check` to `False` that the underlying Clipper2
     library will attempt to "repair" any self-intersections.
-    The "repair" is likely to cause a failed 3D print.
+    The "repair" is likely to cause a failed 3d print.
+    (The "repair" is to emit two paths that overlap in one point, but
+    are separate closed paths. These will get treated as two different objects
+    that will be much too close together for 3d printing purposes.)
 
-    All paths (shapes and holes) must not intersect.
+    If you understand winding, shapes are CCW, holes are CW.
+    But Clipper2 automatically straightens it out for you.
 
     <iframe width="100%" height="280" src="examples/polygon.html"></iframe>
     """

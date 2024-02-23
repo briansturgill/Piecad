@@ -8,6 +8,16 @@ authors = [{name = "Brian Sturgill", email = "codersnext@gmail.com"}]
 license = {file = "LICENSE"}
 classifiers = ["License :: OSI Approved :: MIT License"]
 dynamic = ["version", "description"]
+dependencies = [
+    "trimesh >= 1.26.4",
+]
 
 [project.urls]
 Home = "https://github.com/briansturgill/Piecad"
+
+[tool.flit.sdist]
+include = ["html"]
+exclude = [".benchmarks", "isect_segments-bentley_ottmann"]
+
+[tool.pytest.ini_options]
+pythonpath = [ "../piecad" ]

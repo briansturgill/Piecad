@@ -22,6 +22,7 @@ import manifold3d as _m
 
 __version__ = "0.8.0"
 
+
 def version():
     "Piecad version"
     return __version__

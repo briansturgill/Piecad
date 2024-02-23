@@ -1,0 +1,4 @@
+To see documentation:
+  cd html/piecad
+  python -m http.server &
+  Open browser to http://localhost:8000
