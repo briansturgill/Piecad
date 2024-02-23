@@ -20,10 +20,11 @@ to check for polygon self intersections.
 from __future__ import annotations
 import manifold3d as _m
 
+__version__ = "0.8.0"
 
 def version():
     "Piecad version"
-    return "0.8.0"
+    return __version__
 
 
 class Obj3d:
