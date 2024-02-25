@@ -13,6 +13,7 @@ from . import (
     circle,
     ellipse,
     rounded_rectangle,
+    semicircle,
     cos,
     sin,
     ValidationError,
@@ -223,6 +224,10 @@ def extrude_chaining(
     v_offs.append(0)
     o2d_polys = []
     for h, o2d in pairs:
+        if o2d.is_empty():
+            raise ValidationError(
+                f"At pairs index: {cur_idx}, empty shape is not allowed"
+            )
         polys = o2d.to_paths()
         o2d_polys.append(polys)
         for poly in polys:
@@ -671,7 +676,7 @@ def sphere(radius: float, segments: int = -1):
     _chkGE("radius", radius, 0)
     _chkGE("segments", segments, 3)
 
-    circ = circle(radius, 2 * segments).piecut(90, 270)
+    circ = semicircle(radius, 270, 90, segments)
 
     return revolve(circ, segments=segments)
 
