@@ -80,6 +80,7 @@ _quickTan[360] = 0
 
 def cos(angleInDegrees):
     "Cosine of angle in degrees."
+    angleInDegrees = angleInDegrees % 360.0
     if angleInDegrees in _quickCos:
         return _quickCos[angleInDegrees]
     return _math.cos(deg_to_rad(angleInDegrees))
@@ -87,6 +88,7 @@ def cos(angleInDegrees):
 
 def sin(angleInDegrees):
     "Sine of angle in degrees."
+    angleInDegrees = angleInDegrees % 360.0
     if angleInDegrees in _quickSin:
         return _quickSin[angleInDegrees]
     return _math.sin(deg_to_rad(angleInDegrees))
@@ -94,6 +96,7 @@ def sin(angleInDegrees):
 
 def tan(angleInDegrees):
     "Tangent of angle in degrees."
+    angleInDegrees = angleInDegrees % 360.0
     if angleInDegrees in _quickTan:
         return _quickTan[angleInDegrees]
     return _math.tan(deg_to_rad(angleInDegrees))
