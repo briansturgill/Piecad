@@ -224,9 +224,7 @@ def rounded_rectangle(
     # return Obj2d(_m.CrossSection([pts], _m.FillRule.EvenOdd))
 
 
-def semicircle(
-    radius: float, start_angle: float = 0.0, end_angle: float = 90.0, segments: int = -1
-) -> Obj2d:
+def semicircle(radius: float, start_angle:float = 0.0, end_angle: float = 90.0, segments: int = -1) -> Obj2d:
     """
     Make a semicircle of a given radius between the given angles.
 
@@ -242,16 +240,16 @@ def semicircle(
     if end_angle < start_angle:
         end_angle = end_angle + 360.0
     degs_per_arc = 360.0 - (end_angle - start_angle)
-    segs_per_arc = int(segments // (360.0 / degs_per_arc))
+    segs_per_arc = int(segments // (360.0 / degs_per_arc)) + 2
     degs_per_seg = degs_per_arc / segs_per_arc
 
     pts = []
-    pts.append((radius * cos(start_angle), radius * sin(start_angle)))
+    pts.append((radius*cos(start_angle), radius*sin(start_angle)))
     deg = start_angle
-    for i in range(1, segs_per_arc):
+    for i in range(0, segs_per_arc-1):
         deg += degs_per_seg
-        pts.append((radius * cos(deg), radius * sin(deg)))
-    pts.append((radius * cos(end_angle), radius * sin(end_angle)))
+        pts.append((radius*cos(deg), radius*sin(deg)))
+    pts.append((radius*cos(end_angle), radius*sin(end_angle)))
 
     return Obj2d(_m.CrossSection([pts]))
 

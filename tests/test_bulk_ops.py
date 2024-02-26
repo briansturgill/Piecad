@@ -35,7 +35,7 @@ def test_difference_3d(benchmark):
     c2 = sphere(10, 36).translate((5, 0, 0))
     c2.num_verts()
     o = benchmark(_difference, c1, c2)
-    assert o.num_verts() == 666
+    assert o.num_verts() == 750
 
 
 def test_intersect_2d(benchmark):
@@ -53,7 +53,7 @@ def test_intersect_3d(benchmark):
     c2 = sphere(10, 36).translate((5, 0, 0))
     c2.num_verts()
     o = benchmark(_intersect, c1, c2)
-    assert o.num_verts() == 458
+    assert o.num_verts() == 512
 
 
 def test_union_2d(benchmark):
@@ -71,7 +71,7 @@ def test_union_3d(benchmark):
     c2 = sphere(10, 36).translate((5, 0, 0))
     c2.num_verts()
     o = benchmark(_union, c1, c2)
-    assert o.num_verts() == 879
+    assert o.num_verts() == 994
 
 
 def test_compose_decompose2d():
