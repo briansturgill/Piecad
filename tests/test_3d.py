@@ -215,8 +215,8 @@ def test_sphere(benchmark):
 
 
 def test_geodesic_sphere(benchmark):
-    c = benchmark(_geodesic_sphere, 10, 360 // 3)
-    assert c.num_verts() == 3602
+    c = benchmark(_geodesic_sphere, 10, 360 // 4)
+    assert c.num_verts() == 2118
     assert c.bounding_box() == (-10, -10, -10, 10, 10, 10)
 
 
