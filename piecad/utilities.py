@@ -20,7 +20,7 @@ def _info_str(tag):  # Must be called from inside another function.
     return str
 
 
-from . import Obj2d, Obj3d, config, _chkTY, _chkGE, _chkGO, ValidationError
+from . import Obj2d, Obj3d, config, _chkGE, _chkGO, ValidationError
 
 _viewer_available = config["CADViewerEnabled"]
 

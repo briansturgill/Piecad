@@ -22,7 +22,7 @@ def compose(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
     ty = type(objs[0])
     _chkGOTY("objs", ty)
     if len(objs) == 0:
-        return _m.CrossSection() if ty == Obj2d else _m.Manifold()
+        return Obj2d(_m.CrossSection()) if ty == Obj2d else Obj3d(_m.Manifold())
     for o in objs:
         if type(o) != ty:
             raise ValidationError("Mixed types in parameter: objs.")
@@ -49,7 +49,7 @@ def difference(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
     ty = type(objs[0])
     _chkGOTY("objs", ty)
     if len(objs) == 0:
-        return _m.CrossSection() if ty == Obj2d else _m.Manifold()
+        return Obj2d(_m.CrossSection()) if ty == Obj2d else Obj3d(_m.Manifold())
     for o in objs:
         if type(o) != ty:
             raise ValidationError("Mixed types in parameter: objs.")
@@ -83,7 +83,7 @@ def hull(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
     ty = type(objs[0])
     _chkGOTY("objs", ty)
     if len(objs) == 0:
-        return _m.CrossSection() if ty == Obj2d else _m.Manifold()
+        return Obj2d(_m.CrossSection()) if ty == Obj2d else Obj3d(_m.Manifold())
     for o in objs:
         if type(o) != ty:
             raise ValidationError("Mixed types in parameter: objs.")
@@ -112,7 +112,7 @@ def intersect(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
     ty = type(objs[0])
     _chkGOTY("objs", ty)
     if len(objs) == 0:
-        return _m.CrossSection() if ty == Obj2d else _m.Manifold()
+        return Obj2d(_m.CrossSection()) if ty == Obj2d else Obj3d(_m.Manifold())
     for o in objs:
         if type(o) != ty:
             raise ValidationError("Mixed types in parameter: objs.")
@@ -141,7 +141,7 @@ def union(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
     ty = type(objs[0])
     _chkGOTY("objs", ty)
     if len(objs) == 0:
-        return _m.CrossSection() if ty == Obj2d else _m.Manifold()
+        return Obj2d(_m.CrossSection()) if ty == Obj2d else Obj3d(_m.Manifold())
     for o in objs:
         if type(o) != ty:
             raise ValidationError("Mixed types in parameter: objs.")
