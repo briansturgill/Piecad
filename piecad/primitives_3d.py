@@ -13,7 +13,6 @@ from . import (
     circle,
     ellipse,
     rounded_rectangle,
-    semicircle,
     cos,
     sin,
     ValidationError,
@@ -676,7 +675,7 @@ def sphere(radius: float, segments: int = -1):
     _chkGE("radius", radius, 0)
     _chkGE("segments", segments, 3)
 
-    circ = semicircle(radius, 270, 90, 2 * segments)
+    circ = circle(radius, 2 * segments).piecut(90, 270)
 
     return revolve(circ, segments=segments)
 
