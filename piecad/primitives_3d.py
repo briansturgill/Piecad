@@ -676,7 +676,7 @@ def sphere(radius: float, segments: int = -1):
     _chkGE("radius", radius, 0)
     _chkGE("segments", segments, 3)
 
-    circ = semicircle(radius, 270, 90, segments)
+    circ = semicircle(radius, 270, 90, 2 * segments)
 
     return revolve(circ, segments=segments)
 

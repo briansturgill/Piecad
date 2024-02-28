@@ -62,7 +62,7 @@ def ellipse(radii: list[float, float], segments: int = -1) -> Obj2d:
 import numpy as _np
 
 
-def polygon(paths: list[list[tuple[float, float]]], check=True) -> Obj2d:
+def polygon(paths: list[list[tuple[float, float]]], check: bool = True) -> Obj2d:
     """
     Create a polygon from a single or multiple closed paths of points.
 
@@ -78,15 +78,17 @@ def polygon(paths: list[list[tuple[float, float]]], check=True) -> Obj2d:
 
     Inside means fully contained inside. No intersections are allowed.
 
-    By default, we check for self-intersection.
-    It is an expensive check, if you are confident you will have
-    no self-intersectons, set `check` to `False`.
+    By default we check if Clipper2 found a self-intersection.
+    If it has, we issue a diagnostic message.
+    The check takes about 40% more time, so in a heavily used
+    situation, where you are absolutely sure you're not self-intersectiong,
+    you can set `check` to 'False`.
 
     Be aware that if you set `check` to `False` that the underlying Clipper2
     library will attempt to "repair" any self-intersections.
     The "repair" is likely to cause a failed 3d print.
     (The "repair" is to emit two paths that overlap in one point, but
-    are separate closed paths. These will get treated as two different objects
+    are separate closed paths. These may get treated as two different objects
     that will be much too close together for 3d printing purposes.)
 
     If you understand winding, shapes are CCW, holes are CW.
@@ -94,7 +96,9 @@ def polygon(paths: list[list[tuple[float, float]]], check=True) -> Obj2d:
 
     <iframe width="100%" height="280" src="examples/polygon.html"></iframe>
     """
-    if check:
+
+    obj = Obj2d(_m.CrossSection(paths, _m.FillRule.EvenOdd))
+    if check and len(obj.to_paths()) != len(paths):
         segments = []
         for path in paths:
             n = len(path)
@@ -112,8 +116,7 @@ def polygon(paths: list[list[tuple[float, float]]], check=True) -> Obj2d:
             for isect in isects:
                 txt.append(repr(isect) + "\n")
             raise ValidationError("".join(txt))
-
-    return Obj2d(_m.CrossSection(paths, _m.FillRule.EvenOdd))
+    return obj
 
 
 def rectangle(size: list[float, float], center: bool = False) -> Obj2d:
@@ -248,7 +251,7 @@ def semicircle(
     pts = []
     pts.append((radius * cos(start_angle), radius * sin(start_angle)))
     deg = start_angle
-    for i in range(0, segs_per_arc - 1):
+    for i in range(1, segs_per_arc - 1):
         deg += degs_per_seg
         pts.append((radius * cos(deg), radius * sin(deg)))
     pts.append((radius * cos(end_angle), radius * sin(end_angle)))

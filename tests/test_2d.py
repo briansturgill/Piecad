@@ -166,7 +166,7 @@ def test_polygon(benchmark):
     c = benchmark(_polygon, [pts])
 
 
-def test_polygon_check_False(benchmark):
+def test_polygon_no_check(benchmark):
     c = benchmark(_polygon, [pts], False)
 
 
