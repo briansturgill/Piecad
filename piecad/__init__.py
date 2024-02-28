@@ -162,31 +162,46 @@ class Obj3d:
         """
         return self.mo.num_vert()
 
-    def piecut(self, start_angle=0, end_angle=90) -> Obj3d:
+    def piecut(
+        self, start_angle=0, end_angle=90, both=False
+    ) -> Obj3d | tuple[Obj3d, Obj3d]:
         """
         Cut a wedge out of this object.
 
         It returns a copy of this object minus the wedge.
 
+        Or if `both` is `True` it returns a tuple of the object minus the wedge and the object intersected with the wedge.
+
         """
         if end_angle < start_angle:
             end_angle = end_angle + 360.0
+        if end_angle - start_angle >= 360.0:
+            raise ValidationError(
+                "Parameters start_angle and end_angle must be less than 360 degrees apart."
+            )
         x1, y1, z1, x2, y2, z2 = self.bounding_box()
         c_x = (x2 + x1) / 2.0
         c_y = (y2 + y1) / 2.0
         c_z = (z2 + z1) / 2.0
-        rad = max(z2 - z1, x2 - x1, y2 - y1)  # Actually 2*rad which is good
+        rad = max(z2 - z1, x2 - x1, y2 - y1) * 4
         h = z2 - z1
         pts = []
-        pts.append((rad * cos(start_angle), rad * sin(start_angle)))
+        if end_angle - start_angle != 180.0:
+            pts.append((c_x, c_y))
+        pts.append((rad * cos(start_angle) + c_x, rad * sin(start_angle) + c_y))
         ang = 90 + start_angle
         while ang < end_angle:
-            pts.append((rad * cos(ang), rad * sin(ang)))
+            pts.append((rad * cos(ang) + c_x, rad * sin(ang) + c_y))
             ang = ang + 90
-        pts.append((rad * cos(end_angle), rad * sin(end_angle)))
+        pts.append((rad * cos(end_angle) + c_x, rad * sin(end_angle) + c_y))
         cutter = Obj3d(_m.Manifold.extrude(_m.CrossSection([pts]), h)).translate(
-            [c_x, c_y, c_z - (h / 2)]
+            (0, 0, z1)
         )
+        if both:
+            o1, o2 = self.split(cutter)
+            o1._color = self._color
+            o2._color = self._color
+            return (o1, o2)
         o3 = difference(self, cutter)
         o3._color = self._color
         return o3
@@ -197,24 +212,6 @@ class Obj3d:
 
         """
         return Obj2d(self.mo.project(), color=self._color)
-
-    def slice(self, height: float) -> Obj2d:
-        """
-        Like `project`, but a the given height.
-
-        """
-        return Obj2d(self.mo.slice(height), color=self._color)
-
-    def split(self, cutter: Obj3d) -> Obj3d:
-        """
-        This is like doing a difference and an intersect between this the cutter
-        object simultaneously. It is faster than doing the two operations separately.
-
-        Return is `(diff_obj, inter_obj)`.
-
-        """
-        ret = self.mo.split(cutter.mo)
-        return (Obj3d(ret[0], color=self._color), Obj3d(ret[1], color=self._color))
 
     def rotate(self, degrees: list[float, float, float]) -> Obj3d:
         """
@@ -232,6 +229,25 @@ class Obj3d:
         """
         _chkV3("factors", factors)
         return Obj3d(self.mo.scale(factors), color=self._color)
+
+    def slice(self, height: float) -> Obj2d:
+        """
+        Like `project`, but a the given height.
+
+        """
+        _chkGT("height", height, 0)
+        return Obj2d(self.mo.slice(height), color=self._color)
+
+    def split(self, cutter: Obj3d) -> Obj3d:
+        """
+        This is like doing a difference and an intersect between this the cutter
+        object simultaneously. It is faster than doing the two operations separately.
+
+        Return is `(diff_obj, inter_obj)`.
+
+        """
+        ret = self.mo.split(cutter.mo)
+        return (Obj3d(ret[0], color=self._color), Obj3d(ret[1], color=self._color))
 
     def to_verts_and_faces(
         self,
@@ -432,19 +448,25 @@ class Obj2d:
         o2._color = self._color
         return o2
 
-    def piecut(self, start_angle=0, end_angle=90) -> Obj2d:
+    def piecut(
+        self, start_angle=0, end_angle=90, both=False
+    ) -> Obj2d | tuple[Obj2d, Obj2d]:
         """
         Cut a wedge out of this object.
 
         It returns a copy of this object minus the wedge.
+
+        Or if `both` is `True` it returns a tuple of the object minus the wedge and the object intersected with the wedge.
         """
         if end_angle < start_angle:
             end_angle = end_angle + 360.0
         x1, y1, x2, y2 = self.bounding_box()
         c_x = (x2 + x1) / 2.0
         c_y = (y2 + y1) / 2.0
-        rad = max(x2 - x1, y2 - y1)  # Actually 2*rad which is good
+        rad = max(x2 - x1, y2 - y1) * 4
         pts = []
+        if end_angle - start_angle != 180.0:
+            pts.append((c_x, c_y))
         pts.append((rad * cos(start_angle) + c_x, rad * sin(start_angle) + c_y))
         ang = 90 + start_angle
         while ang < end_angle:
@@ -452,9 +474,13 @@ class Obj2d:
             ang = ang + 90
         pts.append((rad * cos(end_angle) + c_x, rad * sin(end_angle) + c_y))
         cutter = Obj2d(_m.CrossSection([pts]))
-        o2 = difference(self, cutter)
-        o2._color = self._color
-        return o2
+        o1 = difference(self, cutter)
+        o1._color = self._color
+        if both:
+            o2 = intersect(self, cutter)
+            o2._color = self._color
+            return (o1, o2)
+        return o1
 
     def revolve(self, segments: int = -1, revolve_degrees: float = 360.0):
         """
