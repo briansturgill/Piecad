@@ -245,7 +245,7 @@ def _view_handler():
         content = None
 
 
-def winding(lv: list[tuple[float, float]]) -> str:
+def winding(lt: list[tuple[float, float]]) -> str:
     """
     String description of winding of a 2D polygon.
 
@@ -259,12 +259,12 @@ def winding(lv: list[tuple[float, float]]) -> str:
             return "ccw"
         return "zero"
 
-    length = len(lv)
+    length = len(lt)
     if length < 3:
         return "too small"
     winding = 0.0
     for i in range(0, length):
-        winding += (lv[(i + 1) % length][0] - lv[i][0]) * (
-            lv[(i + 1) % length][1] + lv[i][1]
+        winding += (lt[(i + 1) % length][0] - lt[i][0]) * (
+            lt[(i + 1) % length][1] + lt[i][1]
         )
     return wstr(winding)

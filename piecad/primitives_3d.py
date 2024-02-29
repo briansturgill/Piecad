@@ -521,6 +521,9 @@ def pyramid(height: int, num_sides: int, radius: float) -> Obj3d:
 
     <iframe width="100%" height="220" src="examples/pyramid.html"></iframe>
     """
+    _chkGT("height", height, 0)
+    _chkGE("num_sides", num_sides, 3)
+    _chkGT("radius", radius, 0)
     return extrude_transforming(
         circle(radius, segments=num_sides), height=height, scale=(0, 0)
     )

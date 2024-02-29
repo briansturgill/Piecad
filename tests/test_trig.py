@@ -103,3 +103,27 @@ def test_special_cached_trig_values():
         assert _equalish(cos(dvals[i]), _math.cos(rvals[i]))
         assert _equalish(sin(dvals[i]), _math.sin(rvals[i]))
         assert _equalish(tan(dvals[i]), _math.tan(rvals[i]))
+
+
+def test_trig_bare_sin_speed(benchmark):
+    benchmark(_math.sin, 1.23)
+
+
+def test_trig_cache_hit_sin_speed(benchmark):
+    benchmark(sin, 90)
+
+
+def test_trig_cache_miss_sin_speed(benchmark):
+    benchmark(sin, 123)
+
+
+def test_trig_bare_cos_speed(benchmark):
+    benchmark(_math.cos, 1.23)
+
+
+def test_trig_cache_hit_cos_speed(benchmark):
+    benchmark(cos, 90)
+
+
+def test_trig_cache_miss_cos_speed(benchmark):
+    benchmark(cos, 123)
