@@ -42,7 +42,7 @@ def test_acosh_cosh_degree():
         assert round(acosh(cosh(i)), 12) == i
 
 
-def test_Asinh_sinh_degree():
+def test_asinh_sinh_degree():
     for i in range(90 + 1):
         assert round(asinh(sinh(i)), 12) == i
 
@@ -127,3 +127,33 @@ def test_trig_cache_hit_cos_speed(benchmark):
 
 def test_trig_cache_miss_cos_speed(benchmark):
     benchmark(cos, 123)
+
+
+def test_special_values():
+    assert sin(30) == 0.5
+    assert sin(90) == 1
+    assert sin(0) == 0
+    assert sin(150) == 0.5
+    assert sin(180) == 0
+    assert sin(210) == -0.5
+    assert sin(270) == -1
+    assert sin(330) == -0.5
+    assert sin(360) == 0
+
+    assert cos(0) == 1
+    assert cos(60) == 0.5
+    assert cos(90) == 0
+    assert cos(120) == -0.5
+    assert cos(180) == -1
+    assert cos(240) == -0.5
+    assert cos(270) == 0
+    assert cos(300) == 0.5
+    assert cos(360) == 1
+
+    assert tan(0) == 0
+    assert tan(45) == 1
+    assert tan(135) == -1
+    assert tan(180) == 0
+    assert tan(225) == 1
+    assert tan(315) == -1
+    assert tan(360) == 0

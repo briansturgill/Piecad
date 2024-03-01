@@ -78,75 +78,75 @@ _quickTan[330] = _math.tan(11 * _math.pi / 6)
 _quickTan[360] = 0
 
 
-def cos(angleInDegrees):
+def cos(angleInDegrees: float) -> float:
     "Cosine of angle in degrees."
-    angleInDegrees = angleInDegrees % 360.0
+    angleInDegrees = abs(angleInDegrees % 360.0)
     if angleInDegrees in _quickCos:
         return _quickCos[angleInDegrees]
     return _math.cos(deg_to_rad(angleInDegrees))
 
 
-def sin(angleInDegrees):
+def sin(angleInDegrees: float) -> float:
     "Sine of angle in degrees."
-    angleInDegrees = angleInDegrees % 360.0
+    angleInDegrees = abs(angleInDegrees % 360.0)
     if angleInDegrees in _quickSin:
         return _quickSin[angleInDegrees]
     return _math.sin(deg_to_rad(angleInDegrees))
 
 
-def tan(angleInDegrees):
+def tan(angleInDegrees: float) -> float:
     "Tangent of angle in degrees."
-    angleInDegrees = angleInDegrees % 360.0
+    angleInDegrees = abs(angleInDegrees % 360.0)
     if angleInDegrees in _quickTan:
         return _quickTan[angleInDegrees]
     return _math.tan(deg_to_rad(angleInDegrees))
 
 
-def cosh(angleInDegrees):
+def cosh(angleInDegrees: float) -> float:
     "Hyperbolic cosine of angle in degrees."
     return _math.cosh(deg_to_rad(angleInDegrees))
 
 
-def sinh(angleInDegrees):
+def sinh(angleInDegrees: float) -> float:
     "Hyperbolic sine of angle in degrees."
     return _math.sinh(deg_to_rad(angleInDegrees))
 
 
-def tanh(angleInDegrees):
+def tanh(angleInDegrees: float) -> float:
     "Hyperbolic tangent of angle in degrees."
     return _math.tanh(deg_to_rad(angleInDegrees))
 
 
-def acos(cosVal):
+def acos(cosVal: float) -> float:
     "ArcCosine of cosVal returning angle in degrees."
     return rad_to_deg(_math.acos(cosVal))
 
 
-def asin(sinVal):
+def asin(sinVal: float) -> float:
     "ArcSine of sinVal returning angle in degrees."
     return rad_to_deg(_math.asin(sinVal))
 
 
-def atan(tanVal):
+def atan(tanVal: float) -> float:
     "ArcTan of tanVal returning angle in degrees."
     return rad_to_deg(_math.atan(tanVal))
 
 
-def atan2(y, x):
+def atan2(y: float, x: float) -> float:
     "ArcTan of quotient of y and x returning angle in degrees."
     return rad_to_deg(_math.atan2(y, x))
 
 
-def acosh(cosVal):
+def acosh(cosVal: float) -> float:
     "ArcCosine of hyperbolic cosVal returning angle in degrees."
     return rad_to_deg(_math.acosh(cosVal))
 
 
-def asinh(sinVal):
+def asinh(sinVal: float) -> float:
     "ArcSine of hyperbolic sinVal returning angle in degrees"
     return rad_to_deg(_math.asinh(sinVal))
 
 
-def atanh(tanVal):
+def atanh(tanVal: float) -> float:
     "ArcTan of hyperbolic tanVal returning angle in degrees."
     return rad_to_deg(_math.atanh(tanVal))
