@@ -179,3 +179,115 @@ def test_polygon_self_intersect():
     poly = [(10, 10), (50, 50), (50, 10), (10, 50)]
     with pytest.raises(ValidationError):
         _polygon([poly])
+
+
+import numpy as _np
+
+_arc_trig_vals_map = {}
+
+
+def _rounded_rectangle_np(
+    size: list[float, float],
+    rounding_radius: float = 0.2,
+    segments: int = -1,
+    center: bool = False,
+) -> Obj2d:
+    segs_per_arc = segments // 4 + 1
+    deg_per_arc = 90.0 / segs_per_arc
+    x, y = size
+
+    def make_arc_trig_vals(deg):
+        end = deg + 90
+        l = []
+        for i in range(0, segs_per_arc - 1):
+            l.append((cos(deg), sin(deg)))
+            deg += deg_per_arc
+
+        l.append((cos(end), sin(end)))
+        return l
+
+    if segments in _arc_trig_vals_map:
+        arc_trig_vals = _arc_trig_vals_map[segments]
+    else:
+        l = []
+        l.extend(make_arc_trig_vals(180))  # Bottom left
+        l.extend(make_arc_trig_vals(270))  # Bottom right
+        l.extend(make_arc_trig_vals(0))  # Top right
+        l.extend(make_arc_trig_vals(90))  # Top left
+        arc_trig_vals = _np.array(l, dtype=_np.float64)
+        _arc_trig_vals_map[segments] = arc_trig_vals
+
+    rr = rounding_radius
+
+    spa = segs_per_arc
+    pts = _np.array(arc_trig_vals)
+    pts *= rr
+    if center:
+        c_x_off = -x / 2.0 if center else 0.0
+        c_y_off = -y / 2.0 if center else 0.0
+        pts[:, 0] += c_x_off
+        pts[:, 1] += c_y_off
+    pts[0:spa, 0] += rr  # Bottom left
+    pts[0:spa, 1] += rr
+    pts[spa : 2 * spa, 0] += x - rr  # Bottom right
+    pts[spa : 2 * spa, 1] += rr
+    pts[spa * 2 : 3 * spa, 0] += x - rr  # Top right
+    pts[spa * 2 : 3 * spa, 1] += y - rr
+    pts[spa * 3 : 4 * spa, 0] += rr  # Top left
+    pts[spa * 3 : 4 * spa, 1] += y - rr
+
+    return Obj2d(_m.CrossSection([pts], _m.FillRule.EvenOdd))
+
+
+def test_rounded_rectangle_np(benchmark):
+    o = benchmark(_rounded_rectangle_np, (10, 10), 2.0, 36)
+    assert o.num_verts() == 40
+    assert o.bounding_box() == (0, 0, 10, 10)
+
+
+def test_rounded_rectangle_np_centered(benchmark):
+    o = benchmark(_rounded_rectangle_np, (10, 10), 2.0, 36, True)
+    assert o.num_verts() == 40
+    assert o.bounding_box() == (-5, -5, 5, 5)
+
+
+def _rounded_rectangle_hull(
+    size: list[float, float],
+    rounding_radius: float = 0.2,
+    segments: int = -1,
+    center: bool = False,
+) -> Obj2d:
+    if segments == -1:
+        segments = config["DefaultSegments"]
+
+    rr = rounding_radius
+    circ = circle(rr, segments)
+
+    x = size[0]
+    y = size[1]
+
+    c_x_off = -x / 2.0 if center else 0.0
+    c_y_off = -y / 2.0 if center else 0.0
+
+    return Obj2d(
+        _m.CrossSection.batch_hull(
+            [
+                circ.translate((c_x_off + rr, c_y_off + rr)).mo,
+                circ.translate((c_x_off + size[0] - rr, c_y_off + rr)).mo,
+                circ.translate((c_x_off + size[0] - rr, c_y_off + size[1] - rr)).mo,
+                circ.translate((c_x_off + rr, c_y_off + size[1] - rr)).mo,
+            ]
+        )
+    )
+
+
+def test_rounded_rectangle_hull(benchmark):
+    o = benchmark(_rounded_rectangle_hull, (10, 10), 2.0, 36)
+    assert o.num_verts() == 40
+    assert o.bounding_box() == (0, 0, 10, 10)
+
+
+def test_rounded_rectangle_hull_centered(benchmark):
+    o = benchmark(_rounded_rectangle_hull, (10, 10), 2.0, 36, True)
+    assert o.num_verts() == 40
+    assert o.bounding_box() == (-5, -5, 5, 5)
