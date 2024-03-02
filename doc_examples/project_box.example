@@ -1,1 +1,2 @@
-out = project_box((45, 30, 20), rounding_radius=4.0, segments=48)
+box = ProjectBox((45, 30, 20), rounding_radius=4.0, segments=48)
+out = box.finish()
