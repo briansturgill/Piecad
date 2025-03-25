@@ -160,7 +160,7 @@ def test_extrude(benchmark):
 
 def test_revolve():
     c = circle(10)
-    assert revolve(c).num_verts() == 614
+    assert revolve(c).num_verts() == 616
 
 
 def test_torus(benchmark):

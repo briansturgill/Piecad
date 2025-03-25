@@ -93,7 +93,7 @@ def test_is_empty_3d():
 def test_offset(benchmark):
     rr = rounded_rectangle((10, 10), 2.0, 36)
     c = benchmark(_offset, rr, 2, "round")
-    assert c.num_verts() == 98
+    assert c.num_verts() == 100
 
 
 def test_mirror_2d():

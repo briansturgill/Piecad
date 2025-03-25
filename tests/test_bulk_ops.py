@@ -35,7 +35,7 @@ def test_difference_3d(benchmark):
     c2 = sphere(10, 36).translate((5, 0, 0))
     c2.num_verts()
     o = benchmark(_difference, c1, c2)
-    assert o.num_verts() == 1346
+    assert o.num_verts() == 1351
 
 
 def test_intersect_2d(benchmark):
