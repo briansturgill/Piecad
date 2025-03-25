@@ -169,7 +169,7 @@ def extrude(obj: Obj2d, height: float) -> Obj3d:
 
 
 def extrude_chaining(
-    pairs: list[tuple[float, Obj2d]], is_convex: bool = False
+    pairs: list[tuple[float, Obj2d]], is_convex: bool = False, diagnose: str = None
 ) -> Obj3d:
     """
     Extrude multiple 2d objects into a single 3d Object.
@@ -192,7 +192,12 @@ def extrude_chaining(
 
     Caps are automatically generated from the first and last shapes.
 
+    If `diagnose` is not `None`, it should contain a string of a filename where the
+    faulty object is stored (to look at with meshlab, for example).
+    Use of the `.obj` extension is recommended.
+
     <iframe width="100%" height="500" src="examples/extrude_chaining.html"></iframe>
+    
     """
     vertex_list = []
     triangles = []
@@ -283,9 +288,12 @@ def extrude_chaining(
     vertex_list = _np.array(vertex_list, _np.float32)
     triangles = _np.array(triangles, _np.uint32)
     mesh = _m.Mesh(vertex_list, triangles)
-    # import trimesh
-    # mesh_output = trimesh.Trimesh(vertices=vertex_list, faces=triangles)
-    # trimesh.exchange.export.export_mesh(mesh_output, "/tmp/test.obj", "obj")
+    if diagnose != None:
+        import trimesh
+        dot_idx = diagnose.rindex(".")
+        ext = diagnose[dot_idx + 1 :]
+        mesh_output = trimesh.Trimesh(vertices=vertex_list, faces=triangles)
+        trimesh.exchange.export.export_mesh(mesh_output, diagnose, ext)
     mo = _m.Manifold(mesh)
     if mo.is_empty():
         raise ValidationError(f"Error creating Manifold: {mo.status()}.")
@@ -381,9 +389,6 @@ def polyhedron(
     vertices = _np.array(vertices, _np.float32)
     faces = _np.array(faces, _np.uint32)
     mesh = _m.Mesh(vertices, faces)
-    # import trimesh
-    # mesh_output = trimesh.Trimesh(vertices=vertices, faces=faces)
-    # trimesh.exchange.export.export_mesh(mesh_output, "/tmp/mesh.obj", "obj")
     mo = _m.Manifold(mesh)
     if mo.is_empty():
         raise ValidationError(f"Error creating Manifold: {mo.status()}.")
