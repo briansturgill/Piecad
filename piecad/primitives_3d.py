@@ -197,7 +197,6 @@ def extrude_chaining(
     Use of the `.obj` extension is recommended.
 
     <iframe width="100%" height="500" src="examples/extrude_chaining.html"></iframe>
-    
     """
     vertex_list = []
     triangles = []
