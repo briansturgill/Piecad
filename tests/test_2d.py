@@ -115,6 +115,7 @@ def test_star(benchmark):
     o = benchmark(_star, 8, 20)
     assert o.num_verts() == 16
     assert o.bounding_box() == (-20, -20, 20, 20)
+    assert o.area() == pytest.approx(937.2582999)
 
 
 # For this last 2 functions, we are trying to see if winding makes a speed difference

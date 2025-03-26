@@ -249,6 +249,12 @@ class Obj3d:
         ret = self.mo.split(cutter.mo)
         return (Obj3d(ret[0], color=self._color), Obj3d(ret[1], color=self._color))
 
+    def surface_area(self) -> float:
+        """
+        The surface area of this Obj3d.
+        """
+        return self.mo.surface_area()
+
     def to_verts_and_faces(
         self,
     ) -> tuple[list[list[float, float, float]], list[list[int, int, int]]]:
@@ -294,6 +300,12 @@ class Obj3d:
         _chkV3("offsets", offsets)
         return Obj3d(self.mo.translate(offsets), color=self._color)
 
+    def volume(self) -> float:
+        """
+        The volume of this Obj3d.
+        """
+        return self.mo.volume()
+
 
 class Obj2d:
     """
@@ -308,6 +320,12 @@ class Obj2d:
             o = _m.CrossSection()
         self.mo = o
         self._color = color
+
+    def area(self) -> float:
+        """
+        The area of this Obj2d.
+        """
+        return self.mo.area()
 
     def bounding_box(self):
         """
@@ -645,4 +663,3 @@ from .trigonometry import *
 from .primitives_2d import *
 from .primitives_3d import *
 from ._color import _parse_color
-from .project_box import *

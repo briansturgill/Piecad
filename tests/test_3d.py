@@ -120,6 +120,8 @@ def test_cuboid(benchmark):
     c = benchmark(_cuboid, (15, 10, 36))
     assert c.num_verts() == 8
     assert c.bounding_box() == (0, 0, 0, 15, 10, 36)
+    assert c.volume() == pytest.approx(5400.0)
+    assert c.surface_area() == pytest.approx(2100.0)
 
 
 def test_cuboid_centered(benchmark):

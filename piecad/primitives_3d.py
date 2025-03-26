@@ -289,6 +289,7 @@ def extrude_chaining(
     mesh = _m.Mesh(vertex_list, triangles)
     if diagnose != None:
         import trimesh
+
         dot_idx = diagnose.rindex(".")
         ext = diagnose[dot_idx + 1 :]
         mesh_output = trimesh.Trimesh(vertices=vertex_list, faces=triangles)
