@@ -1,4 +1,4 @@
-rm -rf bin lib lib64 include
+rm -rf bin lib lib64 include pyvenv.cfg __pycache__
 python -m venv .
 . bin/activate
  pip install manifold3d trimesh pytest pytest.benchmark black pdoc3 flit
