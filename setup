@@ -1,0 +1,4 @@
+rm -rf bin lib lib64 include
+python -m venv .
+. bin/activate
+ pip install manifold3d trimesh pytest pytest.benchmark black pdoc3 flit
