@@ -11,3 +11,4 @@ test.py
 manifold_docs
 manifold_timing
 pyvenv.cfg
+*.obj
