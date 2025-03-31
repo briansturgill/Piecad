@@ -7,6 +7,9 @@ fi
 if [ ! -d $examples ]; then
 	mkdir $examples
 fi
+if [ ! -d tmp ]; then
+	mkdir tmp
+fi
 if [ ! -L tmp/piecad ]; then
 	ln -s ../../piecad tmp/piecad
 fi
