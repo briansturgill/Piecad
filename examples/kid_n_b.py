@@ -7,7 +7,11 @@
 #
 # v2.1
 
-def lookup(key: float, table: List[(float, float)]):
+from piecad import *
+from math import ceil, floor, inf
+
+
+def lookup(key, table):
     high_k = high_v = low_k = low_v = 0.0
     for k, v in table:
         if k <= key and (k > low_k or low_k > key):
@@ -80,7 +84,9 @@ def ClosePoints(pointarrays) :
         if  (n>=len(arr)):
             return p
         else:
-            return recurse_avg(arr, n+1, p+(arr[n]-p)/(n+1))
+            for i in range(2):
+                p[i] = p[i]+(arr[n][i]-p[i])/(n+1)
+            return recurse_avg(arr, n+1, p)
 
     N = len(pointarrays)
     P = len(pointarrays[0])
@@ -89,9 +95,9 @@ def ClosePoints(pointarrays) :
     midbot = recurse_avg(pointarrays[0])
     midtop = recurse_avg(pointarrays[N-1])
 
-    faces_bot = (
+    faces_bot = [
         [0,i+1,1+(i+1)%len(pointarrays[0])] for i in range(P)
-       )
+       ]
 
     loop_offset = 1
     bot_len = loop_offset + P
@@ -110,9 +116,9 @@ def ClosePoints(pointarrays) :
     top_offset = loop_offset + NP - P
     midtop_offset = top_offset + P
 
-    faces_top = (
-        (midtop_offset,top_offset+(i+1)%P,top_offset+i)  for i in range(P)
-    )
+    faces_top = [
+        [midtop_offset,top_offset+(i+1)%P,top_offset+i]  for i in range(P)
+    ]
 
     points = []
     for i in range(-1, NP+1):
@@ -123,9 +129,9 @@ def ClosePoints(pointarrays) :
         else:
             points.append(pointarrays[floor(i/P)][i%P])
 
-    faces = concat(faces_bot, faces_loop, faces_top)
+    faces = faces_bot + faces_loop + faces_top
 
-    polyhedron(points=points, faces=faces)
+    return polyhedron(vertices=points, faces=faces)
 
 
 
@@ -138,7 +144,7 @@ def ScrewThread(outer_diam, height, pitch=0, tooth_angle=30, tolerance=0.4, tip_
     if tooth_height == 0: 
         tooth_height = pitch
     if tip_min_fract < 0:
-        tip_min_fract =  0
+        tip_min_fract =  0.0
     elif tip_min_fract > 0.9999:
         tip_min_fract = 0.9999
 
@@ -180,14 +186,14 @@ def ScrewThread(outer_diam, height, pitch=0, tooth_angle=30, tolerance=0.4, tip_
     tip_wstart = height + tip_height_sc - tip_height - tip_height_w
 
     def tooth_width(a, h, pitch, tooth_height, extent):
-        ang_full = h*360.0/pitch-a,
-        ang_pn = atan2(sin(ang_full), cos(ang_full)),
+        ang_full = h*360.0/pitch-a
+        ang_pn = atan2(sin(ang_full), cos(ang_full))
         if ang_pn < 0:
             ang = ang_pn+360
         else:
             ang = ang_pn
-        frac = ang/360,
-        tfrac_half = tooth_height / (2*pitch),
+        frac = ang/360
+        tfrac_half = tooth_height / (2*pitch)
         tfrac_cut = 2*tfrac_half
         if frac > tfrac_cut:
             return 0
@@ -196,53 +202,97 @@ def ScrewThread(outer_diam, height, pitch=0, tooth_angle=30, tolerance=0.4, tip_
         else:
             return (1 - (frac - tfrac_half)/tfrac_half) * extent
 
-      pointarrays = []
-      for hs in range(hsteps+1):
-          for s in range(steps_per_loop):
-            ang_full = s*360.0/steps_per_loop,
-            ang_pn = atan2(sin(ang_full), cos(ang_full)),
-            ang = ang_pn < 0 ? ang_pn+360 : ang_pn,
+    pointarrays = []
+    for hs in range(hsteps+1):
+        points = []
+        for s in range(steps_per_loop):
+            ang_full = s*360.0/steps_per_loop
+            ang_pn = atan2(sin(ang_full), cos(ang_full))
 
-            h_fudge = pitch*0.001,
+            if ang_pn < 0:
+                ang = ang_pn+360
+            else:
+                ang =ang_pn
 
-            h_mod =
-              (hs%3 == 2) ?
-                ((s == steps_per_loop-1) ? tooth_height - h_fudge : (
-                 (s == steps_per_loop-2) ? tooth_height/2 : 0)) : (
-              (hs%3 == 0) ?
-                ((s == steps_per_loop-1) ? pitch-tooth_height/2 : (
-                 (s == steps_per_loop-2) ? pitch-tooth_height + h_fudge : 0)) :
-                ((s == steps_per_loop-1) ? pitch-tooth_height/2 + h_fudge : (
-                 (s == steps_per_loop-2) ? tooth_height/2 : 0))
-              ),
+            h_fudge = pitch*0.001
 
-            h_level =
-              (hs%3 == 2) ? tooth_height - h_fudge : (
-              (hs%3 == 0) ? 0 : tooth_height/2),
+            if hs%3 == 2:
+                if s == steps_per_loop-1:
+                    h_mod = tooth_height - h_fudge
+                elif s == steps_per_loop-2:
+                    h_mod = tooth_height/2 
+                else:
+                    h_mod = 0
+            elif hs%3 == 0:
+                if s == steps_per_loop-1:
+                    h_mod = pitch-tooth_height/2
+                elif s == steps_per_loop-2:
+                    h_mod = pitch-tooth_height + h_fudge 
+                else:
+                    h_mod = 0
+            else:
+                if s == steps_per_loop-1:
+                    h_mod = pitch-tooth_height/2 + h_fudge
+                elif s == steps_per_loop-2:
+                    h_mod = tooth_height/2
+                else:
+                    h_mod = 0
 
-            h_ub = floor((hs-hs_ext)/3) * pitch
-              + h_level + ang*pitch/360.0 - h_mod,
-            h_max = height - (hsteps-hs) * h_fudge,
-            h_min = hs * h_fudge,
-            h = (h_ub < h_min) ? h_min : ((h_ub > h_max) ? h_max : h_ub),
+            if hs%3 == 2:
+                h_level = tooth_height - h_fudge
+            elif hs%3 == 0:
+                h_level = 0
+            else:
+                h_level = tooth_height/2
 
-            ht = h - tip_start,
-            hf_ir = ht/tip_height_ir,
-            ht_w = h - tip_wstart,
-            hf_w_t = ht_w/tip_height_w,
-            hf_w = (hf_w_t < 0) ? 0 : ((hf_w_t > 1) ? 1 : hf_w_t),
+            h_ub = floor((hs-hs_ext)/3) * pitch + h_level + ang*pitch/360.0 - h_mod
+            h_max = height - (hsteps-hs) * h_fudge
+            h_min = hs * h_fudge
+            if h_ub < h_min:
+                h = h_min
+            elif h_ub > h_max:
+                h = h_max
+            else:
+                h = h_ub
 
-            ext_tip = (h <= tip_wstart) ? extent : (1-hf_w) * extent,
-            wnormal = tooth_width(ang, h, pitch, tooth_height, ext_tip),
-            w = (h <= tip_wstart) ? wnormal :
-              (1-hf_w) * wnormal +
-              hf_w * (0.1*screw_resolution + (wnormal * wnormal * wnormal /
-                (ext_tip*ext_tip+0.1*screw_resolution))),
-            r = (ht <= 0) ? ir + w :
-              ( (ht < tip_height_ir ? ((2/(1+(hf_ir*hf_ir))-1) * ir) : 0) + w)
-            pointarrays.append([r*cos(ang), r*sin(ang), h])
+            ht = h - tip_start
+            try:
+                hf_ir = ht/tip_height_ir
+            except ZeroDivisionError:
+                hf_ir = inf if ht >= 0 else -inf
+            ht_w = h - tip_wstart
+            try:
+                hf_w_t = ht_w/tip_height_w
+            except ZeroDivisionError:
+                hf_w_t = inf if ht_w >= 0 else -inf
+            if hf_w_t < 0:
+                hf_w = 0
+            elif hf_w_t > 1:
+                hf_w = 1
+            else:
+                hf_w = hf_w_t
 
-    ClosePoints(pointarrays)
+            if h <= tip_wstart: 
+                ext_tip = extent
+            else:
+                ext_tip = (1-hf_w) * extent
+            wnormal = tooth_width(ang, h, pitch, tooth_height, ext_tip)
+            if h <= tip_wstart:
+                w = wnormal
+            else:
+                w = (1-hf_w) * wnormal + \
+                    hf_w * (0.1*screw_resolution + (wnormal * wnormal * wnormal / \
+                    (ext_tip*ext_tip+0.1*screw_resolution)))
+            if ht <= 0:
+                r = ir + w
+            elif ht < tip_height_ir:
+                r = ((2/(1+(hf_ir*hf_ir))-1) * ir)+w
+            else:
+                r = w
+            points.append([r*cos(ang), r*sin(ang), h])
+        pointarrays.append(points)
+
+    return ClosePoints(pointarrays)
 
 # This creates a threaded hole in its children using metric standards by
 # default.
@@ -251,11 +301,11 @@ def ScrewHole(child, outer_diam, height, position=[0,0,0], rotation=[0,0,0], pit
 
   return difference(
     child,
-    translate(position)
-      rotate(rotation)
-      translate([0, 0, -extra_height/2])
       ScrewThread(1.01*outer_diam + 1.25*tolerance, height + extra_height,
-        pitch, tooth_angle, tolerance, tooth_height=tooth_height)
+        pitch, tooth_angle, tolerance, tooth_height=tooth_height) \
+                .translate([0, 0, -extra_height/2])
+                .rotate(rotation)
+                .translate(position)
   )
 
 kid_circle = 34
@@ -272,17 +322,21 @@ def KidBase():
     
 
 # Create a standard sized metric hex nut.
-def KidMetricNut(diameter, thickness=0):
+def KidMetricNut():
     return ScrewHole(KidBase(), kid_screw_size, kid_height, tolerance=kid_tolerance)
 
 # Create a standard sized metric bolt with hex head and hex key.
 def KidMetricBolt():
-    obj = difference() {
+    obj = difference(
         KidBase(),
-        cube([kid_circle, 4, 4], center: True)
+        cube([kid_circle, 4, 4], center=True)
     )
     return ScrewHole(obj, kid_screw_size, kid_height-6, tolerance=kid_tolerance)
 
 
-view(KidMetricBolt())
-view(KidMetricNut())
+b=KidMetricBolt()
+
+n=KidMetricNut()
+
+save("Kid_b.obj", b)
+save("Kid_n.obj", n)
