@@ -2,11 +2,11 @@ from piecad import *
 
 wall = 2
 r = 5
-x = 105
+x = 120
 y = 70
 z = 20
 sh = 120
-case_z = sh + 40
+case_z = sh + 35
 case_inset_z = z / 2
 sr = 25 / 2
 bh = 35
@@ -82,7 +82,7 @@ def DrainStand():
     return union(
         DrainBase(),
         DrainBottom(sh).translate([(x / 6) - 5, y / 2 - 4 * wall, 0]),
-        DrainBottom(bh).translate([x - 50, y / 2 - 4 * wall, 0]),
+        DrainBottom(bh).translate([(x - 2.5 * (x / 6)), y / 2 - 4 * wall, 0]),
     )
 
 
