@@ -54,7 +54,7 @@ def KidSizedThreadedRod(height, isNut=False):
                                 num_twist_divisions = 360, twist=360*height/4.0)
     if isNut:
         return obj
-    tiny = 0.2
+    tiny = 0.6
     return union(
         KidSizedBoltInsert().translate([0, 1, height+tiny]),
         obj.translate([0, 0, tiny]),
