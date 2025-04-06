@@ -33,7 +33,7 @@ def KidSizedNut():
 def KidSizedBoltInsert(isHead=False):
     x = sqrt(kid_circle)
     if isHead:
-        x = x + kid_tolerance
+        x = x + (kid_tolerance/2.0)
     return cube([x, x, kid_height-6]).translate([-x/2.0, -x/2.0, 0])
 
 def KidSizedBolt():
@@ -54,9 +54,11 @@ def KidSizedThreadedRod(height, isNut=False):
                                 num_twist_divisions = 360, twist=360*height/4.0)
     if isNut:
         return obj
+    tiny = 0.2
     return union(
-        KidSizedBoltInsert().translate([0, 1, height]),
-        obj
+        KidSizedBoltInsert().translate([0, 1, height+tiny]),
+        obj.translate([0, 0, tiny]),
+        cylinder(height=tiny, radius=r)
         )
 
 b=KidSizedBolt()
