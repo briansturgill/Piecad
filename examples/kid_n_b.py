@@ -33,7 +33,7 @@ def KidSizedNut():
 def KidSizedBoltInsert(isHead=False):
     x = sqrt(kid_circle)
     if isHead:
-        x = x + (kid_tolerance/2.0)
+        x = x + (kid_tolerance/4.0)
     return cube([x, x, kid_height-6]).translate([-x/2.0, -x/2.0, 0])
 
 def KidSizedBolt():
