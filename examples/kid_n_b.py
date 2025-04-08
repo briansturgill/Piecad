@@ -16,67 +16,72 @@ kid_height = 12.0
 kid_screw_size = 12.0
 kid_tolerance = 0.6
 
+
 def KidSizedXPiece(nHoles):
-    x = (kid_circle+2/2.0) + (nHoles-1)*(kid_circle+2)
-    y = kid_circle+2
+    x = (kid_circle + 2 / 2.0) + (nHoles - 1) * (kid_circle + 2)
+    y = kid_circle + 2
     z = 5.0
     rc_r = 4
     obj = rounded_cuboid([x, y, z], rc_r)
-    for i in range(1, nHoles+1):
-        r = kid_circle/2.0
+    for i in range(1, nHoles + 1):
+        r = kid_circle / 2.0
         obj = difference(
             obj,
-            cylinder(height = z, radius = (kid_screw_size+1)/2.0)
-                .translate([r+1+r*2*(i-1), r+1, 0])
+            cylinder(height=z, radius=(kid_screw_size + 1) / 2.0).translate(
+                [r + 1 + r * 2 * (i - 1), r + 1, 0]
+            ),
         )
     return obj
 
+
 def KidSizedBase():
     return union(
-        cylinder(height=kid_height, radius=kid_nut/2.0, segments=6),
-        cylinder(height=2, radius=kid_circle/2.0)
+        cylinder(height=kid_height, radius=kid_nut / 2.0, segments=6),
+        cylinder(height=2, radius=kid_circle / 2.0),
     )
-    
+
 
 def KidSizedNut():
     return difference(
-            KidSizedBase(),
-            KidSizedThreadedRod(kid_height, isNut=True),
-            cylinder(radius=(kid_screw_size+1)/2.0, height=2)
-        )
+        KidSizedBase(),
+        KidSizedThreadedRod(kid_height, isNut=True),
+        cylinder(radius=(kid_screw_size + 1) / 2.0, height=2),
+    )
+
 
 def KidSizedBoltInsert(isHead=False):
     x = sqrt(kid_circle)
     if isHead:
-        x = x + (kid_tolerance/4.0)
-    return cube([x, x, kid_height-6]).translate([-x/2.0, -x/2.0, 0])
+        x = x + (kid_tolerance / 4.0)
+    return cube([x, x, kid_height - 6]).translate([-x / 2.0, -x / 2.0, 0])
+
 
 def KidSizedBolt():
     obj = difference(
         KidSizedBase().rotate([0, 0, 30]),
         cube([kid_circle, 4, 4], center=True).translate([0, 0, kid_height]),
-        KidSizedBoltInsert(isHead = True)
+        KidSizedBoltInsert(isHead=True),
     )
     return obj
 
+
 def KidSizedThreadedRod(height, isNut=False):
     if isNut:
-        r = (kid_screw_size-2+kid_tolerance)/2.0
+        r = (kid_screw_size - 2 + kid_tolerance) / 2.0
     else:
-        r = (kid_screw_size-2)/2.0
+        r = (kid_screw_size - 2) / 2.0
     obj = circle(radius=r).translate([0, 1])
-    obj = extrude_transforming(obj, height = height,
-                                num_twist_divisions = 360, twist=360*height/4.0)
+    obj = extrude_transforming(
+        obj, height=height, num_twist_divisions=360, twist=360 * height / 4.0
+    )
     if isNut:
         return obj
-    return union(
-        KidSizedBoltInsert().translate([0, 1, height]),
-        obj
-        )
+    return union(KidSizedBoltInsert().translate([0, 1, height]), obj)
 
-b=KidSizedBolt()
 
-n=KidSizedNut()
+b = KidSizedBolt()
+
+n = KidSizedNut()
 
 r = KidSizedThreadedRod(40)
 
