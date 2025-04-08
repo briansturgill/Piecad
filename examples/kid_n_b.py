@@ -16,6 +16,21 @@ kid_height = 12.0
 kid_screw_size = 12.0
 kid_tolerance = 0.6
 
+def KidSizedXPiece(nHoles):
+    x = (kid_circle+2/2.0) + (nHoles-1)*(kid_circle+2)
+    y = kid_circle+2
+    z = 5.0
+    rc_r = 4
+    obj = rounded_cuboid([x, y, z], rc_r)
+    for i in range(1, nHoles+1):
+        r = kid_circle/2.0
+        obj = difference(
+            obj,
+            cylinder(height = z, radius = (kid_screw_size+1)/2.0)
+                .translate([r+1+r*2*(i-1), r+1, 0])
+        )
+    return obj
+
 def KidSizedBase():
     return union(
         cylinder(height=kid_height, radius=kid_nut/2.0, segments=6),
@@ -71,3 +86,8 @@ save("Kid_n.obj", n)
 view(n)
 save("Kid_r.obj", r)
 view(r)
+
+for h in range(2, 7):
+    p = KidSizedXPiece(h)
+    save(f"kid_{h}p.obj", p)
+    view(p)
