@@ -15,3 +15,6 @@ benchmark:
 
 savebenchmark:
 	(read -p "Benchmark Name: " -r NAME ; pytest tests --benchmark-only --benchmark-save=`date +%F`"$${NAME}" --benchmark-name=short)
+
+clean:
+	rm -f examples/*.obj
