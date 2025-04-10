@@ -16,19 +16,21 @@ kid_height = 12.0
 kid_screw_size = 12.0
 kid_tolerance = 0.6
 
+
 def rcube(sz, r):
     return rounded_rectangle([sz[0], sz[1]], r).extrude(sz[2])
 
+
 def KidSizedXPiece(nHoles):
     rc_r = 4
-    pad = rc_r*2
+    pad = rc_r * 2
     x = nHoles * (kid_circle + pad)
     y = kid_circle + pad
     z = 5.0
     obj = rcube([x, y, z], rc_r)
     for i in range(1, nHoles + 1):
         r = (kid_circle + pad) / 2.0
-        print(r + r * 2 * (i-1), r)
+        print(r + r * 2 * (i - 1), r)
         obj = difference(
             obj,
             cylinder(height=z, radius=(kid_screw_size + 1) / 2.0).translate(
