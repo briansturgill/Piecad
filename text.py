@@ -313,16 +313,252 @@ def draw_F(f, stroke):
     )
 
 
+def draw_G(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    o_r_x = w / 2
+    o_r_y = h / 2
+    i_r_x = o_r_x - stroke
+    i_r_y = o_r_y - stroke
+    s = 0
+    e = 45
+    _line_pos += w
+    return union(
+        difference(ellipse(radii=[o_r_x, o_r_y]), ellipse(radii=[i_r_x, i_r_y]))
+        .translate([o_r_x, o_r_y])
+        .piecut(s, e),
+        rectangle([w / 4, stroke]).translate([3 * w / 4 - stroke, h / 2 - stroke]),
+    )
+
+
+def draw_H(f, stroke):
+    global _line_pos
+    w = _width * f
+    h = _height * f
+    m = _midline * f
+    _line_pos += w
+    return union(
+        rectangle([stroke, h]).translate([0, 0]),
+        rectangle([w, stroke]).translate([0, m - stroke]),
+        rectangle([stroke, h]).translate([w - stroke, 0]),
+    )
+
+
+def draw_I(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    mb = _midbar * f
+    bar = w / 3
+    _line_pos += 2 * bar
+    return union(
+        rectangle([bar * 2, stroke]).translate([0, h - stroke]),
+        rectangle([stroke, h]).translate([bar - stroke / 2, 0]),
+        rectangle([bar * 2, stroke]).translate([0, 0]),
+    )
+
+
+def draw_J(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    mb = _midbar * f
+    o_r = w / 3
+    i_r = o_r - stroke
+    s = 0
+    e = 180
+    _line_pos += 3 * o_r
+    return union(
+        difference(circle(radius=o_r), circle(radius=i_r))
+        .piecut(s, e)
+        .translate([o_r, o_r]),
+        rectangle([o_r * 2, stroke]).translate([o_r - stroke / 2, h - stroke]),
+        rectangle([stroke, h - o_r]).translate([2 * o_r - stroke, o_r]),
+    )
+
+
+def draw_K(f, stroke):
+    global _line_pos
+    w = _width * f
+    h = _height * f
+    m = _midline * f
+    _line_pos += w
+    return union(
+        rectangle([stroke, h]).translate([0, 0]),
+        polygon(
+            [
+                [
+                    (0, m),
+                    (w - stroke, h),
+                    (w, h),
+                    (0, m - stroke),
+                ]
+            ]
+        ),
+        polygon(
+            [
+                [
+                    (0, m),
+                    (w - stroke, 0),
+                    (w, 0),
+                    (0, m + stroke),
+                ]
+            ]
+        ),
+    )
+
+
+def draw_L(f, stroke):
+    global _line_pos
+    w = _width * f
+    h = _height * f
+    _line_pos += w
+    return union(
+        rectangle([stroke, h]),
+        rectangle([w, stroke]),
+    )
+
+
+def draw_M(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    m = _midbar * f
+    s = stroke / 2
+    _line_pos += w
+    return union(
+        rectangle([stroke, h]),
+        polygon(
+            [
+                [
+                    (0, h),
+                    (m - s, h * 0.25),
+                    (m + s, h * 0.25),
+                    (stroke, h),
+                ]
+            ]
+        ),
+        polygon(
+            [
+                [
+                    (m - s, h * 0.25),
+                    (w - stroke, h),
+                    (w, h),
+                    (m + s, h * 0.25),
+                ]
+            ]
+        ),
+        rectangle([stroke, h]).translate([w - stroke, 0]),
+    )
+
+
+def draw_N(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    m = _midbar * f
+    s = stroke / 2
+    _line_pos += w
+    return union(
+        rectangle([stroke, h]),
+        polygon(
+            [
+                [
+                    (stroke, h),
+                    (w, 0),
+                    (w - stroke, 0),
+                    (0, h),
+                ]
+            ]
+        ),
+        rectangle([stroke, h]).translate([w - stroke, 0]),
+    )
+
+
 def draw_O(f, stroke):
     global _line_pos
     o_r_x = _width * f / 2.0
     o_r_y = _height * f / 2.0
     i_r_x = o_r_x - stroke
     i_r_y = o_r_y - stroke
-    _line_pos += w
+    _line_pos += _width * f
     return union(
         difference(ellipse(radii=[o_r_x, o_r_y]), ellipse(radii=[i_r_x, i_r_y]))
     ).translate([o_r_x, o_r_y])
+
+
+def draw_P(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    o_r = w / 2
+    i_r = o_r - stroke
+    _line_pos += w
+    return union(
+        difference(circle(radius=o_r), circle(radius=i_r))
+        .translate([o_r, h - o_r])
+        .piecut(90, -90),
+        rectangle([stroke, h]).translate([0, 0]),
+        rectangle([w / 2 - stroke, stroke]).translate([stroke, h - stroke]),
+        rectangle([w / 2 - stroke, stroke]).translate([stroke, h - 2 * o_r]),
+    )
+
+
+def draw_Q(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    m = _midline * f
+    o_r_x = w / 2.0
+    o_r_y = h / 2.0
+    i_r_x = o_r_x - stroke
+    i_r_y = o_r_y - stroke
+    sh = o_r_x
+    _line_pos += w
+    return union(
+        difference(
+            ellipse(radii=[o_r_x, o_r_y]), ellipse(radii=[i_r_x, i_r_y])
+        ).translate([o_r_x, o_r_y]),
+        polygon(
+            [
+                [
+                    (sh, sh),
+                    (w, 0),
+                    (w - stroke, 0),
+                    (sh - stroke, sh),
+                ]
+            ]
+        ),
+    )
+
+
+def draw_R(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    o_r = w / 2
+    i_r = o_r - stroke
+    _line_pos += w
+    return union(
+        difference(circle(radius=o_r), circle(radius=i_r))
+        .translate([o_r, h - o_r])
+        .piecut(90, -90),
+        rectangle([stroke, h]).translate([0, 0]),
+        rectangle([w / 2 - stroke, stroke]).translate([stroke, h - stroke]),
+        rectangle([w / 2 - stroke, stroke]).translate([stroke, h - 2 * o_r]),
+        polygon(
+            [
+                [
+                    (o_r + stroke, h - o_r * 2),
+                    (w, 0),
+                    (w - stroke, 0),
+                    (o_r, h - o_r * 2),
+                ]
+            ]
+        ),
+    )
+
 
 def draw_S(f, stroke):
     global _line_pos
@@ -339,22 +575,25 @@ def draw_S(f, stroke):
     _line_pos += w
     return union(
         difference(
-            ellipse(radii=[o_r_x, o_r_y]).piecut(s_u, e_u), ellipse(radii=[i_r_x, i_r_y]).piecut(s_u, e_u)
+            ellipse(radii=[o_r_x, o_r_y]).piecut(s_u, e_u),
+            ellipse(radii=[i_r_x, i_r_y]).piecut(s_u, e_u),
         ).translate([o_r_x, _height * f - o_r_y]),
         difference(
-            ellipse(radii=[o_r_x, o_r_y]).piecut(s_l, e_l), ellipse(radii=[i_r_x, i_r_y]).piecut(s_l, e_l)
+            ellipse(radii=[o_r_x, o_r_y]).piecut(s_l, e_l),
+            ellipse(radii=[i_r_x, i_r_y]).piecut(s_l, e_l),
         ).translate([o_r_x, o_r_y]),
     )
+
 
 def draw_T(f, stroke):
     global _line_pos
     w = _width * f
     h = _height * f
     mb = _midbar * f
-    s = stroke/2.0
+    s = stroke / 2.0
     _line_pos += w
     return union(
-        rectangle([stroke, h]).translate([mb-s, 0]),
+        rectangle([stroke, h]).translate([mb - s, 0]),
         rectangle([w, stroke]).translate([0, h - stroke]),
     )
 
@@ -428,8 +667,8 @@ def draw_W(f, stroke):
             [
                 [
                     (part - s, 0),
-                    (part * 2 - s, h / 2),
-                    (part * 2 + s, h / 2),
+                    (part * 2 - s, h * 0.75),
+                    (part * 2 + s, h * 0.75),
                     (part + s, 0),
                 ]
             ]
@@ -437,10 +676,10 @@ def draw_W(f, stroke):
         polygon(
             [
                 [
-                    (part * 2 - s, h / 2),
+                    (part * 2 - s, h * 0.75),
                     (part * 3 - s, 0),
                     (part * 3 + s, 0),
-                    (part * 2 + s, h / 2),
+                    (part * 2 + s, h * 0.75),
                 ]
             ]
         ),
@@ -633,6 +872,156 @@ def draw_f(f, stroke):
         .translate([o_r, ml + o_r]),
         rectangle([stroke, ml + o_r]),
         rectangle([o_r * 2, stroke]).translate([-o_r / 2 - stroke / 4, ml - stroke]),
+    ).translate([o_r / 2, 0])
+
+
+def draw_g(f, stroke):
+    global _line_pos
+    w = _width * f
+    m = _midline * f
+    d = _descender * f
+    o_r = m / 2
+    i_r = m / 2 - stroke
+    s = 0
+    e = 200
+    _line_pos += m
+    return union(
+        difference(circle(radius=o_r), circle(radius=i_r)).translate([o_r, o_r]),
+        difference(circle(radius=o_r), circle(radius=i_r))
+        .translate([m - o_r, o_r - d])
+        .piecut(s, e),
+        rectangle([stroke, m]).translate([m - stroke, 0]),
+    )
+
+
+def draw_h(f, stroke):
+    global _line_pos
+    w = _width * f
+    m = _midline * f
+    ll = _lcline * f
+    o_r = m / 2
+    i_r = m / 2 - stroke
+    s = 180
+    e = 0
+    _line_pos += m
+    return union(
+        difference(circle(radius=o_r), circle(radius=i_r))
+        .translate([o_r, o_r])
+        .piecut(s, e),
+        rectangle([stroke, ll]),
+        rectangle([stroke, o_r]).translate([m - stroke, 0]),
+    )
+
+
+def draw_i(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    ml = _midline * f
+    _line_pos += stroke
+    return union(
+        circle(radius=stroke / 2).translate([stroke / 2, ml + stroke]),
+        rectangle([stroke, ml]).translate([0, 0]),
+    )
+
+
+def draw_j(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    ml = _midline * f
+    d = (h - ml) / 2
+    mid = _midbar * f - stroke / 2
+    o_r = w / 4
+    i_r = o_r - stroke
+    s = 0
+    e = 180
+    _line_pos += o_r + stroke
+    return union(
+        difference(circle(radius=o_r), circle(radius=i_r))
+        .piecut(s, e)
+        .translate([-o_r + stroke, 0]),
+        circle(radius=stroke / 2).translate([stroke / 2, ml + stroke]),
+        rectangle([stroke, ml]).translate([0, 0]),
+    ).translate([o_r, 0])
+
+
+def draw_k(f, stroke):
+    global _line_pos
+    w = _midline * f
+    h = _midline * f
+    ll = _lcline * f
+    m = _midline * f / 2
+    _line_pos += w
+    return union(
+        rectangle([stroke, ll]).translate([0, 0]),
+        polygon(
+            [
+                [
+                    (0, m),
+                    (w * 0.8 - stroke, h),
+                    (w * 0.8, h),
+                    (0, m - stroke),
+                ]
+            ]
+        ),
+        polygon(
+            [
+                [
+                    (0, m),
+                    (w - stroke, 0),
+                    (w, 0),
+                    (0, m + stroke),
+                ]
+            ]
+        ),
+    )
+
+
+def draw_l(f, stroke):
+    global _line_pos
+    ll = _lcline * f
+    _line_pos += stroke
+    return union(
+        rectangle([stroke, ll]).translate([0, 0]),
+    )
+
+
+def draw_m(f, stroke):
+    global _line_pos
+    m = _midline * f
+    o_r = (m + 2 * stroke) / 4
+    i_r = o_r - stroke
+    s = 180
+    e = 0
+    _line_pos += m + stroke
+    return union(
+        difference(circle(radius=o_r), circle(radius=i_r))
+        .translate([3 * o_r - stroke, m - o_r])
+        .piecut(s, e),
+        difference(circle(radius=o_r), circle(radius=i_r))
+        .translate([o_r, m - o_r])
+        .piecut(s, e),
+        rectangle([stroke, m]),
+        rectangle([stroke, m - o_r]).translate([o_r * 2 - stroke, 0]),
+        rectangle([stroke, m - o_r]).translate([m, 0]),
+    )
+
+
+def draw_n(f, stroke):
+    global _line_pos
+    m = _midline * f
+    o_r = m / 2
+    i_r = m / 2 - stroke
+    s = 180
+    e = 0
+    _line_pos += m
+    return union(
+        difference(circle(radius=o_r), circle(radius=i_r))
+        .translate([o_r, o_r])
+        .piecut(s, e),
+        rectangle([stroke, m]),
+        rectangle([stroke, o_r]).translate([m - stroke, 0]),
     )
 
 
@@ -644,6 +1033,52 @@ def draw_o(f, stroke):
     i_r = m / 2 - stroke
     _line_pos += m
     return difference(circle(radius=o_r), circle(radius=i_r)).translate([o_r, o_r])
+
+
+def draw_p(f, stroke):
+    global _line_pos
+    w = _width * f
+    m = _midline * f
+    d = _descender * f
+    bar = m + d
+    o_r = m / 2
+    i_r = m / 2 - stroke
+    _line_pos += m
+    return union(
+        difference(circle(radius=o_r), circle(radius=i_r)).translate([o_r, o_r]),
+        rectangle([stroke, bar]).translate([0, -d]),
+    )
+
+
+def draw_q(f, stroke):
+    global _line_pos
+    w = _width * f
+    m = _midline * f
+    d = _descender * f
+    bar = m + d
+    o_r = m / 2
+    i_r = m / 2 - stroke
+    _line_pos += m
+    return union(
+        difference(circle(radius=o_r), circle(radius=i_r)).translate([o_r, o_r]),
+        rectangle([stroke, bar]).translate([m - stroke, -d]),
+    )
+
+
+def draw_r(f, stroke):
+    global _line_pos
+    w = _width * f
+    m = _midline * f
+    o_r = m / 2
+    i_r = m / 2 - stroke
+    _line_pos += m - stroke
+    return union(
+        difference(circle(radius=o_r), circle(radius=i_r))
+        .translate([o_r, o_r])
+        .piecut(180, 10),
+        rectangle([stroke, m]),
+    )
+
 
 def draw_s(f, stroke):
     global _line_pos
@@ -657,15 +1092,18 @@ def draw_s(f, stroke):
     e_u = 10
     s_l = 90
     e_l = 190
-    _line_pos += 2*o_r_x
+    _line_pos += 2 * o_r_x
     return union(
         difference(
-            ellipse(radii=[o_r_x, o_r_y]).piecut(s_u, e_u), ellipse(radii=[i_r_x, i_r_y]).piecut(s_u, e_u)
+            ellipse(radii=[o_r_x, o_r_y]).piecut(s_u, e_u),
+            ellipse(radii=[i_r_x, i_r_y]).piecut(s_u, e_u),
         ).translate([o_r_x, h - stroke - o_r_y]),
         difference(
-            ellipse(radii=[o_r_x, o_r_y]).piecut(s_l, e_l), ellipse(radii=[i_r_x, i_r_y]).piecut(s_l, e_l)
+            ellipse(radii=[o_r_x, o_r_y]).piecut(s_l, e_l),
+            ellipse(radii=[i_r_x, i_r_y]).piecut(s_l, e_l),
         ).translate([o_r_x, o_r_y]),
     )
+
 
 def draw_t(f, stroke):
     global _line_pos
@@ -886,7 +1324,18 @@ _draw["C"] = draw_C
 _draw["D"] = draw_D
 _draw["E"] = draw_E
 _draw["F"] = draw_F
+_draw["G"] = draw_G
+_draw["H"] = draw_H
+_draw["I"] = draw_I
+_draw["J"] = draw_J
+_draw["K"] = draw_K
+_draw["L"] = draw_L
+_draw["M"] = draw_M
+_draw["N"] = draw_N
 _draw["O"] = draw_O
+_draw["P"] = draw_P
+_draw["Q"] = draw_Q
+_draw["R"] = draw_R
 _draw["S"] = draw_S
 _draw["T"] = draw_T
 _draw["U"] = draw_U
@@ -901,7 +1350,18 @@ _draw["c"] = draw_c
 _draw["d"] = draw_d
 _draw["e"] = draw_e
 _draw["f"] = draw_f
+_draw["g"] = draw_g
+_draw["h"] = draw_h
+_draw["i"] = draw_i
+_draw["j"] = draw_j
+_draw["k"] = draw_k
+_draw["l"] = draw_l
+_draw["m"] = draw_m
+_draw["n"] = draw_n
 _draw["o"] = draw_o
+_draw["p"] = draw_p
+_draw["q"] = draw_q
+_draw["r"] = draw_r
 _draw["s"] = draw_s
 _draw["t"] = draw_t
 _draw["u"] = draw_u
@@ -932,8 +1392,9 @@ def text(sz, tstr, stroke=0.6, inter_char_space=None):
 if __name__ == "__main__":
     sz = 6
     h = sz * 3
-    s = "0123456789 AaBbCcDdEeFfDFOo"
     s = "ASsTtUuVvWwXxYyZzA"
+    s = "afiklgmnijmj"
+    s = "0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz"
     w = (len(s) + 2) * sz
     c = text(sz, s, 0.6)
     c3d = difference(cube([w, h, 3]), c.extrude(2).translate([sz, sz, 2]))
