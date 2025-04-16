@@ -948,7 +948,7 @@ def draw_j(f, stroke):
 
 def draw_k(f, stroke):
     global _line_pos
-    w = _midline * f
+    w = _midline * f * 0.80
     h = _midline * f
     ll = _lcline * f
     m = _midline * f / 2
@@ -959,8 +959,8 @@ def draw_k(f, stroke):
             [
                 [
                     (0, m),
-                    (w * 0.8 - stroke, h),
-                    (w * 0.8, h),
+                    (w - stroke, h),
+                    (w, h),
                     (0, m - stroke),
                 ]
             ]
@@ -1196,8 +1196,8 @@ def draw_w(f, stroke):
             [
                 [
                     (part - s, 0),
-                    (part * 2 - s, h / 2),
-                    (part * 2 + s, h / 2),
+                    (part * 2 - s, h * 0.75),
+                    (part * 2 + s, h * 0.75),
                     (part + s, 0),
                 ]
             ]
@@ -1205,10 +1205,10 @@ def draw_w(f, stroke):
         polygon(
             [
                 [
-                    (part * 2 - s, h / 2),
+                    (part * 2 - s, h * 0.75),
                     (part * 3 - s, 0),
                     (part * 3 + s, 0),
-                    (part * 2 + s, h / 2),
+                    (part * 2 + s, h * 0.75),
                 ]
             ]
         ),
