@@ -9,6 +9,70 @@ _midbar = _width / 2.0
 
 _line_pos = 0
 
+draw = {}
+
+def draw_zz(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    ml = _midline * f
+    _line_pos += stroke
+    return union(
+        circle(radius=stroke / 2).translate([stroke / 2, ml + stroke]),
+        rectangle([stroke, ml]).translate([0, 0]),
+    )
+
+def draw_exclamation(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    ml = _midline * f
+    _line_pos += stroke
+    return union(
+        circle(radius=stroke / 2).translate([stroke / 2, stroke / 2]),
+        rectangle([stroke, h-2*stroke]).translate([0, 2 * stroke]),
+    )
+
+def draw_dash(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    ml = _midline * f
+    _line_pos += w/2
+    return union(
+        rectangle([w/2, stroke]).translate([0, ml - stroke]),
+    )
+
+def draw_comma(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    ml = _midline * f
+    _line_pos += stroke
+    return union(
+        circle(radius=stroke / 2).translate([stroke / 2, stroke / 2]),
+        rectangle([stroke/3, stroke]).translate([stroke/2, -stroke/2]).rotate(-20)
+    )
+
+def draw_period(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    ml = _midline * f
+    _line_pos += stroke
+    return union(
+        circle(radius=stroke / 2).translate([stroke / 2, stroke / 2]),
+    )
+
+def draw_underscore(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    ml = _midline * f
+    _line_pos += w
+    return union(
+        rectangle([w, stroke]),
+    )
 
 def draw_0(f, stroke):
     global _line_pos
@@ -1307,69 +1371,101 @@ def draw_z(f, stroke):
     )
 
 
-_draw = {}
-_draw["0"] = draw_0
-_draw["1"] = draw_1
-_draw["2"] = draw_2
-_draw["3"] = draw_3
-_draw["4"] = draw_4
-_draw["5"] = draw_5
-_draw["6"] = draw_6
-_draw["7"] = draw_7
-_draw["8"] = draw_8
-_draw["9"] = draw_9
-_draw["A"] = draw_A
-_draw["B"] = draw_B
-_draw["C"] = draw_C
-_draw["D"] = draw_D
-_draw["E"] = draw_E
-_draw["F"] = draw_F
-_draw["G"] = draw_G
-_draw["H"] = draw_H
-_draw["I"] = draw_I
-_draw["J"] = draw_J
-_draw["K"] = draw_K
-_draw["L"] = draw_L
-_draw["M"] = draw_M
-_draw["N"] = draw_N
-_draw["O"] = draw_O
-_draw["P"] = draw_P
-_draw["Q"] = draw_Q
-_draw["R"] = draw_R
-_draw["S"] = draw_S
-_draw["T"] = draw_T
-_draw["U"] = draw_U
-_draw["V"] = draw_V
-_draw["W"] = draw_W
-_draw["X"] = draw_X
-_draw["Y"] = draw_Y
-_draw["Z"] = draw_Z
-_draw["a"] = draw_a
-_draw["b"] = draw_b
-_draw["c"] = draw_c
-_draw["d"] = draw_d
-_draw["e"] = draw_e
-_draw["f"] = draw_f
-_draw["g"] = draw_g
-_draw["h"] = draw_h
-_draw["i"] = draw_i
-_draw["j"] = draw_j
-_draw["k"] = draw_k
-_draw["l"] = draw_l
-_draw["m"] = draw_m
-_draw["n"] = draw_n
-_draw["o"] = draw_o
-_draw["p"] = draw_p
-_draw["q"] = draw_q
-_draw["r"] = draw_r
-_draw["s"] = draw_s
-_draw["t"] = draw_t
-_draw["u"] = draw_u
-_draw["v"] = draw_v
-_draw["w"] = draw_w
-_draw["x"] = draw_x
-_draw["y"] = draw_y
-_draw["z"] = draw_z
+draw["0"] = draw_0
+draw["1"] = draw_1
+draw["2"] = draw_2
+draw["3"] = draw_3
+draw["4"] = draw_4
+draw["5"] = draw_5
+draw["6"] = draw_6
+draw["7"] = draw_7
+draw["8"] = draw_8
+draw["9"] = draw_9
+draw["A"] = draw_A
+draw["B"] = draw_B
+draw["C"] = draw_C
+draw["D"] = draw_D
+draw["E"] = draw_E
+draw["F"] = draw_F
+draw["G"] = draw_G
+draw["H"] = draw_H
+draw["I"] = draw_I
+draw["J"] = draw_J
+draw["K"] = draw_K
+draw["L"] = draw_L
+draw["M"] = draw_M
+draw["N"] = draw_N
+draw["O"] = draw_O
+draw["P"] = draw_P
+draw["Q"] = draw_Q
+draw["R"] = draw_R
+draw["S"] = draw_S
+draw["T"] = draw_T
+draw["U"] = draw_U
+draw["V"] = draw_V
+draw["W"] = draw_W
+draw["X"] = draw_X
+draw["Y"] = draw_Y
+draw["Z"] = draw_Z
+draw["a"] = draw_a
+draw["b"] = draw_b
+draw["c"] = draw_c
+draw["d"] = draw_d
+draw["e"] = draw_e
+draw["f"] = draw_f
+draw["g"] = draw_g
+draw["h"] = draw_h
+draw["i"] = draw_i
+draw["j"] = draw_j
+draw["k"] = draw_k
+draw["l"] = draw_l
+draw["m"] = draw_m
+draw["n"] = draw_n
+draw["o"] = draw_o
+draw["p"] = draw_p
+draw["q"] = draw_q
+draw["r"] = draw_r
+draw["s"] = draw_s
+draw["t"] = draw_t
+draw["u"] = draw_u
+draw["v"] = draw_v
+draw["w"] = draw_w
+draw["x"] = draw_x
+draw["y"] = draw_y
+draw["z"] = draw_z
+draw["!"] = draw_exclamation
+draw["\""] = draw_zz
+draw["#"] = draw_zz
+draw["$"] = draw_zz
+draw["%"] = draw_zz
+draw["&"] = draw_zz
+draw["'"] = draw_zz
+draw["("] = draw_zz
+draw[")"] = draw_zz
+draw["*"] = draw_zz
+draw["+"] = draw_zz
+draw[","] = draw_comma
+draw["-"] = draw_dash
+draw["."] = draw_period
+draw["/"] = draw_zz
+draw[":"] = draw_zz
+draw[";"] = draw_zz
+draw["<"] = draw_zz
+draw["="] = draw_zz
+draw[">"] = draw_zz
+draw["?"] = draw_zz
+draw["@"] = draw_zz
+draw["["] = draw_zz
+draw["\\"] = draw_zz
+draw["]"] = draw_zz
+draw["^"] = draw_zz
+draw["_"] = draw_underscore
+draw["`"] = draw_zz
+draw["{"] = draw_zz
+draw["|"] = draw_zz
+draw["}"] = draw_zz
+draw["~"] = draw_zz
+
 
 
 def text(sz, tstr, stroke=0.6, inter_char_space=None):
@@ -1384,7 +1480,7 @@ def text(sz, tstr, stroke=0.6, inter_char_space=None):
             _line_pos += _width * f / 2
         else:
             pos = _line_pos
-            l.append(_draw[c](f, stroke).translate([pos, 0]))
+            l.append(draw[c](f, stroke).translate([pos, 0]))
             _line_pos += inter_char_space
     return union(*l)
 
@@ -1395,6 +1491,7 @@ if __name__ == "__main__":
     s = "ASsTtUuVvWwXxYyZzA"
     s = "afiklgmnijmj"
     s = "0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz"
+    s = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
     w = (len(s) + 2) * sz
     c = text(sz, s, 0.6)
     c3d = difference(cube([w, h, 3]), c.extrude(2).translate([sz, sz, 2]))
