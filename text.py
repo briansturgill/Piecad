@@ -11,17 +11,6 @@ _line_pos = 0
 
 draw = {}
 
-def draw_zz(f, stroke):
-    global _line_pos
-    h = _height * f
-    w = _width * f
-    ml = _midline * f
-    _line_pos += stroke
-    return union(
-        circle(radius=stroke / 2).translate([stroke / 2, ml + stroke]),
-        rectangle([stroke, ml]).translate([0, 0]),
-    )
-
 def draw_exclamation(f, stroke):
     global _line_pos
     h = _height * f
@@ -33,14 +22,188 @@ def draw_exclamation(f, stroke):
         rectangle([stroke, h-2*stroke]).translate([0, 2 * stroke]),
     )
 
+def draw_dquote(f, stroke):
+    global _line_pos
+    h = _height * f
+    _line_pos += 3*stroke
+    return union(
+        rectangle([stroke, 2*stroke]).translate([0, h-2*stroke]),
+        rectangle([stroke, 2*stroke]).translate([2*stroke, h-2*stroke]),
+    )
+
+def draw_sharp(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    _line_pos += w
+    return union(
+        rectangle([stroke, h]).translate([w/3-stroke/2, 0]),
+        rectangle([stroke, h]).translate([2*w/3-stroke/2, 0]),
+        rectangle([w, stroke]).translate([0, h/3-stroke/2]),
+        rectangle([w, stroke]).translate([0, 2*h/3-stroke/2]),
+    )
+
+def draw_dollar(f, stroke):
+    global _line_pos
+    w = _width * f
+    h = _height * f
+    hs = _height * f * 0.80
+    o_r_x = w / 2.0
+    o_r_y = (hs + stroke) / 4.0
+    i_r_x = o_r_x - stroke
+    i_r_y = o_r_y - stroke
+    s_u = -90
+    e_u = 0
+    s_l = 90
+    e_l = 180
+    _line_pos += w
+    return union(
+        union(
+            difference(
+                ellipse(radii=[o_r_x, o_r_y]).piecut(s_u, e_u),
+                ellipse(radii=[i_r_x, i_r_y]).piecut(s_u, e_u),
+            ).translate([o_r_x, hs - o_r_y]),
+            difference(
+                ellipse(radii=[o_r_x, o_r_y]).piecut(s_l, e_l),
+                ellipse(radii=[i_r_x, i_r_y]).piecut(s_l, e_l),
+            ).translate([o_r_x, o_r_y]),
+        ).translate([0, (h-hs)/2]),
+        rectangle([stroke, h]).translate([w/2-stroke/2, 0]) 
+    )
+
+
+
+def draw_percent(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    o_r = w/4
+    i_r = o_r - stroke
+    _line_pos += w
+    return union(
+        polygon(
+            [
+                [
+                    (0, 0),
+                    (w-stroke, h),
+                    (w, h),
+                    (stroke, 0),
+                ]
+            ]
+        ),
+        difference(circle(radius=o_r), circle(radius=i_r)).translate([o_r, h-o_r]),
+        difference(circle(radius=o_r), circle(radius=i_r)).translate([w-o_r, o_r]),
+    )
+
+def draw_ampersand(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    mb = _midbar * f
+    mid = h/2
+    _line_pos += w
+    return union(
+        rectangle([stroke, h]).translate([mb, 0]),
+        rectangle([w, stroke]).translate([0, mid]),
+        polygon(
+            [
+                [
+                    (mb+stroke, 0),
+                    (0, mid+stroke),
+                    (0, mid),
+                    (mb, 0),
+                ]
+            ]
+        ),
+    )
+
+def draw_squote(f, stroke):
+    global _line_pos
+    h = _height * f
+    _line_pos += stroke
+    return union(
+        rectangle([stroke, 2*stroke]).translate([0, h-2*stroke]),
+    )
+
+
+def draw_lparen(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    r = h/2
+    p = h/3
+    _line_pos += p
+    return difference(
+        circle(radius=r).translate([r, r]),
+        circle(radius=r-stroke).translate([r, r]),
+        rectangle([h, h]).translate([p, 0]),
+    )
+
+def draw_rparen(f, stroke):
+    # Handled by draw_lparen global _line_pos; _line_pos += p
+    h = _height * f
+    p = h/3
+    return draw_lparen(f, stroke).rotate(180).translate([p, h])
+
+def draw_squote(f, stroke):
+    global _line_pos
+    h = _height * f
+    _line_pos += stroke
+    return union(
+        rectangle([stroke, 2*stroke]).translate([0, h-2*stroke]),
+    )
+
+
+def draw_lparen(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    r = h/2
+    p = h/3
+    _line_pos += p
+    return difference(
+        circle(radius=r).translate([r, r]),
+        circle(radius=r-stroke).translate([r, r]),
+        rectangle([h, h]).translate([p, 0]),
+    )
+
+def draw_rparen(f, stroke):
+    # Handled by draw_lparen global _line_pos; _line_pos += p
+    h = _height * f
+    p = h/3
+    return draw_lparen(f, stroke).rotate(180).translate([p, h])
+
+def draw_star(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    mb = _midbar * f
+    _line_pos += w
+    return union(
+        rectangle([stroke, w]).translate([-stroke/2, -w/2]),
+        rectangle([stroke, w]).translate([-stroke/2, -w/2]).rotate(60),
+        rectangle([stroke, w]).translate([-stroke/2, -w/2]).rotate(-60),
+    ).translate([w/2, h/2])
+
+def draw_plus(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    mb = _midbar * f
+    mid = w/2
+    _line_pos += w
+    return union(
+        rectangle([stroke, w]).translate([mb, stroke/2]),
+        rectangle([w, stroke]).translate([stroke/2, mid]),
+    ).translate([0, h-w-1.5*stroke])
+
 def draw_dash(f, stroke):
     global _line_pos
     h = _height * f
     w = _width * f
-    ml = _midline * f
     _line_pos += w/2
     return union(
-        rectangle([w/2, stroke]).translate([0, ml - stroke]),
+        rectangle([w/2, stroke]).translate([0, h/2]),
     )
 
 def draw_comma(f, stroke):
@@ -64,6 +227,167 @@ def draw_period(f, stroke):
         circle(radius=stroke / 2).translate([stroke / 2, stroke / 2]),
     )
 
+def draw_slash(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    _line_pos += w
+    return union(
+        polygon(
+            [
+                [
+                    (0, 0),
+                    (w-stroke, h),
+                    (w, h),
+                    (stroke, 0),
+                ]
+            ]
+        ),
+    )
+
+def draw_colon(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    ml = _midline * f
+    _line_pos += stroke
+    return union(
+        circle(radius=stroke / 2).translate([stroke / 2, 2*stroke+stroke / 2]),
+        circle(radius=stroke / 2).translate([stroke / 2, stroke / 2]),
+    )
+
+def draw_semicolon(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    ml = _midline * f
+    _line_pos += stroke
+    return union(
+        circle(radius=stroke / 2).translate([stroke / 2, 2*stroke+stroke / 2]),
+        circle(radius=stroke / 2).translate([stroke / 2, stroke / 2]),
+        rectangle([stroke/3, stroke]).translate([stroke/2, -stroke/2]).rotate(-20)
+    )
+
+def draw_less_than(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f * 0.75
+    _line_pos += w
+    return union(
+        rectangle([w, stroke]).rotate(22.5),
+        rectangle([w, stroke]).rotate(-22.5),
+    ).translate([0, h/2])
+
+
+def draw_equals(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f * 0.75
+    _line_pos += w
+    return union(
+        rectangle([w, stroke]).translate([0, 2*stroke]),
+        rectangle([w, stroke])
+    ).translate([0, h/2-stroke])
+
+def draw_greater_than(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f * 0.75
+    _line_pos += w
+    return union(
+        rectangle([w, stroke]).rotate(22.5),
+        rectangle([w, stroke]).rotate(-22.5),
+    ).translate([-w, -h/2-stroke]).rotate(180)
+
+def draw_question(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    mb = _midbar * f
+    o_r = w/2
+    i_r = o_r - stroke
+    s = 210
+    e = -95
+    _line_pos += w
+    return union(
+        difference(circle(radius=o_r), circle(radius=i_r)).piecut(s, e).translate([o_r, h-o_r]),
+        rectangle([stroke, h-w]).translate([o_r-stroke/2, stroke]),
+        circle(radius=stroke / 2).translate([o_r, 0]),
+    )
+
+def draw_at(f, stroke):
+    global _line_pos
+    w = _width * f
+    o_r = w / 2
+    i_r = o_r - stroke
+    a_o_r = w / 4
+    a_i_r = a_o_r - stroke
+    _line_pos += w
+    return union(
+        union(
+            difference(circle(radius=a_o_r), circle(radius=a_i_r)).translate([a_o_r, a_o_r]),
+            rectangle([stroke, a_o_r*2]).translate([a_o_r*2 - stroke, 0]),
+        ).translate([o_r-a_o_r, o_r-a_o_r]),
+        difference(circle(radius=o_r), circle(radius=i_r)).translate([o_r, o_r]),
+    )
+
+def draw_lbracket(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    ml = _midline * f
+    _line_pos += w/3
+    return union(
+        rectangle([w/3, stroke]).translate([0, h-stroke]),
+        rectangle([stroke, h]),
+        rectangle([w/3, stroke]),
+    )
+
+
+def draw_backslash(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    _line_pos += w
+    return union(
+        polygon(
+            [
+                [
+                    (0, h),
+                    (stroke, h),
+                    (w, 0),
+                    (w-stroke, 0),
+                ]
+            ]
+        ),
+    )
+
+
+def draw_rbracket(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    ml = _midline * f
+    _line_pos += w/3
+    return union(
+        rectangle([w/3, stroke]).translate([0, h-stroke]),
+        rectangle([stroke, h]).translate([w/3-stroke, 0]),
+        rectangle([w/3, stroke]).translate([0, 0]),
+    )
+
+
+def draw_caret(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    mid = w/2+stroke/2
+    cs = w/2
+    _line_pos += cs*0.85
+    return union(
+        rectangle([stroke, cs]).rotate(30+180),
+        rectangle([stroke, cs]).translate([-stroke/2, stroke/2]).rotate(-30+180),
+    ).translate([cs*0.5, h])
+
 def draw_underscore(f, stroke):
     global _line_pos
     h = _height * f
@@ -73,6 +397,69 @@ def draw_underscore(f, stroke):
     return union(
         rectangle([w, stroke]),
     )
+
+def draw_grave(f, stroke):
+    global _line_pos
+    h = _height * f
+    _line_pos += 1.5*stroke
+    return union(
+        rectangle([stroke, 2*stroke]).translate([3*stroke, h-3*stroke]).rotate(20),
+    )
+
+def draw_lbrace(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    ml = _midline * f
+    r = w/4
+    _line_pos += w/3 + r
+    return union(
+        union(
+            rectangle([w/3, stroke]).translate([0, h-stroke]),
+            rectangle([stroke, h]),
+            rectangle([w/3, stroke]),
+        ).translate([r, 0]),
+        circle(radius=r).translate([r, h/2]).piecut(-90, 90)
+    )
+
+def draw_vbar(f, stroke):
+    global _line_pos
+    h = _height * f
+    _line_pos += stroke
+    return difference(
+        rectangle([stroke, h]),
+        rectangle([stroke, stroke/2]).translate([0, h/2-stroke/4]),
+    )
+
+def draw_rbrace(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    ml = _midline * f
+    r = w/4
+    _line_pos += w/3 + r
+    return union(
+        union(
+            rectangle([w/3, stroke]).translate([0, h-stroke]),
+            rectangle([stroke, h]).translate([w/3-stroke, 0]),
+            rectangle([w/3, stroke]).translate([0, 0]),
+        ).translate([r, 0]),
+        circle(radius=r).translate([w/3+r, h/2]).piecut(90, -90)
+    ).translate([-r, 0])
+
+
+def draw_tilde(f, stroke):
+    global _line_pos
+    h = _height * f
+    w = _width * f
+    o_r = w/4
+    i_r = o_r - stroke
+    _line_pos += o_r*4-stroke
+    return union(
+        difference(circle(radius=o_r).piecut(180, 0), circle(radius=i_r).piecut(180, 0)),
+        difference(circle(radius=o_r).piecut(0, 180), circle(radius=i_r).piecut(0, 180)).translate([2*o_r-stroke, 0]),
+    ).rotate(22.5).translate([o_r, h-o_r])
+
 
 def draw_0(f, stroke):
     global _line_pos
@@ -1434,44 +1821,46 @@ draw["x"] = draw_x
 draw["y"] = draw_y
 draw["z"] = draw_z
 draw["!"] = draw_exclamation
-draw["\""] = draw_zz
-draw["#"] = draw_zz
-draw["$"] = draw_zz
-draw["%"] = draw_zz
-draw["&"] = draw_zz
-draw["'"] = draw_zz
-draw["("] = draw_zz
-draw[")"] = draw_zz
-draw["*"] = draw_zz
-draw["+"] = draw_zz
+draw["\""] = draw_dquote
+draw["#"] = draw_sharp
+draw["$"] = draw_dollar
+draw["%"] = draw_percent
+draw["&"] = draw_ampersand
+draw["'"] = draw_squote
+draw["("] = draw_lparen
+draw[")"] = draw_rparen
+draw["*"] = draw_star
+draw["+"] = draw_plus
 draw[","] = draw_comma
 draw["-"] = draw_dash
 draw["."] = draw_period
-draw["/"] = draw_zz
-draw[":"] = draw_zz
-draw[";"] = draw_zz
-draw["<"] = draw_zz
-draw["="] = draw_zz
-draw[">"] = draw_zz
-draw["?"] = draw_zz
-draw["@"] = draw_zz
-draw["["] = draw_zz
-draw["\\"] = draw_zz
-draw["]"] = draw_zz
-draw["^"] = draw_zz
+draw["/"] = draw_slash
+draw[":"] = draw_colon
+draw[";"] = draw_semicolon
+draw["<"] = draw_less_than
+draw["="] = draw_equals
+draw[">"] = draw_greater_than
+draw["?"] = draw_question
+draw["@"] = draw_at
+draw["["] = draw_lbracket
+draw["\\"] = draw_backslash
+draw["]"] = draw_rbracket
+draw["^"] = draw_caret
 draw["_"] = draw_underscore
-draw["`"] = draw_zz
-draw["{"] = draw_zz
-draw["|"] = draw_zz
-draw["}"] = draw_zz
-draw["~"] = draw_zz
+draw["`"] = draw_grave
+draw["{"] = draw_lbrace
+draw["|"] = draw_vbar
+draw["}"] = draw_rbrace
+draw["~"] = draw_tilde
 
 
 
-def text(sz, tstr, stroke=0.6, inter_char_space=None):
+def text(sz, tstr, stroke=None, inter_char_space=None):
     global _line_pos
     _line_pos = 0
     f = sz / _height
+    if stroke == None:
+        stroke = 2 * f
     if inter_char_space == None:
         inter_char_space = 3 * f
     l = []
@@ -1491,9 +1880,9 @@ if __name__ == "__main__":
     s = "ASsTtUuVvWwXxYyZzA"
     s = "afiklgmnijmj"
     s = "0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz"
-    s = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
+    s = "!\"#$%&'()*+,-./:;<=>?@[\\]|^|_|`|{|}~"
     w = (len(s) + 2) * sz
-    c = text(sz, s, 0.6)
+    c = text(sz, s)
     c3d = difference(cube([w, h, 3]), c.extrude(2).translate([sz, sz, 2]))
     view(c3d)
     view(c)
