@@ -2,7 +2,7 @@ from piecad import *
 
 wall = 2
 r = 5
-x = 120
+x = 140
 y = 70
 z = 20
 sh = 120
@@ -88,4 +88,4 @@ def DrainStand():
 
 out = union(DrainStand(), DrainTops(), DrainCase().translate([30, y + 20, 0]))
 view(out)
-save("NeilMedDrainStandv2.obj", out)
+save("/tmp/NeilMedDrainStandv2.obj", out)
