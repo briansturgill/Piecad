@@ -95,7 +95,7 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
             if obj._color != None:
                 mesh_output.visual.vertex_colors = obj._color
             # Manifold3d has a different definition than Trimesh
-            #if not mesh_output.is_watertight:
+            # if not mesh_output.is_watertight:
             #    print("WARNING: output mesh is not watertight")
             trimesh.exchange.export.export_mesh(mesh_output, filename, ext)
         else:
@@ -110,7 +110,7 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                 if obj._color != None:
                     mesh_output.visual.vertex_colors = obj._color
                 # Manifold3d has a different definition than Trimesh
-                #if not mesh_output.is_watertight:
+                # if not mesh_output.is_watertight:
                 #    print("WARNING: output mesh is not watertight")
                 scene.add_geometry(mesh_output)
             trimesh.exchange.export.export_scene(scene, filename, ext)

@@ -663,3 +663,4 @@ from .trigonometry import *
 from .primitives_2d import *
 from .primitives_3d import *
 from ._color import _parse_color
+from .text import text
