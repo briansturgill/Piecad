@@ -94,8 +94,9 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
             mesh_output = trimesh.Trimesh(vertices=vertices, faces=mesh.tri_verts)
             if obj._color != None:
                 mesh_output.visual.vertex_colors = obj._color
-            if not mesh_output.is_watertight:
-                print("WARNING: output mesh is not watertight")
+            # Manifold3d has a different definition than Trimesh
+            #if not mesh_output.is_watertight:
+            #    print("WARNING: output mesh is not watertight")
             trimesh.exchange.export.export_mesh(mesh_output, filename, ext)
         else:
             scene = trimesh.Scene()
@@ -108,8 +109,9 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                 mesh_output = trimesh.Trimesh(vertices=vertices, faces=mesh.tri_verts)
                 if obj._color != None:
                     mesh_output.visual.vertex_colors = obj._color
-                if not mesh_output.is_watertight:
-                    print("WARNING: output mesh is not watertight")
+                # Manifold3d has a different definition than Trimesh
+                #if not mesh_output.is_watertight:
+                #    print("WARNING: output mesh is not watertight")
                 scene.add_geometry(mesh_output)
             trimesh.exchange.export.export_scene(scene, filename, ext)
         # trimesh obj file export does not end with newline
