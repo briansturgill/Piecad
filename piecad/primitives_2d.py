@@ -268,3 +268,18 @@ def star(num_points: int, outer_radius: float, inner_radius: float = 0.0) -> Obj
         deg += deg_per_np
 
     return Obj2d(_m.CrossSection([pts]))
+
+
+import importlib
+
+_module = None
+
+
+def text(sz: float, tstr: str):
+    """
+    Draw the ASCII printable characters in `tstr` in shapes in size `sz`.
+    """
+    global _module
+    if _module == None:
+        _module = importlib.import_module("._text", "piecad")
+    return _module._text_func(sz, tstr)

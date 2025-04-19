@@ -1,4 +1,4 @@
-from piecad import *
+from . import *
 
 _height = 18.0
 _descender = 4.0
@@ -1901,7 +1901,7 @@ draw["}"] = draw_rbrace
 draw["~"] = draw_tilde
 
 
-def text(sz: float, tstr: str):
+def _text_func(sz: float, tstr: str):
     """
     Draw the ASCII printable characters in `tstr` in shapes in size `sz`.
     """
