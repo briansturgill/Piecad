@@ -86,6 +86,6 @@ def DrainStand():
     )
 
 
-out = union(DrainStand(), DrainTops(), DrainCase().translate([30, y + 20, 0]))
-view(out)
-save("/tmp/NeilMedDrainStandv2.obj", out)
+save("/tmp/NeilMedDrainStandv2_stand.obj", DrainStand())
+save("/tmp/NeilMedDrainStandv2_case.obj", DrainCase())
+save("/tmp/NeilMedDrainStandv2_tops.obj", DrainTops())
