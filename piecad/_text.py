@@ -225,9 +225,9 @@ def draw_comma(f, stroke):
     ml = _midline * f
     _line_pos += stroke
     return union(
-        circle(radius=stroke / 2).translate([stroke / 2, stroke / 2]),
-        rectangle([stroke / 3, stroke])
-        .translate([stroke / 2, -stroke / 2])
+        circle(radius=stroke).translate([stroke, stroke]),
+        rectangle([stroke / 3, 1.5*stroke])
+        .translate([stroke, -stroke])
         .rotate(-20),
     )
 
@@ -239,7 +239,7 @@ def draw_period(f, stroke):
     ml = _midline * f
     _line_pos += stroke
     return union(
-        circle(radius=stroke / 2).translate([stroke / 2, stroke / 2]),
+        circle(radius=stroke).translate([stroke, stroke]),
     )
 
 
@@ -269,8 +269,8 @@ def draw_colon(f, stroke):
     ml = _midline * f
     _line_pos += stroke
     return union(
-        circle(radius=stroke / 2).translate([stroke / 2, 2 * stroke + stroke / 2]),
-        circle(radius=stroke / 2).translate([stroke / 2, stroke / 2]),
+        circle(radius=stroke).translate([stroke, 2 * stroke + stroke]),
+        circle(radius=stroke).translate([stroke, stroke]),
     )
 
 
@@ -281,10 +281,10 @@ def draw_semicolon(f, stroke):
     ml = _midline * f
     _line_pos += stroke
     return union(
-        circle(radius=stroke / 2).translate([stroke / 2, 2 * stroke + stroke / 2]),
-        circle(radius=stroke / 2).translate([stroke / 2, stroke / 2]),
-        rectangle([stroke / 3, stroke])
-        .translate([stroke / 2, -stroke / 2])
+        circle(radius=stroke).translate([stroke, 2 * stroke + stroke]),
+        circle(radius=stroke).translate([stroke, stroke]),
+        rectangle([stroke / 3, 1.5*stroke])
+        .translate([stroke, -stroke])
         .rotate(-20),
     )
 
@@ -350,7 +350,7 @@ def draw_at(f, stroke):
     o_r = w / 2
     i_r = o_r - stroke
     a_o_r = w / 4
-    a_i_r = a_o_r - stroke
+    a_i_r = w / 5
     _line_pos += w
     return union(
         union(
