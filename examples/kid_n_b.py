@@ -46,6 +46,21 @@ def KidSizedBase():
         cylinder(height=2, radius=kid_circle / 2.0),
     )
 
+def KidSizedWrench():
+    h = kid_height - 2
+    i_r = (kid_nut + 2) / 2
+    o_r = (kid_nut+16) / 2
+    bar_l = 105
+    bar_w = 20
+    hole = cylinder(height=h, radius=i_r, segments=6)
+    outer = cylinder(height=h, radius=o_r)
+    end = difference(outer, hole)
+    return union(
+        end,
+        cube([bar_l, bar_w, h]).translate([o_r-3, -o_r/2, 0]),
+        end.translate([bar_l+o_r*2-5, 0, 0]),
+    )
+
 
 def KidSizedNut():
     return difference(
@@ -91,14 +106,18 @@ n = KidSizedNut()
 
 r = KidSizedThreadedRod(40)
 
-save("Kid_b.obj", b)
+w = KidSizedWrench()
+
+save("/tmp/kid_b.obj", b)
 view(b)
-save("Kid_n.obj", n)
+save("/tmp/kid_n.obj", n)
 view(n)
-save("Kid_r.obj", r)
+save("/tmp/kid_r.obj", r)
 view(r)
+save("/tmp/kid_w.obj", w)
+view(w)
 
 for h in range(2, 7):
     p = KidSizedXPiece(h)
-    save(f"kid_{h}p.obj", p)
+    save(f"/tmp/kid_{h}p.obj", p)
     view(p)
