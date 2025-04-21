@@ -17,10 +17,10 @@ def draw_exclamation(f, stroke):
     h = _height * f
     w = _width * f
     ml = _midline * f
-    _line_pos += stroke
+    _line_pos += 2*stroke
     return union(
-        circle(radius=stroke / 2).translate([stroke / 2, stroke / 2]),
-        rectangle([stroke, h - 2 * stroke]).translate([0, 2 * stroke]),
+        circle(radius=stroke).translate([stroke, stroke]),
+        rectangle([stroke, h - 3 * stroke]).translate([stroke/2, 3 * stroke]),
     )
 
 
@@ -269,7 +269,7 @@ def draw_colon(f, stroke):
     ml = _midline * f
     _line_pos += stroke
     return union(
-        circle(radius=stroke).translate([stroke, 2 * stroke + stroke]),
+        circle(radius=stroke).translate([stroke, 4 * stroke + stroke]),
         circle(radius=stroke).translate([stroke, stroke]),
     )
 
@@ -281,7 +281,7 @@ def draw_semicolon(f, stroke):
     ml = _midline * f
     _line_pos += stroke
     return union(
-        circle(radius=stroke).translate([stroke, 2 * stroke + stroke]),
+        circle(radius=stroke).translate([stroke, 4 * stroke + stroke]),
         circle(radius=stroke).translate([stroke, stroke]),
         rectangle([stroke / 3, 1.5*stroke])
         .translate([stroke, -stroke])
@@ -330,17 +330,17 @@ def draw_question(f, stroke):
     h = _height * f
     w = _width * f
     mb = _midbar * f
-    o_r = w / 2
+    o_r = w / 2.5
     i_r = o_r - stroke
     s = 210
-    e = -95
+    e = -102
     _line_pos += w
     return union(
         difference(circle(radius=o_r), circle(radius=i_r))
         .piecut(s, e)
         .translate([o_r, h - o_r]),
-        rectangle([stroke, h - w]).translate([o_r - stroke / 2, stroke]),
-        circle(radius=stroke / 2).translate([o_r, 0]),
+        rectangle([stroke, h - w - stroke]).translate([o_r - stroke/2, 2.5*stroke]),
+        circle(radius=stroke).translate([o_r, stroke]),
     )
 
 

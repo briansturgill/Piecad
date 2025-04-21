@@ -22,12 +22,14 @@ if __name__ == "__main__":
     l.append("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     l.append("abcdefghijklmnopqrstuvwxyz")
 
-    for sz in [3, 6, 8]:
+    for sz in [4, 5, 6, 8]:
         for s in l:
             c = text(sz, s)
-            h = c.height + 2 * sz
-            w = c.width + 2 * sz
-            c3d = difference(cube([w, h, 3]), c.extrude(2).translate([sz, sz, 2]))
+            pad = 2
+            h = c.height + 4 * pad
+            w = c.width + 4 * pad
+            obj = cube([w, h, 3]).translate([0, 0, -3])
+            c3d = sunken_text(obj, sz, s, pad=pad)
             view(c3d)
             if s[0] == "A":
                 n = "U"

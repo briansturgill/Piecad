@@ -17,6 +17,8 @@ from . import (
     sin,
     ValidationError,
     difference,
+    union,
+    text,
     winding,
     _chkGT,
     _chkTY,
@@ -547,7 +549,7 @@ def revolve(obj: Obj2d, segments: int = -1, revolve_degrees: float = 360.0) -> O
     return Obj3d(_m.Manifold.revolve(obj.mo, segments, revolve_degrees))
 
 
-def sphere(radius: float, segments: int = -1):
+def sphere(radius: float, segments: int = -1) -> Obj3d:
     """
     Create a classical sphere of a given radius.
 
@@ -564,6 +566,18 @@ def sphere(radius: float, segments: int = -1):
 
     return revolve(circ, segments=segments)
 
+def sunken_text(obj: Obj3d, sz: float, tstr: str, height: float = 2, corner_r:float = 2, pad:float = 4) -> Obj3d:
+    """
+    Creates text in `tstr` of size `sz` even with the surface of `obj`.
+    Prints better than differencing the returned `text` with `obj`.
+    """
+    txt = text(sz, tstr)
+    x = txt.width+2*pad
+    y = txt.height+2*pad
+    return union(
+        difference(obj, rounded_rectangle([x, y], corner_r).translate([pad, pad]).extrude(height).translate([0, 0, -height])),
+        txt.translate([pad, pad]).extrude(height).translate([pad, pad, -height])
+    )
 
 def torus(outer_radius: float, inner_radius: float, segments=-1):
     """
