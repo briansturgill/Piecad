@@ -2,6 +2,7 @@ dist
 .vscode
 lib
 bin
+share
 lib64
 html
 include

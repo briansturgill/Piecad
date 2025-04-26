@@ -28,7 +28,7 @@ if __name__ == "__main__":
             pad = 2
             h = c.height + 4 * pad
             w = c.width + 4 * pad
-            obj = cube([w, h, 3]).translate([0, 0, -3])
+            obj = rounded_rectangle([w, h], 2).extrude(2).translate([0, 0, -3])
             c3d = sunken_text(obj, sz, s, pad=pad)
             view(c3d)
             if s[0] == "A":

@@ -1909,8 +1909,8 @@ def _text_func(sz: float, tstr: str):
     _line_pos = 0
     cur_width = 0
     f = sz / _height
-    stroke = 2 * f
-    inter_char_space = 6 * f
+    stroke = sz/10.0
+    inter_char_space = sz/3.0
     l = []
     for c in tstr:
         if c == " ":
