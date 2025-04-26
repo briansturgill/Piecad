@@ -17,10 +17,10 @@ def draw_exclamation(f, stroke):
     h = _height * f
     w = _width * f
     ml = _midline * f
-    _line_pos += 2*stroke
+    _line_pos += 2 * stroke
     return union(
         circle(radius=stroke).translate([stroke, stroke]),
-        rectangle([stroke, h - 3 * stroke]).translate([stroke/2, 3 * stroke]),
+        rectangle([stroke, h - 3 * stroke]).translate([stroke / 2, 3 * stroke]),
     )
 
 
@@ -226,9 +226,7 @@ def draw_comma(f, stroke):
     _line_pos += stroke
     return union(
         circle(radius=stroke).translate([stroke, stroke]),
-        rectangle([stroke / 3, 1.5*stroke])
-        .translate([stroke, -stroke])
-        .rotate(-20),
+        rectangle([stroke / 3, 1.5 * stroke]).translate([stroke, -stroke]).rotate(-20),
     )
 
 
@@ -283,9 +281,7 @@ def draw_semicolon(f, stroke):
     return union(
         circle(radius=stroke).translate([stroke, 4 * stroke + stroke]),
         circle(radius=stroke).translate([stroke, stroke]),
-        rectangle([stroke / 3, 1.5*stroke])
-        .translate([stroke, -stroke])
-        .rotate(-20),
+        rectangle([stroke / 3, 1.5 * stroke]).translate([stroke, -stroke]).rotate(-20),
     )
 
 
@@ -339,7 +335,7 @@ def draw_question(f, stroke):
         difference(circle(radius=o_r), circle(radius=i_r))
         .piecut(s, e)
         .translate([o_r, h - o_r]),
-        rectangle([stroke, h - w - stroke]).translate([o_r - stroke/2, 2.5*stroke]),
+        rectangle([stroke, h - w - stroke]).translate([o_r - stroke / 2, 2.5 * stroke]),
         circle(radius=stroke).translate([o_r, stroke]),
     )
 
@@ -1909,8 +1905,8 @@ def _text_func(sz: float, tstr: str):
     _line_pos = 0
     cur_width = 0
     f = sz / _height
-    stroke = sz/10.0
-    inter_char_space = sz/3.0
+    stroke = sz / 10.0
+    inter_char_space = sz / 3.0
     l = []
     for c in tstr:
         if c == " ":

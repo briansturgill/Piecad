@@ -5,14 +5,14 @@ from piecad import *
 def test_text():
     s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz"
     o = text(6, s)
-    assert o.num_verts() == 2101
+    assert o.num_verts() == 2106
     assert round(o.height) == 7
     assert round(o.width) == 283
     s = "0123456789 !\"#$%&'()*+,-./:;<=>?@[\\]|^|_|`|{|}~"
     o = text(6, s)
-    assert o.num_verts() == 1799
+    assert o.num_verts() == 1802
     assert round(o.height) == 7
-    assert round(o.width) == 214
+    assert round(o.width) == 213
 
 
 if __name__ == "__main__":

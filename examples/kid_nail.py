@@ -31,7 +31,7 @@ def make_nail(r):
             cylinder(radius=stop_r, height=stop_h).translate([0, 0, top_h]),
             cylinder(radius=top_r, height=top_h),
         ),
-        cone(radius_high=r - 2 - 1, radius_low=r - 2, height=h+stop_h).translate(
+        cone(radius_high=r - 2 - 1, radius_low=r - 2, height=h + stop_h).translate(
             [0, 0, top_h + stop_h]
         ),
         polygon([[(0, hole_wb), (hole_wt, hole_h), (hole_wt, hole_h), (hole_wb, 0)]])

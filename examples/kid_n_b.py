@@ -46,10 +46,11 @@ def KidSizedBase():
         cylinder(height=2, radius=kid_circle / 2.0),
     )
 
+
 def KidSizedWrench():
     h = kid_height - 2
     i_r = (kid_nut + 2) / 2
-    o_r = (kid_nut+16) / 2
+    o_r = (kid_nut + 16) / 2
     bar_l = 105
     bar_w = 20
     hole = cylinder(height=h, radius=i_r, segments=6)
@@ -57,8 +58,8 @@ def KidSizedWrench():
     end = difference(outer, hole)
     return union(
         end,
-        cube([bar_l, bar_w, h]).translate([o_r-3, -o_r/2, 0]),
-        end.translate([bar_l+o_r*2-5, 0, 0]),
+        cube([bar_l, bar_w, h]).translate([o_r - 3, -o_r / 2, 0]),
+        end.translate([bar_l + o_r * 2 - 5, 0, 0]),
     )
 
 
