@@ -581,8 +581,8 @@ def sunken_text(
     """
     txt = text(sz, tstr)
     x1, y1, x2, y2 = txt.bounding_box()
-    x = (x2-x1) + 2 * pad
-    y = (y2-y1) + 2 * pad
+    x = (x2 - x1) + 2 * pad
+    y = (y2 - y1) + 2 * pad
     return union(
         difference(
             obj,

@@ -275,9 +275,25 @@ import importlib
 _module = None
 
 
+def text_set_font(font_name: str):
+    """
+    Set the current font used by `text` and `sunken_text`.
+    Fonts are stored in the `_package_name/fonts` directory.
+    Or you can use a full pathname to the `.ttf` file.
+
+    Only one font can be in use at a time. (The previous font is automatically closed.)
+    """
+    global _module
+    if _module == None:
+        _module = importlib.import_module("._text", "piecad")
+    return _module._set_font(sz, tstr)
+
+
 def text(sz: float, tstr: str):
     """
-    Draw the ASCII printable characters in `tstr` in shapes in size `sz`.
+    Draw the unicode printable characters in `tstr` in shapes of size `sz`.
+
+    The default font is `Hack-Regular.ttf`.
     """
     global _module
     if _module == None:
