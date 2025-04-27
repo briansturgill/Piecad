@@ -5,14 +5,10 @@ from piecad import *
 def test_text():
     s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz"
     o = text(6, s)
-    assert o.num_verts() == 2106
-    assert round(o.height) == 7
-    assert round(o.width) == 283
+    assert o.num_verts() == 26241
     s = "0123456789 !\"#$%&'()*+,-./:;<=>?@[\\]|^|_|`|{|}~"
     o = text(6, s)
-    assert o.num_verts() == 1802
-    assert round(o.height) == 7
-    assert round(o.width) == 213
+    assert o.num_verts() == 20718
 
 
 if __name__ == "__main__":
@@ -22,12 +18,13 @@ if __name__ == "__main__":
     l.append("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     l.append("abcdefghijklmnopqrstuvwxyz")
 
-    for sz in [4, 5, 6, 8]:
+    for sz in [3, 4, 5, 6, 8, 10]:
         for s in l:
             c = text(sz, s)
             pad = 2
-            h = c.height + 4 * pad
-            w = c.width + 4 * pad
+            x1, y1, x2, y2 = c.bounding_box()
+            h = (y2-y1) + 4 * pad
+            w = (x2-x1) + 4 * pad
             obj = rounded_rectangle([w, h], 2).extrude(2).translate([0, 0, -3])
             c3d = sunken_text(obj, sz, s, pad=pad)
             view(c3d)

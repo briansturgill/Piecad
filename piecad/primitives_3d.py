@@ -580,8 +580,9 @@ def sunken_text(
     Prints better than differencing the returned `text` with `obj`.
     """
     txt = text(sz, tstr)
-    x = txt.width + 2 * pad
-    y = txt.height + 2 * pad
+    x1, y1, x2, y2 = txt.bounding_box()
+    x = (x2-x1) + 2 * pad
+    y = (y2-y1) + 2 * pad
     return union(
         difference(
             obj,
