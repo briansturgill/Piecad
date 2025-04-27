@@ -286,7 +286,7 @@ def text_set_font(font_name: str):
     global _module
     if _module == None:
         _module = importlib.import_module("._text", "piecad")
-    return _module._set_font(sz, tstr)
+    return _module._set_font(font_name)
 
 
 def text(sz: float, tstr: str):

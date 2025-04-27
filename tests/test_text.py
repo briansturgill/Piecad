@@ -12,28 +12,34 @@ def test_text():
 
 
 if __name__ == "__main__":
-    l = []
-    l.append("0123456789")
-    l.append("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")
-    l.append("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-    l.append("abcdefghijklmnopqrstuvwxyz")
+    test_text = "012-ABCQ.abcg {/:;|}"
+    sizes = [3, 4, 5, 6, 8, 10]
 
-    for sz in [3, 4, 5, 6, 8, 10]:
-        for s in l:
-            c = text(sz, s)
-            pad = 2
-            x1, y1, x2, y2 = c.bounding_box()
-            h = (y2 - y1) + 4 * pad
-            w = (x2 - x1) + 4 * pad
-            obj = rounded_rectangle([w, h], 2).extrude(2).translate([0, 0, -3])
-            c3d = sunken_text(obj, sz, s, pad=pad)
-            view(c3d)
-            if s[0] == "A":
-                n = "U"
-            elif s[0] == "a":
-                n = "l"
-            elif s[0] == "!":
-                n = "S"
-            else:
-                n = "d"
-            save(f"/tmp/text_{sz}_{n}.obj", c3d)
+    def gen_test_output(tag, fname):
+        text_set_font(fname)
+        l = []
+        pad = 4
+        last_sz = sizes[0]
+        off = sizes[0]/2
+        for sz in sizes:
+            s = f"{tag}{sz}: {test_text}"
+            c = text(sz, s).translate([pad, off])
+            l.append(c)
+            off += last_sz+sz
+            last_sz = sz
+        txt3d = union(*l).extrude(pad)
+        x1, y1, z1, x2, y2, z2 = txt3d.bounding_box()
+        h = y2 - y1
+        w = x2 - x1
+        obj = union(
+            difference(
+                rounded_rectangle([w+pad*4, h+pad*4], 3).extrude(2*pad),
+                rounded_rectangle([w+pad*2, h+pad*2], 3).extrude(pad).translate([pad, pad, pad])
+            ),
+            txt3d.translate([pad, 2*pad, pad])
+        )
+        view(obj)
+        save(f"/tmp/{tag}.obj", obj)
+
+    gen_test_output("hack", "Hack-Regular.ttf")
+    gen_test_output("robo", "Roboto-Regular.ttf")

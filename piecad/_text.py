@@ -1,7 +1,9 @@
 from piecad import *
 from fontTools.ttLib import TTFont
+import fontTools.ttLib
+from fontTools.ttLib.removeOverlaps import removeOverlaps
 import fontTools
-import fontPens.flattenPen as fp
+import fontPens.flattenPen
 from importlib import resources as impresources
 from . import fonts
 
@@ -28,6 +30,7 @@ def _set_font(fname):
     _close_font()
 
     _font = TTFont(font_file)
+    removeOverlaps(_font)
     _cmap = _font.getBestCmap()
     _glyph_set = _font.getGlyphSet()
 
@@ -37,10 +40,11 @@ _set_font("Hack-Regular.ttf")
 
 def _get_glyph_polygon(c):
     glyph = _glyph_set[_cmap[ord(c)]]
-    recorder = fontTools.pens.recordingPen.DecomposingRecordingPen(_glyph_set)
-    pen = fp.FlattenPen(recorder)
+    recorder = fontTools.pens.recordingPen.RecordingPen()
+    flattener = fontPens.flattenPen.FlattenPen(recorder)
+    decomposer = fontTools.pens.filterPen.DecomposingFilterPen(flattener, _glyph_set)
 
-    glyph.draw(pen)
+    glyph.draw(decomposer)
     paths = []
     path = []
     for item in recorder.value:
@@ -56,18 +60,14 @@ def _get_glyph_polygon(c):
             print("Unhandled item:", item[0])
 
     max_y = 0
-    max_x = 0
     for pth in paths:
         for pt in pth:
-            x = pt[0]
             y = pt[1]
-            if x > max_x:
-                max_x = x
             if y > max_y:
                 max_y = y
 
-    obj = polygon(paths)
-    obj.max_x = max_x
+    obj = polygon(paths, check=False)
+    obj.width = glyph.width
     obj.max_y = max_y
     return obj
 
@@ -80,18 +80,16 @@ def _text_func(sz: float, tstr: str, inter_char_space=None):
     if inter_char_space == None:
         inter_char_space = sz / 3.0
     l = []
-    max_x = 0
     max_y = 0
     for c in tstr:
         poly = _get_glyph_polygon(c)
-        if poly.max_x > max_x:
-            max_x = poly.max_x
+        width = poly.width
         if poly.max_y > max_y:
             max_y = poly.max_y
         if line_pos > 0:
             line_pos += inter_char_space
         poly = poly.translate([line_pos, 0])
-        line_pos += max_x
+        line_pos += width
         l.append(poly)
     f = sz / max_y
     obj = union(*l).scale([f, f])
