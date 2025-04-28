@@ -278,10 +278,14 @@ _module = None
 def text_set_font(font_name: str):
     """
     Set the current font used by `text`.
-    Fonts are stored in the `_package_name/fonts` directory.
+    Fonts are stored in the `_package_name_/fonts` directory.
     Or you can use a full pathname to the `.ttf` file.
+    Most OpenType/TrueType fonts can be used.
 
     Only one font can be in use at a time. (The previous font is automatically closed.)
+
+    The default font is `Roboto-Regular.ttf`.
+    Also available is `Hack-Regular.ttf` (Monospaced).
     """
     global _module
     if _module == None:
@@ -293,8 +297,8 @@ def text(sz: float, tstr: str):
     """
     Draw the unicode printable characters in `tstr` in shapes of size `sz`.
 
-    The default font is `Hack-Regular.ttf`.
-    Also available is `Roboto-Regular.ttf`.
+    The default font is `Roboto-Regular.ttf`.
+    Also available is `Hack-Regular.ttf` (Monospaced).
     """
     global _module
     if _module == None:

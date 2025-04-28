@@ -35,7 +35,7 @@ def _set_font(fname):
     _glyph_set = _font.getGlyphSet()
 
 
-_set_font("Hack-Regular.ttf")
+_set_font("Roboto-Regular.ttf")
 
 
 def _get_glyph_polygon(c):
