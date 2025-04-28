@@ -527,13 +527,13 @@ def rounded_cylinder(
         .translate((-radius, 0))
         .piecut(90, 270)
     )
-    o3 = revolve(rr, segments)
+    o3 = revolve(rr, segments=segments)
     if center:
         o3 = o3.translate((0, 0, -height / 2.0))
     return o3
 
 
-def revolve(obj: Obj2d, segments: int = -1, revolve_degrees: float = 360.0) -> Obj3d:
+def revolve(obj: Obj2d, revolve_degrees: float = 360.0, segments: int = -1) -> Obj3d:
     """
     Create a Obj3d by revolving an Obj2d around the Y-axis, then rotating it so that Y becomes Z.
 

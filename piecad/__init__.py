@@ -500,13 +500,13 @@ class Obj2d:
             return (o1, o2)
         return o1
 
-    def revolve(self, segments: int = -1, revolve_degrees: float = 360.0):
+    def revolve(self, revolve_degrees: float = 360.0, segments: int = -1):
         """
         Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
 
         For ``segments`` see the documentation of ``set_default_segments``.
         """
-        o3 = revolve(self, segments, revolve_degrees)
+        o3 = revolve(self, revolve_degrees, segments)
         o3._color = self._color
         return o3
 
