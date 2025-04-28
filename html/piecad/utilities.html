@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>piecad.utilities API documentation</title>
+<meta name="description" content="Miscellaneous (but important) functions">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>piecad.utilities</code></h1>
+</header>
+<section id="section-intro">
+<h2 id="miscellaneous-but-important-functions">Miscellaneous (but important) functions</h2>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="piecad.utilities.load"><code class="name flex">
+<span>def <span class="ident">load</span></span>(<span>filename: str) ‑> <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a> | <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load(filename: str) -&gt; Obj3d | Obj2d:
+    &#34;&#34;&#34;
+    Load a 3d object from a file.
+
+    The format read from `filename` is determined by the file&#39;s extention.
+
+    The available formats for 3D are:
+
+    | Type        | Extension    |
+    |:------------|:------------:|
+    | 3MF         |   .3mf       |
+    | GLB         |   .glb       |
+    | GLTF        |   .gltf      |
+    | OBJ         |   .obj       |
+    | PLY         |   .ply       |
+    | STL         |   .stl_ascii |
+    | STL binary  |   .stl       |
+
+    \\(See [https://github/mikedh/trimesh] for more formats.\\)
+
+    Currently 2d objects are not supported.
+    &#34;&#34;&#34;
+    dot_idx = filename.rindex(&#34;.&#34;)
+    ext = filename[dot_idx + 1 :]
+    mesh = trimesh.exchange.load.load(filename, ext, force=&#34;mesh&#34;)
+    if type(mesh) == trimesh.path.Path2D:
+        raise ValidationError(&#34;Currently 2d objects are no supported.&#34;)
+    else:
+        o = Obj3d(_m.Manifold.create_from_verts_and_faces(mesh.vertices, mesh.faces))
+
+    return o</code></pre>
+</details>
+<div class="desc"><p>Load a 3d object from a file.</p>
+<p>The format read from <code>filename</code> is determined by the file's extention.</p>
+<p>The available formats for 3D are:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Type</th>
+<th style="text-align: center;">Extension</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">3MF</td>
+<td style="text-align: center;">.3mf</td>
+</tr>
+<tr>
+<td style="text-align: left;">GLB</td>
+<td style="text-align: center;">.glb</td>
+</tr>
+<tr>
+<td style="text-align: left;">GLTF</td>
+<td style="text-align: center;">.gltf</td>
+</tr>
+<tr>
+<td style="text-align: left;">OBJ</td>
+<td style="text-align: center;">.obj</td>
+</tr>
+<tr>
+<td style="text-align: left;">PLY</td>
+<td style="text-align: center;">.ply</td>
+</tr>
+<tr>
+<td style="text-align: left;">STL</td>
+<td style="text-align: center;">.stl_ascii</td>
+</tr>
+<tr>
+<td style="text-align: left;">STL binary</td>
+<td style="text-align: center;">.stl</td>
+</tr>
+</tbody>
+</table>
+<p>(See [<a href="https://github/mikedh/trimesh]">https://github/mikedh/trimesh]</a> for more formats.)</p>
+<p>Currently 2d objects are not supported.</p></div>
+</dd>
+<dt id="piecad.utilities.save"><code class="name flex">
+<span>def <span class="ident">save</span></span>(<span>filename: str,<br>*objs: <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a> | <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save(filename: str, *objs: Obj3d | Obj2d) -&gt; None:
+    &#34;&#34;&#34;
+    Save a 3d or 2d object in a file suitable for printing, etc.
+
+    The format placed in [p:filename] is determined by the file&#39;s extention.
+
+    The available formats for 3D are:
+
+    | Type        | Extension    |
+    |:------------|:------------:|
+    | 3MF         |   .3mf       |
+    | GLB         |   .glb       |
+    | GLTF        |   .gltf      |
+    | OBJ         |   .obj       |
+    | PLY         |   .ply       |
+    | STL         |   .stl_ascii |
+    | STL binary  |   .stl       |
+
+    \\(See [https://github/mikedh/trimesh] for more formats.\\)
+
+    For 2D, only the SVG (.svg) format is available.
+    &#34;&#34;&#34;
+    _chkGE(&#34;len(objs)&#34;, len(objs), 1)
+    dot_idx = filename.rindex(&#34;.&#34;)
+    ext = filename[dot_idx + 1 :]
+    if type(objs[0]) == Obj3d:
+        if len(objs) == 1:
+            obj = objs[0]
+            mesh = obj.mo.to_mesh()
+            if mesh.vert_properties.shape[1] &gt; 3:
+                vertices = mesh.vert_properties[:, :3]
+            else:
+                vertices = mesh.vert_properties
+            mesh_output = trimesh.Trimesh(vertices=vertices, faces=mesh.tri_verts)
+            if obj._color != None:
+                mesh_output.visual.vertex_colors = obj._color
+            # Manifold3d has a different definition than Trimesh
+            # if not mesh_output.is_watertight:
+            #    print(&#34;WARNING: output mesh is not watertight&#34;)
+            trimesh.exchange.export.export_mesh(mesh_output, filename, ext)
+        else:
+            scene = trimesh.Scene()
+            for obj in objs:
+                mesh = obj.mo.to_mesh()
+                if mesh.vert_properties.shape[1] &gt; 3:
+                    vertices = mesh.vert_properties[:, :3]
+                else:
+                    vertices = mesh.vert_properties
+                mesh_output = trimesh.Trimesh(vertices=vertices, faces=mesh.tri_verts)
+                if obj._color != None:
+                    mesh_output.visual.vertex_colors = obj._color
+                # Manifold3d has a different definition than Trimesh
+                # if not mesh_output.is_watertight:
+                #    print(&#34;WARNING: output mesh is not watertight&#34;)
+                scene.add_geometry(mesh_output)
+            trimesh.exchange.export.export_scene(scene, filename, ext)
+        # trimesh obj file export does not end with newline
+        # currently this upsets prusa_slicer
+        if ext == &#34;obj&#34;:
+            with open(filename, &#34;a&#34;) as f:
+                f.write(&#34;\n&#34;)
+    else:  # Obj2d
+        if ext != &#34;svg&#34;:
+            raise (ValidationError(&#34;Only the SVG format is supported for Obj2d.&#34;))
+        _save_svg(filename, *objs)</code></pre>
+</details>
+<div class="desc"><p>Save a 3d or 2d object in a file suitable for printing, etc.</p>
+<p>The format placed in [p:filename] is determined by the file's extention.</p>
+<p>The available formats for 3D are:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Type</th>
+<th style="text-align: center;">Extension</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">3MF</td>
+<td style="text-align: center;">.3mf</td>
+</tr>
+<tr>
+<td style="text-align: left;">GLB</td>
+<td style="text-align: center;">.glb</td>
+</tr>
+<tr>
+<td style="text-align: left;">GLTF</td>
+<td style="text-align: center;">.gltf</td>
+</tr>
+<tr>
+<td style="text-align: left;">OBJ</td>
+<td style="text-align: center;">.obj</td>
+</tr>
+<tr>
+<td style="text-align: left;">PLY</td>
+<td style="text-align: center;">.ply</td>
+</tr>
+<tr>
+<td style="text-align: left;">STL</td>
+<td style="text-align: center;">.stl_ascii</td>
+</tr>
+<tr>
+<td style="text-align: left;">STL binary</td>
+<td style="text-align: center;">.stl</td>
+</tr>
+</tbody>
+</table>
+<p>(See [<a href="https://github/mikedh/trimesh]">https://github/mikedh/trimesh]</a> for more formats.)</p>
+<p>For 2D, only the SVG (.svg) format is available.</p></div>
+</dd>
+<dt id="piecad.utilities.view"><code class="name flex">
+<span>def <span class="ident">view</span></span>(<span>obj: <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a> | <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a>,<br>title: str = '') ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def view(obj: Obj3d | Obj2d, title: str = &#34;&#34;) -&gt; None:
+    &#34;&#34;&#34;
+    Use CADView protocol to display the geometry object.
+
+    Returns obj unchanged... so that it works well in return statements.
+    &#34;&#34;&#34;
+    global _view_thread
+    if _viewer_available == False:
+        return
+
+    _chkGO(&#34;obj&#34;, obj)
+
+    if title == &#34;&#34;:
+        title = _info_str(&#34;view&#34;)
+
+    if type(obj) == Obj2d:
+        color = obj._color
+        obj = Obj2d(_m.Manifold.extrude(obj.mo, 0.1))
+        obj._color = color
+
+    if _view_thread == None:
+        _view_thread = threading.Thread(target=_view_handler, daemon=True)
+        _view_thread.start()
+        atexit.register(_tell_view_handler_to_exit)
+
+    mesh = obj.mo.to_mesh()
+    if mesh.vert_properties.shape[1] &gt; 3:
+        vertices = mesh.vert_properties[:, :3]
+    else:
+        vertices = mesh.vert_properties
+    faces = mesh.tri_verts
+    view_data = {}
+    view_data[&#34;title&#34;] = title
+    view_data[&#34;color&#34;] = [210, 180, 140] if obj._color == None else obj._color
+    view_data[&#34;vertices&#34;] = vertices.tolist()
+    fl = faces.tolist()
+    # for one in fl:
+    #    one.insert(0, len(one))
+    # fl.insert(0, len(fl))
+    view_data[&#34;faces&#34;] = fl
+    _view_queue.put(view_data)
+    return obj</code></pre>
+</details>
+<div class="desc"><p>Use CADView protocol to display the geometry object.</p>
+<p>Returns obj unchanged&hellip; so that it works well in return statements.</p></div>
+</dd>
+<dt id="piecad.utilities.winding"><code class="name flex">
+<span>def <span class="ident">winding</span></span>(<span>lt: list[tuple[float, float]]) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def winding(lt: list[tuple[float, float]]) -&gt; str:
+    &#34;&#34;&#34;
+    String description of winding of a 2D polygon.
+
+    Returns one of `&#34;cw&#34;`, `&#34;ccw&#34;`, `&#34;zero&#34;` or `&#34;too small&#34;`.
+    &#34;&#34;&#34;
+
+    def wstr(winding):
+        if winding &gt; 0:
+            return &#34;cw&#34;
+        if winding &lt; 0:
+            return &#34;ccw&#34;
+        return &#34;zero&#34;
+
+    length = len(lt)
+    if length &lt; 3:
+        return &#34;too small&#34;
+    winding = 0.0
+    for i in range(0, length):
+        winding += (lt[(i + 1) % length][0] - lt[i][0]) * (
+            lt[(i + 1) % length][1] + lt[i][1]
+        )
+    return wstr(winding)</code></pre>
+</details>
+<div class="desc"><p>String description of winding of a 2D polygon.</p>
+<p>Returns one of <code>"cw"</code>, <code>"ccw"</code>, <code>"zero"</code> or <code>"too small"</code>.</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul>
+<li><a href="#miscellaneous-but-important-functions">Miscellaneous (but important) functions</a></li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="piecad" href="index.html">piecad</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="piecad.utilities.load" href="#piecad.utilities.load">load</a></code></li>
+<li><code><a title="piecad.utilities.save" href="#piecad.utilities.save">save</a></code></li>
+<li><code><a title="piecad.utilities.view" href="#piecad.utilities.view">view</a></code></li>
+<li><code><a title="piecad.utilities.winding" href="#piecad.utilities.winding">winding</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

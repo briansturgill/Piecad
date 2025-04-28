@@ -4,7 +4,7 @@ lib
 bin
 share
 lib64
-html
+.benchmarks
 include
 manifold3d.cpython-310-x86_64-linux-gnu.so
 __pycache__

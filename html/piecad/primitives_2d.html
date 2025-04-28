@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>piecad.primitives_2d API documentation</title>
+<meta name="description" content="Create 2D objects such as circles and retangles.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>piecad.primitives_2d</code></h1>
+</header>
+<section id="section-intro">
+<h2 id="create-2d-objects-such-as-circles-and-retangles">Create 2D objects such as circles and retangles.</h2>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="piecad.primitives_2d.circle"><code class="name flex">
+<span>def <span class="ident">circle</span></span>(<span>radius: float, segments: int = -1) ‑> <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def circle(radius: float, segments: int = -1) -&gt; Obj2d:
+    &#34;&#34;&#34;
+    Make a circle of a given radius.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    Circles are created with the center at `(0,0)`
+    &#34;&#34;&#34;
+    if segments == -1:
+        segments = config[&#34;DefaultSegments&#34;]
+    _chkGT(&#34;radius&#34;, radius, 0.0)
+    _chkGE(&#34;segments&#34;, segments, 3)
+
+    if segments in _unit_circles:
+        circ = _unit_circles[segments]
+    else:
+        circ = _m.CrossSection.circle(1, segments)
+        _unit_circles[segments] = circ
+
+    return Obj2d(circ.scale((radius, radius)))</code></pre>
+</details>
+<div class="desc"><p>Make a circle of a given radius.</p>
+<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>Circles are created with the center at <code>(0,0)</code></p></div>
+</dd>
+<dt id="piecad.primitives_2d.ellipse"><code class="name flex">
+<span>def <span class="ident">ellipse</span></span>(<span>radii: list[float, float], segments: int = -1) ‑> <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ellipse(radii: list[float, float], segments: int = -1) -&gt; Obj2d:
+    &#34;&#34;&#34;
+    Make an ellipse with the given radii.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    Ellipses are created with the center at `(0,0)`
+    &#34;&#34;&#34;
+    if segments == -1:
+        segments = config[&#34;DefaultSegments&#34;]
+    _chkV2(&#34;radii&#34;, radii)
+    _chkGE(&#34;segments&#34;, segments, 3)
+
+    if segments in _unit_circles:
+        circ = _unit_circles[segments]
+    else:
+        circ = _m.CrossSection.circle(1, segments)
+        _unit_circles[segments] = circ
+
+    return Obj2d(circ.scale(radii))</code></pre>
+</details>
+<div class="desc"><p>Make an ellipse with the given radii.</p>
+<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>Ellipses are created with the center at <code>(0,0)</code></p></div>
+</dd>
+<dt id="piecad.primitives_2d.polygon"><code class="name flex">
+<span>def <span class="ident">polygon</span></span>(<span>paths: list[list[tuple[float, float]]], check: bool = True) ‑> <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def polygon(paths: list[list[tuple[float, float]]], check: bool = True) -&gt; Obj2d:
+    &#34;&#34;&#34;
+    Create a polygon from a single or multiple closed paths of points.
+
+    Polygons follow the even/odd fill rule, meaning:
+    * You can have multiple outer shapes.
+    * Outer shapes can have holes.
+    * Holes can have inner shapes.
+    * Inner shapes can have holes
+    * And so on.
+
+    Holes can only occur inside a shape.
+    A shape is either an outer shape or is inside a hole.
+
+    Inside means fully contained inside. No intersections are allowed.
+
+    By default we check if Clipper2 found a self-intersection.
+    If it has, we issue a diagnostic message.
+    The check takes about 40% more time, so in a heavily used
+    situation, where you are absolutely sure you&#39;re not self-intersectiong,
+    you can set `check` to &#39;False`.
+
+    Be aware that if you set `check` to `False` that the underlying Clipper2
+    library will attempt to &#34;repair&#34; any self-intersections.
+    The &#34;repair&#34; is likely to cause a failed 3d print.
+    (The &#34;repair&#34; is to emit two paths that overlap in one point, but
+    are separate closed paths. These may get treated as two different objects
+    that will be much too close together for 3d printing purposes.)
+
+    If you understand winding, shapes are CCW, holes are CW.
+    But Clipper2 automatically straightens it out for you.
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;280&#34; src=&#34;examples/polygon.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+
+    obj = Obj2d(_m.CrossSection(paths, _m.FillRule.EvenOdd))
+    if check and len(obj.to_paths()) != len(paths):
+        segments = []
+        for path in paths:
+            n = len(path)
+            for i in range(0, n):
+                segments.append((path[i], path[(i + 1) % n]))
+
+        isects = _isect_segments_include_segments(segments)
+
+        if len(isects) &gt; 0:
+            txt = []
+            txt.append(&#34;ERROR: your polygon path(s) have self-intersection(s).\n&#34;)
+            txt.append(
+                &#34;Intersections format: (Intersection_point, [(Segment1), (Segment2)])\n&#34;
+            )
+            for isect in isects:
+                txt.append(repr(isect) + &#34;\n&#34;)
+            raise ValidationError(&#34;&#34;.join(txt))
+    return obj</code></pre>
+</details>
+<div class="desc"><p>Create a polygon from a single or multiple closed paths of points.</p>
+<p>Polygons follow the even/odd fill rule, meaning:
+* You can have multiple outer shapes.
+* Outer shapes can have holes.
+* Holes can have inner shapes.
+* Inner shapes can have holes
+* And so on.</p>
+<p>Holes can only occur inside a shape.
+A shape is either an outer shape or is inside a hole.</p>
+<p>Inside means fully contained inside. No intersections are allowed.</p>
+<p>By default we check if Clipper2 found a self-intersection.
+If it has, we issue a diagnostic message.
+The check takes about 40% more time, so in a heavily used
+situation, where you are absolutely sure you're not self-intersectiong,
+you can set <code>check</code> to 'False`.</p>
+<p>Be aware that if you set <code>check</code> to <code>False</code> that the underlying Clipper2
+library will attempt to "repair" any self-intersections.
+The "repair" is likely to cause a failed 3d print.
+(The "repair" is to emit two paths that overlap in one point, but
+are separate closed paths. These may get treated as two different objects
+that will be much too close together for 3d printing purposes.)</p>
+<p>If you understand winding, shapes are CCW, holes are CW.
+But Clipper2 automatically straightens it out for you.</p>
+<iframe width="100%" height="280" src="examples/polygon.html"></iframe></div>
+</dd>
+<dt id="piecad.primitives_2d.rectangle"><code class="name flex">
+<span>def <span class="ident">rectangle</span></span>(<span>size: list[float, float], center: bool = False) ‑> <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rectangle(size: list[float, float], center: bool = False) -&gt; Obj2d:
+    &#34;&#34;&#34;
+    Make a rectangle of a given size.
+
+    By default, the bottom left corner of the rectangle will be at `(0,0)`.
+    When `center` is `True` it will cause the rectangle to be centered at `(0,0)`.
+    &#34;&#34;&#34;
+    if type(size) == float or type(size) == int:
+        return square(size)
+    _chkV2(&#34;size&#34;, size)
+
+    return Obj2d(_m.CrossSection.square(size, center))</code></pre>
+</details>
+<div class="desc"><p>Make a rectangle of a given size.</p>
+<p>By default, the bottom left corner of the rectangle will be at <code>(0,0)</code>.
+When <code>center</code> is <code>True</code> it will cause the rectangle to be centered at <code>(0,0)</code>.</p></div>
+</dd>
+<dt id="piecad.primitives_2d.rounded_rectangle"><code class="name flex">
+<span>def <span class="ident">rounded_rectangle</span></span>(<span>size: list[float, float],<br>rounding_radius: float = 0.2,<br>segments: int = -1,<br>center: bool = False) ‑> <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rounded_rectangle(
+    size: list[float, float],
+    rounding_radius: float = 0.2,
+    segments: int = -1,
+    center: bool = False,
+) -&gt; Obj2d:
+    &#34;&#34;&#34;
+    Create a rectangle with rounded corners.
+
+    The `rounded_rectangele` will have dimensions of `size` dimensions and with
+    corners of `rounding_radius`.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+    Each corner will be given approximately 1/4 of segments.
+
+    By default, the bottom left corner of the square will be at `(0,0)`.
+    When `center` is `True` it will cause the square to be centered at `(0,0)`.
+    &#34;&#34;&#34;
+    if segments == -1:
+        segments = config[&#34;DefaultSegments&#34;]
+    _chkGE(&#34;segments&#34;, segments, 3)
+    _chkV2(&#34;size&#34;, size)
+    _chkGT(&#34;rounding_radius&#34;, rounding_radius, 0)
+
+    rr = rounding_radius
+    circ = circle(rr, segments)
+
+    x = size[0]
+    y = size[1]
+
+    c_x_off = -x / 2.0 if center else 0.0
+    c_y_off = -y / 2.0 if center else 0.0
+
+    return Obj2d(
+        _m.CrossSection.batch_hull(
+            [
+                circ.translate((c_x_off + rr, c_y_off + rr)).mo,
+                circ.translate((c_x_off + size[0] - rr, c_y_off + rr)).mo,
+                circ.translate((c_x_off + size[0] - rr, c_y_off + size[1] - rr)).mo,
+                circ.translate((c_x_off + rr, c_y_off + size[1] - rr)).mo,
+            ]
+        )
+    )
+
+    # segs_per_arc = segments // 4 + 1
+    # deg_per_arc = 90.0 / segs_per_arc
+    # pts = []
+    # x, y = size
+
+    # def make_arc_trig_vals(deg):
+    #    end = deg + 90
+    #    l = []
+    #    for i in range(0, segs_per_arc - 1):
+    #        l.append((cos(deg), sin(deg)))
+    #        deg += deg_per_arc
+
+    #    l.append((cos(end), sin(end)))
+    #    return l
+
+    # if segments in _arc_trig_vals_map:
+    #    arc_trig_vals = _arc_trig_vals_map[segments]
+    # else:
+    #    arc_trig_vals = (
+    #        make_arc_trig_vals(180),  # Bottom left
+    #        make_arc_trig_vals(270),  # Bottom right
+    #        make_arc_trig_vals(0),  # Top right
+    #        make_arc_trig_vals(90),  # Top left
+    #    )
+    #    _arc_trig_vals_map[segments] = arc_trig_vals
+
+    # rr = rounding_radius
+
+    # pts = []
+    # c_x_off = -x / 2.0 if center else 0.0
+    # c_y_off = -y / 2.0 if center else 0.0
+
+    # def arc(tvals, rad, x_off, y_off):
+    #    x_off += c_x_off
+    #    y_off += c_y_off
+    #    for c, s in tvals:
+    #        pts.append((x_off + rad * c, y_off + rad * s))
+
+    # bl, br, tr, tl = arc_trig_vals
+    # arc(bl, rr, rr, rr)  # Bottom left
+    # arc(br, rr, x - rr, rr)  # Bottom right
+    # arc(tr, rr, x - rr, y - rr)  # Top right
+    # arc(tl, rr, rr, y - rr)  # Top left
+
+    # return Obj2d(_m.CrossSection([pts], _m.FillRule.EvenOdd))</code></pre>
+</details>
+<div class="desc"><p>Create a rectangle with rounded corners.</p>
+<p>The <code>rounded_rectangele</code> will have dimensions of <code>size</code> dimensions and with
+corners of <code>rounding_radius</code>.</p>
+<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.
+Each corner will be given approximately 1/4 of segments.</p>
+<p>By default, the bottom left corner of the square will be at <code>(0,0)</code>.
+When <code>center</code> is <code>True</code> it will cause the square to be centered at <code>(0,0)</code>.</p></div>
+</dd>
+<dt id="piecad.primitives_2d.square"><code class="name flex">
+<span>def <span class="ident">square</span></span>(<span>size: float, center: bool = False) ‑> <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def square(size: float, center: bool = False) -&gt; Obj2d:
+    &#34;&#34;&#34;
+    Make a square of a given size.
+
+    By default, the bottom left corner of the square will be at `(0,0)`.
+    When `center` is `True` it will cause the square to be centered at `(0,0)`.
+    &#34;&#34;&#34;
+    if type(size) == list or type(size) == tuple:
+        return rectangle(size)
+
+    _chkGT(&#34;size&#34;, size, 0)
+
+    return Obj2d(_m.CrossSection.square((size, size), center))</code></pre>
+</details>
+<div class="desc"><p>Make a square of a given size.</p>
+<p>By default, the bottom left corner of the square will be at <code>(0,0)</code>.
+When <code>center</code> is <code>True</code> it will cause the square to be centered at <code>(0,0)</code>.</p></div>
+</dd>
+<dt id="piecad.primitives_2d.star"><code class="name flex">
+<span>def <span class="ident">star</span></span>(<span>num_points: int, outer_radius: float, inner_radius: float = 0.0) ‑> <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def star(num_points: int, outer_radius: float, inner_radius: float = 0.0) -&gt; Obj2d:
+    &#34;&#34;&#34;
+    Make a regular star of a given number of points.
+
+    If `inner_radius` is `0.0` then it will be calculated based on outer_radius.
+
+    Stars are created with the center at `(0,0)`.
+    &#34;&#34;&#34;
+    _chkGE(&#34;num_points&#34;, num_points, 3)
+    _chkGT(&#34;outer_radius&#34;, outer_radius, 0.0)
+    _chkGE(&#34;inner_radius&#34;, inner_radius, 0.0)
+    pts = []
+    deg_per_np = 360.0 / num_points
+    ido = deg_per_np / 2.0  # inner_degree_offset
+
+    if inner_radius == 0.0:
+        ratio = cos(360.0 / num_points) / cos(180 / num_points)
+        inner_radius = outer_radius * ratio
+
+    deg = 90
+    for i in range(0, num_points):
+        pts.append((outer_radius * cos(deg), outer_radius * sin(deg)))
+        pts.append((inner_radius * cos(deg + ido), inner_radius * sin(deg + ido)))
+        deg += deg_per_np
+
+    return Obj2d(_m.CrossSection([pts]))</code></pre>
+</details>
+<div class="desc"><p>Make a regular star of a given number of points.</p>
+<p>If <code>inner_radius</code> is <code>0.0</code> then it will be calculated based on outer_radius.</p>
+<p>Stars are created with the center at <code>(0,0)</code>.</p></div>
+</dd>
+<dt id="piecad.primitives_2d.text"><code class="name flex">
+<span>def <span class="ident">text</span></span>(<span>sz: float, tstr: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def text(sz: float, tstr: str):
+    &#34;&#34;&#34;
+    Draw the unicode printable characters in `tstr` in shapes of size `sz`.
+
+    The default font is `Roboto-Regular.ttf`.
+    Also available is `Hack-Regular.ttf` (Monospaced).
+    &#34;&#34;&#34;
+    global _module
+    if _module == None:
+        _module = importlib.import_module(&#34;._text&#34;, &#34;piecad&#34;)
+    return _module._text_func(sz, tstr)</code></pre>
+</details>
+<div class="desc"><p>Draw the unicode printable characters in <code>tstr</code> in shapes of size <code>sz</code>.</p>
+<p>The default font is <code>Roboto-Regular.ttf</code>.
+Also available is <code>Hack-Regular.ttf</code> (Monospaced).</p></div>
+</dd>
+<dt id="piecad.primitives_2d.text_set_font"><code class="name flex">
+<span>def <span class="ident">text_set_font</span></span>(<span>font_name: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def text_set_font(font_name: str):
+    &#34;&#34;&#34;
+    Set the current font used by `text`.
+    Fonts are stored in the `_package_name_/fonts` directory.
+    Or you can use a full pathname to the `.ttf` file.
+    Most OpenType/TrueType fonts can be used.
+
+    Only one font can be in use at a time. (The previous font is automatically closed.)
+
+    The default font is `Roboto-Regular.ttf`.
+    Also available is `Hack-Regular.ttf` (Monospaced).
+    &#34;&#34;&#34;
+    global _module
+    if _module == None:
+        _module = importlib.import_module(&#34;._text&#34;, &#34;piecad&#34;)
+    return _module._set_font(font_name)</code></pre>
+</details>
+<div class="desc"><p>Set the current font used by <code><a title="piecad.primitives_2d.text" href="#piecad.primitives_2d.text">text()</a></code>.
+Fonts are stored in the <code>_package_name_/fonts</code> directory.
+Or you can use a full pathname to the <code>.ttf</code> file.
+Most OpenType/TrueType fonts can be used.</p>
+<p>Only one font can be in use at a time. (The previous font is automatically closed.)</p>
+<p>The default font is <code>Roboto-Regular.ttf</code>.
+Also available is <code>Hack-Regular.ttf</code> (Monospaced).</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul>
+<li><a href="#create-2d-objects-such-as-circles-and-retangles">Create 2D objects such as circles and retangles.</a></li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="piecad" href="index.html">piecad</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="piecad.primitives_2d.circle" href="#piecad.primitives_2d.circle">circle</a></code></li>
+<li><code><a title="piecad.primitives_2d.ellipse" href="#piecad.primitives_2d.ellipse">ellipse</a></code></li>
+<li><code><a title="piecad.primitives_2d.polygon" href="#piecad.primitives_2d.polygon">polygon</a></code></li>
+<li><code><a title="piecad.primitives_2d.rectangle" href="#piecad.primitives_2d.rectangle">rectangle</a></code></li>
+<li><code><a title="piecad.primitives_2d.rounded_rectangle" href="#piecad.primitives_2d.rounded_rectangle">rounded_rectangle</a></code></li>
+<li><code><a title="piecad.primitives_2d.square" href="#piecad.primitives_2d.square">square</a></code></li>
+<li><code><a title="piecad.primitives_2d.star" href="#piecad.primitives_2d.star">star</a></code></li>
+<li><code><a title="piecad.primitives_2d.text" href="#piecad.primitives_2d.text">text</a></code></li>
+<li><code><a title="piecad.primitives_2d.text_set_font" href="#piecad.primitives_2d.text_set_font">text_set_font</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

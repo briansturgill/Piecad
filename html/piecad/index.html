@@ -1,0 +1,1740 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>piecad API documentation</title>
+<meta name="description" content="&#34;Easy as Pie&#34; CAD (Piecad) …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Package <code>piecad</code></h1>
+</header>
+<section id="section-intro">
+<p>"Easy as Pie" CAD (Piecad)</p>
+<p>It is my opinionted view of what a good, simple CAD API should look like.</p>
+<p>For many years I used <a href="https://www.openscad.org">OpenSCAD</a>,
+but the functional language it uses was often a hinderance and its speed
+was poor.</p>
+<p>Piecad is based on <a href="https://github.com/elalish/manifold">Manifold</a>.
+Manifold incorporates <a href="https://github.com/AngusJohnson/Clipper2">Clipper2</a> for 2D objects.
+It also uses <a href="https://github.com/akuukka/quickhull"><code>quickhull</code></a> for 3d convex hulls.
+You can see Manifold's web site for other packages that are used.</p>
+<p>Piecad also uses <a href="https://github.com/ideasman42/isect_segments-bentley_ottmann">isect_segments-bentley_ottmann</a>
+to check for polygon self intersections.</p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="piecad.bulk_ops" href="bulk_ops.html">piecad.bulk_ops</a></code></dt>
+<dd>
+<div class="desc"><p>Miscellaneous bulk operations that work on multiple objects.</p></div>
+</dd>
+<dt><code class="name"><a title="piecad.primitives_2d" href="primitives_2d.html">piecad.primitives_2d</a></code></dt>
+<dd>
+<div class="desc"><p>Create 2D objects such as circles and retangles.</p></div>
+</dd>
+<dt><code class="name"><a title="piecad.primitives_3d" href="primitives_3d.html">piecad.primitives_3d</a></code></dt>
+<dd>
+<div class="desc"><p>Create 3D objects such as spheres and cubes.</p></div>
+</dd>
+<dt><code class="name"><a title="piecad.trigonometry" href="trigonometry.html">piecad.trigonometry</a></code></dt>
+<dd>
+<div class="desc"><p>Trigonometry functions that use and return degrees …</p></div>
+</dd>
+<dt><code class="name"><a title="piecad.utilities" href="utilities.html">piecad.utilities</a></code></dt>
+<dd>
+<div class="desc"><p>Miscellaneous (but important) functions</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="piecad.set_default_segments"><code class="name flex">
+<span>def <span class="ident">set_default_segments</span></span>(<span>segments: int = 36) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_default_segments(segments: int = 36) -&gt; None:
+    &#34;&#34;&#34;
+    Set the default value for the number of circular segments to use.
+
+    Functions that produce circular objects need to know how
+    many segments should be used to draw the &#34;circle&#34;.
+    For example if you call the ``circle`` function with ``segments = 4``
+    it will produce a square... in most cases undesirable, though
+    a ``circle`` with ``segments = 6`` will produce a hexagon which
+    can be useful.
+    In most cases a higher number is desired as it produces objects
+    that look truly round.
+
+    The default value of `segments` 36.
+
+    If you need a circular objects primary axes to have exact values (at the
+    90 degree marks), chose a `segments` value that is a multiple of 4.
+
+    In circular functions, if the value passed in for ``segments`` is ``-1``, then
+    the ``default_segments`` value is used. Thus circular functions have
+    a default value for ``segments`` of ``-1``.
+    &#34;&#34;&#34;
+    global _default_segments
+    _chkGE(&#34;segments&#34;, segments, 3)
+    config[&#34;DefaultSegments&#34;] = segments</code></pre>
+</details>
+<div class="desc"><p>Set the default value for the number of circular segments to use.</p>
+<p>Functions that produce circular objects need to know how
+many segments should be used to draw the "circle".
+For example if you call the <code>circle</code> function with <code>segments = 4</code>
+it will produce a square&hellip; in most cases undesirable, though
+a <code>circle</code> with <code>segments = 6</code> will produce a hexagon which
+can be useful.
+In most cases a higher number is desired as it produces objects
+that look truly round.</p>
+<p>The default value of <code>segments</code> 36.</p>
+<p>If you need a circular objects primary axes to have exact values (at the
+90 degree marks), chose a <code>segments</code> value that is a multiple of 4.</p>
+<p>In circular functions, if the value passed in for <code>segments</code> is <code>-1</code>, then
+the <code>default_segments</code> value is used. Thus circular functions have
+a default value for <code>segments</code> of <code>-1</code>.</p></div>
+</dd>
+<dt id="piecad.version"><code class="name flex">
+<span>def <span class="ident">version</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def version():
+    &#34;Piecad version&#34;
+    return __version__</code></pre>
+</details>
+<div class="desc"><p>Piecad version</p></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="piecad.Obj2d"><code class="flex name class">
+<span>class <span class="ident">Obj2d</span></span>
+<span>(</span><span>o: object = None, color=None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Obj2d:
+    &#34;&#34;&#34;
+    Wrapper class for &#34;CrossSections&#34;, which are 2D graphical objects.
+
+    Attributes:
+        mo The Manifold::CrossSection object used by manifold3d.
+    &#34;&#34;&#34;
+
+    def __init__(self, o: object = None, color=None):
+        if o == None:
+            o = _m.CrossSection()
+        self.mo = o
+        self._color = color
+
+    def area(self) -&gt; float:
+        &#34;&#34;&#34;
+        The area of this Obj2d.
+        &#34;&#34;&#34;
+        return self.mo.area()
+
+    def bounding_box(self):
+        &#34;&#34;&#34;
+        Return the bounding box of this object.
+
+        Return a tuple: (left, bottom, right, top) which represents
+        a rectangle that would exactly contain this object.
+
+        It can be broken up like this: `x1, y1, x2, y2 = obj.bounding_box()`
+        &#34;&#34;&#34;
+        return self.mo.bounds()
+
+    def center(
+        self, axes: tuple[bool, bool] = (True, True), at: tuple[float, float] = (0, 0)
+    ):
+        &#34;&#34;&#34;
+        Center the object on each of the `True` axes.
+
+        Parameter `at` specifies the point to center on.
+
+        &#34;&#34;&#34;
+        xmin, ymin, xmax, ymax = self.bounding_box()
+        mid_x = (xmax - xmin) / 2 + xmin
+        mid_y = (ymax - ymin) / 2 + ymin
+        new_x = 0
+        new_x = 0
+        new_x = 0
+        if axes[0]:
+            new_x = at[0] - mid_x
+        if axes[1]:
+            new_y = at[0] - mid_y
+        o2 = self.translate((new_x, new_y))
+        o2._color = self._color
+        return o2
+
+    def color(self, cspec):
+        &#34;&#34;&#34;
+        Assign the given color to this object.&lt;/summary&gt;
+
+        Parameters:
+
+            The `color` parameter has 3 formats:
+
+            *   A tuple of RGB color values, where each value is between
+                0 and 255. Such as: `(255, 128, 0)`
+
+            * A string beginning with &#34;#&#34; followed by 6 hex digits
+                representing RGB. Such as &#34;#FF00FF&#34;
+            * A string that is one of the basic or extended CSS color names.
+              For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color/keywords)
+        &#34;&#34;&#34;
+        return Obj2d(self.mo, _parse_color(cspec))
+
+    def decompose(self) -&gt; list[Obj2d]:
+        &#34;&#34;&#34;
+        Decompose this object into a list of topologically disjoint objects.
+
+        &#34;&#34;&#34;
+        ml = self.mo.decompose()
+        l = []
+        for m in ml:
+            l.append(Obj2d(m, color=self._color))
+        return l
+
+    def is_empty(self):
+        &#34;&#34;&#34;
+        Is this object empty?
+        &#34;&#34;&#34;
+        return self.mo.is_empty()
+
+    def extrude(self, height: int):
+        &#34;&#34;&#34;
+        Extrude this object into a Obj3d of the given height.
+        &#34;&#34;&#34;
+        o3 = Obj3d(_m.Manifold.extrude(self.mo, height))
+        o3._color = self._color
+        return o3
+
+    def mirror(self, axes: tuple[bool, bool]):
+        &#34;&#34;&#34;
+        Mirror this object around the given axes.
+
+        To understand this, pretend you are holding you right hand up in front of a mirror.
+        Consider the hand in mirror the original image, but flattened to 2D.
+        Mirror over the x axis and you will get an image to the left that looks like a left hand.
+        Mirror over the y axis and you will get an image of the right hand upside down.
+        Mirror over the x and y axes and you will get an image a left hand upside down.
+
+        From a mathmatical standpoint, mirroring is negating all the points in each axis selected.
+
+        &#34;&#34;&#34;
+        uv = [0, 0]
+        if axes[0]:
+            uv[0] = 1
+        if axes[1]:
+            uv[1] = 1
+        return Obj2d(self.mo.mirror(uv), self._color)
+
+    def num_verts(self) -&gt; int:
+        &#34;&#34;&#34;
+        The number of vertices in this object.
+
+        This is useful in unit testing shapes.
+
+        It is very difficult to check that a shape is correct, but knowing that a correct
+        number of vertices is present goes a long way to making sure things are healthy.
+        &#34;&#34;&#34;
+        return self.mo.num_vert()
+
+    def offset(
+        self, delta: float, join_type: str, miter_limit: float = 2.0, segments: int = -1
+    ) -&gt; Obj2d:
+        &#34;&#34;&#34;
+        Offset (or inset) a 2D object by a given distance called `delta`.
+        A negative delta will cause an inset to be done.
+
+        Select `join_type` from `&#34;square&#34;`, `&#34;round&#34;`, or `&#34;miter&#34;`.
+        To understand `miter_limit`, see: [Clipper2 MiterLimit](https://www.angusj.com/clipper2/Docs/Units/Clipper.Offset/Classes/ClipperOffset/Properties/MiterLimit.htm)
+
+        For ``segments`` see the documentation of ``set_default_segments``.
+
+        &#34;&#34;&#34;
+        if segments == -1:
+            segments = config[&#34;DefaultSegments&#34;]
+        _chkGE(&#34;segments&#34;, segments, 3)
+
+        if join_type == &#34;round&#34;:
+            jt = _m.JoinType.Round
+        elif join_type == &#34;square&#34;:
+            jt = _m.JoinType.Square
+        elif join_type == &#34;miter&#34;:
+            jt = _m.JoinType.Miter
+        else:
+            raise ValidationError(
+                &#39;Invalid join type specified, must be one of: &#34;round&#34;, &#34;square&#34;, or &#34;miter&#34;&#39;
+            )
+        o2 = Obj2d(self.mo.offset(delta, jt, miter_limit, segments))
+        o2._color = self._color
+        return o2
+
+    def piecut(
+        self, start_angle=0, end_angle=90, both=False
+    ) -&gt; Obj2d | tuple[Obj2d, Obj2d]:
+        &#34;&#34;&#34;
+        Cut a wedge out of this object.
+
+        It returns a copy of this object minus the wedge.
+
+        Or if `both` is `True` it returns a tuple of the object minus the wedge and the object intersected with the wedge.
+        &#34;&#34;&#34;
+        if end_angle &lt; start_angle:
+            end_angle = end_angle + 360.0
+        x1, y1, x2, y2 = self.bounding_box()
+        c_x = (x2 + x1) / 2.0
+        c_y = (y2 + y1) / 2.0
+        rad = max(x2 - x1, y2 - y1) * 4
+        pts = []
+        if end_angle - start_angle != 180.0:
+            pts.append((c_x, c_y))
+        pts.append((rad * cos(start_angle) + c_x, rad * sin(start_angle) + c_y))
+        ang = 90 + start_angle
+        while ang &lt; end_angle:
+            pts.append((rad * cos(ang) + c_x, rad * sin(ang) + c_y))
+            ang = ang + 90
+        pts.append((rad * cos(end_angle) + c_x, rad * sin(end_angle) + c_y))
+        cutter = Obj2d(_m.CrossSection([pts]))
+        o1 = difference(self, cutter)
+        o1._color = self._color
+        if both:
+            o2 = intersect(self, cutter)
+            o2._color = self._color
+            return (o1, o2)
+        return o1
+
+    def revolve(self, revolve_degrees: float = 360.0, segments: int = -1):
+        &#34;&#34;&#34;
+        Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
+
+        For ``segments`` see the documentation of ``set_default_segments``.
+        &#34;&#34;&#34;
+        o3 = revolve(self, revolve_degrees, segments)
+        o3._color = self._color
+        return o3
+
+    def rotate(self, degrees: float) -&gt; Obj2d:
+        &#34;&#34;&#34;
+        Rotate this object by the given degrees.
+
+        &#34;&#34;&#34;
+        return Obj2d(self.mo.rotate(degrees), color=self._color)
+
+    def scale(self, factors: list[float, float]) -&gt; Obj2d:
+        &#34;&#34;&#34;
+        Scale this object by the given factors.
+
+        If you want no change, use `1.0`, that means 100% (thus unchanged).
+        &#34;&#34;&#34;
+        _chkV2(&#34;factors&#34;, factors)
+        return Obj2d(self.mo.scale(factors), color=self._color)
+
+    def to_paths(self) -&gt; list[list[float, float]]:
+        &#34;&#34;&#34;
+        Return a lists of paths, each of which is a list of vertices that make up this object.
+        &#34;&#34;&#34;
+        return self.mo.to_polygons()
+
+    def transform(
+        self, matrix2x3: tuple[tuple[float, float, float], tuple[float, float, float]]
+    ) -&gt; Obj3d:
+        &#34;&#34;&#34;
+        Transform this object with the given affine transformaton matrix.
+
+        If you don&#39;t know what this is, you probably don&#39;t need it.
+        &#34;&#34;&#34;
+        if len(matrix2x3) != 2 or len(matrix2x3[0]) != 3 or len(matrix2x3[1]) != 3:
+            raise ValueError(&#34;Improperly sized 2x3 matrix.&#34;)
+
+        return Obj2d(self.mo.transform(matrix2x3), color=self._color)
+
+    def translate(self, offsets: list[float, float]) -&gt; Obj2d:
+        &#34;&#34;&#34;
+        Translate (move) this object by the given offsets.
+        &#34;&#34;&#34;
+        _chkV2(&#34;offsets&#34;, offsets)
+        return Obj2d(self.mo.translate(offsets), color=self._color)</code></pre>
+</details>
+<div class="desc"><p>Wrapper class for "CrossSections", which are 2D graphical objects.</p>
+<h2 id="attributes">Attributes</h2>
+<p>mo The Manifold::CrossSection object used by manifold3d.</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="piecad.Obj2d.area"><code class="name flex">
+<span>def <span class="ident">area</span></span>(<span>self) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def area(self) -&gt; float:
+    &#34;&#34;&#34;
+    The area of this Obj2d.
+    &#34;&#34;&#34;
+    return self.mo.area()</code></pre>
+</details>
+<div class="desc"><p>The area of this Obj2d.</p></div>
+</dd>
+<dt id="piecad.Obj2d.bounding_box"><code class="name flex">
+<span>def <span class="ident">bounding_box</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def bounding_box(self):
+    &#34;&#34;&#34;
+    Return the bounding box of this object.
+
+    Return a tuple: (left, bottom, right, top) which represents
+    a rectangle that would exactly contain this object.
+
+    It can be broken up like this: `x1, y1, x2, y2 = obj.bounding_box()`
+    &#34;&#34;&#34;
+    return self.mo.bounds()</code></pre>
+</details>
+<div class="desc"><p>Return the bounding box of this object.</p>
+<p>Return a tuple: (left, bottom, right, top) which represents
+a rectangle that would exactly contain this object.</p>
+<p>It can be broken up like this: <code>x1, y1, x2, y2 = obj.bounding_box()</code></p></div>
+</dd>
+<dt id="piecad.Obj2d.center"><code class="name flex">
+<span>def <span class="ident">center</span></span>(<span>self, axes: tuple[bool, bool] = (True, True), at: tuple[float, float] = (0, 0))</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def center(
+    self, axes: tuple[bool, bool] = (True, True), at: tuple[float, float] = (0, 0)
+):
+    &#34;&#34;&#34;
+    Center the object on each of the `True` axes.
+
+    Parameter `at` specifies the point to center on.
+
+    &#34;&#34;&#34;
+    xmin, ymin, xmax, ymax = self.bounding_box()
+    mid_x = (xmax - xmin) / 2 + xmin
+    mid_y = (ymax - ymin) / 2 + ymin
+    new_x = 0
+    new_x = 0
+    new_x = 0
+    if axes[0]:
+        new_x = at[0] - mid_x
+    if axes[1]:
+        new_y = at[0] - mid_y
+    o2 = self.translate((new_x, new_y))
+    o2._color = self._color
+    return o2</code></pre>
+</details>
+<div class="desc"><p>Center the object on each of the <code>True</code> axes.</p>
+<p>Parameter <code>at</code> specifies the point to center on.</p></div>
+</dd>
+<dt id="piecad.Obj2d.color"><code class="name flex">
+<span>def <span class="ident">color</span></span>(<span>self, cspec)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def color(self, cspec):
+    &#34;&#34;&#34;
+    Assign the given color to this object.&lt;/summary&gt;
+
+    Parameters:
+
+        The `color` parameter has 3 formats:
+
+        *   A tuple of RGB color values, where each value is between
+            0 and 255. Such as: `(255, 128, 0)`
+
+        * A string beginning with &#34;#&#34; followed by 6 hex digits
+            representing RGB. Such as &#34;#FF00FF&#34;
+        * A string that is one of the basic or extended CSS color names.
+          For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color/keywords)
+    &#34;&#34;&#34;
+    return Obj2d(self.mo, _parse_color(cspec))</code></pre>
+</details>
+<div class="desc"><p>Assign the given color to this object.</summary></p>
+<h2 id="parameters">Parameters</h2>
+<p>The <code>color</code> parameter has 3 formats:</p>
+<ul>
+<li>
+<p>A tuple of RGB color values, where each value is between
+0 and 255. Such as: <code>(255, 128, 0)</code></p>
+</li>
+<li>
+<p>A string beginning with "#" followed by 6 hex digits
+representing RGB. Such as "#FF00FF"</p>
+</li>
+<li>A string that is one of the basic or extended CSS color names.
+For a list of color names see: <a href="https://www.w3.org/wiki/CSS/Properties/color/keywords">Color keywords</a></li>
+</ul></div>
+</dd>
+<dt id="piecad.Obj2d.decompose"><code class="name flex">
+<span>def <span class="ident">decompose</span></span>(<span>self) ‑> list[<a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def decompose(self) -&gt; list[Obj2d]:
+    &#34;&#34;&#34;
+    Decompose this object into a list of topologically disjoint objects.
+
+    &#34;&#34;&#34;
+    ml = self.mo.decompose()
+    l = []
+    for m in ml:
+        l.append(Obj2d(m, color=self._color))
+    return l</code></pre>
+</details>
+<div class="desc"><p>Decompose this object into a list of topologically disjoint objects.</p></div>
+</dd>
+<dt id="piecad.Obj2d.extrude"><code class="name flex">
+<span>def <span class="ident">extrude</span></span>(<span>self, height: int)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extrude(self, height: int):
+    &#34;&#34;&#34;
+    Extrude this object into a Obj3d of the given height.
+    &#34;&#34;&#34;
+    o3 = Obj3d(_m.Manifold.extrude(self.mo, height))
+    o3._color = self._color
+    return o3</code></pre>
+</details>
+<div class="desc"><p>Extrude this object into a Obj3d of the given height.</p></div>
+</dd>
+<dt id="piecad.Obj2d.is_empty"><code class="name flex">
+<span>def <span class="ident">is_empty</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_empty(self):
+    &#34;&#34;&#34;
+    Is this object empty?
+    &#34;&#34;&#34;
+    return self.mo.is_empty()</code></pre>
+</details>
+<div class="desc"><p>Is this object empty?</p></div>
+</dd>
+<dt id="piecad.Obj2d.mirror"><code class="name flex">
+<span>def <span class="ident">mirror</span></span>(<span>self, axes: tuple[bool, bool])</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mirror(self, axes: tuple[bool, bool]):
+    &#34;&#34;&#34;
+    Mirror this object around the given axes.
+
+    To understand this, pretend you are holding you right hand up in front of a mirror.
+    Consider the hand in mirror the original image, but flattened to 2D.
+    Mirror over the x axis and you will get an image to the left that looks like a left hand.
+    Mirror over the y axis and you will get an image of the right hand upside down.
+    Mirror over the x and y axes and you will get an image a left hand upside down.
+
+    From a mathmatical standpoint, mirroring is negating all the points in each axis selected.
+
+    &#34;&#34;&#34;
+    uv = [0, 0]
+    if axes[0]:
+        uv[0] = 1
+    if axes[1]:
+        uv[1] = 1
+    return Obj2d(self.mo.mirror(uv), self._color)</code></pre>
+</details>
+<div class="desc"><p>Mirror this object around the given axes.</p>
+<p>To understand this, pretend you are holding you right hand up in front of a mirror.
+Consider the hand in mirror the original image, but flattened to 2D.
+Mirror over the x axis and you will get an image to the left that looks like a left hand.
+Mirror over the y axis and you will get an image of the right hand upside down.
+Mirror over the x and y axes and you will get an image a left hand upside down.</p>
+<p>From a mathmatical standpoint, mirroring is negating all the points in each axis selected.</p></div>
+</dd>
+<dt id="piecad.Obj2d.num_verts"><code class="name flex">
+<span>def <span class="ident">num_verts</span></span>(<span>self) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def num_verts(self) -&gt; int:
+    &#34;&#34;&#34;
+    The number of vertices in this object.
+
+    This is useful in unit testing shapes.
+
+    It is very difficult to check that a shape is correct, but knowing that a correct
+    number of vertices is present goes a long way to making sure things are healthy.
+    &#34;&#34;&#34;
+    return self.mo.num_vert()</code></pre>
+</details>
+<div class="desc"><p>The number of vertices in this object.</p>
+<p>This is useful in unit testing shapes.</p>
+<p>It is very difficult to check that a shape is correct, but knowing that a correct
+number of vertices is present goes a long way to making sure things are healthy.</p></div>
+</dd>
+<dt id="piecad.Obj2d.offset"><code class="name flex">
+<span>def <span class="ident">offset</span></span>(<span>self, delta: float, join_type: str, miter_limit: float = 2.0, segments: int = -1) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def offset(
+    self, delta: float, join_type: str, miter_limit: float = 2.0, segments: int = -1
+) -&gt; Obj2d:
+    &#34;&#34;&#34;
+    Offset (or inset) a 2D object by a given distance called `delta`.
+    A negative delta will cause an inset to be done.
+
+    Select `join_type` from `&#34;square&#34;`, `&#34;round&#34;`, or `&#34;miter&#34;`.
+    To understand `miter_limit`, see: [Clipper2 MiterLimit](https://www.angusj.com/clipper2/Docs/Units/Clipper.Offset/Classes/ClipperOffset/Properties/MiterLimit.htm)
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    &#34;&#34;&#34;
+    if segments == -1:
+        segments = config[&#34;DefaultSegments&#34;]
+    _chkGE(&#34;segments&#34;, segments, 3)
+
+    if join_type == &#34;round&#34;:
+        jt = _m.JoinType.Round
+    elif join_type == &#34;square&#34;:
+        jt = _m.JoinType.Square
+    elif join_type == &#34;miter&#34;:
+        jt = _m.JoinType.Miter
+    else:
+        raise ValidationError(
+            &#39;Invalid join type specified, must be one of: &#34;round&#34;, &#34;square&#34;, or &#34;miter&#34;&#39;
+        )
+    o2 = Obj2d(self.mo.offset(delta, jt, miter_limit, segments))
+    o2._color = self._color
+    return o2</code></pre>
+</details>
+<div class="desc"><p>Offset (or inset) a 2D object by a given distance called <code>delta</code>.
+A negative delta will cause an inset to be done.</p>
+<p>Select <code>join_type</code> from <code>"square"</code>, <code>"round"</code>, or <code>"miter"</code>.
+To understand <code>miter_limit</code>, see: <a href="https://www.angusj.com/clipper2/Docs/Units/Clipper.Offset/Classes/ClipperOffset/Properties/MiterLimit.htm">Clipper2 MiterLimit</a></p>
+<p>For <code>segments</code> see the documentation of <code><a title="piecad.set_default_segments" href="#piecad.set_default_segments">set_default_segments()</a></code>.</p></div>
+</dd>
+<dt id="piecad.Obj2d.piecut"><code class="name flex">
+<span>def <span class="ident">piecut</span></span>(<span>self, start_angle=0, end_angle=90, both=False) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a> | tuple[<a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a>, <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def piecut(
+    self, start_angle=0, end_angle=90, both=False
+) -&gt; Obj2d | tuple[Obj2d, Obj2d]:
+    &#34;&#34;&#34;
+    Cut a wedge out of this object.
+
+    It returns a copy of this object minus the wedge.
+
+    Or if `both` is `True` it returns a tuple of the object minus the wedge and the object intersected with the wedge.
+    &#34;&#34;&#34;
+    if end_angle &lt; start_angle:
+        end_angle = end_angle + 360.0
+    x1, y1, x2, y2 = self.bounding_box()
+    c_x = (x2 + x1) / 2.0
+    c_y = (y2 + y1) / 2.0
+    rad = max(x2 - x1, y2 - y1) * 4
+    pts = []
+    if end_angle - start_angle != 180.0:
+        pts.append((c_x, c_y))
+    pts.append((rad * cos(start_angle) + c_x, rad * sin(start_angle) + c_y))
+    ang = 90 + start_angle
+    while ang &lt; end_angle:
+        pts.append((rad * cos(ang) + c_x, rad * sin(ang) + c_y))
+        ang = ang + 90
+    pts.append((rad * cos(end_angle) + c_x, rad * sin(end_angle) + c_y))
+    cutter = Obj2d(_m.CrossSection([pts]))
+    o1 = difference(self, cutter)
+    o1._color = self._color
+    if both:
+        o2 = intersect(self, cutter)
+        o2._color = self._color
+        return (o1, o2)
+    return o1</code></pre>
+</details>
+<div class="desc"><p>Cut a wedge out of this object.</p>
+<p>It returns a copy of this object minus the wedge.</p>
+<p>Or if <code>both</code> is <code>True</code> it returns a tuple of the object minus the wedge and the object intersected with the wedge.</p></div>
+</dd>
+<dt id="piecad.Obj2d.revolve"><code class="name flex">
+<span>def <span class="ident">revolve</span></span>(<span>self, revolve_degrees: float = 360.0, segments: int = -1)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def revolve(self, revolve_degrees: float = 360.0, segments: int = -1):
+    &#34;&#34;&#34;
+    Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+    &#34;&#34;&#34;
+    o3 = revolve(self, revolve_degrees, segments)
+    o3._color = self._color
+    return o3</code></pre>
+</details>
+<div class="desc"><p>Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.</p>
+<p>For <code>segments</code> see the documentation of <code><a title="piecad.set_default_segments" href="#piecad.set_default_segments">set_default_segments()</a></code>.</p></div>
+</dd>
+<dt id="piecad.Obj2d.rotate"><code class="name flex">
+<span>def <span class="ident">rotate</span></span>(<span>self, degrees: float) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rotate(self, degrees: float) -&gt; Obj2d:
+    &#34;&#34;&#34;
+    Rotate this object by the given degrees.
+
+    &#34;&#34;&#34;
+    return Obj2d(self.mo.rotate(degrees), color=self._color)</code></pre>
+</details>
+<div class="desc"><p>Rotate this object by the given degrees.</p></div>
+</dd>
+<dt id="piecad.Obj2d.scale"><code class="name flex">
+<span>def <span class="ident">scale</span></span>(<span>self, factors: list[float, float]) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def scale(self, factors: list[float, float]) -&gt; Obj2d:
+    &#34;&#34;&#34;
+    Scale this object by the given factors.
+
+    If you want no change, use `1.0`, that means 100% (thus unchanged).
+    &#34;&#34;&#34;
+    _chkV2(&#34;factors&#34;, factors)
+    return Obj2d(self.mo.scale(factors), color=self._color)</code></pre>
+</details>
+<div class="desc"><p>Scale this object by the given factors.</p>
+<p>If you want no change, use <code>1.0</code>, that means 100% (thus unchanged).</p></div>
+</dd>
+<dt id="piecad.Obj2d.to_paths"><code class="name flex">
+<span>def <span class="ident">to_paths</span></span>(<span>self) ‑> list[list[float, float]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_paths(self) -&gt; list[list[float, float]]:
+    &#34;&#34;&#34;
+    Return a lists of paths, each of which is a list of vertices that make up this object.
+    &#34;&#34;&#34;
+    return self.mo.to_polygons()</code></pre>
+</details>
+<div class="desc"><p>Return a lists of paths, each of which is a list of vertices that make up this object.</p></div>
+</dd>
+<dt id="piecad.Obj2d.transform"><code class="name flex">
+<span>def <span class="ident">transform</span></span>(<span>self,<br>matrix2x3: tuple[tuple[float, float, float], tuple[float, float, float]]) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transform(
+    self, matrix2x3: tuple[tuple[float, float, float], tuple[float, float, float]]
+) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Transform this object with the given affine transformaton matrix.
+
+    If you don&#39;t know what this is, you probably don&#39;t need it.
+    &#34;&#34;&#34;
+    if len(matrix2x3) != 2 or len(matrix2x3[0]) != 3 or len(matrix2x3[1]) != 3:
+        raise ValueError(&#34;Improperly sized 2x3 matrix.&#34;)
+
+    return Obj2d(self.mo.transform(matrix2x3), color=self._color)</code></pre>
+</details>
+<div class="desc"><p>Transform this object with the given affine transformaton matrix.</p>
+<p>If you don't know what this is, you probably don't need it.</p></div>
+</dd>
+<dt id="piecad.Obj2d.translate"><code class="name flex">
+<span>def <span class="ident">translate</span></span>(<span>self, offsets: list[float, float]) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def translate(self, offsets: list[float, float]) -&gt; Obj2d:
+    &#34;&#34;&#34;
+    Translate (move) this object by the given offsets.
+    &#34;&#34;&#34;
+    _chkV2(&#34;offsets&#34;, offsets)
+    return Obj2d(self.mo.translate(offsets), color=self._color)</code></pre>
+</details>
+<div class="desc"><p>Translate (move) this object by the given offsets.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="piecad.Obj3d"><code class="flex name class">
+<span>class <span class="ident">Obj3d</span></span>
+<span>(</span><span>o: object = None, color=None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Obj3d:
+    &#34;&#34;&#34;
+    Wrapper class for &#34;Manifolds&#34;, which are 3D graphical objects.
+
+    Attributes:
+        mo The Manifold::Manifold object used by manifold3d.
+    &#34;&#34;&#34;
+
+    def __init__(self, o: object = None, color=None):
+        if o == None:
+            o = _m.Manifold()
+        self.mo = o
+        self._color = color
+
+    def bounding_box(self):
+        &#34;&#34;&#34;
+        Return the bounding box of this object.
+
+        Return a tuple: (left, front, bottom, right, back, top) which represents
+        a cuboid that would exactly contain this object.
+
+        It can be broken up like this: `x1, y1, z1, x2, y2, z2 = obj.bounding_box()`
+        &#34;&#34;&#34;
+        return self.mo.bounding_box()
+
+    def center(
+        self,
+        axes: tuple[bool, bool, bool] = (True, True, True),
+        at: tuple[float, float, float] = (0, 0, 0),
+    ):
+        &#34;&#34;&#34;
+        Center the object on each of the `True` axes.
+
+        Parameter `at` specifies the point to center on.
+
+        &#34;&#34;&#34;
+        xmin, ymin, zmin, xmax, ymax, zmax = self.bounding_box()
+        mid_x = (xmax - xmin) / 2 + xmin
+        mid_y = (ymax - ymin) / 2 + ymin
+        mid_z = (zmax - zmin) / 2 + zmin
+        new_x = 0
+        new_x = 0
+        new_x = 0
+        if axes[0]:
+            new_x = at[0] - mid_x
+        if axes[1]:
+            new_y = at[0] - mid_y
+        if axes[2]:
+            new_z = at[0] - mid_z
+        o3 = self.translate((new_x, new_y, new_z))
+        o3._color = self._color
+        return o3
+
+    def color(self, cspec):
+        &#34;&#34;&#34;
+        Assign the given color to this object.&lt;/summary&gt;
+
+        Parameters:
+
+            The `color` parameter has 3 formats:
+
+            *   A tuple of RGB color values, where each value is between
+                0 and 255. Such as: `(255, 128, 0)`
+
+            * A string beginning with &#34;#&#34; followed by 6 hex digits
+                representing RGB. Such as &#34;#FF00FF&#34;
+            * A string that is one of the basic or extended CSS color names.
+              For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color/keywords)
+        &#34;&#34;&#34;
+        return Obj3d(self.mo, _parse_color(cspec))
+
+    def decompose(self) -&gt; list[Obj3d]:
+        &#34;&#34;&#34;
+        Decompose this object into a list of topologically disjoint objects.
+
+        &#34;&#34;&#34;
+        ml = self.mo.decompose()
+        l = []
+        for m in ml:
+            l.append(Obj3d(m, color=self._color))
+        return l
+
+    def is_empty(self):
+        &#34;&#34;&#34;
+        Is this object empty?
+
+        &#34;&#34;&#34;
+        return self.mo.is_empty()
+
+    def mirror(self, axes: tuple[bool, bool, bool]):
+        &#34;&#34;&#34;
+        Mirror this object around the given axes.
+
+        To understand this, pretend you are holding you right hand up in front of a mirror.
+        Consider the hand in mirror the original image.
+        Mirror over the x axis and you will get an image to the left that looks like a left hand.
+        Mirror over the y axis and you will get an image like the back of the hand you are holding up.
+        Mirror over the x and y axes and you will get an image like the back of a left hand.
+        For the Z axis it&#39;s the same, but each hand is upside down.
+
+        From a mathmatical standpoint, mirroring is negating all the points in each axis selected.
+
+        &#34;&#34;&#34;
+        uv = [0, 0, 0]
+        if axes[0]:
+            uv[0] = 1
+        if axes[1]:
+            uv[1] = 1
+        if axes[2]:
+            uv[2] = 1
+        return Obj3d(self.mo.mirror(uv), self._color)
+
+    def num_faces(self) -&gt; int:
+        &#34;&#34;&#34;
+        The number of faces in this object.
+
+        This is useful in unit testing shapes.
+
+        It is very difficult to check that a shape is correct, but knowing that a correct
+        number of faces is present goes a long way to making sure things are healthy.
+        &#34;&#34;&#34;
+        return self.mo.num_tri()
+
+    def num_verts(self) -&gt; int:
+        &#34;&#34;&#34;
+        The number of vertices in this object.
+
+        This is useful in unit testing shapes.
+
+        It is very difficult to check that a shape is correct, but knowing that a correct
+        number of vertices is present goes a long way to making sure things are healthy.
+        &#34;&#34;&#34;
+        return self.mo.num_vert()
+
+    def piecut(
+        self, start_angle=0, end_angle=90, both=False
+    ) -&gt; Obj3d | tuple[Obj3d, Obj3d]:
+        &#34;&#34;&#34;
+        Cut a wedge out of this object.
+
+        It returns a copy of this object minus the wedge.
+
+        Or if `both` is `True` it returns a tuple of the object minus the wedge and the object intersected with the wedge.
+
+        &#34;&#34;&#34;
+        if end_angle &lt; start_angle:
+            end_angle = end_angle + 360.0
+        if end_angle - start_angle &gt;= 360.0:
+            raise ValidationError(
+                &#34;Parameters start_angle and end_angle must be less than 360 degrees apart.&#34;
+            )
+        x1, y1, z1, x2, y2, z2 = self.bounding_box()
+        c_x = (x2 + x1) / 2.0
+        c_y = (y2 + y1) / 2.0
+        c_z = (z2 + z1) / 2.0
+        rad = max(z2 - z1, x2 - x1, y2 - y1) * 4
+        h = z2 - z1
+        pts = []
+        if end_angle - start_angle != 180.0:
+            pts.append((c_x, c_y))
+        pts.append((rad * cos(start_angle) + c_x, rad * sin(start_angle) + c_y))
+        ang = 90 + start_angle
+        while ang &lt; end_angle:
+            pts.append((rad * cos(ang) + c_x, rad * sin(ang) + c_y))
+            ang = ang + 90
+        pts.append((rad * cos(end_angle) + c_x, rad * sin(end_angle) + c_y))
+        cutter = Obj3d(_m.Manifold.extrude(_m.CrossSection([pts]), h)).translate(
+            (0, 0, z1)
+        )
+        if both:
+            o1, o2 = self.split(cutter)
+            o1._color = self._color
+            o2._color = self._color
+            return (o1, o2)
+        o3 = difference(self, cutter)
+        o3._color = self._color
+        return o3
+
+    def project(self) -&gt; Obj2d:
+        &#34;&#34;&#34;
+        Return a Obj2d representing this object&#39;s &#34;shadow&#34; on the x-y plane.
+
+        &#34;&#34;&#34;
+        return Obj2d(self.mo.project(), color=self._color)
+
+    def rotate(self, degrees: list[float, float, float]) -&gt; Obj3d:
+        &#34;&#34;&#34;
+        Rotate this object by the given degrees for each axis.
+
+        &#34;&#34;&#34;
+        _chkV3(&#34;degrees&#34;, degrees)
+        return Obj3d(self.mo.rotate(degrees), color=self._color)
+
+    def scale(self, factors: list[float, float, float]) -&gt; Obj3d:
+        &#34;&#34;&#34;
+        Scale this object by the given factors.
+
+        If you want no change, use `1.0`, that means 100% (thus unchanged).
+        &#34;&#34;&#34;
+        _chkV3(&#34;factors&#34;, factors)
+        return Obj3d(self.mo.scale(factors), color=self._color)
+
+    def slice(self, height: float) -&gt; Obj2d:
+        &#34;&#34;&#34;
+        Like `project`, but a the given height.
+
+        &#34;&#34;&#34;
+        _chkGT(&#34;height&#34;, height, 0)
+        return Obj2d(self.mo.slice(height), color=self._color)
+
+    def split(self, cutter: Obj3d) -&gt; Obj3d:
+        &#34;&#34;&#34;
+        This is like doing a difference and an intersect between this the cutter
+        object simultaneously. It is faster than doing the two operations separately.
+
+        Return is `(diff_obj, inter_obj)`.
+
+        &#34;&#34;&#34;
+        ret = self.mo.split(cutter.mo)
+        return (Obj3d(ret[0], color=self._color), Obj3d(ret[1], color=self._color))
+
+    def surface_area(self) -&gt; float:
+        &#34;&#34;&#34;
+        The surface area of this Obj3d.
+        &#34;&#34;&#34;
+        return self.mo.surface_area()
+
+    def to_verts_and_faces(
+        self,
+    ) -&gt; tuple[list[list[float, float, float]], list[list[int, int, int]]]:
+        &#34;&#34;&#34;
+        Return a pair containg a list of vertices and a list of faces for this object.
+
+        &#34;&#34;&#34;
+        mesh = self.mo.to_mesh()
+        if mesh.vert_properties.shape[1] &gt; 3:
+            vertices = mesh.vert_properties[:, :3]
+        else:
+            vertices = mesh.vert_properties
+        return (vertices, mesh.tri_verts)
+
+    def transform(
+        self,
+        matrix3x4: tuple[
+            tuple[float, float, float, float],
+            tuple[float, float, float, float],
+            tuple[float, float, float, float],
+            tuple[float, float, float, float],
+        ],
+    ) -&gt; Obj3d:
+        &#34;&#34;&#34;
+        Transform this object with the given affine transformaton matrix.
+
+        If you don&#39;t know what this is, you probably don&#39;t need it.
+        &#34;&#34;&#34;
+        if (
+            len(matrix3x4) != 3
+            or len(matrix3x4[0]) != 4
+            or len(matrix3x4[1]) != 4
+            or len(matrix3x4[2]) != 4
+        ):
+            raise ValueError(&#34;Improperly sized 3x4 matrix.&#34;)
+
+        return Obj3d(self.mo.transform(matrix3x4), color=self._color)
+
+    def translate(self, offsets: list[float, float, float]) -&gt; Obj3d:
+        &#34;&#34;&#34;
+        Translate (move) this object by the given offsets.
+        &#34;&#34;&#34;
+        _chkV3(&#34;offsets&#34;, offsets)
+        return Obj3d(self.mo.translate(offsets), color=self._color)
+
+    def volume(self) -&gt; float:
+        &#34;&#34;&#34;
+        The volume of this Obj3d.
+        &#34;&#34;&#34;
+        return self.mo.volume()</code></pre>
+</details>
+<div class="desc"><p>Wrapper class for "Manifolds", which are 3D graphical objects.</p>
+<h2 id="attributes">Attributes</h2>
+<p>mo The Manifold::Manifold object used by manifold3d.</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="piecad.Obj3d.bounding_box"><code class="name flex">
+<span>def <span class="ident">bounding_box</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def bounding_box(self):
+    &#34;&#34;&#34;
+    Return the bounding box of this object.
+
+    Return a tuple: (left, front, bottom, right, back, top) which represents
+    a cuboid that would exactly contain this object.
+
+    It can be broken up like this: `x1, y1, z1, x2, y2, z2 = obj.bounding_box()`
+    &#34;&#34;&#34;
+    return self.mo.bounding_box()</code></pre>
+</details>
+<div class="desc"><p>Return the bounding box of this object.</p>
+<p>Return a tuple: (left, front, bottom, right, back, top) which represents
+a cuboid that would exactly contain this object.</p>
+<p>It can be broken up like this: <code>x1, y1, z1, x2, y2, z2 = obj.bounding_box()</code></p></div>
+</dd>
+<dt id="piecad.Obj3d.center"><code class="name flex">
+<span>def <span class="ident">center</span></span>(<span>self,<br>axes: tuple[bool, bool, bool] = (True, True, True),<br>at: tuple[float, float, float] = (0, 0, 0))</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def center(
+    self,
+    axes: tuple[bool, bool, bool] = (True, True, True),
+    at: tuple[float, float, float] = (0, 0, 0),
+):
+    &#34;&#34;&#34;
+    Center the object on each of the `True` axes.
+
+    Parameter `at` specifies the point to center on.
+
+    &#34;&#34;&#34;
+    xmin, ymin, zmin, xmax, ymax, zmax = self.bounding_box()
+    mid_x = (xmax - xmin) / 2 + xmin
+    mid_y = (ymax - ymin) / 2 + ymin
+    mid_z = (zmax - zmin) / 2 + zmin
+    new_x = 0
+    new_x = 0
+    new_x = 0
+    if axes[0]:
+        new_x = at[0] - mid_x
+    if axes[1]:
+        new_y = at[0] - mid_y
+    if axes[2]:
+        new_z = at[0] - mid_z
+    o3 = self.translate((new_x, new_y, new_z))
+    o3._color = self._color
+    return o3</code></pre>
+</details>
+<div class="desc"><p>Center the object on each of the <code>True</code> axes.</p>
+<p>Parameter <code>at</code> specifies the point to center on.</p></div>
+</dd>
+<dt id="piecad.Obj3d.color"><code class="name flex">
+<span>def <span class="ident">color</span></span>(<span>self, cspec)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def color(self, cspec):
+    &#34;&#34;&#34;
+    Assign the given color to this object.&lt;/summary&gt;
+
+    Parameters:
+
+        The `color` parameter has 3 formats:
+
+        *   A tuple of RGB color values, where each value is between
+            0 and 255. Such as: `(255, 128, 0)`
+
+        * A string beginning with &#34;#&#34; followed by 6 hex digits
+            representing RGB. Such as &#34;#FF00FF&#34;
+        * A string that is one of the basic or extended CSS color names.
+          For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color/keywords)
+    &#34;&#34;&#34;
+    return Obj3d(self.mo, _parse_color(cspec))</code></pre>
+</details>
+<div class="desc"><p>Assign the given color to this object.</summary></p>
+<h2 id="parameters">Parameters</h2>
+<p>The <code>color</code> parameter has 3 formats:</p>
+<ul>
+<li>
+<p>A tuple of RGB color values, where each value is between
+0 and 255. Such as: <code>(255, 128, 0)</code></p>
+</li>
+<li>
+<p>A string beginning with "#" followed by 6 hex digits
+representing RGB. Such as "#FF00FF"</p>
+</li>
+<li>A string that is one of the basic or extended CSS color names.
+For a list of color names see: <a href="https://www.w3.org/wiki/CSS/Properties/color/keywords">Color keywords</a></li>
+</ul></div>
+</dd>
+<dt id="piecad.Obj3d.decompose"><code class="name flex">
+<span>def <span class="ident">decompose</span></span>(<span>self) ‑> list[<a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def decompose(self) -&gt; list[Obj3d]:
+    &#34;&#34;&#34;
+    Decompose this object into a list of topologically disjoint objects.
+
+    &#34;&#34;&#34;
+    ml = self.mo.decompose()
+    l = []
+    for m in ml:
+        l.append(Obj3d(m, color=self._color))
+    return l</code></pre>
+</details>
+<div class="desc"><p>Decompose this object into a list of topologically disjoint objects.</p></div>
+</dd>
+<dt id="piecad.Obj3d.is_empty"><code class="name flex">
+<span>def <span class="ident">is_empty</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_empty(self):
+    &#34;&#34;&#34;
+    Is this object empty?
+
+    &#34;&#34;&#34;
+    return self.mo.is_empty()</code></pre>
+</details>
+<div class="desc"><p>Is this object empty?</p></div>
+</dd>
+<dt id="piecad.Obj3d.mirror"><code class="name flex">
+<span>def <span class="ident">mirror</span></span>(<span>self, axes: tuple[bool, bool, bool])</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mirror(self, axes: tuple[bool, bool, bool]):
+    &#34;&#34;&#34;
+    Mirror this object around the given axes.
+
+    To understand this, pretend you are holding you right hand up in front of a mirror.
+    Consider the hand in mirror the original image.
+    Mirror over the x axis and you will get an image to the left that looks like a left hand.
+    Mirror over the y axis and you will get an image like the back of the hand you are holding up.
+    Mirror over the x and y axes and you will get an image like the back of a left hand.
+    For the Z axis it&#39;s the same, but each hand is upside down.
+
+    From a mathmatical standpoint, mirroring is negating all the points in each axis selected.
+
+    &#34;&#34;&#34;
+    uv = [0, 0, 0]
+    if axes[0]:
+        uv[0] = 1
+    if axes[1]:
+        uv[1] = 1
+    if axes[2]:
+        uv[2] = 1
+    return Obj3d(self.mo.mirror(uv), self._color)</code></pre>
+</details>
+<div class="desc"><p>Mirror this object around the given axes.</p>
+<p>To understand this, pretend you are holding you right hand up in front of a mirror.
+Consider the hand in mirror the original image.
+Mirror over the x axis and you will get an image to the left that looks like a left hand.
+Mirror over the y axis and you will get an image like the back of the hand you are holding up.
+Mirror over the x and y axes and you will get an image like the back of a left hand.
+For the Z axis it's the same, but each hand is upside down.</p>
+<p>From a mathmatical standpoint, mirroring is negating all the points in each axis selected.</p></div>
+</dd>
+<dt id="piecad.Obj3d.num_faces"><code class="name flex">
+<span>def <span class="ident">num_faces</span></span>(<span>self) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def num_faces(self) -&gt; int:
+    &#34;&#34;&#34;
+    The number of faces in this object.
+
+    This is useful in unit testing shapes.
+
+    It is very difficult to check that a shape is correct, but knowing that a correct
+    number of faces is present goes a long way to making sure things are healthy.
+    &#34;&#34;&#34;
+    return self.mo.num_tri()</code></pre>
+</details>
+<div class="desc"><p>The number of faces in this object.</p>
+<p>This is useful in unit testing shapes.</p>
+<p>It is very difficult to check that a shape is correct, but knowing that a correct
+number of faces is present goes a long way to making sure things are healthy.</p></div>
+</dd>
+<dt id="piecad.Obj3d.num_verts"><code class="name flex">
+<span>def <span class="ident">num_verts</span></span>(<span>self) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def num_verts(self) -&gt; int:
+    &#34;&#34;&#34;
+    The number of vertices in this object.
+
+    This is useful in unit testing shapes.
+
+    It is very difficult to check that a shape is correct, but knowing that a correct
+    number of vertices is present goes a long way to making sure things are healthy.
+    &#34;&#34;&#34;
+    return self.mo.num_vert()</code></pre>
+</details>
+<div class="desc"><p>The number of vertices in this object.</p>
+<p>This is useful in unit testing shapes.</p>
+<p>It is very difficult to check that a shape is correct, but knowing that a correct
+number of vertices is present goes a long way to making sure things are healthy.</p></div>
+</dd>
+<dt id="piecad.Obj3d.piecut"><code class="name flex">
+<span>def <span class="ident">piecut</span></span>(<span>self, start_angle=0, end_angle=90, both=False) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a> | tuple[<a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a>, <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def piecut(
+    self, start_angle=0, end_angle=90, both=False
+) -&gt; Obj3d | tuple[Obj3d, Obj3d]:
+    &#34;&#34;&#34;
+    Cut a wedge out of this object.
+
+    It returns a copy of this object minus the wedge.
+
+    Or if `both` is `True` it returns a tuple of the object minus the wedge and the object intersected with the wedge.
+
+    &#34;&#34;&#34;
+    if end_angle &lt; start_angle:
+        end_angle = end_angle + 360.0
+    if end_angle - start_angle &gt;= 360.0:
+        raise ValidationError(
+            &#34;Parameters start_angle and end_angle must be less than 360 degrees apart.&#34;
+        )
+    x1, y1, z1, x2, y2, z2 = self.bounding_box()
+    c_x = (x2 + x1) / 2.0
+    c_y = (y2 + y1) / 2.0
+    c_z = (z2 + z1) / 2.0
+    rad = max(z2 - z1, x2 - x1, y2 - y1) * 4
+    h = z2 - z1
+    pts = []
+    if end_angle - start_angle != 180.0:
+        pts.append((c_x, c_y))
+    pts.append((rad * cos(start_angle) + c_x, rad * sin(start_angle) + c_y))
+    ang = 90 + start_angle
+    while ang &lt; end_angle:
+        pts.append((rad * cos(ang) + c_x, rad * sin(ang) + c_y))
+        ang = ang + 90
+    pts.append((rad * cos(end_angle) + c_x, rad * sin(end_angle) + c_y))
+    cutter = Obj3d(_m.Manifold.extrude(_m.CrossSection([pts]), h)).translate(
+        (0, 0, z1)
+    )
+    if both:
+        o1, o2 = self.split(cutter)
+        o1._color = self._color
+        o2._color = self._color
+        return (o1, o2)
+    o3 = difference(self, cutter)
+    o3._color = self._color
+    return o3</code></pre>
+</details>
+<div class="desc"><p>Cut a wedge out of this object.</p>
+<p>It returns a copy of this object minus the wedge.</p>
+<p>Or if <code>both</code> is <code>True</code> it returns a tuple of the object minus the wedge and the object intersected with the wedge.</p></div>
+</dd>
+<dt id="piecad.Obj3d.project"><code class="name flex">
+<span>def <span class="ident">project</span></span>(<span>self) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def project(self) -&gt; Obj2d:
+    &#34;&#34;&#34;
+    Return a Obj2d representing this object&#39;s &#34;shadow&#34; on the x-y plane.
+
+    &#34;&#34;&#34;
+    return Obj2d(self.mo.project(), color=self._color)</code></pre>
+</details>
+<div class="desc"><p>Return a Obj2d representing this object's "shadow" on the x-y plane.</p></div>
+</dd>
+<dt id="piecad.Obj3d.rotate"><code class="name flex">
+<span>def <span class="ident">rotate</span></span>(<span>self, degrees: list[float, float, float]) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rotate(self, degrees: list[float, float, float]) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Rotate this object by the given degrees for each axis.
+
+    &#34;&#34;&#34;
+    _chkV3(&#34;degrees&#34;, degrees)
+    return Obj3d(self.mo.rotate(degrees), color=self._color)</code></pre>
+</details>
+<div class="desc"><p>Rotate this object by the given degrees for each axis.</p></div>
+</dd>
+<dt id="piecad.Obj3d.scale"><code class="name flex">
+<span>def <span class="ident">scale</span></span>(<span>self, factors: list[float, float, float]) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def scale(self, factors: list[float, float, float]) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Scale this object by the given factors.
+
+    If you want no change, use `1.0`, that means 100% (thus unchanged).
+    &#34;&#34;&#34;
+    _chkV3(&#34;factors&#34;, factors)
+    return Obj3d(self.mo.scale(factors), color=self._color)</code></pre>
+</details>
+<div class="desc"><p>Scale this object by the given factors.</p>
+<p>If you want no change, use <code>1.0</code>, that means 100% (thus unchanged).</p></div>
+</dd>
+<dt id="piecad.Obj3d.slice"><code class="name flex">
+<span>def <span class="ident">slice</span></span>(<span>self, height: float) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def slice(self, height: float) -&gt; Obj2d:
+    &#34;&#34;&#34;
+    Like `project`, but a the given height.
+
+    &#34;&#34;&#34;
+    _chkGT(&#34;height&#34;, height, 0)
+    return Obj2d(self.mo.slice(height), color=self._color)</code></pre>
+</details>
+<div class="desc"><p>Like <code>project</code>, but a the given height.</p></div>
+</dd>
+<dt id="piecad.Obj3d.split"><code class="name flex">
+<span>def <span class="ident">split</span></span>(<span>self, cutter: <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a>) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def split(self, cutter: Obj3d) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    This is like doing a difference and an intersect between this the cutter
+    object simultaneously. It is faster than doing the two operations separately.
+
+    Return is `(diff_obj, inter_obj)`.
+
+    &#34;&#34;&#34;
+    ret = self.mo.split(cutter.mo)
+    return (Obj3d(ret[0], color=self._color), Obj3d(ret[1], color=self._color))</code></pre>
+</details>
+<div class="desc"><p>This is like doing a difference and an intersect between this the cutter
+object simultaneously. It is faster than doing the two operations separately.</p>
+<p>Return is <code>(diff_obj, inter_obj)</code>.</p></div>
+</dd>
+<dt id="piecad.Obj3d.surface_area"><code class="name flex">
+<span>def <span class="ident">surface_area</span></span>(<span>self) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def surface_area(self) -&gt; float:
+    &#34;&#34;&#34;
+    The surface area of this Obj3d.
+    &#34;&#34;&#34;
+    return self.mo.surface_area()</code></pre>
+</details>
+<div class="desc"><p>The surface area of this Obj3d.</p></div>
+</dd>
+<dt id="piecad.Obj3d.to_verts_and_faces"><code class="name flex">
+<span>def <span class="ident">to_verts_and_faces</span></span>(<span>self) ‑> tuple[list[list[float, float, float]], list[list[int, int, int]]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_verts_and_faces(
+    self,
+) -&gt; tuple[list[list[float, float, float]], list[list[int, int, int]]]:
+    &#34;&#34;&#34;
+    Return a pair containg a list of vertices and a list of faces for this object.
+
+    &#34;&#34;&#34;
+    mesh = self.mo.to_mesh()
+    if mesh.vert_properties.shape[1] &gt; 3:
+        vertices = mesh.vert_properties[:, :3]
+    else:
+        vertices = mesh.vert_properties
+    return (vertices, mesh.tri_verts)</code></pre>
+</details>
+<div class="desc"><p>Return a pair containg a list of vertices and a list of faces for this object.</p></div>
+</dd>
+<dt id="piecad.Obj3d.transform"><code class="name flex">
+<span>def <span class="ident">transform</span></span>(<span>self,<br>matrix3x4: tuple[tuple[float, float, float, float], tuple[float, float, float, float], tuple[float, float, float, float], tuple[float, float, float, float]]) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transform(
+    self,
+    matrix3x4: tuple[
+        tuple[float, float, float, float],
+        tuple[float, float, float, float],
+        tuple[float, float, float, float],
+        tuple[float, float, float, float],
+    ],
+) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Transform this object with the given affine transformaton matrix.
+
+    If you don&#39;t know what this is, you probably don&#39;t need it.
+    &#34;&#34;&#34;
+    if (
+        len(matrix3x4) != 3
+        or len(matrix3x4[0]) != 4
+        or len(matrix3x4[1]) != 4
+        or len(matrix3x4[2]) != 4
+    ):
+        raise ValueError(&#34;Improperly sized 3x4 matrix.&#34;)
+
+    return Obj3d(self.mo.transform(matrix3x4), color=self._color)</code></pre>
+</details>
+<div class="desc"><p>Transform this object with the given affine transformaton matrix.</p>
+<p>If you don't know what this is, you probably don't need it.</p></div>
+</dd>
+<dt id="piecad.Obj3d.translate"><code class="name flex">
+<span>def <span class="ident">translate</span></span>(<span>self, offsets: list[float, float, float]) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def translate(self, offsets: list[float, float, float]) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Translate (move) this object by the given offsets.
+    &#34;&#34;&#34;
+    _chkV3(&#34;offsets&#34;, offsets)
+    return Obj3d(self.mo.translate(offsets), color=self._color)</code></pre>
+</details>
+<div class="desc"><p>Translate (move) this object by the given offsets.</p></div>
+</dd>
+<dt id="piecad.Obj3d.volume"><code class="name flex">
+<span>def <span class="ident">volume</span></span>(<span>self) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def volume(self) -&gt; float:
+    &#34;&#34;&#34;
+    The volume of this Obj3d.
+    &#34;&#34;&#34;
+    return self.mo.volume()</code></pre>
+</details>
+<div class="desc"><p>The volume of this Obj3d.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="piecad.ValidationError"><code class="flex name class">
+<span>class <span class="ident">ValidationError</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ValidationError(BaseException):
+    &#34;&#34;&#34;
+    Exception class for errors detected in arguments to **piecad**
+    functions and methods.
+    &#34;&#34;&#34;
+
+    pass</code></pre>
+</details>
+<div class="desc"><p>Exception class for errors detected in arguments to <strong>piecad</strong>
+functions and methods.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="piecad.bulk_ops" href="bulk_ops.html">piecad.bulk_ops</a></code></li>
+<li><code><a title="piecad.primitives_2d" href="primitives_2d.html">piecad.primitives_2d</a></code></li>
+<li><code><a title="piecad.primitives_3d" href="primitives_3d.html">piecad.primitives_3d</a></code></li>
+<li><code><a title="piecad.trigonometry" href="trigonometry.html">piecad.trigonometry</a></code></li>
+<li><code><a title="piecad.utilities" href="utilities.html">piecad.utilities</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="piecad.set_default_segments" href="#piecad.set_default_segments">set_default_segments</a></code></li>
+<li><code><a title="piecad.version" href="#piecad.version">version</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></code></h4>
+<ul class="two-column">
+<li><code><a title="piecad.Obj2d.area" href="#piecad.Obj2d.area">area</a></code></li>
+<li><code><a title="piecad.Obj2d.bounding_box" href="#piecad.Obj2d.bounding_box">bounding_box</a></code></li>
+<li><code><a title="piecad.Obj2d.center" href="#piecad.Obj2d.center">center</a></code></li>
+<li><code><a title="piecad.Obj2d.color" href="#piecad.Obj2d.color">color</a></code></li>
+<li><code><a title="piecad.Obj2d.decompose" href="#piecad.Obj2d.decompose">decompose</a></code></li>
+<li><code><a title="piecad.Obj2d.extrude" href="#piecad.Obj2d.extrude">extrude</a></code></li>
+<li><code><a title="piecad.Obj2d.is_empty" href="#piecad.Obj2d.is_empty">is_empty</a></code></li>
+<li><code><a title="piecad.Obj2d.mirror" href="#piecad.Obj2d.mirror">mirror</a></code></li>
+<li><code><a title="piecad.Obj2d.num_verts" href="#piecad.Obj2d.num_verts">num_verts</a></code></li>
+<li><code><a title="piecad.Obj2d.offset" href="#piecad.Obj2d.offset">offset</a></code></li>
+<li><code><a title="piecad.Obj2d.piecut" href="#piecad.Obj2d.piecut">piecut</a></code></li>
+<li><code><a title="piecad.Obj2d.revolve" href="#piecad.Obj2d.revolve">revolve</a></code></li>
+<li><code><a title="piecad.Obj2d.rotate" href="#piecad.Obj2d.rotate">rotate</a></code></li>
+<li><code><a title="piecad.Obj2d.scale" href="#piecad.Obj2d.scale">scale</a></code></li>
+<li><code><a title="piecad.Obj2d.to_paths" href="#piecad.Obj2d.to_paths">to_paths</a></code></li>
+<li><code><a title="piecad.Obj2d.transform" href="#piecad.Obj2d.transform">transform</a></code></li>
+<li><code><a title="piecad.Obj2d.translate" href="#piecad.Obj2d.translate">translate</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></code></h4>
+<ul class="two-column">
+<li><code><a title="piecad.Obj3d.bounding_box" href="#piecad.Obj3d.bounding_box">bounding_box</a></code></li>
+<li><code><a title="piecad.Obj3d.center" href="#piecad.Obj3d.center">center</a></code></li>
+<li><code><a title="piecad.Obj3d.color" href="#piecad.Obj3d.color">color</a></code></li>
+<li><code><a title="piecad.Obj3d.decompose" href="#piecad.Obj3d.decompose">decompose</a></code></li>
+<li><code><a title="piecad.Obj3d.is_empty" href="#piecad.Obj3d.is_empty">is_empty</a></code></li>
+<li><code><a title="piecad.Obj3d.mirror" href="#piecad.Obj3d.mirror">mirror</a></code></li>
+<li><code><a title="piecad.Obj3d.num_faces" href="#piecad.Obj3d.num_faces">num_faces</a></code></li>
+<li><code><a title="piecad.Obj3d.num_verts" href="#piecad.Obj3d.num_verts">num_verts</a></code></li>
+<li><code><a title="piecad.Obj3d.piecut" href="#piecad.Obj3d.piecut">piecut</a></code></li>
+<li><code><a title="piecad.Obj3d.project" href="#piecad.Obj3d.project">project</a></code></li>
+<li><code><a title="piecad.Obj3d.rotate" href="#piecad.Obj3d.rotate">rotate</a></code></li>
+<li><code><a title="piecad.Obj3d.scale" href="#piecad.Obj3d.scale">scale</a></code></li>
+<li><code><a title="piecad.Obj3d.slice" href="#piecad.Obj3d.slice">slice</a></code></li>
+<li><code><a title="piecad.Obj3d.split" href="#piecad.Obj3d.split">split</a></code></li>
+<li><code><a title="piecad.Obj3d.surface_area" href="#piecad.Obj3d.surface_area">surface_area</a></code></li>
+<li><code><a title="piecad.Obj3d.to_verts_and_faces" href="#piecad.Obj3d.to_verts_and_faces">to_verts_and_faces</a></code></li>
+<li><code><a title="piecad.Obj3d.transform" href="#piecad.Obj3d.transform">transform</a></code></li>
+<li><code><a title="piecad.Obj3d.translate" href="#piecad.Obj3d.translate">translate</a></code></li>
+<li><code><a title="piecad.Obj3d.volume" href="#piecad.Obj3d.volume">volume</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="piecad.ValidationError" href="#piecad.ValidationError">ValidationError</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

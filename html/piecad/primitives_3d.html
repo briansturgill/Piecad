@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>piecad.primitives_3d API documentation</title>
+<meta name="description" content="Create 3D objects such as spheres and cubes.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>piecad.primitives_3d</code></h1>
+</header>
+<section id="section-intro">
+<h2 id="create-3d-objects-such-as-spheres-and-cubes">Create 3D objects such as spheres and cubes.</h2>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="piecad.primitives_3d.cone"><code class="name flex">
+<span>def <span class="ident">cone</span></span>(<span>height: float,<br>radius_low: float,<br>radius_high: float = 0.2,<br>segments: int = -1,<br>center: bool = False) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cone(
+    height: float,
+    radius_low: float,
+    radius_high: float = 0.2,
+    segments: int = -1,
+    center: bool = False,
+) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Make a cone with given radii and height.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    Why does ``radius_high`` not default to 0? Pointy things
+    don&#39;t 3d print very well. If the model is not to be printed,
+    by all means set it to 0.
+
+    By default, the cone bottom is centered at `(0,0,0)`.
+    When `center` is `True`, the cone will be centered on `(0,0,0)`.
+    (In other words, the bottom of the cone will be at `(0,0,-height/2.0`.)
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/cone.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+    if segments == -1:
+        segments = config[&#34;DefaultSegments&#34;]
+    _chkGT(&#34;height&#34;, height, 0)
+    _chkGT(&#34;radius_low&#34;, radius_low, 0)
+    _chkGE(&#34;radius_high&#34;, radius_high, 0)
+    _chkGE(&#34;segments&#34;, segments, 3)
+    return Obj3d(
+        _m.Manifold.cylinder(height, radius_low, radius_high, segments, center)
+    )</code></pre>
+</details>
+<div class="desc"><p>Make a cone with given radii and height.</p>
+<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>Why does <code>radius_high</code> not default to 0? Pointy things
+don't 3d print very well. If the model is not to be printed,
+by all means set it to 0.</p>
+<p>By default, the cone bottom is centered at <code>(0,0,0)</code>.
+When <code>center</code> is <code>True</code>, the cone will be centered on <code>(0,0,0)</code>.
+(In other words, the bottom of the cone will be at <code>(0,0,-height/2.0</code>.)</p>
+<iframe width="100%" height="220" src="examples/cone.html"></iframe></div>
+</dd>
+<dt id="piecad.primitives_3d.cube"><code class="name flex">
+<span>def <span class="ident">cube</span></span>(<span>size: float, center: bool = False) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cube(size: float, center: bool = False) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Make a cube of with sides of the given size.
+
+    By default, the bottom front left corner of the cube will be at `(0,0,0)`.
+    When `center` is `True` it will cause the cube to be centered at `(0,0,0)`.
+
+    &#34;&#34;&#34;
+    # Too many models on one page. &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/cube.html&#34;&gt;&lt;/iframe&gt;
+    if type(size) == list or type(size) == tuple:
+        return cuboid(size, center)
+    return Obj3d(_m.Manifold.cube((size, size, size), center))</code></pre>
+</details>
+<div class="desc"><p>Make a cube of with sides of the given size.</p>
+<p>By default, the bottom front left corner of the cube will be at <code>(0,0,0)</code>.
+When <code>center</code> is <code>True</code> it will cause the cube to be centered at <code>(0,0,0)</code>.</p></div>
+</dd>
+<dt id="piecad.primitives_3d.cuboid"><code class="name flex">
+<span>def <span class="ident">cuboid</span></span>(<span>size: list[float, float, float], center: bool = False) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cuboid(size: list[float, float, float], center: bool = False) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Make a cuboid with the x, y, and z values given in size.
+
+    By default, the bottom front left corner of the cuboid will be at `(0,0,0)`.
+    When `center` is `True` it will cause the cube to be centered at `(0,0,0)`.
+
+    &#34;&#34;&#34;
+    # Too many models on one page. &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/cuboid.html&#34;&gt;&lt;/iframe&gt;
+    if type(size) == float or type(size) == int:
+        return cube(size)
+    return Obj3d(_m.Manifold.cube(size, center))</code></pre>
+</details>
+<div class="desc"><p>Make a cuboid with the x, y, and z values given in size.</p>
+<p>By default, the bottom front left corner of the cuboid will be at <code>(0,0,0)</code>.
+When <code>center</code> is <code>True</code> it will cause the cube to be centered at <code>(0,0,0)</code>.</p></div>
+</dd>
+<dt id="piecad.primitives_3d.cylinder"><code class="name flex">
+<span>def <span class="ident">cylinder</span></span>(<span>height: float, radius: float, segments: int = -1, center=False) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cylinder(height: float, radius: float, segments: int = -1, center=False) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Make a cylinder of a given radius and height.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    By default, the cylinder bottom is centered at `(0,0,0)`.
+    When `center` is `True`, the cylinder will centered on `(0,0,0)`.
+    (In other words, the bottom of the cylinder will be at `(0,0,-height/2.0`.)
+    &#34;&#34;&#34;
+    if segments == -1:
+        segments = config[&#34;DefaultSegments&#34;]
+    _chkGT(&#34;height&#34;, height, 0)
+    _chkGT(&#34;radius&#34;, radius, 0)
+    _chkGE(&#34;segments&#34;, segments, 3)
+    cyl = circle(radius, segments).extrude(height)
+    if center:
+        cyl = cyl.translate((0, 0, -height / 2.0))
+    return cyl</code></pre>
+</details>
+<div class="desc"><p>Make a cylinder of a given radius and height.</p>
+<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>By default, the cylinder bottom is centered at <code>(0,0,0)</code>.
+When <code>center</code> is <code>True</code>, the cylinder will centered on <code>(0,0,0)</code>.
+(In other words, the bottom of the cylinder will be at <code>(0,0,-height/2.0</code>.)</p></div>
+</dd>
+<dt id="piecad.primitives_3d.ellipsoid"><code class="name flex">
+<span>def <span class="ident">ellipsoid</span></span>(<span>radii: tuple[float, float, float], segments: int = -1, center=False) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ellipsoid(
+    radii: tuple[float, float, float], segments: int = -1, center=False
+) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Make an ellipsoid which is elliptical on all three radii.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    The ellipsoid is centered at `(0,0,0)`.
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/ellipsoid.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+    if segments == -1:
+        segments = config[&#34;DefaultSegments&#34;]
+    _chkV3(&#34;radius&#34;, radii)
+    _chkGE(&#34;segments&#34;, segments, 3)
+
+    return sphere(1, segments=segments).scale(radii)</code></pre>
+</details>
+<div class="desc"><p>Make an ellipsoid which is elliptical on all three radii.</p>
+<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>The ellipsoid is centered at <code>(0,0,0)</code>.</p>
+<iframe width="100%" height="220" src="examples/ellipsoid.html"></iframe></div>
+</dd>
+<dt id="piecad.primitives_3d.elliptical_cylinder"><code class="name flex">
+<span>def <span class="ident">elliptical_cylinder</span></span>(<span>height: float, radii: tuple[float, float], segments: int = -1, center=False) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def elliptical_cylinder(
+    height: float, radii: tuple[float, float], segments: int = -1, center=False
+) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Make a elliptically shaped cylinder of given radii and height.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    By default, the elliptical cylinder bottom is centered at `(0,0,0)`.
+    When `center` is `True`, the cylinder will centered on `(0,0,0)`.
+    (In other words, the bottom of the elliptical cylinder will be at `(0,0,-height/2.0`.)
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/elliptical_cylinder.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+    if segments == -1:
+        segments = config[&#34;DefaultSegments&#34;]
+    _chkGT(&#34;height&#34;, height, 0)
+    _chkV2(&#34;radii&#34;, radii)
+    _chkGE(&#34;segments&#34;, segments, 3)
+
+    ecyl = extrude(ellipse(radii, segments), height)
+    if center:
+        ecyl = ecyl.translate((0, 0, -height / 2.0))
+    return ecyl</code></pre>
+</details>
+<div class="desc"><p>Make a elliptically shaped cylinder of given radii and height.</p>
+<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>By default, the elliptical cylinder bottom is centered at <code>(0,0,0)</code>.
+When <code>center</code> is <code>True</code>, the cylinder will centered on <code>(0,0,0)</code>.
+(In other words, the bottom of the elliptical cylinder will be at <code>(0,0,-height/2.0</code>.)</p>
+<iframe width="100%" height="220" src="examples/elliptical_cylinder.html"></iframe></div>
+</dd>
+<dt id="piecad.primitives_3d.extrude"><code class="name flex">
+<span>def <span class="ident">extrude</span></span>(<span>obj: <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a>,<br>height: float) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extrude(obj: Obj2d, height: float) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Create a Obj3d solid from Obj2d of given height.
+
+    The 2d object will be copied and moved up to ``height``.
+    Lines will be added creating an ``obj``-shaped 3d solid.
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/extrude.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+    _chkTY(&#34;obj&#34;, obj, Obj2d)
+    _chkGT(&#34;height&#34;, height, 0)
+    return Obj3d(_m.Manifold.extrude(obj.mo, height))</code></pre>
+</details>
+<div class="desc"><p>Create a Obj3d solid from Obj2d of given height.</p>
+<p>The 2d object will be copied and moved up to <code>height</code>.
+Lines will be added creating an <code>obj</code>-shaped 3d solid.</p>
+<iframe width="100%" height="220" src="examples/extrude.html"></iframe></div>
+</dd>
+<dt id="piecad.primitives_3d.extrude_chaining"><code class="name flex">
+<span>def <span class="ident">extrude_chaining</span></span>(<span>pairs: list[tuple[float, <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a>]],<br>is_convex: bool = False,<br>diagnose: str = None) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extrude_chaining(
+    pairs: list[tuple[float, Obj2d]], is_convex: bool = False, diagnose: str = None
+) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Extrude multiple 2d objects into a single 3d Object.
+
+    ALL 2D OBJECTS MUST HAVE THE SAME NUMBER OF POINTS.
+
+    Parameter `pairs` is a list of pairs: `[[height, Obj2d], ...]`.
+    This list controls an extrusion of 2d shapes chained together
+    into one 3d object.
+
+    The `height` is cumulative. You are always specifing the exact current height
+    to be output for the current object. This is done so that you can have numerically
+    robust dimensions in your object. If relative heights were used, extuding something
+    like a sphere is would end up with a sphere that&#39;s height was not precisely
+    the desired height.
+
+    If parameter `is_convex` is set to `True` a much faster triangulation
+    algoritm is used, which only works on a convex shape. If you don&#39;t
+    understand what this means, leave this option alone.
+
+    Caps are automatically generated from the first and last shapes.
+
+    If `diagnose` is not `None`, it should contain a string of a filename where the
+    faulty object is stored (to look at with meshlab, for example).
+    Use of the `.obj` extension is recommended.
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;500&#34; src=&#34;examples/extrude_chaining.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+    vertex_list = []
+    triangles = []
+
+    _chkGT(&#34;pairs length&#34;, len(pairs), 1)
+
+    def add_cap(v_off, polys, top):
+
+        if not is_convex or len(polys) != 1:
+            tris = _m.triangulate(polys)
+            for t in tris:
+                if top:
+                    triangles.append((t[0] + v_off, t[1] + v_off, t[2] + v_off))
+                else:  # Bottom caps are reversed.
+                    triangles.append((t[2] + v_off, t[1] + v_off, t[0] + v_off))
+        else:  # Fan triangulation
+            n = len(poly)  # We have only one to deal with
+            chosen = 0
+            for i in range(1, n - 1):
+                cur = i
+                next = i + 1
+                if top:
+                    triangles.append((chosen + v_off, cur + v_off, next + v_off))
+                else:  # Bottom caps are clockwise.
+                    triangles.append((next + v_off, cur + v_off, chosen + v_off))
+
+    v_offs = []
+    v_offs.append(0)
+    o2d_polys = []
+    for h, o2d in pairs:
+        if o2d.is_empty():
+            raise ValidationError(
+                f&#34;At pairs index: {cur_idx}, empty shape is not allowed&#34;
+            )
+        polys = o2d.to_paths()
+        o2d_polys.append(polys)
+        for poly in polys:
+            for vert in poly:
+                vertex_list.append((vert[0], vert[1], h))
+        v_offs.append(len(vertex_list))
+    v_offs.pop()
+
+    prev_polys = o2d_polys[0]
+    prev_vo = 0
+    add_cap(prev_vo, prev_polys, top=False)
+    last = len(pairs)
+    cur_idx = 1
+
+    while cur_idx &lt; last:
+        cur_polys = o2d_polys[cur_idx]
+        cur_vo = v_offs[cur_idx]
+
+        if len(cur_polys) != len(prev_polys):
+            raise ValidationError(
+                f&#34;At pairs index: {cur_idx}, previous shape does not match current shape&#34;
+            )
+
+        for i in range(0, len(cur_polys)):
+            b = prev_polys[i]
+            t = cur_polys[i]
+
+            if len(b) != len(t):
+                raise ValidationError(
+                    f&#34;At pairs index: {cur_idx}, poly: {i}, previous shape does not match current shape&#34;
+                )
+
+            bottom_p = 0 + prev_vo
+            top_p = 0 + cur_vo
+            _len = len(b)
+
+            for j in range(0, _len):
+                next_bottom_p = ((j + 1) % _len) + prev_vo
+                next_top_p = ((j + 1) % _len) + cur_vo
+                triangles.append((bottom_p, next_bottom_p, next_top_p))
+                triangles.append((bottom_p, next_top_p, top_p))
+                bottom_p = next_bottom_p
+                top_p = next_top_p
+
+            prev_vo = cur_vo
+            cur_vo += _len
+
+        prev_polys = cur_polys
+        prev_vo = v_offs[cur_idx]
+        cur_idx += 1
+
+    add_cap(prev_vo, prev_polys, top=True)
+
+    vertex_list = _np.array(vertex_list, _np.float32)
+    triangles = _np.array(triangles, _np.uint32)
+    mesh = _m.Mesh(vertex_list, triangles)
+    if diagnose != None:
+        import trimesh
+
+        dot_idx = diagnose.rindex(&#34;.&#34;)
+        ext = diagnose[dot_idx + 1 :]
+        mesh_output = trimesh.Trimesh(vertices=vertex_list, faces=triangles)
+        trimesh.exchange.export.export_mesh(mesh_output, diagnose, ext)
+    mo = _m.Manifold(mesh)
+    if mo.is_empty():
+        raise ValidationError(f&#34;Error creating Manifold: {mo.status()}.&#34;)
+    return Obj3d(mo)</code></pre>
+</details>
+<div class="desc"><p>Extrude multiple 2d objects into a single 3d Object.</p>
+<p>ALL 2D OBJECTS MUST HAVE THE SAME NUMBER OF POINTS.</p>
+<p>Parameter <code>pairs</code> is a list of pairs: <code>[[height, Obj2d], &hellip;]</code>.
+This list controls an extrusion of 2d shapes chained together
+into one 3d object.</p>
+<p>The <code>height</code> is cumulative. You are always specifing the exact current height
+to be output for the current object. This is done so that you can have numerically
+robust dimensions in your object. If relative heights were used, extuding something
+like a sphere is would end up with a sphere that's height was not precisely
+the desired height.</p>
+<p>If parameter <code>is_convex</code> is set to <code>True</code> a much faster triangulation
+algoritm is used, which only works on a convex shape. If you don't
+understand what this means, leave this option alone.</p>
+<p>Caps are automatically generated from the first and last shapes.</p>
+<p>If <code>diagnose</code> is not <code>None</code>, it should contain a string of a filename where the
+faulty object is stored (to look at with meshlab, for example).
+Use of the <code>.obj</code> extension is recommended.</p>
+<iframe width="100%" height="500" src="examples/extrude_chaining.html"></iframe></div>
+</dd>
+<dt id="piecad.primitives_3d.extrude_transforming"><code class="name flex">
+<span>def <span class="ident">extrude_transforming</span></span>(<span>obj: <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a>,<br>height: float,<br>num_twist_divisions: int = 0,<br>twist: float = 0,<br>scale: tuple[float, float] = (1.0, 1.0)) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extrude_transforming(
+    obj: Obj2d,
+    height: float,
+    num_twist_divisions: int = 0,
+    twist: float = 0,
+    scale: tuple[float, float] = (1.0, 1.0),
+) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Create a Obj3d solid from Obj2d of given height.
+
+    The 2d object will be copied and moved up to ``height``.
+    Lines will be added creating an ``obj``-shaped 3d solid.
+
+    Parameter ``num_twist_divisions`` should only be used when ``twist`` is
+    greater than zero.
+
+    Parameter `twist` will cause a circular rotation for each `num_twist_divisions`.
+
+    Parammeter `scale` specifes scaling factors applied at each division.
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;270&#34; src=&#34;examples/extrude_transforming.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+    _chkTY(&#34;obj&#34;, obj, Obj2d)
+    _chkGT(&#34;height&#34;, height, 0)
+    _chkGE(&#34;num_twist_divisions&#34;, num_twist_divisions, 0)
+    _chkGE(&#34;twist&#34;, twist, 0)
+    _chkV2(&#34;scale&#34;, scale)
+    return Obj3d(
+        _m.Manifold.extrude(
+            obj.mo,
+            height,
+            num_twist_divisions,
+            twist,
+            scale,
+        )
+    )</code></pre>
+</details>
+<div class="desc"><p>Create a Obj3d solid from Obj2d of given height.</p>
+<p>The 2d object will be copied and moved up to <code>height</code>.
+Lines will be added creating an <code>obj</code>-shaped 3d solid.</p>
+<p>Parameter <code>num_twist_divisions</code> should only be used when <code>twist</code> is
+greater than zero.</p>
+<p>Parameter <code>twist</code> will cause a circular rotation for each <code>num_twist_divisions</code>.</p>
+<p>Parammeter <code>scale</code> specifes scaling factors applied at each division.</p>
+<iframe width="100%" height="270" src="examples/extrude_transforming.html"></iframe></div>
+</dd>
+<dt id="piecad.primitives_3d.geodesic_sphere"><code class="name flex">
+<span>def <span class="ident">geodesic_sphere</span></span>(<span>radius, segments=-1)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def geodesic_sphere(radius, segments=-1):
+    &#34;&#34;&#34;
+    Create a geodesic sphere of a given radius.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/geodesic_sphere.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+    if segments == -1:
+        segments = config[&#34;DefaultSegments&#34;]
+    _chkGT(&#34;radius&#34;, radius, 0)
+    _chkGE(&#34;segments&#34;, segments, 3)
+
+    return Obj3d(_m.Manifold.sphere(radius, segments))</code></pre>
+</details>
+<div class="desc"><p>Create a geodesic sphere of a given radius.</p>
+<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<iframe width="100%" height="220" src="examples/geodesic_sphere.html"></iframe></div>
+</dd>
+<dt id="piecad.primitives_3d.polyhedron"><code class="name flex">
+<span>def <span class="ident">polyhedron</span></span>(<span>vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def polyhedron(
+    vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]
+) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Create an Obj3d from points and a list of triangles using those points.
+
+    THIS IS AN ADVANCED FUNCTION.
+
+    If you don&#39;t already understand the &#34;directions&#34; below... REALLY, try doing
+    what you want to do another way.
+
+    * Faces have to be wound counter-clockwise.
+
+    * All faces must be triangles.
+
+    * Faces are integer indices into the vertices list.
+
+    You eventually will get a message from the Manifold package saying it is not &#34;manifold&#34;.
+
+    That isn&#39;t really helpful.
+
+    Try adding these lines just before the call to polyhedron.
+
+    ```python
+    import trimesh
+    mesh_output = trimesh.Trimesh(vertices=vertices, faces=triangles)
+    trimesh.exchange.export.export_mesh(mesh_output, &#34;mesh.obj&#34;, &#34;obj&#34;)
+    ```
+
+    Then use a program like `meshlab` to look at where things are not manifold.
+
+    &#34;&#34;&#34;
+    vertices = _np.array(vertices, _np.float32)
+    faces = _np.array(faces, _np.uint32)
+    mesh = _m.Mesh(vertices, faces)
+    mo = _m.Manifold(mesh)
+    if mo.is_empty():
+        raise ValidationError(f&#34;Error creating Manifold: {mo.status()}.&#34;)
+    return Obj3d(mo)</code></pre>
+</details>
+<div class="desc"><p>Create an Obj3d from points and a list of triangles using those points.</p>
+<p>THIS IS AN ADVANCED FUNCTION.</p>
+<p>If you don't already understand the "directions" below&hellip; REALLY, try doing
+what you want to do another way.</p>
+<ul>
+<li>
+<p>Faces have to be wound counter-clockwise.</p>
+</li>
+<li>
+<p>All faces must be triangles.</p>
+</li>
+<li>
+<p>Faces are integer indices into the vertices list.</p>
+</li>
+</ul>
+<p>You eventually will get a message from the Manifold package saying it is not "manifold".</p>
+<p>That isn't really helpful.</p>
+<p>Try adding these lines just before the call to polyhedron.</p>
+<pre><code class="language-python">import trimesh
+mesh_output = trimesh.Trimesh(vertices=vertices, faces=triangles)
+trimesh.exchange.export.export_mesh(mesh_output, &quot;mesh.obj&quot;, &quot;obj&quot;)
+</code></pre>
+<p>Then use a program like <code>meshlab</code> to look at where things are not manifold.</p></div>
+</dd>
+<dt id="piecad.primitives_3d.pyramid"><code class="name flex">
+<span>def <span class="ident">pyramid</span></span>(<span>height: int, num_sides: int, radius: float) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def pyramid(height: int, num_sides: int, radius: float) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Make a regular pyramid with the given height and number of sides.
+
+    The `radius` specifies the circle on which the corners of the pyramid will be built.
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/pyramid.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+    _chkGT(&#34;height&#34;, height, 0)
+    _chkGE(&#34;num_sides&#34;, num_sides, 3)
+    _chkGT(&#34;radius&#34;, radius, 0)
+    return extrude_transforming(
+        circle(radius, segments=num_sides), height=height, scale=(0, 0)
+    )</code></pre>
+</details>
+<div class="desc"><p>Make a regular pyramid with the given height and number of sides.</p>
+<p>The <code>radius</code> specifies the circle on which the corners of the pyramid will be built.</p>
+<iframe width="100%" height="220" src="examples/pyramid.html"></iframe></div>
+</dd>
+<dt id="piecad.primitives_3d.revolve"><code class="name flex">
+<span>def <span class="ident">revolve</span></span>(<span>obj: <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a>,<br>revolve_degrees: float = 360.0,<br>segments: int = -1) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def revolve(obj: Obj2d, revolve_degrees: float = 360.0, segments: int = -1) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Create a Obj3d by revolving an Obj2d around the Y-axis, then rotating it so that Y becomes Z.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/revolve.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+    if segments == -1:
+        segments = config[&#34;DefaultSegments&#34;]
+    _chkTY(&#34;obj&#34;, obj, Obj2d)
+    _chkGE(&#34;segments&#34;, segments, 3)
+    _chkGT(&#34;revolve_degrees&#34;, revolve_degrees, 0)
+    return Obj3d(_m.Manifold.revolve(obj.mo, segments, revolve_degrees))</code></pre>
+</details>
+<div class="desc"><p>Create a Obj3d by revolving an Obj2d around the Y-axis, then rotating it so that Y becomes Z.</p>
+<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<iframe width="100%" height="220" src="examples/revolve.html"></iframe></div>
+</dd>
+<dt id="piecad.primitives_3d.rounded_cuboid"><code class="name flex">
+<span>def <span class="ident">rounded_cuboid</span></span>(<span>size: list[float, float, float],<br>rounding_radius=2.0,<br>segments: int = -1,<br>center: bool = False) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rounded_cuboid(
+    size: list[float, float, float],
+    rounding_radius=2.0,
+    segments: int = -1,
+    center: bool = False,
+) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Make a rounded_cuboid with the x, y, and z values given in size.
+
+    Parameter `rounding_radius` is the size of the rounded lip at top and bottom.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    By default, the bottom front left corner of the rounded cuboid will be at `(0,0,0)`.
+    When `center` is `True` it will cause the rounded cuboid to be centered at `(0,0,0)`.
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/rounded_cuboid.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+    if segments == -1:
+        segments = config[&#34;DefaultSegments&#34;]
+    _chkGE(&#34;segments&#34;, segments, 3)
+    _chkGE(&#34;rounding_radius&#34;, rounding_radius, 0)
+    _chkV3(&#34;size&#34;, size)
+    if type(size) == float or type(size) == int:
+        size = (size, size, size)
+    l = []
+    res = config[&#34;LayerResolution&#34;]
+    arc_segs = rounding_radius / res
+    deg_per_arc_seg = 90.0 / arc_segs
+    deg = 0.0
+    cur_z = 0
+    x, y, z = size
+    rr = rounding_radius
+    ix = x - 2 * rr
+    iy = y - 2 * rr
+    smallest_rr = sin(deg_per_arc_seg) / 2.0
+    l.append(
+        (cur_z, rounded_rectangle((ix, iy), smallest_rr, segments).translate((rr, rr)))
+    )
+    deg += deg_per_arc_seg
+    while deg &lt; 90.0:
+        delta = rr * sin(deg)
+        cur_z = rr - rr * cos(deg)
+        l.append(
+            (
+                cur_z,
+                rounded_rectangle(
+                    (ix + 2 * delta, iy + 2 * delta), delta, segments
+                ).translate((rr - delta, rr - delta)),
+            )
+        )
+        deg += deg_per_arc_seg
+
+    cur_z = rr
+    l.append((cur_z, rounded_rectangle((x, y), rr, segments)))
+
+    cur_z = z - rr
+    l.append((cur_z, rounded_rectangle((x, y), rr, segments)))
+
+    deg = 90.0
+    deg -= deg_per_arc_seg
+    while deg &gt; 0.0:
+        delta = rr * sin(deg)
+        cur_z = z - rr + rr * cos(deg)
+        l.append(
+            (
+                cur_z,
+                rounded_rectangle(
+                    ((ix) + 2 * delta, (iy) + 2 * delta), delta, segments
+                ).translate((rr - delta, rr - delta)),
+            )
+        )
+        deg -= deg_per_arc_seg
+
+    cur_z = z
+    l.append(
+        (cur_z, rounded_rectangle((ix, iy), smallest_rr, segments).translate((rr, rr)))
+    )
+
+    o = extrude_chaining(l, is_convex=True)
+    if center:
+        o = o.translate((-x / 2.0, -y / 2.0, -z / 2.0))
+    return o</code></pre>
+</details>
+<div class="desc"><p>Make a rounded_cuboid with the x, y, and z values given in size.</p>
+<p>Parameter <code>rounding_radius</code> is the size of the rounded lip at top and bottom.</p>
+<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>By default, the bottom front left corner of the rounded cuboid will be at <code>(0,0,0)</code>.
+When <code>center</code> is <code>True</code> it will cause the rounded cuboid to be centered at <code>(0,0,0)</code>.</p>
+<iframe width="100%" height="220" src="examples/rounded_cuboid.html"></iframe></div>
+</dd>
+<dt id="piecad.primitives_3d.rounded_cylinder"><code class="name flex">
+<span>def <span class="ident">rounded_cylinder</span></span>(<span>height: float,<br>radius: float,<br>rounding_radius: float = 2.0,<br>segments: int = -1,<br>center: bool = False) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rounded_cylinder(
+    height: float,
+    radius: float,
+    rounding_radius: float = 2.0,
+    segments: int = -1,
+    center: bool = False,
+) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Make a rounded cylinder of a given radius and height.
+
+    Parameter `rounding_radius` is the size of the rounded lip at top and bottom.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    By default, the rounded cylinder bottom is centered at `(0,0,0)`.
+    When `center` is `True`, the rounded cylinder will centered on `(0,0,0)`.
+    (In other words, the bottom of the rounded cylinder will be at `(0,0,-height/2.0`.)
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/rounded_cylinder.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+    if segments == -1:
+        segments = config[&#34;DefaultSegments&#34;]
+    _chkGE(&#34;segments&#34;, segments, 3)
+    _chkGT(&#34;radius&#34;, radius, 0)
+    rr = (
+        rounded_rectangle((2 * radius, height), rounding_radius, segments)
+        .translate((-radius, 0))
+        .piecut(90, 270)
+    )
+    o3 = revolve(rr, segments=segments)
+    if center:
+        o3 = o3.translate((0, 0, -height / 2.0))
+    return o3</code></pre>
+</details>
+<div class="desc"><p>Make a rounded cylinder of a given radius and height.</p>
+<p>Parameter <code>rounding_radius</code> is the size of the rounded lip at top and bottom.</p>
+<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>By default, the rounded cylinder bottom is centered at <code>(0,0,0)</code>.
+When <code>center</code> is <code>True</code>, the rounded cylinder will centered on <code>(0,0,0)</code>.
+(In other words, the bottom of the rounded cylinder will be at <code>(0,0,-height/2.0</code>.)</p>
+<iframe width="100%" height="220" src="examples/rounded_cylinder.html"></iframe></div>
+</dd>
+<dt id="piecad.primitives_3d.sphere"><code class="name flex">
+<span>def <span class="ident">sphere</span></span>(<span>radius: float, segments: int = -1) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sphere(radius: float, segments: int = -1) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Create a classical sphere of a given radius.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/sphere.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+    if segments == -1:
+        segments = config[&#34;DefaultSegments&#34;]
+    _chkGE(&#34;radius&#34;, radius, 0)
+    _chkGE(&#34;segments&#34;, segments, 3)
+
+    circ = circle(radius, 2 * segments).piecut(90, 270)
+
+    return revolve(circ, segments=segments)</code></pre>
+</details>
+<div class="desc"><p>Create a classical sphere of a given radius.</p>
+<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<iframe width="100%" height="220" src="examples/sphere.html"></iframe></div>
+</dd>
+<dt id="piecad.primitives_3d.torus"><code class="name flex">
+<span>def <span class="ident">torus</span></span>(<span>outer_radius: float, inner_radius: float, segments=-1)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def torus(outer_radius: float, inner_radius: float, segments=-1):
+    &#34;&#34;&#34;
+    Create a torus with the specified radii.
+
+    For ``segments`` see the documentation of ``set_default_segments``.
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/torus.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+    if segments == -1:
+        segments = config[&#34;DefaultSegments&#34;]
+    _chkGT(&#34;outer_radius&#34;, outer_radius, 0)
+    _chkGT(&#34;inner_radius&#34;, inner_radius, 0)
+    _chkGE(&#34;segments&#34;, segments, 3)
+    if inner_radius &gt;= outer_radius:
+        raise ValidationError(
+            &#34;Parameter inner_radius must be smaller than outer_radius.&#34;
+        )
+    sz = (outer_radius - inner_radius) / 2.0
+    circ = circle(sz, segments).translate((outer_radius - sz, outer_radius - sz))
+
+    return revolve(circ, segments=segments).translate((0, 0, -outer_radius + sz))</code></pre>
+</details>
+<div class="desc"><p>Create a torus with the specified radii.</p>
+<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<iframe width="100%" height="220" src="examples/torus.html"></iframe></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul>
+<li><a href="#create-3d-objects-such-as-spheres-and-cubes">Create 3D objects such as spheres and cubes.</a></li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="piecad" href="index.html">piecad</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="piecad.primitives_3d.cone" href="#piecad.primitives_3d.cone">cone</a></code></li>
+<li><code><a title="piecad.primitives_3d.cube" href="#piecad.primitives_3d.cube">cube</a></code></li>
+<li><code><a title="piecad.primitives_3d.cuboid" href="#piecad.primitives_3d.cuboid">cuboid</a></code></li>
+<li><code><a title="piecad.primitives_3d.cylinder" href="#piecad.primitives_3d.cylinder">cylinder</a></code></li>
+<li><code><a title="piecad.primitives_3d.ellipsoid" href="#piecad.primitives_3d.ellipsoid">ellipsoid</a></code></li>
+<li><code><a title="piecad.primitives_3d.elliptical_cylinder" href="#piecad.primitives_3d.elliptical_cylinder">elliptical_cylinder</a></code></li>
+<li><code><a title="piecad.primitives_3d.extrude" href="#piecad.primitives_3d.extrude">extrude</a></code></li>
+<li><code><a title="piecad.primitives_3d.extrude_chaining" href="#piecad.primitives_3d.extrude_chaining">extrude_chaining</a></code></li>
+<li><code><a title="piecad.primitives_3d.extrude_transforming" href="#piecad.primitives_3d.extrude_transforming">extrude_transforming</a></code></li>
+<li><code><a title="piecad.primitives_3d.geodesic_sphere" href="#piecad.primitives_3d.geodesic_sphere">geodesic_sphere</a></code></li>
+<li><code><a title="piecad.primitives_3d.polyhedron" href="#piecad.primitives_3d.polyhedron">polyhedron</a></code></li>
+<li><code><a title="piecad.primitives_3d.pyramid" href="#piecad.primitives_3d.pyramid">pyramid</a></code></li>
+<li><code><a title="piecad.primitives_3d.revolve" href="#piecad.primitives_3d.revolve">revolve</a></code></li>
+<li><code><a title="piecad.primitives_3d.rounded_cuboid" href="#piecad.primitives_3d.rounded_cuboid">rounded_cuboid</a></code></li>
+<li><code><a title="piecad.primitives_3d.rounded_cylinder" href="#piecad.primitives_3d.rounded_cylinder">rounded_cylinder</a></code></li>
+<li><code><a title="piecad.primitives_3d.sphere" href="#piecad.primitives_3d.sphere">sphere</a></code></li>
+<li><code><a title="piecad.primitives_3d.torus" href="#piecad.primitives_3d.torus">torus</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>
