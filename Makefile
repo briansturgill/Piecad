@@ -3,9 +3,10 @@ all: test docs
 
 docs:
 	black piecad/*.py tests/*.py doc_examples/*.example examples/*.py
-	rm -rf html/piecad/*
+	rm -rf docs/*
 	pdoc3 --html piecad --force
 	(cd doc_examples; ./mk_doc_examples)
+	mv html/piecad docs
 
 test:
 	pytest tests --benchmark-disable
