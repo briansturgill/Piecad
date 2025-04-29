@@ -4,12 +4,17 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "piecad"
+description = '"Easy as Pie" CAD (Piecad)'
 authors = [{name = "Brian Sturgill", email = "codersnext@gmail.com"}]
 license = {file = "LICENSE"}
 classifiers = ["License :: OSI Approved :: MIT License"]
-dynamic = ["version", "description"]
+dynamic = ["version"]
 dependencies = [
     "trimesh >= 1.26.4",
+    "fontPens >= 0.2.4",
+    "fontTools >= 4.57.0",
+    "manifold3d >= 3.0.1",
+    "skia-pathops >= 0.8.0",
 ]
 
 [project.urls]

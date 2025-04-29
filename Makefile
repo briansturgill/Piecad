@@ -7,6 +7,7 @@ docs:
 	pdoc3 --html piecad --force
 	(cd doc_examples; ./mk_doc_examples)
 	mv html/piecad docs
+	rmdir html
 
 test:
 	pytest tests --benchmark-disable

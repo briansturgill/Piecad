@@ -7,8 +7,11 @@ Its primary focus is the creation of models for 3D printing.
 
 [Documentation](https://briansturgill.github.io/Piecad)
 
-INSTALLATION IS STILL IN PROGRESS -- FINISHED SOON
+To install (virtual environment recommended):
 
+```sh
+pip install piecad
+```
 
 ## CREDITS
 
