@@ -74,7 +74,13 @@ def _get_glyph_polygon(c):
 
 def _text_func(sz: float, tstr: str, inter_char_space=None):
     """
-    Draw the ASCII printable characters in `tstr` in shapes in size `sz`.
+     Draw the unicode printable characters in `tstr` in shapes of size `sz`.
+
+    The default font is `Roboto-Regular.ttf`.
+    Also available is `Hack-Regular.ttf` (Monospaced).
+
+    The default value for the spacing between characters (`inter_char_space`) is `sz/3.0`.
+
     """
     line_pos = 0
     if inter_char_space == None:

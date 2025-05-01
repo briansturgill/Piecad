@@ -293,14 +293,16 @@ def text_set_font(font_name: str):
     return _module._set_font(font_name)
 
 
-def text(sz: float, tstr: str):
+def text(sz: float, tstr: str, inter_char_space = None):
     """
     Draw the unicode printable characters in `tstr` in shapes of size `sz`.
 
     The default font is `Roboto-Regular.ttf`.
     Also available is `Hack-Regular.ttf` (Monospaced).
+
+    The default value for the spacing between characters (`inter_char_space`) is `sz/3.0`.
     """
     global _module
     if _module == None:
         _module = importlib.import_module("._text", "piecad")
-    return _module._text_func(sz, tstr)
+    return _module._text_func(sz, tstr, inter_char_space=None)
