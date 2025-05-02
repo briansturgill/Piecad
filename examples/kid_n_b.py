@@ -30,7 +30,6 @@ def KidSizedXPiece(nHoles):
     obj = rcube([x, y, z], rc_r)
     for i in range(1, nHoles + 1):
         r = (kid_circle + pad) / 2.0
-        print(r + r * 2 * (i - 1), r)
         obj = difference(
             obj,
             cylinder(height=z, radius=(kid_screw_size + 1) / 2.0).translate(
