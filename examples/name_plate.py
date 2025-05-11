@@ -14,7 +14,7 @@ xl1, yl1, xl2, yl2 = txt2.bounding_box()
 hl = yl2 - yl1
 wl = xl2 - xl1
 
-uoff = sz/6
+uoff = sz / 6
 txt1 = txt1.translate([-xu1, hl - yu1 + uoff])
 txt2 = txt2.translate([-xl1, -yl1])
 

@@ -1,13 +1,13 @@
 
-all: test docs
+all: test documents
 
-docs:
+documents:
 	black piecad/*.py tests/*.py doc_examples/*.example examples/*.py
 	rm -rf docs/*
 	pdoc3 --html piecad --force
 	(cd doc_examples; ./mk_doc_examples)
-	mv html/piecad docs
-	rmdir html
+	mv html/piecad/* docs
+	rm -rf html
 
 test:
 	pytest tests --benchmark-disable
