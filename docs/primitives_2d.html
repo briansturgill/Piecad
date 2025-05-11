@@ -57,7 +57,7 @@ el.replaceWith(d);
     &#34;&#34;&#34;
     Make a circle of a given radius.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     Circles are created with the center at `(0,0)`
     &#34;&#34;&#34;
@@ -75,7 +75,7 @@ el.replaceWith(d);
     return Obj2d(circ.scale((radius, radius)))</code></pre>
 </details>
 <div class="desc"><p>Make a circle of a given radius.</p>
-<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
 <p>Circles are created with the center at <code>(0,0)</code></p></div>
 </dd>
 <dt id="piecad.primitives_2d.ellipse"><code class="name flex">
@@ -90,7 +90,7 @@ el.replaceWith(d);
     &#34;&#34;&#34;
     Make an ellipse with the given radii.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     Ellipses are created with the center at `(0,0)`
     &#34;&#34;&#34;
@@ -108,7 +108,7 @@ el.replaceWith(d);
     return Obj2d(circ.scale(radii))</code></pre>
 </details>
 <div class="desc"><p>Make an ellipse with the given radii.</p>
-<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
 <p>Ellipses are created with the center at <code>(0,0)</code></p></div>
 </dd>
 <dt id="piecad.primitives_2d.polygon"><code class="name flex">
@@ -245,7 +245,7 @@ When <code>center</code> is <code>True</code> it will cause the rectangle to be 
     The `rounded_rectangele` will have dimensions of `size` dimensions and with
     corners of `rounding_radius`.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
     Each corner will be given approximately 1/4 of segments.
 
     By default, the bottom left corner of the square will be at `(0,0)`.
@@ -326,7 +326,7 @@ When <code>center</code> is <code>True</code> it will cause the rectangle to be 
 <div class="desc"><p>Create a rectangle with rounded corners.</p>
 <p>The <code>rounded_rectangele</code> will have dimensions of <code>size</code> dimensions and with
 corners of <code>rounding_radius</code>.</p>
-<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.
 Each corner will be given approximately 1/4 of segments.</p>
 <p>By default, the bottom left corner of the square will be at <code>(0,0)</code>.
 When <code>center</code> is <code>True</code> it will cause the square to be centered at <code>(0,0)</code>.</p></div>
@@ -397,28 +397,31 @@ When <code>center</code> is <code>True</code> it will cause the square to be cen
 <p>Stars are created with the center at <code>(0,0)</code>.</p></div>
 </dd>
 <dt id="piecad.primitives_2d.text"><code class="name flex">
-<span>def <span class="ident">text</span></span>(<span>sz: float, tstr: str)</span>
+<span>def <span class="ident">text</span></span>(<span>sz: float, tstr: str, inter_char_space=None)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def text(sz: float, tstr: str):
+<pre><code class="python">def text(sz: float, tstr: str, inter_char_space=None):
     &#34;&#34;&#34;
     Draw the unicode printable characters in `tstr` in shapes of size `sz`.
 
     The default font is `Roboto-Regular.ttf`.
     Also available is `Hack-Regular.ttf` (Monospaced).
+
+    The default value for the spacing between characters (`inter_char_space`) is `sz/3.0`.
     &#34;&#34;&#34;
     global _module
     if _module == None:
         _module = importlib.import_module(&#34;._text&#34;, &#34;piecad&#34;)
-    return _module._text_func(sz, tstr)</code></pre>
+    return _module._text_func(sz, tstr, inter_char_space=None)</code></pre>
 </details>
 <div class="desc"><p>Draw the unicode printable characters in <code>tstr</code> in shapes of size <code>sz</code>.</p>
 <p>The default font is <code>Roboto-Regular.ttf</code>.
-Also available is <code>Hack-Regular.ttf</code> (Monospaced).</p></div>
+Also available is <code>Hack-Regular.ttf</code> (Monospaced).</p>
+<p>The default value for the spacing between characters (<code>inter_char_space</code>) is <code>sz/3.0</code>.</p></div>
 </dd>
 <dt id="piecad.primitives_2d.text_set_font"><code class="name flex">
 <span>def <span class="ident">text_set_font</span></span>(<span>font_name: str)</span>

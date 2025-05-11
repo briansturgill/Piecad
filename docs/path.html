@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>piecad.path API documentation</title>
+<meta name="description" content="Create a 2D object from an SVG-like path.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>piecad.path</code></h1>
+</header>
+<section id="section-intro">
+<h2 id="create-a-2d-object-from-an-svg-like-path">Create a 2D object from an SVG-like path.</h2>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="piecad.path.path"><code class="name flex">
+<span>def <span class="ident">path</span></span>(<span>initial_point: tuple[float, float] = (0, 0), segments: int = -1) ‑> <a title="piecad.path.PathMaker" href="#piecad.path.PathMaker">PathMaker</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def path(initial_point: tuple[float, float] = (0, 0), segments: int = -1) -&gt; PathMaker:
+    &#34;&#34;&#34;
+    Create an SVG-like path at `initial_point`. The path can contain lines, arcs, and
+    quadratic and cubic bezier curves.
+
+    The `close` method returns an `Obj2d`
+
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;350&#34; src=&#34;examples/path.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+    if segments == -1:
+        segments = config[&#34;DefaultSegments&#34;]
+    _chkGE(&#34;segments&#34;, segments, 3)
+    return PathMaker(initial_point, segments)</code></pre>
+</details>
+<div class="desc"><p>Create an SVG-like path at <code>initial_point</code>. The path can contain lines, arcs, and
+quadratic and cubic bezier curves.</p>
+<p>The <code>close</code> method returns an <code>Obj2d</code></p>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
+<iframe width="100%" height="350" src="examples/path.html"></iframe></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="piecad.path.PathMaker"><code class="flex name class">
+<span>class <span class="ident">PathMaker</span></span>
+<span>(</span><span>initial_point: tuple[float, float], segments: int)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PathMaker:
+    _ll = []
+    _list = []
+    _cur_pt = (0, 0)
+    _beginning_pt = None
+
+    def __init__(self, initial_point: tuple[float, float], segments: int):
+        &#34;&#34;&#34;
+        Do not create `PathMaker` directly, use the `path` function instead.
+        &#34;&#34;&#34;
+        self._inital_pt = initial_point
+        self._segments = segments
+
+    def _add(self, o: object):
+        if type(o) == Line:
+            self._list.append(_xy(o.start))
+            self._list.append(_xy(o.end))
+        else:
+            self._list.append(_xy(o.start))
+            for t in range(1, self._segments):
+                self._list.append(_xy(o.point(t / (float(self._segments) - 1))))
+            self._list.append(_xy(o.end))
+
+    def line_to(self, end: tuple[float, float]) -&gt; typing.Self:
+        &#34;&#34;&#34;
+        Add a line from the current point to `end`.
+        &#34;&#34;&#34;
+        _chkV2(&#34;end&#34;, end)
+        self._add(Line(_cp(self._cur_pt), _cp(end)))
+        self._cur_pt = end
+        return self
+
+    def quadratic_bezier_to(
+        self, control_point: tuple[float, float], end: tuple[float, float]
+    ) -&gt; typing.Self:
+        &#34;&#34;&#34;
+        Add a quadratic bezier curve from the current point to `end`, with `control_point`.
+        &#34;&#34;&#34;
+        _chkV2(&#34;control_panel&#34;, control_point)
+        _chkV2(&#34;end&#34;, end)
+        self._add(QuadraticBezier(_cp(self._cur_pt), _cp(control_point), _cp(end)))
+        self._cur_pt = end
+        return self
+
+    def cubic_bezier_to(
+        self,
+        control_point_1: tuple[float, float],
+        control_point_2: tuple[float, float],
+        end: tuple[float, float],
+    ) -&gt; typing.Self:
+        &#34;&#34;&#34;
+        Add a cubic bezier curve from the current point to `end`, with control points
+        `control_point_1` and `control_point_2`.
+        &#34;&#34;&#34;
+        _chkV2(&#34;control_point_1&#34;, control_point_1)
+        _chkV2(&#34;control_point_2&#34;, control_point_2)
+        _chkV2(&#34;end&#34;, end)
+        self._add(
+            CubicBezier(
+                _cp(self._cur_pt), _cp(control_point_1), _cp(control_point_2), _cp(end)
+            )
+        )
+        self._cur_pt = end
+        return self
+
+    def arc_to(
+        self,
+        radii: tuple[float, float] | float,
+        end: tuple[float, float],
+        x_axis_rotation: float = 0,
+        large_arc: bool = False,
+        ccw: bool = False,
+    ) -&gt; typing.Self:
+        &#34;&#34;&#34;
+        Add an eliptical arc from the current point to `end`, with `radii` which is the x, y tuple of the
+        eliptical radius. If x and y are the same, then a single float can be specified.
+
+        The x_axis_rotation gives degrees) of the ellipse relative to the x-axis
+
+        Four arcs can be made between using the above parameters, to choose the one needed:
+
+        The `ccw` flag choses a counter-clockwise or a clockwise (default) arc.
+
+        The `large_arc` flag chooses the longest arc over the shortest (default) arc.
+        &#34;&#34;&#34;
+        if type(radii) == int:
+            radii = float(radii)
+        if type(radii) == float:
+            radii = (radii, radii)
+        _chkV2(&#34;radii&#34;, radii)
+        _chkV2(&#34;end&#34;, end)
+        self._add(
+            Arc(
+                _cp(self._cur_pt),
+                _cp(radii),
+                x_axis_rotation,
+                large_arc,
+                ccw,
+                _cp(end),
+            )
+        )
+        self._cur_pt = end
+        return self
+
+    def close(self) -&gt; Obj2d:
+        &#34;&#34;&#34;
+        Returns an `Obj2d` shape of the path.
+        &#34;&#34;&#34;
+        if len(self._list) &gt; 1 and self._list[0] == self._list[-1]:
+            self._list.pop()
+        obj = polygon([self._list], check=False)
+        return obj</code></pre>
+</details>
+<div class="desc"><p>Do not create <code><a title="piecad.path.PathMaker" href="#piecad.path.PathMaker">PathMaker</a></code> directly, use the <code><a title="piecad.path.path" href="#piecad.path.path">path()</a></code> function instead.</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="piecad.path.PathMaker.arc_to"><code class="name flex">
+<span>def <span class="ident">arc_to</span></span>(<span>self,<br>radii: tuple[float, float] | float,<br>end: tuple[float, float],<br>x_axis_rotation: float = 0,<br>large_arc: bool = False,<br>ccw: bool = False) ‑> Self</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def arc_to(
+    self,
+    radii: tuple[float, float] | float,
+    end: tuple[float, float],
+    x_axis_rotation: float = 0,
+    large_arc: bool = False,
+    ccw: bool = False,
+) -&gt; typing.Self:
+    &#34;&#34;&#34;
+    Add an eliptical arc from the current point to `end`, with `radii` which is the x, y tuple of the
+    eliptical radius. If x and y are the same, then a single float can be specified.
+
+    The x_axis_rotation gives degrees) of the ellipse relative to the x-axis
+
+    Four arcs can be made between using the above parameters, to choose the one needed:
+
+    The `ccw` flag choses a counter-clockwise or a clockwise (default) arc.
+
+    The `large_arc` flag chooses the longest arc over the shortest (default) arc.
+    &#34;&#34;&#34;
+    if type(radii) == int:
+        radii = float(radii)
+    if type(radii) == float:
+        radii = (radii, radii)
+    _chkV2(&#34;radii&#34;, radii)
+    _chkV2(&#34;end&#34;, end)
+    self._add(
+        Arc(
+            _cp(self._cur_pt),
+            _cp(radii),
+            x_axis_rotation,
+            large_arc,
+            ccw,
+            _cp(end),
+        )
+    )
+    self._cur_pt = end
+    return self</code></pre>
+</details>
+<div class="desc"><p>Add an eliptical arc from the current point to <code>end</code>, with <code>radii</code> which is the x, y tuple of the
+eliptical radius. If x and y are the same, then a single float can be specified.</p>
+<p>The x_axis_rotation gives degrees) of the ellipse relative to the x-axis</p>
+<p>Four arcs can be made between using the above parameters, to choose the one needed:</p>
+<p>The <code>ccw</code> flag choses a counter-clockwise or a clockwise (default) arc.</p>
+<p>The <code>large_arc</code> flag chooses the longest arc over the shortest (default) arc.</p></div>
+</dd>
+<dt id="piecad.path.PathMaker.close"><code class="name flex">
+<span>def <span class="ident">close</span></span>(<span>self) ‑> <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def close(self) -&gt; Obj2d:
+    &#34;&#34;&#34;
+    Returns an `Obj2d` shape of the path.
+    &#34;&#34;&#34;
+    if len(self._list) &gt; 1 and self._list[0] == self._list[-1]:
+        self._list.pop()
+    obj = polygon([self._list], check=False)
+    return obj</code></pre>
+</details>
+<div class="desc"><p>Returns an <code>Obj2d</code> shape of the path.</p></div>
+</dd>
+<dt id="piecad.path.PathMaker.cubic_bezier_to"><code class="name flex">
+<span>def <span class="ident">cubic_bezier_to</span></span>(<span>self,<br>control_point_1: tuple[float, float],<br>control_point_2: tuple[float, float],<br>end: tuple[float, float]) ‑> Self</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cubic_bezier_to(
+    self,
+    control_point_1: tuple[float, float],
+    control_point_2: tuple[float, float],
+    end: tuple[float, float],
+) -&gt; typing.Self:
+    &#34;&#34;&#34;
+    Add a cubic bezier curve from the current point to `end`, with control points
+    `control_point_1` and `control_point_2`.
+    &#34;&#34;&#34;
+    _chkV2(&#34;control_point_1&#34;, control_point_1)
+    _chkV2(&#34;control_point_2&#34;, control_point_2)
+    _chkV2(&#34;end&#34;, end)
+    self._add(
+        CubicBezier(
+            _cp(self._cur_pt), _cp(control_point_1), _cp(control_point_2), _cp(end)
+        )
+    )
+    self._cur_pt = end
+    return self</code></pre>
+</details>
+<div class="desc"><p>Add a cubic bezier curve from the current point to <code>end</code>, with control points
+<code>control_point_1</code> and <code>control_point_2</code>.</p></div>
+</dd>
+<dt id="piecad.path.PathMaker.line_to"><code class="name flex">
+<span>def <span class="ident">line_to</span></span>(<span>self, end: tuple[float, float]) ‑> Self</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def line_to(self, end: tuple[float, float]) -&gt; typing.Self:
+    &#34;&#34;&#34;
+    Add a line from the current point to `end`.
+    &#34;&#34;&#34;
+    _chkV2(&#34;end&#34;, end)
+    self._add(Line(_cp(self._cur_pt), _cp(end)))
+    self._cur_pt = end
+    return self</code></pre>
+</details>
+<div class="desc"><p>Add a line from the current point to <code>end</code>.</p></div>
+</dd>
+<dt id="piecad.path.PathMaker.quadratic_bezier_to"><code class="name flex">
+<span>def <span class="ident">quadratic_bezier_to</span></span>(<span>self, control_point: tuple[float, float], end: tuple[float, float]) ‑> Self</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def quadratic_bezier_to(
+    self, control_point: tuple[float, float], end: tuple[float, float]
+) -&gt; typing.Self:
+    &#34;&#34;&#34;
+    Add a quadratic bezier curve from the current point to `end`, with `control_point`.
+    &#34;&#34;&#34;
+    _chkV2(&#34;control_panel&#34;, control_point)
+    _chkV2(&#34;end&#34;, end)
+    self._add(QuadraticBezier(_cp(self._cur_pt), _cp(control_point), _cp(end)))
+    self._cur_pt = end
+    return self</code></pre>
+</details>
+<div class="desc"><p>Add a quadratic bezier curve from the current point to <code>end</code>, with <code>control_point</code>.</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul>
+<li><a href="#create-a-2d-object-from-an-svg-like-path">Create a 2D object from an SVG-like path.</a></li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="piecad" href="index.html">piecad</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="piecad.path.path" href="#piecad.path.path">path</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="piecad.path.PathMaker" href="#piecad.path.PathMaker">PathMaker</a></code></h4>
+<ul class="">
+<li><code><a title="piecad.path.PathMaker.arc_to" href="#piecad.path.PathMaker.arc_to">arc_to</a></code></li>
+<li><code><a title="piecad.path.PathMaker.close" href="#piecad.path.PathMaker.close">close</a></code></li>
+<li><code><a title="piecad.path.PathMaker.cubic_bezier_to" href="#piecad.path.PathMaker.cubic_bezier_to">cubic_bezier_to</a></code></li>
+<li><code><a title="piecad.path.PathMaker.line_to" href="#piecad.path.PathMaker.line_to">line_to</a></code></li>
+<li><code><a title="piecad.path.PathMaker.quadratic_bezier_to" href="#piecad.path.PathMaker.quadratic_bezier_to">quadratic_bezier_to</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

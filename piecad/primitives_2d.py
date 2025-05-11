@@ -19,7 +19,7 @@ def circle(radius: float, segments: int = -1) -> Obj2d:
     """
     Make a circle of a given radius.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     Circles are created with the center at `(0,0)`
     """
@@ -41,7 +41,7 @@ def ellipse(radii: list[float, float], segments: int = -1) -> Obj2d:
     """
     Make an ellipse with the given radii.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     Ellipses are created with the center at `(0,0)`
     """
@@ -148,7 +148,7 @@ def rounded_rectangle(
     The `rounded_rectangele` will have dimensions of `size` dimensions and with
     corners of `rounding_radius`.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
     Each corner will be given approximately 1/4 of segments.
 
     By default, the bottom left corner of the square will be at `(0,0)`.
@@ -293,7 +293,7 @@ def text_set_font(font_name: str):
     return _module._set_font(font_name)
 
 
-def text(sz: float, tstr: str, inter_char_space = None):
+def text(sz: float, tstr: str, inter_char_space=None):
     """
     Draw the unicode printable characters in `tstr` in shapes of size `sz`.
 

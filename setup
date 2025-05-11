@@ -2,5 +2,5 @@ rm -rf bin lib lib64 include pyvenv.cfg __pycache__ share
 python -m venv .
 . bin/activate
 pip install --upgrade pip
-pip install manifold3d trimesh pytest pytest.benchmark black pdoc3 flit fontTools fontPens skia-pathops
+pip install manifold3d trimesh pytest pytest.benchmark black pdoc3 flit fontTools fontPens skia-pathops svgpathtools
 git checkout .gitignore

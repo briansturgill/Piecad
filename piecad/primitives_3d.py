@@ -38,9 +38,9 @@ def cone(
     """
     Make a cone with given radii and height.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
-    Why does ``radius_high`` not default to 0? Pointy things
+    Why does `radius_high` not default to 0? Pointy things
     don't 3d print very well. If the model is not to be printed,
     by all means set it to 0.
 
@@ -93,7 +93,7 @@ def cylinder(height: float, radius: float, segments: int = -1, center=False) -> 
     """
     Make a cylinder of a given radius and height.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     By default, the cylinder bottom is centered at `(0,0,0)`.
     When `center` is `True`, the cylinder will centered on `(0,0,0)`.
@@ -116,7 +116,7 @@ def ellipsoid(
     """
     Make an ellipsoid which is elliptical on all three radii.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     The ellipsoid is centered at `(0,0,0)`.
 
@@ -136,7 +136,7 @@ def elliptical_cylinder(
     """
     Make a elliptically shaped cylinder of given radii and height.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     By default, the elliptical cylinder bottom is centered at `(0,0,0)`.
     When `center` is `True`, the cylinder will centered on `(0,0,0)`.
@@ -160,8 +160,8 @@ def extrude(obj: Obj2d, height: float) -> Obj3d:
     """
     Create a Obj3d solid from Obj2d of given height.
 
-    The 2d object will be copied and moved up to ``height``.
-    Lines will be added creating an ``obj``-shaped 3d solid.
+    The 2d object will be copied and moved up to `height`.
+    Lines will be added creating an `obj`-shaped 3d solid.
 
     <iframe width="100%" height="220" src="examples/extrude.html"></iframe>
     """
@@ -312,10 +312,10 @@ def extrude_transforming(
     """
     Create a Obj3d solid from Obj2d of given height.
 
-    The 2d object will be copied and moved up to ``height``.
-    Lines will be added creating an ``obj``-shaped 3d solid.
+    The 2d object will be copied and moved up to `height`.
+    Lines will be added creating an `obj`-shaped 3d solid.
 
-    Parameter ``num_twist_divisions`` should only be used when ``twist`` is
+    Parameter `num_twist_divisions` should only be used when `twist` is
     greater than zero.
 
     Parameter `twist` will cause a circular rotation for each `num_twist_divisions`.
@@ -344,7 +344,7 @@ def geodesic_sphere(radius, segments=-1):
     """
     Create a geodesic sphere of a given radius.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     <iframe width="100%" height="220" src="examples/geodesic_sphere.html"></iframe>
     """
@@ -424,7 +424,7 @@ def rounded_cuboid(
 
     Parameter `rounding_radius` is the size of the rounded lip at top and bottom.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     By default, the bottom front left corner of the rounded cuboid will be at `(0,0,0)`.
     When `center` is `True` it will cause the rounded cuboid to be centered at `(0,0,0)`.
@@ -510,7 +510,7 @@ def rounded_cylinder(
 
     Parameter `rounding_radius` is the size of the rounded lip at top and bottom.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     By default, the rounded cylinder bottom is centered at `(0,0,0)`.
     When `center` is `True`, the rounded cylinder will centered on `(0,0,0)`.
@@ -537,7 +537,7 @@ def revolve(obj: Obj2d, revolve_degrees: float = 360.0, segments: int = -1) -> O
     """
     Create a Obj3d by revolving an Obj2d around the Y-axis, then rotating it so that Y becomes Z.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     <iframe width="100%" height="220" src="examples/revolve.html"></iframe>
     """
@@ -553,7 +553,7 @@ def sphere(radius: float, segments: int = -1) -> Obj3d:
     """
     Create a classical sphere of a given radius.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     <iframe width="100%" height="220" src="examples/sphere.html"></iframe>
     """
@@ -571,7 +571,7 @@ def torus(outer_radius: float, inner_radius: float, segments=-1):
     """
     Create a torus with the specified radii.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     <iframe width="100%" height="220" src="examples/torus.html"></iframe>
     """

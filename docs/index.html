@@ -55,6 +55,10 @@ to check for polygon self intersections.</p>
 <dd>
 <div class="desc"><p>Miscellaneous bulk operations that work on multiple objects.</p></div>
 </dd>
+<dt><code class="name"><a title="piecad.path" href="path.html">piecad.path</a></code></dt>
+<dd>
+<div class="desc"><p>Create a 2D object from an SVG-like path.</p></div>
+</dd>
 <dt><code class="name"><a title="piecad.primitives_2d" href="primitives_2d.html">piecad.primitives_2d</a></code></dt>
 <dd>
 <div class="desc"><p>Create 2D objects such as circles and retangles.</p></div>
@@ -92,9 +96,9 @@ to check for polygon self intersections.</p>
 
     Functions that produce circular objects need to know how
     many segments should be used to draw the &#34;circle&#34;.
-    For example if you call the ``circle`` function with ``segments = 4``
+    For example if you call the `circle` function with `segments = 4`
     it will produce a square... in most cases undesirable, though
-    a ``circle`` with ``segments = 6`` will produce a hexagon which
+    a `circle` with `segments = 6` will produce a hexagon which
     can be useful.
     In most cases a higher number is desired as it produces objects
     that look truly round.
@@ -104,9 +108,9 @@ to check for polygon self intersections.</p>
     If you need a circular objects primary axes to have exact values (at the
     90 degree marks), chose a `segments` value that is a multiple of 4.
 
-    In circular functions, if the value passed in for ``segments`` is ``-1``, then
-    the ``default_segments`` value is used. Thus circular functions have
-    a default value for ``segments`` of ``-1``.
+    In circular functions, if the value passed in for `segments` is `-1`, then
+    the `default_segments` value is used. Thus circular functions have
+    a default value for `segments` of `-1`.
     &#34;&#34;&#34;
     global _default_segments
     _chkGE(&#34;segments&#34;, segments, 3)
@@ -294,7 +298,7 @@ a default value for <code>segments</code> of <code>-1</code>.</p></div>
         Select `join_type` from `&#34;square&#34;`, `&#34;round&#34;`, or `&#34;miter&#34;`.
         To understand `miter_limit`, see: [Clipper2 MiterLimit](https://www.angusj.com/clipper2/Docs/Units/Clipper.Offset/Classes/ClipperOffset/Properties/MiterLimit.htm)
 
-        For ``segments`` see the documentation of ``set_default_segments``.
+        For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
         &#34;&#34;&#34;
         if segments == -1:
@@ -353,7 +357,7 @@ a default value for <code>segments</code> of <code>-1</code>.</p></div>
         &#34;&#34;&#34;
         Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
 
-        For ``segments`` see the documentation of ``set_default_segments``.
+        For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
         &#34;&#34;&#34;
         o3 = revolve(self, revolve_degrees, segments)
         o3._color = self._color
@@ -655,7 +659,7 @@ number of vertices is present goes a long way to making sure things are healthy.
     Select `join_type` from `&#34;square&#34;`, `&#34;round&#34;`, or `&#34;miter&#34;`.
     To understand `miter_limit`, see: [Clipper2 MiterLimit](https://www.angusj.com/clipper2/Docs/Units/Clipper.Offset/Classes/ClipperOffset/Properties/MiterLimit.htm)
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     &#34;&#34;&#34;
     if segments == -1:
@@ -680,7 +684,7 @@ number of vertices is present goes a long way to making sure things are healthy.
 A negative delta will cause an inset to be done.</p>
 <p>Select <code>join_type</code> from <code>"square"</code>, <code>"round"</code>, or <code>"miter"</code>.
 To understand <code>miter_limit</code>, see: <a href="https://www.angusj.com/clipper2/Docs/Units/Clipper.Offset/Classes/ClipperOffset/Properties/MiterLimit.htm">Clipper2 MiterLimit</a></p>
-<p>For <code>segments</code> see the documentation of <code><a title="piecad.set_default_segments" href="#piecad.set_default_segments">set_default_segments()</a></code>.</p></div>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p></div>
 </dd>
 <dt id="piecad.Obj2d.piecut"><code class="name flex">
 <span>def <span class="ident">piecut</span></span>(<span>self, start_angle=0, end_angle=90, both=False) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a> | tuple[<a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a>, <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a>]</span>
@@ -740,14 +744,14 @@ To understand <code>miter_limit</code>, see: <a href="https://www.angusj.com/cli
     &#34;&#34;&#34;
     Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
     &#34;&#34;&#34;
     o3 = revolve(self, revolve_degrees, segments)
     o3._color = self._color
     return o3</code></pre>
 </details>
 <div class="desc"><p>Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.</p>
-<p>For <code>segments</code> see the documentation of <code><a title="piecad.set_default_segments" href="#piecad.set_default_segments">set_default_segments()</a></code>.</p></div>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p></div>
 </dd>
 <dt id="piecad.Obj2d.rotate"><code class="name flex">
 <span>def <span class="ident">rotate</span></span>(<span>self, degrees: float) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
@@ -1665,6 +1669,7 @@ functions and methods.</p></div>
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
 <li><code><a title="piecad.bulk_ops" href="bulk_ops.html">piecad.bulk_ops</a></code></li>
+<li><code><a title="piecad.path" href="path.html">piecad.path</a></code></li>
 <li><code><a title="piecad.primitives_2d" href="primitives_2d.html">piecad.primitives_2d</a></code></li>
 <li><code><a title="piecad.primitives_3d" href="primitives_3d.html">piecad.primitives_3d</a></code></li>
 <li><code><a title="piecad.trigonometry" href="trigonometry.html">piecad.trigonometry</a></code></li>

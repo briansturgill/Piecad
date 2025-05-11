@@ -445,7 +445,7 @@ class Obj2d:
         Select `join_type` from `"square"`, `"round"`, or `"miter"`.
         To understand `miter_limit`, see: [Clipper2 MiterLimit](https://www.angusj.com/clipper2/Docs/Units/Clipper.Offset/Classes/ClipperOffset/Properties/MiterLimit.htm)
 
-        For ``segments`` see the documentation of ``set_default_segments``.
+        For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
         """
         if segments == -1:
@@ -504,7 +504,7 @@ class Obj2d:
         """
         Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
 
-        For ``segments`` see the documentation of ``set_default_segments``.
+        For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
         """
         o3 = revolve(self, revolve_degrees, segments)
         o3._color = self._color
@@ -585,9 +585,9 @@ def set_default_segments(segments: int = 36) -> None:
 
     Functions that produce circular objects need to know how
     many segments should be used to draw the "circle".
-    For example if you call the ``circle`` function with ``segments = 4``
+    For example if you call the `circle` function with `segments = 4`
     it will produce a square... in most cases undesirable, though
-    a ``circle`` with ``segments = 6`` will produce a hexagon which
+    a `circle` with `segments = 6` will produce a hexagon which
     can be useful.
     In most cases a higher number is desired as it produces objects
     that look truly round.
@@ -597,9 +597,9 @@ def set_default_segments(segments: int = 36) -> None:
     If you need a circular objects primary axes to have exact values (at the
     90 degree marks), chose a `segments` value that is a multiple of 4.
 
-    In circular functions, if the value passed in for ``segments`` is ``-1``, then
-    the ``default_segments`` value is used. Thus circular functions have
-    a default value for ``segments`` of ``-1``.
+    In circular functions, if the value passed in for `segments` is `-1`, then
+    the `default_segments` value is used. Thus circular functions have
+    a default value for `segments` of `-1`.
     """
     global _default_segments
     _chkGE("segments", segments, 3)
@@ -663,3 +663,4 @@ from .trigonometry import *
 from .primitives_2d import *
 from .primitives_3d import *
 from ._color import _parse_color
+from .path import *

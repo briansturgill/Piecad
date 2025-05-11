@@ -63,9 +63,9 @@ el.replaceWith(d);
     &#34;&#34;&#34;
     Make a cone with given radii and height.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
-    Why does ``radius_high`` not default to 0? Pointy things
+    Why does `radius_high` not default to 0? Pointy things
     don&#39;t 3d print very well. If the model is not to be printed,
     by all means set it to 0.
 
@@ -86,7 +86,7 @@ el.replaceWith(d);
     )</code></pre>
 </details>
 <div class="desc"><p>Make a cone with given radii and height.</p>
-<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
 <p>Why does <code>radius_high</code> not default to 0? Pointy things
 don't 3d print very well. If the model is not to be printed,
 by all means set it to 0.</p>
@@ -157,7 +157,7 @@ When <code>center</code> is <code>True</code> it will cause the cube to be cente
     &#34;&#34;&#34;
     Make a cylinder of a given radius and height.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     By default, the cylinder bottom is centered at `(0,0,0)`.
     When `center` is `True`, the cylinder will centered on `(0,0,0)`.
@@ -174,7 +174,7 @@ When <code>center</code> is <code>True</code> it will cause the cube to be cente
     return cyl</code></pre>
 </details>
 <div class="desc"><p>Make a cylinder of a given radius and height.</p>
-<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
 <p>By default, the cylinder bottom is centered at <code>(0,0,0)</code>.
 When <code>center</code> is <code>True</code>, the cylinder will centered on <code>(0,0,0)</code>.
 (In other words, the bottom of the cylinder will be at <code>(0,0,-height/2.0</code>.)</p></div>
@@ -193,7 +193,7 @@ When <code>center</code> is <code>True</code>, the cylinder will centered on <co
     &#34;&#34;&#34;
     Make an ellipsoid which is elliptical on all three radii.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     The ellipsoid is centered at `(0,0,0)`.
 
@@ -207,7 +207,7 @@ When <code>center</code> is <code>True</code>, the cylinder will centered on <co
     return sphere(1, segments=segments).scale(radii)</code></pre>
 </details>
 <div class="desc"><p>Make an ellipsoid which is elliptical on all three radii.</p>
-<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
 <p>The ellipsoid is centered at <code>(0,0,0)</code>.</p>
 <iframe width="100%" height="220" src="examples/ellipsoid.html"></iframe></div>
 </dd>
@@ -225,7 +225,7 @@ When <code>center</code> is <code>True</code>, the cylinder will centered on <co
     &#34;&#34;&#34;
     Make a elliptically shaped cylinder of given radii and height.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     By default, the elliptical cylinder bottom is centered at `(0,0,0)`.
     When `center` is `True`, the cylinder will centered on `(0,0,0)`.
@@ -245,7 +245,7 @@ When <code>center</code> is <code>True</code>, the cylinder will centered on <co
     return ecyl</code></pre>
 </details>
 <div class="desc"><p>Make a elliptically shaped cylinder of given radii and height.</p>
-<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
 <p>By default, the elliptical cylinder bottom is centered at <code>(0,0,0)</code>.
 When <code>center</code> is <code>True</code>, the cylinder will centered on <code>(0,0,0)</code>.
 (In other words, the bottom of the elliptical cylinder will be at <code>(0,0,-height/2.0</code>.)</p>
@@ -263,8 +263,8 @@ When <code>center</code> is <code>True</code>, the cylinder will centered on <co
     &#34;&#34;&#34;
     Create a Obj3d solid from Obj2d of given height.
 
-    The 2d object will be copied and moved up to ``height``.
-    Lines will be added creating an ``obj``-shaped 3d solid.
+    The 2d object will be copied and moved up to `height`.
+    Lines will be added creating an `obj`-shaped 3d solid.
 
     &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/extrude.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
@@ -453,10 +453,10 @@ Use of the <code>.obj</code> extension is recommended.</p>
     &#34;&#34;&#34;
     Create a Obj3d solid from Obj2d of given height.
 
-    The 2d object will be copied and moved up to ``height``.
-    Lines will be added creating an ``obj``-shaped 3d solid.
+    The 2d object will be copied and moved up to `height`.
+    Lines will be added creating an `obj`-shaped 3d solid.
 
-    Parameter ``num_twist_divisions`` should only be used when ``twist`` is
+    Parameter `num_twist_divisions` should only be used when `twist` is
     greater than zero.
 
     Parameter `twist` will cause a circular rotation for each `num_twist_divisions`.
@@ -501,7 +501,7 @@ greater than zero.</p>
     &#34;&#34;&#34;
     Create a geodesic sphere of a given radius.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/geodesic_sphere.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
@@ -513,7 +513,7 @@ greater than zero.</p>
     return Obj3d(_m.Manifold.sphere(radius, segments))</code></pre>
 </details>
 <div class="desc"><p>Create a geodesic sphere of a given radius.</p>
-<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
 <iframe width="100%" height="220" src="examples/geodesic_sphere.html"></iframe></div>
 </dd>
 <dt id="piecad.primitives_3d.polyhedron"><code class="name flex">
@@ -627,7 +627,7 @@ trimesh.exchange.export.export_mesh(mesh_output, &quot;mesh.obj&quot;, &quot;obj
     &#34;&#34;&#34;
     Create a Obj3d by revolving an Obj2d around the Y-axis, then rotating it so that Y becomes Z.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/revolve.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
@@ -639,7 +639,7 @@ trimesh.exchange.export.export_mesh(mesh_output, &quot;mesh.obj&quot;, &quot;obj
     return Obj3d(_m.Manifold.revolve(obj.mo, segments, revolve_degrees))</code></pre>
 </details>
 <div class="desc"><p>Create a Obj3d by revolving an Obj2d around the Y-axis, then rotating it so that Y becomes Z.</p>
-<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
 <iframe width="100%" height="220" src="examples/revolve.html"></iframe></div>
 </dd>
 <dt id="piecad.primitives_3d.rounded_cuboid"><code class="name flex">
@@ -661,7 +661,7 @@ trimesh.exchange.export.export_mesh(mesh_output, &quot;mesh.obj&quot;, &quot;obj
 
     Parameter `rounding_radius` is the size of the rounded lip at top and bottom.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     By default, the bottom front left corner of the rounded cuboid will be at `(0,0,0)`.
     When `center` is `True` it will cause the rounded cuboid to be centered at `(0,0,0)`.
@@ -736,7 +736,7 @@ trimesh.exchange.export.export_mesh(mesh_output, &quot;mesh.obj&quot;, &quot;obj
 </details>
 <div class="desc"><p>Make a rounded_cuboid with the x, y, and z values given in size.</p>
 <p>Parameter <code>rounding_radius</code> is the size of the rounded lip at top and bottom.</p>
-<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
 <p>By default, the bottom front left corner of the rounded cuboid will be at <code>(0,0,0)</code>.
 When <code>center</code> is <code>True</code> it will cause the rounded cuboid to be centered at <code>(0,0,0)</code>.</p>
 <iframe width="100%" height="220" src="examples/rounded_cuboid.html"></iframe></div>
@@ -761,7 +761,7 @@ When <code>center</code> is <code>True</code> it will cause the rounded cuboid t
 
     Parameter `rounding_radius` is the size of the rounded lip at top and bottom.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     By default, the rounded cylinder bottom is centered at `(0,0,0)`.
     When `center` is `True`, the rounded cylinder will centered on `(0,0,0)`.
@@ -785,7 +785,7 @@ When <code>center</code> is <code>True</code> it will cause the rounded cuboid t
 </details>
 <div class="desc"><p>Make a rounded cylinder of a given radius and height.</p>
 <p>Parameter <code>rounding_radius</code> is the size of the rounded lip at top and bottom.</p>
-<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
 <p>By default, the rounded cylinder bottom is centered at <code>(0,0,0)</code>.
 When <code>center</code> is <code>True</code>, the rounded cylinder will centered on <code>(0,0,0)</code>.
 (In other words, the bottom of the rounded cylinder will be at <code>(0,0,-height/2.0</code>.)</p>
@@ -803,7 +803,7 @@ When <code>center</code> is <code>True</code>, the rounded cylinder will centere
     &#34;&#34;&#34;
     Create a classical sphere of a given radius.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/sphere.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
@@ -817,7 +817,7 @@ When <code>center</code> is <code>True</code>, the rounded cylinder will centere
     return revolve(circ, segments=segments)</code></pre>
 </details>
 <div class="desc"><p>Create a classical sphere of a given radius.</p>
-<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
 <iframe width="100%" height="220" src="examples/sphere.html"></iframe></div>
 </dd>
 <dt id="piecad.primitives_3d.torus"><code class="name flex">
@@ -832,7 +832,7 @@ When <code>center</code> is <code>True</code>, the rounded cylinder will centere
     &#34;&#34;&#34;
     Create a torus with the specified radii.
 
-    For ``segments`` see the documentation of ``set_default_segments``.
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
     &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/torus.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
@@ -851,7 +851,7 @@ When <code>center</code> is <code>True</code>, the rounded cylinder will centere
     return revolve(circ, segments=segments).translate((0, 0, -outer_radius + sz))</code></pre>
 </details>
 <div class="desc"><p>Create a torus with the specified radii.</p>
-<p>For <code>segments</code> see the documentation of <code>set_default_segments</code>.</p>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
 <iframe width="100%" height="220" src="examples/torus.html"></iframe></div>
 </dd>
 </dl>
