@@ -76,9 +76,9 @@ def hull(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
     The corresponding hull that is returned will be of the same type
     as the input objects.
 
-    <iframe width="100%" height="250" src="examples/hull2d.html"></iframe>
+    <iframe width="100%" height="290" src="examples/hull2d.html"></iframe>
 
-    <iframe width="100%" height="250" src="examples/hull3d.html"></iframe>
+    <iframe width="100%" height="290" src="examples/hull3d.html"></iframe>
     """
     ty = type(objs[0])
     _chkGOTY("objs", ty)

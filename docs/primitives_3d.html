@@ -313,7 +313,7 @@ Lines will be added creating an <code>obj</code>-shaped 3d solid.</p>
     faulty object is stored (to look at with meshlab, for example).
     Use of the `.obj` extension is recommended.
 
-    &lt;iframe width=&#34;100%&#34; height=&#34;500&#34; src=&#34;examples/extrude_chaining.html&#34;&gt;&lt;/iframe&gt;
+    &lt;iframe width=&#34;100%&#34; height=&#34;550&#34; src=&#34;examples/extrude_chaining.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
     vertex_list = []
     triangles = []
@@ -433,7 +433,7 @@ understand what this means, leave this option alone.</p>
 <p>If <code>diagnose</code> is not <code>None</code>, it should contain a string of a filename where the
 faulty object is stored (to look at with meshlab, for example).
 Use of the <code>.obj</code> extension is recommended.</p>
-<iframe width="100%" height="500" src="examples/extrude_chaining.html"></iframe></div>
+<iframe width="100%" height="550" src="examples/extrude_chaining.html"></iframe></div>
 </dd>
 <dt id="piecad.primitives_3d.extrude_transforming"><code class="name flex">
 <span>def <span class="ident">extrude_transforming</span></span>(<span>obj: <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a>,<br>height: float,<br>num_twist_divisions: int = 0,<br>twist: float = 0,<br>scale: tuple[float, float] = (1.0, 1.0)) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
@@ -463,7 +463,7 @@ Use of the <code>.obj</code> extension is recommended.</p>
 
     Parammeter `scale` specifes scaling factors applied at each division.
 
-    &lt;iframe width=&#34;100%&#34; height=&#34;270&#34; src=&#34;examples/extrude_transforming.html&#34;&gt;&lt;/iframe&gt;
+    &lt;iframe width=&#34;100%&#34; height=&#34;300&#34; src=&#34;examples/extrude_transforming.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
     _chkTY(&#34;obj&#34;, obj, Obj2d)
     _chkGT(&#34;height&#34;, height, 0)
@@ -487,7 +487,7 @@ Lines will be added creating an <code>obj</code>-shaped 3d solid.</p>
 greater than zero.</p>
 <p>Parameter <code>twist</code> will cause a circular rotation for each <code>num_twist_divisions</code>.</p>
 <p>Parammeter <code>scale</code> specifes scaling factors applied at each division.</p>
-<iframe width="100%" height="270" src="examples/extrude_transforming.html"></iframe></div>
+<iframe width="100%" height="300" src="examples/extrude_transforming.html"></iframe></div>
 </dd>
 <dt id="piecad.primitives_3d.geodesic_sphere"><code class="name flex">
 <span>def <span class="ident">geodesic_sphere</span></span>(<span>radius, segments=-1)</span>
@@ -666,7 +666,7 @@ trimesh.exchange.export.export_mesh(mesh_output, &quot;mesh.obj&quot;, &quot;obj
     By default, the bottom front left corner of the rounded cuboid will be at `(0,0,0)`.
     When `center` is `True` it will cause the rounded cuboid to be centered at `(0,0,0)`.
 
-    &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/rounded_cuboid.html&#34;&gt;&lt;/iframe&gt;
+    &lt;iframe width=&#34;100%&#34; height=&#34;250&#34; src=&#34;examples/rounded_cuboid.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
     if segments == -1:
         segments = config[&#34;DefaultSegments&#34;]
@@ -739,7 +739,7 @@ trimesh.exchange.export.export_mesh(mesh_output, &quot;mesh.obj&quot;, &quot;obj
 <p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
 <p>By default, the bottom front left corner of the rounded cuboid will be at <code>(0,0,0)</code>.
 When <code>center</code> is <code>True</code> it will cause the rounded cuboid to be centered at <code>(0,0,0)</code>.</p>
-<iframe width="100%" height="220" src="examples/rounded_cuboid.html"></iframe></div>
+<iframe width="100%" height="250" src="examples/rounded_cuboid.html"></iframe></div>
 </dd>
 <dt id="piecad.primitives_3d.rounded_cylinder"><code class="name flex">
 <span>def <span class="ident">rounded_cylinder</span></span>(<span>height: float,<br>radius: float,<br>rounding_radius: float = 2.0,<br>segments: int = -1,<br>center: bool = False) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
@@ -767,7 +767,7 @@ When <code>center</code> is <code>True</code> it will cause the rounded cuboid t
     When `center` is `True`, the rounded cylinder will centered on `(0,0,0)`.
     (In other words, the bottom of the rounded cylinder will be at `(0,0,-height/2.0`.)
 
-    &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/rounded_cylinder.html&#34;&gt;&lt;/iframe&gt;
+    &lt;iframe width=&#34;100%&#34; height=&#34;250&#34; src=&#34;examples/rounded_cylinder.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
     if segments == -1:
         segments = config[&#34;DefaultSegments&#34;]
@@ -789,7 +789,7 @@ When <code>center</code> is <code>True</code> it will cause the rounded cuboid t
 <p>By default, the rounded cylinder bottom is centered at <code>(0,0,0)</code>.
 When <code>center</code> is <code>True</code>, the rounded cylinder will centered on <code>(0,0,0)</code>.
 (In other words, the bottom of the rounded cylinder will be at <code>(0,0,-height/2.0</code>.)</p>
-<iframe width="100%" height="220" src="examples/rounded_cylinder.html"></iframe></div>
+<iframe width="100%" height="250" src="examples/rounded_cylinder.html"></iframe></div>
 </dd>
 <dt id="piecad.primitives_3d.sphere"><code class="name flex">
 <span>def <span class="ident">sphere</span></span>(<span>radius: float, segments: int = -1) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>

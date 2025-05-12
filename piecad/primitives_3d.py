@@ -198,7 +198,7 @@ def extrude_chaining(
     faulty object is stored (to look at with meshlab, for example).
     Use of the `.obj` extension is recommended.
 
-    <iframe width="100%" height="500" src="examples/extrude_chaining.html"></iframe>
+    <iframe width="100%" height="550" src="examples/extrude_chaining.html"></iframe>
     """
     vertex_list = []
     triangles = []
@@ -322,7 +322,7 @@ def extrude_transforming(
 
     Parammeter `scale` specifes scaling factors applied at each division.
 
-    <iframe width="100%" height="270" src="examples/extrude_transforming.html"></iframe>
+    <iframe width="100%" height="300" src="examples/extrude_transforming.html"></iframe>
     """
     _chkTY("obj", obj, Obj2d)
     _chkGT("height", height, 0)
@@ -429,7 +429,7 @@ def rounded_cuboid(
     By default, the bottom front left corner of the rounded cuboid will be at `(0,0,0)`.
     When `center` is `True` it will cause the rounded cuboid to be centered at `(0,0,0)`.
 
-    <iframe width="100%" height="220" src="examples/rounded_cuboid.html"></iframe>
+    <iframe width="100%" height="250" src="examples/rounded_cuboid.html"></iframe>
     """
     if segments == -1:
         segments = config["DefaultSegments"]
@@ -516,7 +516,7 @@ def rounded_cylinder(
     When `center` is `True`, the rounded cylinder will centered on `(0,0,0)`.
     (In other words, the bottom of the rounded cylinder will be at `(0,0,-height/2.0`.)
 
-    <iframe width="100%" height="220" src="examples/rounded_cylinder.html"></iframe>
+    <iframe width="100%" height="250" src="examples/rounded_cylinder.html"></iframe>
     """
     if segments == -1:
         segments = config["DefaultSegments"]

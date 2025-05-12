@@ -94,7 +94,7 @@ def polygon(paths: list[list[tuple[float, float]]], check: bool = True) -> Obj2d
     If you understand winding, shapes are CCW, holes are CW.
     But Clipper2 automatically straightens it out for you.
 
-    <iframe width="100%" height="280" src="examples/polygon.html"></iframe>
+    <iframe width="100%" height="300" src="examples/polygon.html"></iframe>
     """
 
     obj = Obj2d(_m.CrossSection(paths, _m.FillRule.EvenOdd))
