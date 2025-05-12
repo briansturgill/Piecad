@@ -272,7 +272,7 @@ def star(num_points: int, outer_radius: float, inner_radius: float = 0.0) -> Obj
 
 import importlib
 
-_module = None
+_text_module = None
 
 
 def text_set_font(font_name: str):
@@ -287,10 +287,10 @@ def text_set_font(font_name: str):
     The default font is `Roboto-Regular.ttf`.
     Also available is `Hack-Regular.ttf` (Monospaced).
     """
-    global _module
-    if _module == None:
-        _module = importlib.import_module("._text", "piecad")
-    return _module._set_font(font_name)
+    global _text_module
+    if _text_module == None:
+        _text_module = importlib.import_module("._text", "piecad")
+    return _text_module._set_font(font_name)
 
 
 def text(sz: float, tstr: str, inter_char_space=None):
@@ -302,7 +302,7 @@ def text(sz: float, tstr: str, inter_char_space=None):
 
     The default value for the spacing between characters (`inter_char_space`) is `sz/3.0`.
     """
-    global _module
-    if _module == None:
-        _module = importlib.import_module("._text", "piecad")
-    return _module._text_func(sz, tstr, inter_char_space=None)
+    global _text_module
+    if _text_module == None:
+        _text_module = importlib.import_module("._text", "piecad")
+    return _text_module._text_func(sz, tstr, inter_char_space=None)

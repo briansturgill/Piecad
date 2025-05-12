@@ -3,7 +3,7 @@
 """
 
 from svgpathtools import svg2paths, parse_path, Line, QuadraticBezier, CubicBezier, Arc
-from . import _chkGE, _chkV2, Obj2d, config, polygon
+from piecad import _chkGE, _chkV2, Obj2d, config, polygon
 import typing
 
 
@@ -21,10 +21,20 @@ class PathMaker:
     _cur_pt = (0, 0)
     _beginning_pt = None
 
-    def __init__(self, initial_point: tuple[float, float], segments: int):
+    def __init__(self, initial_point: tuple[float, float] = (0,0), segments: int= -1):
         """
-        Do not create `PathMaker` directly, use the `path` function instead.
+        Create an SVG-like path startin at `initial_point`. The path can contain lines, arcs, and
+        quadratic and cubic bezier curves.
+
+        The `close` method returns an `Obj2d`
+
+        For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+
+        <iframe width="100%" height="400" src="/examples/path.html"></iframe>
         """
+        if segments == -1:
+            segments = config["DefaultSegments"]
+        _chkGE("segments", segments, 3)
         self._inital_pt = initial_point
         self._segments = segments
 
@@ -128,32 +138,3 @@ class PathMaker:
         obj = polygon([self._list], check=False)
         return obj
 
-
-def path(initial_point: tuple[float, float] = (0, 0), segments: int = -1) -> PathMaker:
-    """
-    Create an SVG-like path at `initial_point`. The path can contain lines, arcs, and
-    quadratic and cubic bezier curves.
-
-    The `close` method returns an `Obj2d`
-
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
-
-    <iframe width="100%" height="350" src="examples/path.html"></iframe>
-    """
-    if segments == -1:
-        segments = config["DefaultSegments"]
-    _chkGE("segments", segments, 3)
-    return PathMaker(initial_point, segments)
-
-
-# Example usage
-if __name__ == "__main__":
-    obj = (
-        path()
-        .line_to((10, 0))
-        .arc_to(5, (10, 10))
-        .cubic_bezier_to((6, 12), (3, 8), (0, 10))
-        .quadratic_bezier_to((3, 5), (0, 0))
-        .close()
-    )
-    view(obj)

@@ -413,10 +413,10 @@ When <code>center</code> is <code>True</code> it will cause the square to be cen
 
     The default value for the spacing between characters (`inter_char_space`) is `sz/3.0`.
     &#34;&#34;&#34;
-    global _module
-    if _module == None:
-        _module = importlib.import_module(&#34;._text&#34;, &#34;piecad&#34;)
-    return _module._text_func(sz, tstr, inter_char_space=None)</code></pre>
+    global _text_module
+    if _text_module == None:
+        _text_module = importlib.import_module(&#34;._text&#34;, &#34;piecad&#34;)
+    return _text_module._text_func(sz, tstr, inter_char_space=None)</code></pre>
 </details>
 <div class="desc"><p>Draw the unicode printable characters in <code>tstr</code> in shapes of size <code>sz</code>.</p>
 <p>The default font is <code>Roboto-Regular.ttf</code>.
@@ -443,10 +443,10 @@ Also available is <code>Hack-Regular.ttf</code> (Monospaced).</p>
     The default font is `Roboto-Regular.ttf`.
     Also available is `Hack-Regular.ttf` (Monospaced).
     &#34;&#34;&#34;
-    global _module
-    if _module == None:
-        _module = importlib.import_module(&#34;._text&#34;, &#34;piecad&#34;)
-    return _module._set_font(font_name)</code></pre>
+    global _text_module
+    if _text_module == None:
+        _text_module = importlib.import_module(&#34;._text&#34;, &#34;piecad&#34;)
+    return _text_module._set_font(font_name)</code></pre>
 </details>
 <div class="desc"><p>Set the current font used by <code><a title="piecad.primitives_2d.text" href="#piecad.primitives_2d.text">text()</a></code>.
 Fonts are stored in the <code>_package_name_/fonts</code> directory.
