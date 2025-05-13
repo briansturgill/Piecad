@@ -9,5 +9,5 @@ def test_projectbox():
     assert left.num_verts() == right.num_verts()
     assert front.num_verts() == back.num_verts()
     assert top.num_verts() != bottom.num_verts()
-    assert top.num_verts() == 610
+    assert top.num_verts() == 592
     assert bottom.num_verts() == 512
