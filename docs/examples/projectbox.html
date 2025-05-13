@@ -33,16 +33,13 @@ pre {
     <td class="cd">
 <code>
 <pre>
-from piecad.path import Path
+from piecad.projectbox import ProjectBox
 
-out = (
-    Path()
-    .line_to((10, 0))
-    .arc_to(5, (10, 10))
-    .cubic_bezier_to((6, 12), (3, 8), (0, 10))
-    .quadratic_bezier_to((3, 5), (0, 0))
-    .close()
-)
+walls = ProjectBox((45, 30, 20)).finish()
+
+left, right, front, back, top, bottom = walls
+
+out = top
 
 </pre>
 </code>
@@ -51,7 +48,7 @@ out = (
 		<tr>
     <td>
 		<div class="mv">
-    <model-viewer src="../models/path.glb" ar ar-scale="fixed" interaction-prompt="none" camera-controls touch-action="pan-y" disable-zoom alt="Output of code example." shadow-intensity="2" camera-orbit="0deg 180deg 0" xr-environment></model-viewer>
+    <model-viewer src="../models/projectbox.glb" ar ar-scale="fixed" interaction-prompt="none" camera-controls touch-action="pan-y" disable-zoom alt="Output of code example." shadow-intensity="2" camera-orbit="0deg 180deg 0" xr-environment></model-viewer>
 		</div>
     </td>
     </tr>

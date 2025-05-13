@@ -1,7 +1,7 @@
-from piecad.path import PathMaker
+from piecad.path import Path
 
 out = (
-    PathMaker()
+    Path()
     .line_to((10, 0))
     .arc_to(5, (10, 10))
     .cubic_bezier_to((6, 12), (3, 8), (0, 10))

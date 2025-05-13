@@ -1,0 +1,7 @@
+from piecad.projectbox import ProjectBox
+
+walls = ProjectBox((45, 30, 20)).finish()
+
+left, right, front, back, top, bottom = walls
+
+out = top

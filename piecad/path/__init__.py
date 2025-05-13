@@ -15,7 +15,7 @@ def _xy(cplex):
     return (cplex.real, cplex.imag)
 
 
-class PathMaker:
+class Path:
     _ll = []
     _list = []
     _cur_pt = (0, 0)
@@ -23,7 +23,7 @@ class PathMaker:
 
     def __init__(self, initial_point: tuple[float, float] = (0,0), segments: int= -1):
         """
-        Create an SVG-like path startin at `initial_point`. The path can contain lines, arcs, and
+        Create an SVG-like path starting at `initial_point`. The path can contain lines, arcs, and
         quadratic and cubic bezier curves.
 
         The `close` method returns an `Obj2d`

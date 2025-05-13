@@ -1,0 +1,1 @@
+out = text(40, version()).extrude(20).rotate([90, 0, 0])

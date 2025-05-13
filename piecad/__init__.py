@@ -15,12 +15,16 @@ You can see Manifold's web site for other packages that are used.
 Piecad also uses [isect_segments-bentley_ottmann](https://github.com/ideasman42/isect_segments-bentley_ottmann)
 to check for polygon self intersections.
 
+## Piecad Version
+
+<iframe width="100%" height="250" src="examples/version.html"></iframe>
+
 """
 
 from __future__ import annotations
 import manifold3d as _m
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 
 def version():

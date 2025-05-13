@@ -33,16 +33,7 @@ pre {
     <td class="cd">
 <code>
 <pre>
-from piecad.path import Path
-
-out = (
-    Path()
-    .line_to((10, 0))
-    .arc_to(5, (10, 10))
-    .cubic_bezier_to((6, 12), (3, 8), (0, 10))
-    .quadratic_bezier_to((3, 5), (0, 0))
-    .close()
-)
+out = text(40, version()).extrude(20).rotate([90, 0, 0])
 
 </pre>
 </code>
@@ -51,7 +42,7 @@ out = (
 		<tr>
     <td>
 		<div class="mv">
-    <model-viewer src="../models/path.glb" ar ar-scale="fixed" interaction-prompt="none" camera-controls touch-action="pan-y" disable-zoom alt="Output of code example." shadow-intensity="2" camera-orbit="0deg 180deg 0" xr-environment></model-viewer>
+    <model-viewer src="../models/version.glb" ar ar-scale="fixed" interaction-prompt="none" camera-controls touch-action="pan-y" disable-zoom alt="Output of code example." shadow-intensity="2" camera-orbit="0deg 180deg 0" xr-environment></model-viewer>
 		</div>
     </td>
     </tr>

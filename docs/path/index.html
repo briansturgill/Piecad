@@ -47,8 +47,8 @@ el.replaceWith(d);
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="piecad.path.PathMaker"><code class="flex name class">
-<span>class <span class="ident">PathMaker</span></span>
+<dt id="piecad.path.Path"><code class="flex name class">
+<span>class <span class="ident">Path</span></span>
 <span>(</span><span>initial_point: tuple[float, float] = (0, 0), segments: int = -1)</span>
 </code></dt>
 <dd>
@@ -56,7 +56,7 @@ el.replaceWith(d);
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class PathMaker:
+<pre><code class="python">class Path:
     _ll = []
     _list = []
     _cur_pt = (0, 0)
@@ -64,7 +64,7 @@ el.replaceWith(d);
 
     def __init__(self, initial_point: tuple[float, float] = (0,0), segments: int= -1):
         &#34;&#34;&#34;
-        Create an SVG-like path startin at `initial_point`. The path can contain lines, arcs, and
+        Create an SVG-like path starting at `initial_point`. The path can contain lines, arcs, and
         quadratic and cubic bezier curves.
 
         The `close` method returns an `Obj2d`
@@ -179,14 +179,14 @@ el.replaceWith(d);
         obj = polygon([self._list], check=False)
         return obj</code></pre>
 </details>
-<div class="desc"><p>Create an SVG-like path startin at <code>initial_point</code>. The path can contain lines, arcs, and
+<div class="desc"><p>Create an SVG-like path starting at <code>initial_point</code>. The path can contain lines, arcs, and
 quadratic and cubic bezier curves.</p>
 <p>The <code>close</code> method returns an <code>Obj2d</code></p>
 <p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
 <iframe width="100%" height="400" src="/examples/path.html"></iframe></div>
 <h3>Methods</h3>
 <dl>
-<dt id="piecad.path.PathMaker.arc_to"><code class="name flex">
+<dt id="piecad.path.Path.arc_to"><code class="name flex">
 <span>def <span class="ident">arc_to</span></span>(<span>self,<br>radii: tuple[float, float] | float,<br>end: tuple[float, float],<br>x_axis_rotation: float = 0,<br>large_arc: bool = False,<br>ccw: bool = False) ‑> Self</span>
 </code></dt>
 <dd>
@@ -240,7 +240,7 @@ eliptical radius. If x and y are the same, then a single float can be specified.
 <p>The <code>ccw</code> flag choses a counter-clockwise or a clockwise (default) arc.</p>
 <p>The <code>large_arc</code> flag chooses the longest arc over the shortest (default) arc.</p></div>
 </dd>
-<dt id="piecad.path.PathMaker.close"><code class="name flex">
+<dt id="piecad.path.Path.close"><code class="name flex">
 <span>def <span class="ident">close</span></span>(<span>self) ‑> <a title="piecad.Obj2d" href="../index.html#piecad.Obj2d">Obj2d</a></span>
 </code></dt>
 <dd>
@@ -259,7 +259,7 @@ eliptical radius. If x and y are the same, then a single float can be specified.
 </details>
 <div class="desc"><p>Returns an <code>Obj2d</code> shape of the path.</p></div>
 </dd>
-<dt id="piecad.path.PathMaker.cubic_bezier_to"><code class="name flex">
+<dt id="piecad.path.Path.cubic_bezier_to"><code class="name flex">
 <span>def <span class="ident">cubic_bezier_to</span></span>(<span>self,<br>control_point_1: tuple[float, float],<br>control_point_2: tuple[float, float],<br>end: tuple[float, float]) ‑> Self</span>
 </code></dt>
 <dd>
@@ -291,7 +291,7 @@ eliptical radius. If x and y are the same, then a single float can be specified.
 <div class="desc"><p>Add a cubic bezier curve from the current point to <code>end</code>, with control points
 <code>control_point_1</code> and <code>control_point_2</code>.</p></div>
 </dd>
-<dt id="piecad.path.PathMaker.line_to"><code class="name flex">
+<dt id="piecad.path.Path.line_to"><code class="name flex">
 <span>def <span class="ident">line_to</span></span>(<span>self, end: tuple[float, float]) ‑> Self</span>
 </code></dt>
 <dd>
@@ -310,7 +310,7 @@ eliptical radius. If x and y are the same, then a single float can be specified.
 </details>
 <div class="desc"><p>Add a line from the current point to <code>end</code>.</p></div>
 </dd>
-<dt id="piecad.path.PathMaker.quadratic_bezier_to"><code class="name flex">
+<dt id="piecad.path.Path.quadratic_bezier_to"><code class="name flex">
 <span>def <span class="ident">quadratic_bezier_to</span></span>(<span>self, control_point: tuple[float, float], end: tuple[float, float]) ‑> Self</span>
 </code></dt>
 <dd>
@@ -352,13 +352,13 @@ eliptical radius. If x and y are the same, then a single float can be specified.
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="piecad.path.PathMaker" href="#piecad.path.PathMaker">PathMaker</a></code></h4>
+<h4><code><a title="piecad.path.Path" href="#piecad.path.Path">Path</a></code></h4>
 <ul class="">
-<li><code><a title="piecad.path.PathMaker.arc_to" href="#piecad.path.PathMaker.arc_to">arc_to</a></code></li>
-<li><code><a title="piecad.path.PathMaker.close" href="#piecad.path.PathMaker.close">close</a></code></li>
-<li><code><a title="piecad.path.PathMaker.cubic_bezier_to" href="#piecad.path.PathMaker.cubic_bezier_to">cubic_bezier_to</a></code></li>
-<li><code><a title="piecad.path.PathMaker.line_to" href="#piecad.path.PathMaker.line_to">line_to</a></code></li>
-<li><code><a title="piecad.path.PathMaker.quadratic_bezier_to" href="#piecad.path.PathMaker.quadratic_bezier_to">quadratic_bezier_to</a></code></li>
+<li><code><a title="piecad.path.Path.arc_to" href="#piecad.path.Path.arc_to">arc_to</a></code></li>
+<li><code><a title="piecad.path.Path.close" href="#piecad.path.Path.close">close</a></code></li>
+<li><code><a title="piecad.path.Path.cubic_bezier_to" href="#piecad.path.Path.cubic_bezier_to">cubic_bezier_to</a></code></li>
+<li><code><a title="piecad.path.Path.line_to" href="#piecad.path.Path.line_to">line_to</a></code></li>
+<li><code><a title="piecad.path.Path.quadratic_bezier_to" href="#piecad.path.Path.quadratic_bezier_to">quadratic_bezier_to</a></code></li>
 </ul>
 </li>
 </ul>
