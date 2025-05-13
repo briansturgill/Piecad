@@ -1,6 +1,8 @@
 """
 ProjectBox class.
 
+THIS FEATURE IS EXPERIMENTAL, THE API SUBJECT TO CHANGE.
+
 A class for quickly constructing a project box.
 
 Call `finish` to retrieve the Obj3d of the final box.
