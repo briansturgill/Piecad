@@ -56,18 +56,21 @@ class ProjectBox:
         self.off = 2*wall+tiny
 
         def mkwall(dims, ty=None):
-            rr = (wall*3.0)/2+tiny
-            screw_r = (3/2)*0.8 # 3mm screw hole
-            screw_top_r = 3
-            screw_h = 8
+            screw_h = 10
+            screw_top_r = 3.0
+            screw_r = (screw_top_r/2)*0.8 # 3mm screw hole
+            rd = (screw_top_r+2*wall)+tiny
+            rr = rd/2.0
             off = self.off
 
             def post(rot):
+                post_l = 2*rr
+                post_w = 3*wall+tiny
                 return difference(
                     union(
                         cylinder(radius=rr, height=self.h),
-                        cube([rr, rr, self.h]).translate([-rr, 0, 0]),
-                        cube([rr, rr, self.h]).translate([0, -rr, 0]),
+                        cube([post_l, post_w, self.h]).translate([0, -rr, 0]),
+                        cube([post_w, post_l, self.h]).translate([-rr, 0, 0]),
                     ),
                     cylinder(radius=screw_r, height=screw_h).translate([0, 0, self.h-screw_h]),
                 ).translate([rr, rr, 0]).rotate([0, 0, rot])
@@ -86,10 +89,10 @@ class ProjectBox:
                     )
                     o = difference(
                         o,
-                        cube([w-3*rr, wall+tiny, self.h]).translate([1.5*rr,wall,wall]),
-                        cube([w-3*rr, wall+tiny, self.h]).translate([1.5*rr,d-2*wall,wall]),
-                        cube([wall+tiny, d-3*rr, self.h]).translate([wall, 1.5*rr, wall]),
-                        cube([wall+tiny, d-3*rr, self.h]).translate([w-2*wall,1.5*rr,wall]),
+                        cube([w-4*rr, wall+tiny, self.h]).translate([2.0*rr,wall,wall]),
+                        cube([w-4*rr, wall+tiny, self.h]).translate([2.0*rr,d-2*wall,wall]),
+                        cube([wall+tiny, d-4*rr, self.h]).translate([wall, 2.0*rr, wall]),
+                        cube([wall+tiny, d-4*rr, self.h]).translate([w-2*wall,2.0*rr,wall]),
                     )
                 else:
                     def tbh():
@@ -112,8 +115,8 @@ class ProjectBox:
                     )
                 o = o.translate([-off, -off, -wall])
             else:
-                w = dims[0]-rr+wall
-                d = dims[1]-rr+2*tiny
+                w = dims[0]-2*rr+wall
+                d = dims[1]-2*rr+2*tiny
                 h = dims[2]
                 o = cube([w, d, h])
                 o = o.translate([0, 0, -wall])
