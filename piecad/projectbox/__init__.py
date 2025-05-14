@@ -117,8 +117,8 @@ class ProjectBox:
                     )
                 o = o.translate([-off, -off, -wall])
             else:
-                w = dims[0]-2*rr+wall
-                d = dims[1]-2*rr+2*tiny
+                w = dims[0]-2*rr-tiny+wall
+                d = dims[1]-wall
                 h = dims[2]
                 o = cube([w, d, h])
                 o = o.translate([0, 0, -wall])
