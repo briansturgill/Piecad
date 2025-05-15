@@ -145,73 +145,61 @@ class ProjectBox:
         self._m_differences = []
 
 
-    def left(self, x, y, pair):
+    def left(self, x, y, shape, hole):
         """
         Add a component at `x, y` of the left side of the box.
-        The `pair` is the `(shape, hole)` of the component.
         If `shape` or `hole` is not present, use `None`.
         """
-        shape, hole = pair
         if shape != None:
             self._l_unions.append(shape)
         if hole != None:
             self._differences.append(hole)
 
-    def right(self, x, y, pair):
+    def right(self, x, y, shape, hole):
         """
         Add a component at `x, y` of the right side of the box.
-        The `pair` is the `(shape, hole)` of the component.
         If `shape` or `hole` is not present, use `None`.
         """
-        shape, hole = pair
         if shape != None:
             self._r_unions.append(shape)
         if hole != None:
             self._r_differences.append(hole)
 
-    def front(self, x, y, pair):
+    def front(self, x, y, shape, hole):
         """
         Add a component at `x, y` of the front side of the box.
-        The `pair` is the `(shape, hole)` of the component.
         If `shape` or `hole` is not present, use `None`.
         """
-        shape, hole = pair
         if shape != None:
             self._f_unions.append(shape)
         if hole != None:
             self._f_differences.append(hole)
 
-    def back(self, x, y, pair):
+    def back(self, x, y, shape, hole):
         """
         Add a component at `x, y` of the back side of the box.
-        The `pair` is the `(shape, hole)` of the component.
         If `shape` or `hole` is not present, use `None`.
         """
-        shape, hole = pair
         if shape != None:
             self._k_unions.append(shape)
         if hole != None:
             self._k_differences.append(hole)
 
-    def top(self, x, y, pair):
+    def top(self, x, y, shape, hole):
         """
         Add a component at `x, y` of the top of the box.
-        The `pair` is the `(shape, hole)` of the component.
         If `shape` or `hole` is not present, use `None`.
         """
-        shape, hole = pair
         if shape != None:
             self._t_unions.append(shape)
         if hole != None:
             self._t_differences.append(hole)
 
-    def bottom(self, x, y, pair):
+    def bottom(self, x, y, shape, hole):
         """
         Add a component at `x, y` of the bottom of the box.
-        The `pair` is the `(shape, hole)` of the component.
         If `shape` or `hole` is not present, use `None`.
         """
-        shape, hole = pair
         if shape != None:
             self._m_unions.append(shape)
         if hole != None:
