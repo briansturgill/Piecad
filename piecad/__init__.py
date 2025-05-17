@@ -355,8 +355,7 @@ class Obj2d:
         mid_x = (xmax - xmin) / 2 + xmin
         mid_y = (ymax - ymin) / 2 + ymin
         new_x = 0
-        new_x = 0
-        new_x = 0
+        new_y = 0
         if axes[0]:
             new_x = at[0] - mid_x
         if axes[1]:
