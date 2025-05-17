@@ -96,7 +96,7 @@ def tilt_base(bottom):
     off_big = bottom.offset(2 + 0.05, "square").extrude(base_h + tilt_h)
     off_big = difference(off_big, off_b)
     xmin, ymin, zmin, xmax, ymax, zmax = off_big.bounding_box()
-    rot = atan(tilt_h / (ymax - ymin))*0.75
+    rot = atan(tilt_h / (ymax - ymin)) * 0.75
     off_big = off_big.translate([0, 0, -tilt_h])
     wedge = cube([2 * (xmax - xmin), 2 * (ymax - ymin), 2 * (zmax - zmin)])
     xmin, ymin, zmin, xmax, ymax, zmax = wedge.bounding_box()
