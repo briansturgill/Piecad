@@ -1,3 +1,7 @@
+"""
+Create two different sized "nails" that goes into holes on a kid's workbench.
+"""
+
 # Derived from threads.scad: https://github.com/rcolyer/threads-scad.git
 # Created 2016-2017 by Ryan A. Colyer.
 # This work is released with CC0 into the public domain.
@@ -40,9 +44,10 @@ def make_nail(r):
     )
 
 
-s = make_nail(small_r).rotate([90, 0, 0])
-l = make_nail(large_r).rotate([90, 0, 0])
-view(s)
-save("/tmp/kid_nail_small.obj", s)
-view(l)
-save("/tmp/kid_nail_large.obj", l)
+if __name__ == "__main__":
+    s = make_nail(small_r).rotate([90, 0, 0])
+    l = make_nail(large_r).rotate([90, 0, 0])
+    view(s)
+    save("/tmp/kid_nail_small.obj", s)
+    view(l)
+    save("/tmp/kid_nail_large.obj", l)

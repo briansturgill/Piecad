@@ -1,3 +1,7 @@
+"""
+Create a name plate from revolved text.
+"""
+
 from piecad import *
 
 text_set_font("Roboto-Regular.ttf")
@@ -36,5 +40,6 @@ bottom = rounded_rectangle([x2 - x1, y2 - y1]).extrude(2)
 
 obj = union(txt.translate([0, 0, 2]), bottom)
 
-view(obj)
-save("/tmp/name_plate.obj", obj)
+if __name__ == "__main__":
+    view(obj)
+    save("/tmp/name_plate.obj", obj)

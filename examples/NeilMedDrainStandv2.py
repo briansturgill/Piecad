@@ -1,3 +1,7 @@
+"""
+Drain stand for a NeilMed sinus rinse bottle.
+"""
+
 from piecad import *
 
 wall = 2
@@ -86,6 +90,7 @@ def DrainStand():
     )
 
 
-save("/tmp/NeilMedDrainStandv2_stand.obj", DrainStand())
-save("/tmp/NeilMedDrainStandv2_case.obj", DrainCase())
-save("/tmp/NeilMedDrainStandv2_tops.obj", DrainTops())
+if __name__ == "__main__":
+    save("/tmp/NeilMedDrainStandv2_stand.obj", DrainStand())
+    save("/tmp/NeilMedDrainStandv2_case.obj", DrainCase())
+    save("/tmp/NeilMedDrainStandv2_tops.obj", DrainTops())

@@ -1,3 +1,7 @@
+"""
+Wrench, Nuts, Bolts, Pieces with Holes, for Kids.
+"""
+
 # Derived from threads.scad: https://github.com/rcolyer/threads-scad.git
 # Created 2016-2017 by Ryan A. Colyer.
 # This work is released with CC0 into the public domain.
@@ -108,16 +112,17 @@ r = KidSizedThreadedRod(40)
 
 w = KidSizedWrench()
 
-save("/tmp/kid_b.obj", b)
-view(b)
-save("/tmp/kid_n.obj", n)
-view(n)
-save("/tmp/kid_r.obj", r)
-view(r)
-save("/tmp/kid_w.obj", w)
-view(w)
+if __name__ == "__main__":
+    save("/tmp/kid_b.obj", b)
+    view(b)
+    save("/tmp/kid_n.obj", n)
+    view(n)
+    save("/tmp/kid_r.obj", r)
+    view(r)
+    save("/tmp/kid_w.obj", w)
+    view(w)
 
-for h in range(2, 7):
-    p = KidSizedXPiece(h)
-    save(f"/tmp/kid_{h}p.obj", p)
-    view(p)
+    for h in range(2, 7):
+        p = KidSizedXPiece(h)
+        save(f"/tmp/kid_{h}p.obj", p)
+        view(p)

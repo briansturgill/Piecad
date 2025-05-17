@@ -1,3 +1,7 @@
+"""
+Drain stand for a NeilMed sinus rinse bottle.
+"""
+
 from piecad import *
 
 wall = 2
@@ -67,5 +71,6 @@ def DrainStand():
     )
 
 
-out = union(DrainStand().translate([0, 0, wall]), DrainTops())
-view(out)
+if __name__ == "__main__":
+    out = union(DrainStand().translate([0, 0, wall]), DrainTops())
+    view(out)

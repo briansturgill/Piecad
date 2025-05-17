@@ -1,3 +1,7 @@
+"""
+A purse hanger that uses you car's head rest posts.
+"""
+
 from piecad import *
 
 inch = 25.4
@@ -35,8 +39,6 @@ slider = union(
     ).translate([ring_r, 0, 0]),
 )
 
-view(slider)
-
 hook = union(
     ring(hook_h),
     rounded_rectangle([hook_l, hook_w], hook_r)
@@ -50,7 +52,9 @@ hook = union(
     .translate([-slider_l, 0, 0]),
 )
 
-view(hook)
+if __name__ == "__main__":
+    view(slider)
+    view(hook)
 
-save("/tmp/head_rest_purse_hanger_slider.obj", slider)
-save("/tmp/head_rest_purse_hanger_hook.obj", hook)
+    save("/tmp/head_rest_purse_hanger_slider.obj", slider)
+    save("/tmp/head_rest_purse_hanger_hook.obj", hook)
