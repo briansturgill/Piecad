@@ -19,7 +19,7 @@ Piecad has a `view` function which works like a 3d `print` (also does 2D).
 Piecad-Viewer provides the window that displays the model/image from each `view` call.
 You can use arrow keys to swtich between the models/images.
 
-[Examples](https://briansturgill.github.io/Piecad/examples/README.md)
+[Examples](examples/README.md)
 
 # My Piecad development environment.
 
