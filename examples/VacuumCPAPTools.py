@@ -15,6 +15,10 @@ vha_h = 34  # Height of Vacuum hose adapter
 ja_h = 4  # Height of join portion
 ja_r = vh_r
 wall_thk = 3
+noz_base_h = 21
+noz_cone_h = 9
+noz_h = 70
+noz_r = 8
 
 
 def adapter():
@@ -50,11 +54,33 @@ def joiner():
         ),
     )
 
+def nozzle():
+    return difference (
+        union(
+            difference(
+                cylinder(radius=noz_r, height=noz_h),
+                cylinder(radius=noz_r - 2, height=noz_h + 2).translate([0, 0, -1]),
+            ).translate([0, 0, noz_base_h + noz_cone_h]),
+            difference(
+                cone(radius_low=ch_r, radius_high=noz_r, height=noz_cone_h),
+                cone(radius_low=ch_r-2, radius_high=noz_r - 2, height=noz_cone_h + 2).translate([0, 0, -1]),
+            ).translate([0, 0, noz_base_h]),
+            difference(
+                cylinder(radius=ch_r, height=noz_base_h),
+                cylinder(radius=ch_r - 2, height=noz_base_h + 2).translate([0, 0, -1]),
+            ),
+        ),
+        cuboid([noz_r*2, noz_r*6, 20], center=True).rotate([-45, 0, 0]).translate([0, 0, noz_base_h+noz_cone_h+noz_h])
+    )
+
 
 if __name__ == "__main__":
     a = adapter()
     j = joiner()
+    n = nozzle()
     view(a)
     view(j)
-    save("/tmp/adapter.obj", a)
-    save("/tmp/joiner.obj", j)
+    view(n)
+    save("/tmp/v_adapter.obj", a)
+    save("/tmp/v_joiner.obj", j)
+    save("/tmp/v_nozzle.obj", j)
