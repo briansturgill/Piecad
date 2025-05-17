@@ -73,8 +73,8 @@ class Obj3d:
         mid_y = (ymax - ymin) / 2 + ymin
         mid_z = (zmax - zmin) / 2 + zmin
         new_x = 0
-        new_x = 0
-        new_x = 0
+        new_y = 0
+        new_z = 0
         if axes[0]:
             new_x = at[0] - mid_x
         if axes[1]:
