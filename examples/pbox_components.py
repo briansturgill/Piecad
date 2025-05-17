@@ -1,7 +1,5 @@
 """
 ProjectBox Example Components.
-
-Most components are centered.
 """
 
 from piecad import *
@@ -9,6 +7,9 @@ from piecad.projectbox import *
 
 
 def doppler_motion_sensor():
+    """
+    ORIGIN: bottom left
+    """
     tp = pbc.tap_post(6, 1.4)
     return union(
         tp.translate([0, 0, 0]),
@@ -19,6 +20,9 @@ def doppler_motion_sensor():
 
 
 def round_buzzer(buzzer_d, hole_d):
+    """
+    ORIGIN: centered
+    """
     tiny = 0.01
     return difference(
         circle((buzzer_d + 2) / 2.0).extrude(2),
@@ -27,11 +31,17 @@ def round_buzzer(buzzer_d, hole_d):
 
 
 def round_buzzer_hole(hole_d):
+    """
+    ORIGIN: centered
+    """
     return pbc.hole(hole_d / 2.0)
 
 
 # Works best if r is evenly divisible by hole_w
 def circular_speaker_grid_holes(r, wall=2, hole_w=2):
+    """
+    ORIGIN: centered
+    """
     tiny = 0.01
     l = []
     y = -(r - hole_w)
@@ -46,6 +56,9 @@ def circular_speaker_grid_holes(r, wall=2, hole_w=2):
 
 
 def max9814_mic(rot=0):
+    """
+    ORIGIN: centered
+    """
     tiny = 0.01
     return union(
         difference(
@@ -59,11 +72,17 @@ def max9814_mic(rot=0):
 
 
 def max9814_mic_hole(wall=2):
+    """
+    ORIGIN: bottom left
+    """
     tiny = 0.01
     return pbc.hole(5, wall + 6).translate([0, 0, 6 - tiny])
 
 
 def bme280():
+    """
+    ORIGIN: bottom left
+    """
     return union(
         difference(
             cube([12 + 4, 16 + 4, 3], center=True),
@@ -81,10 +100,16 @@ def bme280():
 
 
 def bme280_hole(wall=2):
+    """
+    ORIGIN: bottom left
+    """
     return pbc.hole(3 / 2, wall).translate([(11.5 / 2) - 3.5, 0, 0])
 
 
 def usb_breakout():
+    """
+    ORIGIN: centered
+    """
     tp = pbc.tap_post(6, 3)
     return union(tp.translate([-7, -4, 0]), tp.translate([-7, 4, 0])).rotate(
         [0, 90, 90]
@@ -92,6 +117,9 @@ def usb_breakout():
 
 
 def usb_breakout_hole(wall=2):
+    """
+    ORIGIN: centered
+    """
     return pbc.horizontal_slot_hole(8, 3, wall).translate([0, 6 + 2 + 1.5, 0])
 
 
