@@ -39,6 +39,16 @@ el.replaceWith(d);
 <p>THIS FEATURE IS EXPERIMENTAL, THE API SUBJECT TO CHANGE.</p>
 <p>A class for quickly constructing a project box.</p>
 <p>Call <code>finish</code> to retrieve the Obj3d of the final box.</p>
+<p>See <code>examples</code> to see how to use ProjectBox (`pbox_*).</p>
+<p>The general idea is that ProjectBox creates routines that let you position components
+in 2D (x, y) on the left, right, front, back, top, bottom of a ProjectBox.
+Generally 2D design is easier than 3D.</p>
+<p>Components are shapes or holes.
+Holes names end in "_hole" or "holes".
+When a ProjectBox is finished, all shapes are unioned with the box and
+all holes are differenced from the box.</p>
+<p>By convention component origins (0, 0) are either centered, or bottom left.
+It is a good idea to show the ORIGIN in the components documentation.</p>
 </section>
 <section>
 </section>
@@ -187,9 +197,9 @@ el.replaceWith(d);
         If `shape` or `hole` is not present, use `None`.
         &#34;&#34;&#34;
         if shape != None:
-            self._l_unions.append(shape)
+            self._l_unions.append(shape.translate([x, y, 0]))
         if hole != None:
-            self._differences.append(hole)
+            self._l_differences.append(hole.translate([x, y, 0]))
 
     def right(self, x, y, shape, hole):
         &#34;&#34;&#34;
@@ -197,9 +207,9 @@ el.replaceWith(d);
         If `shape` or `hole` is not present, use `None`.
         &#34;&#34;&#34;
         if shape != None:
-            self._r_unions.append(shape)
+            self._r_unions.append(shape.translate([x, y, 0]))
         if hole != None:
-            self._r_differences.append(hole)
+            self._r_differences.append(hole.translate([x, y, 0]))
 
     def front(self, x, y, shape, hole):
         &#34;&#34;&#34;
@@ -207,9 +217,9 @@ el.replaceWith(d);
         If `shape` or `hole` is not present, use `None`.
         &#34;&#34;&#34;
         if shape != None:
-            self._f_unions.append(shape)
+            self._f_unions.append(shape.translate([x, y, 0]))
         if hole != None:
-            self._f_differences.append(hole)
+            self._f_differences.append(hole.translate([x, y, 0]))
 
     def back(self, x, y, shape, hole):
         &#34;&#34;&#34;
@@ -217,9 +227,9 @@ el.replaceWith(d);
         If `shape` or `hole` is not present, use `None`.
         &#34;&#34;&#34;
         if shape != None:
-            self._k_unions.append(shape)
+            self._k_unions.append(shape.translate([x, y, 0]))
         if hole != None:
-            self._k_differences.append(hole)
+            self._k_differences.append(hole.translate([x, y, 0]))
 
     def top(self, x, y, shape, hole):
         &#34;&#34;&#34;
@@ -227,9 +237,9 @@ el.replaceWith(d);
         If `shape` or `hole` is not present, use `None`.
         &#34;&#34;&#34;
         if shape != None:
-            self._t_unions.append(shape)
+            self._t_unions.append(shape.translate([x, y, 0]))
         if hole != None:
-            self._t_differences.append(hole)
+            self._t_differences.append(hole.translate([x, y, 0]))
 
     def bottom(self, x, y, shape, hole):
         &#34;&#34;&#34;
@@ -237,9 +247,9 @@ el.replaceWith(d);
         If `shape` or `hole` is not present, use `None`.
         &#34;&#34;&#34;
         if shape != None:
-            self._m_unions.append(shape)
+            self._m_unions.append(shape.translate([x, y, 0]))
         if hole != None:
-            self._m_differences.append(hole)
+            self._m_differences.append(hole.translate([x, y, 0]))
 
     def finish(self) -&gt; Obj3d:
         &#34;&#34;&#34;
@@ -251,10 +261,10 @@ el.replaceWith(d);
 
         &#34;&#34;&#34;
         def f(box, differences, unions):
-            if len(differences) &gt; 0:
-                box = difference(box, *differences)
             if len(unions) &gt; 0:
                 box = union(box, *unions)
+            if len(differences) &gt; 0:
+                box = difference(box, *differences)
             return box
         return (
                 f(self._l_wall, self._l_differences, self._l_unions),
@@ -288,9 +298,9 @@ el.replaceWith(d);
     If `shape` or `hole` is not present, use `None`.
     &#34;&#34;&#34;
     if shape != None:
-        self._k_unions.append(shape)
+        self._k_unions.append(shape.translate([x, y, 0]))
     if hole != None:
-        self._k_differences.append(hole)</code></pre>
+        self._k_differences.append(hole.translate([x, y, 0]))</code></pre>
 </details>
 <div class="desc"><p>Add a component at <code>x, y</code> of the back side of the box.
 If <code>shape</code> or <code>hole</code> is not present, use <code>None</code>.</p></div>
@@ -309,9 +319,9 @@ If <code>shape</code> or <code>hole</code> is not present, use <code>None</code>
     If `shape` or `hole` is not present, use `None`.
     &#34;&#34;&#34;
     if shape != None:
-        self._m_unions.append(shape)
+        self._m_unions.append(shape.translate([x, y, 0]))
     if hole != None:
-        self._m_differences.append(hole)</code></pre>
+        self._m_differences.append(hole.translate([x, y, 0]))</code></pre>
 </details>
 <div class="desc"><p>Add a component at <code>x, y</code> of the bottom of the box.
 If <code>shape</code> or <code>hole</code> is not present, use <code>None</code>.</p></div>
@@ -334,10 +344,10 @@ If <code>shape</code> or <code>hole</code> is not present, use <code>None</code>
 
     &#34;&#34;&#34;
     def f(box, differences, unions):
-        if len(differences) &gt; 0:
-            box = difference(box, *differences)
         if len(unions) &gt; 0:
             box = union(box, *unions)
+        if len(differences) &gt; 0:
+            box = difference(box, *differences)
         return box
     return (
             f(self._l_wall, self._l_differences, self._l_unions),
@@ -366,9 +376,9 @@ If <code>shape</code> or <code>hole</code> is not present, use <code>None</code>
     If `shape` or `hole` is not present, use `None`.
     &#34;&#34;&#34;
     if shape != None:
-        self._f_unions.append(shape)
+        self._f_unions.append(shape.translate([x, y, 0]))
     if hole != None:
-        self._f_differences.append(hole)</code></pre>
+        self._f_differences.append(hole.translate([x, y, 0]))</code></pre>
 </details>
 <div class="desc"><p>Add a component at <code>x, y</code> of the front side of the box.
 If <code>shape</code> or <code>hole</code> is not present, use <code>None</code>.</p></div>
@@ -387,9 +397,9 @@ If <code>shape</code> or <code>hole</code> is not present, use <code>None</code>
     If `shape` or `hole` is not present, use `None`.
     &#34;&#34;&#34;
     if shape != None:
-        self._l_unions.append(shape)
+        self._l_unions.append(shape.translate([x, y, 0]))
     if hole != None:
-        self._differences.append(hole)</code></pre>
+        self._l_differences.append(hole.translate([x, y, 0]))</code></pre>
 </details>
 <div class="desc"><p>Add a component at <code>x, y</code> of the left side of the box.
 If <code>shape</code> or <code>hole</code> is not present, use <code>None</code>.</p></div>
@@ -408,9 +418,9 @@ If <code>shape</code> or <code>hole</code> is not present, use <code>None</code>
     If `shape` or `hole` is not present, use `None`.
     &#34;&#34;&#34;
     if shape != None:
-        self._r_unions.append(shape)
+        self._r_unions.append(shape.translate([x, y, 0]))
     if hole != None:
-        self._r_differences.append(hole)</code></pre>
+        self._r_differences.append(hole.translate([x, y, 0]))</code></pre>
 </details>
 <div class="desc"><p>Add a component at <code>x, y</code> of the right side of the box.
 If <code>shape</code> or <code>hole</code> is not present, use <code>None</code>.</p></div>
@@ -429,9 +439,9 @@ If <code>shape</code> or <code>hole</code> is not present, use <code>None</code>
     If `shape` or `hole` is not present, use `None`.
     &#34;&#34;&#34;
     if shape != None:
-        self._t_unions.append(shape)
+        self._t_unions.append(shape.translate([x, y, 0]))
     if hole != None:
-        self._t_differences.append(hole)</code></pre>
+        self._t_differences.append(hole.translate([x, y, 0]))</code></pre>
 </details>
 <div class="desc"><p>Add a component at <code>x, y</code> of the top of the box.
 If <code>shape</code> or <code>hole</code> is not present, use <code>None</code>.</p></div>
@@ -451,6 +461,7 @@ If <code>shape</code> or <code>hole</code> is not present, use <code>None</code>
     def tap_post(h: float, size_d: float, post_wall=2.0, add_taper=False, z_rot=0):
         &#34;&#34;&#34;
         A post suitable for tapping or using a self-taping screw or bolt.
+        ORIGIN: centered
 
         Parameter `h` is the height of the post (without taper).
 
@@ -481,10 +492,21 @@ If <code>shape</code> or <code>hole</code> is not present, use <code>None</code>
 
     @staticmethod
     def horizontal_slot_hole(w, h, wall=2):
+        &#34;&#34;&#34;
+        Creates a hole that is a rounded_rectangle.
+        Useful for things like a USB connector.
+
+        ORIGIN: centered
+        &#34;&#34;&#34;
         return rounded_rectangle((w, h), h/2.0).extrude(wall).rotate((180, 0, 0)).translate((-(w+h)/2.0, 0, 0))
 
     @staticmethod
     def tapered_bolt_hole(height, size_d):
+        &#34;&#34;&#34;
+        Creates a hole for a tapered bolt (the top of the head will be flush).
+
+        ORIGIN: centered
+        &#34;&#34;&#34;
         bolt_top_r = size_d
         r = size_d/2.0
         chamfer_h = sin(45)*bolt_top_r
@@ -499,27 +521,97 @@ If <code>shape</code> or <code>hole</code> is not present, use <code>None</code>
 
     @staticmethod
     def hole(r, wall=2):
+        &#34;&#34;&#34;
+        Creates a negative shape to create a hole.
+        (Used in difference, or the &#34;hole&#34; attribute in ProjectBox methods.)
+
+        ORIGIN: centered
+        &#34;&#34;&#34;
         return circle(r).extrude(wall).rotate((180, 0, 0))
 
-    @staticmethod
-    def wedge(sz, thk):
-        return polyhedron(vertices=[
-                [0, 0, 0], [0, -sz, 0], [0, 0, sz],
-                [thk, 0, 0], [thk, -sz, 0], [thk, 0, sz]],
-                faces=[[1,2,0], [4,3,5], [3,0, 2], [3,2,5], [3,1,0], [4,1,3], [2,1,5], [5,1,4]
-                ])
 
     @staticmethod
     def wire_tie_loop():
+        &#34;&#34;&#34;
+        A &#34;horseshoe&#34; sized to pass a wire tie through.
+        Useful for holding project boards in place with no screws.
+
+        ORIGIN: centered
+        &#34;&#34;&#34;
         tiny = 0.01
         return difference(
             cube([2, 7, 6], center=True),
             cube([2+2*tiny, 3, 2], center=True),
-        ).translate([1,3.5,3])</code></pre>
+        ).translate([1,3.5,3])
+
+    @staticmethod
+    def circular_speaker_grid_holes(radius, wall=2, hole_w=2):
+        &#34;&#34;&#34;
+        The `radius` is the radius of the speaker grill.
+        Also useful for air holes.
+
+        Parameter `wall` specifies the width of the grid holes.
+        Parameter `hole_w` specifies the width of the grid holes.
+
+        Works best if speaker `radius` is evenly divisible by `hole_w`.
+
+        ORIGIN: centered
+        &#34;&#34;&#34;
+        tiny = 0.01
+        l = []
+        y = -(radius - hole_w)
+        while y &lt;= radius - hole_w:
+            l.append(
+                cube([radius * 2, hole_w, wall + 2 * tiny], center=True).translate([0, y, 0])
+            )
+            y += 2 * hole_w
+        return intersect(
+            union(*l), cylinder(radius=radius, height=wall + 2 * tiny, center=True)
+        ).translate([0, 0, -(wall / 2) - tiny])</code></pre>
 </details>
 <div class="desc"></div>
 <h3>Static methods</h3>
 <dl>
+<dt id="piecad.projectbox.pbc.circular_speaker_grid_holes"><code class="name flex">
+<span>def <span class="ident">circular_speaker_grid_holes</span></span>(<span>radius, wall=2, hole_w=2)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def circular_speaker_grid_holes(radius, wall=2, hole_w=2):
+    &#34;&#34;&#34;
+    The `radius` is the radius of the speaker grill.
+    Also useful for air holes.
+
+    Parameter `wall` specifies the width of the grid holes.
+    Parameter `hole_w` specifies the width of the grid holes.
+
+    Works best if speaker `radius` is evenly divisible by `hole_w`.
+
+    ORIGIN: centered
+    &#34;&#34;&#34;
+    tiny = 0.01
+    l = []
+    y = -(radius - hole_w)
+    while y &lt;= radius - hole_w:
+        l.append(
+            cube([radius * 2, hole_w, wall + 2 * tiny], center=True).translate([0, y, 0])
+        )
+        y += 2 * hole_w
+    return intersect(
+        union(*l), cylinder(radius=radius, height=wall + 2 * tiny, center=True)
+    ).translate([0, 0, -(wall / 2) - tiny])</code></pre>
+</details>
+<div class="desc"><p>The <code>radius</code> is the radius of the speaker grill.
+Also useful for air holes.</p>
+<p>Parameter <code>wall</code> specifies the width of the grid holes.
+Parameter <code>hole_w</code> specifies the width of the grid holes.</p>
+<p>Works best if speaker <code>radius</code> is evenly divisible by <code>hole_w</code>.</p>
+<p>ORIGIN: centered</p></div>
+</dd>
 <dt id="piecad.projectbox.pbc.hole"><code class="name flex">
 <span>def <span class="ident">hole</span></span>(<span>r, wall=2)</span>
 </code></dt>
@@ -530,9 +622,17 @@ If <code>shape</code> or <code>hole</code> is not present, use <code>None</code>
 </summary>
 <pre><code class="python">@staticmethod
 def hole(r, wall=2):
+    &#34;&#34;&#34;
+    Creates a negative shape to create a hole.
+    (Used in difference, or the &#34;hole&#34; attribute in ProjectBox methods.)
+
+    ORIGIN: centered
+    &#34;&#34;&#34;
     return circle(r).extrude(wall).rotate((180, 0, 0))</code></pre>
 </details>
-<div class="desc"></div>
+<div class="desc"><p>Creates a negative shape to create a hole.
+(Used in difference, or the "hole" attribute in ProjectBox methods.)</p>
+<p>ORIGIN: centered</p></div>
 </dd>
 <dt id="piecad.projectbox.pbc.horizontal_slot_hole"><code class="name flex">
 <span>def <span class="ident">horizontal_slot_hole</span></span>(<span>w, h, wall=2)</span>
@@ -544,9 +644,17 @@ def hole(r, wall=2):
 </summary>
 <pre><code class="python">@staticmethod
 def horizontal_slot_hole(w, h, wall=2):
+    &#34;&#34;&#34;
+    Creates a hole that is a rounded_rectangle.
+    Useful for things like a USB connector.
+
+    ORIGIN: centered
+    &#34;&#34;&#34;
     return rounded_rectangle((w, h), h/2.0).extrude(wall).rotate((180, 0, 0)).translate((-(w+h)/2.0, 0, 0))</code></pre>
 </details>
-<div class="desc"></div>
+<div class="desc"><p>Creates a hole that is a rounded_rectangle.
+Useful for things like a USB connector.</p>
+<p>ORIGIN: centered</p></div>
 </dd>
 <dt id="piecad.projectbox.pbc.tap_post"><code class="name flex">
 <span>def <span class="ident">tap_post</span></span>(<span>h: float, size_d: float, post_wall=2.0, add_taper=False, z_rot=0)</span>
@@ -560,6 +668,7 @@ def horizontal_slot_hole(w, h, wall=2):
 def tap_post(h: float, size_d: float, post_wall=2.0, add_taper=False, z_rot=0):
     &#34;&#34;&#34;
     A post suitable for tapping or using a self-taping screw or bolt.
+    ORIGIN: centered
 
     Parameter `h` is the height of the post (without taper).
 
@@ -588,7 +697,8 @@ def tap_post(h: float, size_d: float, post_wall=2.0, add_taper=False, z_rot=0):
     else:
         return circ.extrude(h)</code></pre>
 </details>
-<div class="desc"><p>A post suitable for tapping or using a self-taping screw or bolt.</p>
+<div class="desc"><p>A post suitable for tapping or using a self-taping screw or bolt.
+ORIGIN: centered</p>
 <p>Parameter <code>h</code> is the height of the post (without taper).</p>
 <p>Parameter <code>size_d</code> is a diameter because that's how bolts are usually
 specified. For example a M4 bolt has a 4mm diameter.</p>
@@ -610,6 +720,11 @@ add a taper then the tap post's top is centered at (0, 0, 0).</p>
 </summary>
 <pre><code class="python">@staticmethod
 def tapered_bolt_hole(height, size_d):
+    &#34;&#34;&#34;
+    Creates a hole for a tapered bolt (the top of the head will be flush).
+
+    ORIGIN: centered
+    &#34;&#34;&#34;
     bolt_top_r = size_d
     r = size_d/2.0
     chamfer_h = sin(45)*bolt_top_r
@@ -622,25 +737,8 @@ def tapered_bolt_hole(height, size_d):
     ).rotate((180, 0, 0))
     return o</code></pre>
 </details>
-<div class="desc"></div>
-</dd>
-<dt id="piecad.projectbox.pbc.wedge"><code class="name flex">
-<span>def <span class="ident">wedge</span></span>(<span>sz, thk)</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@staticmethod
-def wedge(sz, thk):
-    return polyhedron(vertices=[
-            [0, 0, 0], [0, -sz, 0], [0, 0, sz],
-            [thk, 0, 0], [thk, -sz, 0], [thk, 0, sz]],
-            faces=[[1,2,0], [4,3,5], [3,0, 2], [3,2,5], [3,1,0], [4,1,3], [2,1,5], [5,1,4]
-            ])</code></pre>
-</details>
-<div class="desc"></div>
+<div class="desc"><p>Creates a hole for a tapered bolt (the top of the head will be flush).</p>
+<p>ORIGIN: centered</p></div>
 </dd>
 <dt id="piecad.projectbox.pbc.wire_tie_loop"><code class="name flex">
 <span>def <span class="ident">wire_tie_loop</span></span>(<span>)</span>
@@ -652,13 +750,21 @@ def wedge(sz, thk):
 </summary>
 <pre><code class="python">@staticmethod
 def wire_tie_loop():
+    &#34;&#34;&#34;
+    A &#34;horseshoe&#34; sized to pass a wire tie through.
+    Useful for holding project boards in place with no screws.
+
+    ORIGIN: centered
+    &#34;&#34;&#34;
     tiny = 0.01
     return difference(
         cube([2, 7, 6], center=True),
         cube([2+2*tiny, 3, 2], center=True),
     ).translate([1,3.5,3])</code></pre>
 </details>
-<div class="desc"></div>
+<div class="desc"><p>A "horseshoe" sized to pass a wire tie through.
+Useful for holding project boards in place with no screws.</p>
+<p>ORIGIN: centered</p></div>
 </dd>
 </dl>
 </dd>
@@ -692,11 +798,11 @@ def wire_tie_loop():
 <li>
 <h4><code><a title="piecad.projectbox.pbc" href="#piecad.projectbox.pbc">pbc</a></code></h4>
 <ul class="">
+<li><code><a title="piecad.projectbox.pbc.circular_speaker_grid_holes" href="#piecad.projectbox.pbc.circular_speaker_grid_holes">circular_speaker_grid_holes</a></code></li>
 <li><code><a title="piecad.projectbox.pbc.hole" href="#piecad.projectbox.pbc.hole">hole</a></code></li>
 <li><code><a title="piecad.projectbox.pbc.horizontal_slot_hole" href="#piecad.projectbox.pbc.horizontal_slot_hole">horizontal_slot_hole</a></code></li>
 <li><code><a title="piecad.projectbox.pbc.tap_post" href="#piecad.projectbox.pbc.tap_post">tap_post</a></code></li>
 <li><code><a title="piecad.projectbox.pbc.tapered_bolt_hole" href="#piecad.projectbox.pbc.tapered_bolt_hole">tapered_bolt_hole</a></code></li>
-<li><code><a title="piecad.projectbox.pbc.wedge" href="#piecad.projectbox.pbc.wedge">wedge</a></code></li>
 <li><code><a title="piecad.projectbox.pbc.wire_tie_loop" href="#piecad.projectbox.pbc.wire_tie_loop">wire_tie_loop</a></code></li>
 </ul>
 </li>

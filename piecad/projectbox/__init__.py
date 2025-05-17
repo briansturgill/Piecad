@@ -4,6 +4,19 @@ THIS FEATURE IS EXPERIMENTAL, THE API SUBJECT TO CHANGE.
 A class for quickly constructing a project box.
 
 Call `finish` to retrieve the Obj3d of the final box.
+
+See `examples` to see how to use ProjectBox (`pbox_*).
+
+The general idea is that ProjectBox creates routines that let you position components
+in 2D (x, y) on the left, right, front, back, top, bottom of a ProjectBox.
+Generally 2D design is easier than 3D.
+
+Components are shapes or holes.  Holes names end in "_hole" or "holes".
+When a ProjectBox is finished, all shapes are unioned with the box and
+all holes are differenced from the box.
+
+By convention component origins (0, 0) are either centered, or bottom left.
+It is a good idea to show the ORIGIN in the components documentation.
 """
 
 from piecad import (
@@ -11,7 +24,9 @@ from piecad import (
     config,
     rounded_rectangle,
     union,
+    intersect,
     difference,
+    polyhedron,
     circle,
     cube,
     cone,
@@ -151,9 +166,9 @@ class ProjectBox:
         If `shape` or `hole` is not present, use `None`.
         """
         if shape != None:
-            self._l_unions.append(shape)
+            self._l_unions.append(shape.translate([x, y, 0]))
         if hole != None:
-            self._differences.append(hole)
+            self._l_differences.append(hole.translate([x, y, 0]))
 
     def right(self, x, y, shape, hole):
         """
@@ -161,9 +176,9 @@ class ProjectBox:
         If `shape` or `hole` is not present, use `None`.
         """
         if shape != None:
-            self._r_unions.append(shape)
+            self._r_unions.append(shape.translate([x, y, 0]))
         if hole != None:
-            self._r_differences.append(hole)
+            self._r_differences.append(hole.translate([x, y, 0]))
 
     def front(self, x, y, shape, hole):
         """
@@ -171,9 +186,9 @@ class ProjectBox:
         If `shape` or `hole` is not present, use `None`.
         """
         if shape != None:
-            self._f_unions.append(shape)
+            self._f_unions.append(shape.translate([x, y, 0]))
         if hole != None:
-            self._f_differences.append(hole)
+            self._f_differences.append(hole.translate([x, y, 0]))
 
     def back(self, x, y, shape, hole):
         """
@@ -181,9 +196,9 @@ class ProjectBox:
         If `shape` or `hole` is not present, use `None`.
         """
         if shape != None:
-            self._k_unions.append(shape)
+            self._k_unions.append(shape.translate([x, y, 0]))
         if hole != None:
-            self._k_differences.append(hole)
+            self._k_differences.append(hole.translate([x, y, 0]))
 
     def top(self, x, y, shape, hole):
         """
@@ -191,9 +206,9 @@ class ProjectBox:
         If `shape` or `hole` is not present, use `None`.
         """
         if shape != None:
-            self._t_unions.append(shape)
+            self._t_unions.append(shape.translate([x, y, 0]))
         if hole != None:
-            self._t_differences.append(hole)
+            self._t_differences.append(hole.translate([x, y, 0]))
 
     def bottom(self, x, y, shape, hole):
         """
@@ -201,9 +216,9 @@ class ProjectBox:
         If `shape` or `hole` is not present, use `None`.
         """
         if shape != None:
-            self._m_unions.append(shape)
+            self._m_unions.append(shape.translate([x, y, 0]))
         if hole != None:
-            self._m_differences.append(hole)
+            self._m_differences.append(hole.translate([x, y, 0]))
 
     def finish(self) -> Obj3d:
         """
@@ -215,10 +230,10 @@ class ProjectBox:
 
         """
         def f(box, differences, unions):
-            if len(differences) > 0:
-                box = difference(box, *differences)
             if len(unions) > 0:
                 box = union(box, *unions)
+            if len(differences) > 0:
+                box = difference(box, *differences)
             return box
         return (
                 f(self._l_wall, self._l_differences, self._l_unions),
@@ -234,6 +249,7 @@ class pbc:
     def tap_post(h: float, size_d: float, post_wall=2.0, add_taper=False, z_rot=0):
         """
         A post suitable for tapping or using a self-taping screw or bolt.
+        ORIGIN: centered
 
         Parameter `h` is the height of the post (without taper).
 
@@ -264,10 +280,21 @@ class pbc:
 
     @staticmethod
     def horizontal_slot_hole(w, h, wall=2):
+        """
+        Creates a hole that is a rounded_rectangle.
+        Useful for things like a USB connector.
+
+        ORIGIN: centered
+        """
         return rounded_rectangle((w, h), h/2.0).extrude(wall).rotate((180, 0, 0)).translate((-(w+h)/2.0, 0, 0))
 
     @staticmethod
     def tapered_bolt_hole(height, size_d):
+        """
+        Creates a hole for a tapered bolt (the top of the head will be flush).
+
+        ORIGIN: centered
+        """
         bolt_top_r = size_d
         r = size_d/2.0
         chamfer_h = sin(45)*bolt_top_r
@@ -282,20 +309,50 @@ class pbc:
 
     @staticmethod
     def hole(r, wall=2):
+        """
+        Creates a negative shape to create a hole.
+        (Used in difference, or the "hole" attribute in ProjectBox methods.)
+
+        ORIGIN: centered
+        """
         return circle(r).extrude(wall).rotate((180, 0, 0))
 
-    @staticmethod
-    def wedge(sz, thk):
-        return polyhedron(vertices=[
-                [0, 0, 0], [0, -sz, 0], [0, 0, sz],
-                [thk, 0, 0], [thk, -sz, 0], [thk, 0, sz]],
-                faces=[[1,2,0], [4,3,5], [3,0, 2], [3,2,5], [3,1,0], [4,1,3], [2,1,5], [5,1,4]
-                ])
 
     @staticmethod
     def wire_tie_loop():
+        """
+        A "horseshoe" sized to pass a wire tie through.
+        Useful for holding project boards in place with no screws.
+
+        ORIGIN: centered
+        """
         tiny = 0.01
         return difference(
             cube([2, 7, 6], center=True),
             cube([2+2*tiny, 3, 2], center=True),
         ).translate([1,3.5,3])
+
+    @staticmethod
+    def circular_speaker_grid_holes(radius, wall=2, hole_w=2):
+        """
+        The `radius` is the radius of the speaker grill.
+        Also useful for air holes.
+
+        Parameter `wall` specifies the width of the grid holes.
+        Parameter `hole_w` specifies the width of the grid holes.
+
+        Works best if speaker `radius` is evenly divisible by `hole_w`.
+
+        ORIGIN: centered
+        """
+        tiny = 0.01
+        l = []
+        y = -(radius - hole_w)
+        while y <= radius - hole_w:
+            l.append(
+                cube([radius * 2, hole_w, wall + 2 * tiny], center=True).translate([0, y, 0])
+            )
+            y += 2 * hole_w
+        return intersect(
+            union(*l), cylinder(radius=radius, height=wall + 2 * tiny, center=True)
+        ).translate([0, 0, -(wall / 2) - tiny])
