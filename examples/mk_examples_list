@@ -16,5 +16,5 @@ for f in fl:
     if nl != -1:
         doc = doc[0:nl]
 
-    print("* "+f+".py\n    - ", doc)
+    print(f"* [{f}.py]({f}.py)\n    - ", doc)
     print()

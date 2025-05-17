@@ -6,7 +6,7 @@ documents:
 	rm -rf docs/*
 	pdoc3 --html piecad --force
 	(cd doc_examples; ./mk_doc_examples)
-	(cd examples; ./mk_examples_list >examples.md)
+	(cd examples; ./mk_examples_list >README.md)
 	mv html/piecad/* docs
 	rm -rf html
 
