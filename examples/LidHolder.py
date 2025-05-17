@@ -3,6 +3,9 @@ Make a holder for multiple sizes of lids.
 """
 
 from piecad import *
+from math import atan2
+
+set_default_segments(100)
 
 tiny = 105
 small = 130
@@ -86,21 +89,24 @@ wedge = None
 def tilt_base(bottom):
     global wedge
     bottom = bottom.project()
-    off_b = bottom.offset(0.05, "square").extrude(base_h - 2).translate([0, 0, 2])
-    off_big = bottom.offset(2 + 0.05, "square").extrude(base_h)
-    wedge_h = base_h - 2
-    wedge_w = large
-    wedge = intersect(
-        cylinder(radius=large / 2, height=wedge_h),
-        polygon(paths=[[(0, 0), (wedge_w, 0), (wedge_w, -wedge_h)]])
-        .extrude(wedge_w)
-        .rotate([90, 0, 180])
-        .center(),
+    tilt_h = 10
+    off_b = (
+        bottom.offset(0.05, "square").extrude(base_h - 2).translate([0, 0, 2 + tilt_h])
     )
+    off_big = bottom.offset(2 + 0.05, "square").extrude(base_h + tilt_h)
+    off_big = difference(off_big, off_b)
+    xmin, ymin, zmin, xmax, ymax, zmax = off_big.bounding_box()
+    rot = atan2(ymax - ymin, tilt_h)
+    print(rot)
+    off_big = off_big.translate([0, 0, -tilt_h])
+    print(off_big.bounding_box())
+    wedge = cube([2 * (xmax - xmin), 2 * (ymax - ymin), 2 * (zmax - zmin)])
     xmin, ymin, zmin, xmax, ymax, zmax = wedge.bounding_box()
-    wedge = wedge.translate([0, 0, -(zmax - zmin)]).rotate([0, 0, 90])
-    off_big = union(off_big, wedge)
-    return difference(off_big, off_b)
+    wedge = wedge.translate([-(xmax - xmin) / 2, -(ymax - ymin) / 2, -zmax - 2])
+    print(wedge.bounding_box())
+    off_big = off_big.rotate([-rot, 0, 0])
+    off_big = difference(off_big, wedge)
+    return off_big
 
 
 d1 = disc(tiny, 0)

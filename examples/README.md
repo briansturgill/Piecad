@@ -12,6 +12,9 @@
 * [KnifeStand.py](KnifeStand.py)
     -  Knife Stand Example
 
+1.5223142126723095
+(-109.05, -97.05, -10.0, 109.05, 109.05, 10.0)
+(-218.1, -206.1, -42.0, 218.1, 206.1, -2.0)
 * [LidHolder.py](LidHolder.py)
     -  Make a holder for multiple sizes of lids.
 
