@@ -214,7 +214,7 @@ a default value for <code>segments</code> of <code>-1</code>.</p></div>
         if axes[0]:
             new_x = at[0] - mid_x
         if axes[1]:
-            new_y = at[0] - mid_y
+            new_y = at[1] - mid_y
         o2 = self.translate((new_x, new_y))
         o2._color = self._color
         return o2
@@ -480,7 +480,7 @@ a rectangle that would exactly contain this object.</p>
     if axes[0]:
         new_x = at[0] - mid_x
     if axes[1]:
-        new_y = at[0] - mid_y
+        new_y = at[1] - mid_y
     o2 = self.translate((new_x, new_y))
     o2._color = self._color
     return o2</code></pre>
@@ -908,9 +908,9 @@ To understand <code>miter_limit</code>, see: <a href="https://www.angusj.com/cli
         if axes[0]:
             new_x = at[0] - mid_x
         if axes[1]:
-            new_y = at[0] - mid_y
+            new_y = at[1] - mid_y
         if axes[2]:
-            new_z = at[0] - mid_z
+            new_z = at[2] - mid_z
         o3 = self.translate((new_x, new_y, new_z))
         o3._color = self._color
         return o3
@@ -1198,9 +1198,9 @@ a cuboid that would exactly contain this object.</p>
     if axes[0]:
         new_x = at[0] - mid_x
     if axes[1]:
-        new_y = at[0] - mid_y
+        new_y = at[1] - mid_y
     if axes[2]:
-        new_z = at[0] - mid_z
+        new_z = at[2] - mid_z
     o3 = self.translate((new_x, new_y, new_z))
     o3._color = self._color
     return o3</code></pre>

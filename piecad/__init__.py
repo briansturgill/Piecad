@@ -24,7 +24,7 @@ to check for polygon self intersections.
 from __future__ import annotations
 import manifold3d as _m
 
-__version__ = "1.0.5"
+__version__ = "1.0.6"
 
 
 def version():
@@ -78,9 +78,9 @@ class Obj3d:
         if axes[0]:
             new_x = at[0] - mid_x
         if axes[1]:
-            new_y = at[0] - mid_y
+            new_y = at[1] - mid_y
         if axes[2]:
-            new_z = at[0] - mid_z
+            new_z = at[2] - mid_z
         o3 = self.translate((new_x, new_y, new_z))
         o3._color = self._color
         return o3
@@ -359,7 +359,7 @@ class Obj2d:
         if axes[0]:
             new_x = at[0] - mid_x
         if axes[1]:
-            new_y = at[0] - mid_y
+            new_y = at[1] - mid_y
         o2 = self.translate((new_x, new_y))
         o2._color = self._color
         return o2

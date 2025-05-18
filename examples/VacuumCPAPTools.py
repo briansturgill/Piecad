@@ -54,8 +54,9 @@ def joiner():
         ),
     )
 
+
 def nozzle():
-    return difference (
+    return difference(
         union(
             difference(
                 cylinder(radius=noz_r, height=noz_h),
@@ -63,14 +64,18 @@ def nozzle():
             ).translate([0, 0, noz_base_h + noz_cone_h]),
             difference(
                 cone(radius_low=ch_r, radius_high=noz_r, height=noz_cone_h),
-                cone(radius_low=ch_r-2, radius_high=noz_r - 2, height=noz_cone_h + 2).translate([0, 0, -1]),
+                cone(
+                    radius_low=ch_r - 2, radius_high=noz_r - 2, height=noz_cone_h + 2
+                ).translate([0, 0, -1]),
             ).translate([0, 0, noz_base_h]),
             difference(
                 cylinder(radius=ch_r, height=noz_base_h),
                 cylinder(radius=ch_r - 2, height=noz_base_h + 2).translate([0, 0, -1]),
             ),
         ),
-        cuboid([noz_r*2, noz_r*6, 20], center=True).rotate([-45, 0, 0]).translate([0, 0, noz_base_h+noz_cone_h+noz_h])
+        cuboid([noz_r * 2, noz_r * 6, 20], center=True)
+        .rotate([-45, 0, 0])
+        .translate([0, 0, noz_base_h + noz_cone_h + noz_h]),
     )
 
 
