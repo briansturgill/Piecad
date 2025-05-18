@@ -83,4 +83,4 @@ if __name__ == "__main__":
     view(n)
     save("/tmp/v_adapter.obj", a)
     save("/tmp/v_joiner.obj", j)
-    save("/tmp/v_nozzle.obj", j)
+    save("/tmp/v_nozzle.obj", n)
