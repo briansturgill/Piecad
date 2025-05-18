@@ -108,6 +108,14 @@ def bme280_hole(wall=2):
 
 def usb_breakout():
     """
+    This is an unusual component.
+
+    This "shape" part (usually) goes on the bottom. (Rotate as necessary.)
+
+    The "hole" part goes on a side.
+
+    Thus you don't put the "shape" and "hole" in the same call.
+
     ORIGIN: centered
     """
     tp = pbc.tap_post(6, 3)
@@ -118,6 +126,8 @@ def usb_breakout():
 
 def usb_breakout_hole(wall=2):
     """
+    SEE USAGE NOtE IN usb_breakout()
+
     ORIGIN: centered
     """
     return pbc.horizontal_slot_hole(8, 3, wall).translate([0, 6 + 2 + 1.5, 0])
