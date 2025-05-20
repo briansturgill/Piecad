@@ -15,6 +15,7 @@ dependencies = [
     "fontTools >= 4.57.0",
     "manifold3d >= 3.0.1",
     "skia-pathops >= 0.8.0",
+		"svgpathtools==1.7.0",
 ]
 
 [project.urls]

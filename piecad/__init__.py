@@ -24,7 +24,7 @@ to check for polygon self intersections.
 from __future__ import annotations
 import manifold3d as _m
 
-__version__ = "1.0.6"
+__version__ = "1.0.7"
 
 
 def version():
