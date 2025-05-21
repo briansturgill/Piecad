@@ -137,7 +137,7 @@ class ProjectBox:
                 d = dims[1]-wall
                 h = dims[2]
                 o = cube([w, d, h])
-                o = o.translate([0, 0, -wall])
+                o = o.translate([(dims[0]-w)/2, 0, -wall])
             return o
 
         self._l_wall = mkwall([self.d, self.h, self.wall])
@@ -286,7 +286,9 @@ class pbc:
 
         ORIGIN: centered
         """
-        return rounded_rectangle((w, h), h/2.0).extrude(wall).rotate((180, 0, 0)).translate((-(w+h)/2.0, 0, 0))
+        slot = rounded_rectangle((w, h), h/2.0).extrude(wall)
+        slot = slot.translate([0, 0, -wall]).center([True, True, False])
+        return slot
 
     @staticmethod
     def tapered_bolt_hole(height, size_d):
