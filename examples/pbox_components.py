@@ -6,6 +6,40 @@ from piecad import *
 from piecad.projectbox import *
 
 
+def hcsr04(wall=2):
+    """
+    HC-SR04 Ultrasonic Distance Sensor.
+    ORIGIN: center
+    """
+    w = 48
+    h = 20
+    d = 8
+
+    def l_wall():
+        return union(
+            cube([wall, h, d]),
+            pbc.wire_tie_loop().translate([wall / 2, (h - 7) / 2, d]),
+        )
+
+    return union(
+        l_wall().translate([-wall, 0, 0]),
+        l_wall().translate([w, 0, 0]),
+    ).translate([-w / 2, -h / 2, 0])
+
+
+def hcsr04_holes(wall=2):
+    """
+    HC-SR04 Ultrasonic Distance Sensor.
+    ORIGIN: center
+    """
+    cyl_r = 18.0 / 2
+    w = 48
+    return union(
+        cylinder(radius=cyl_r, height=wall).translate([cyl_r + 2, cyl_r, -wall]),
+        cylinder(radius=cyl_r, height=wall).translate([w - cyl_r - 2, cyl_r, -wall]),
+    ).translate([-w / 2, -cyl_r, 0])
+
+
 def doppler_motion_sensor():
     """
     ORIGIN: bottom left

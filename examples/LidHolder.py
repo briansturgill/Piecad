@@ -98,7 +98,7 @@ def tilt_base(bottom):
     xmin, ymin, zmin, xmax, ymax, zmax = off_big.bounding_box()
     # This is not really technically correct, it just worked.
     # rot = atan(tilt_h / (ymax - ymin)) * 0.75
-    rot = atan((tilt_h-2) / (xmax - xmin))
+    rot = atan((tilt_h - 2) / (xmax - xmin))
     off_big = off_big.translate([0, 0, -tilt_h])
     wedge = cube([2 * (xmax - xmin), 2 * (ymax - ymin), 2 * (zmax - zmin)])
     xmin, ymin, zmin, xmax, ymax, zmax = wedge.bounding_box()
