@@ -11,7 +11,7 @@ post = 0.75 * inch
 off = 0.25 * inch
 
 hook_l = 5 * inch
-hook_h = 5
+hook_h = 15
 hook_w = post
 slider_l = 3.0 * inch
 slider_h = hook_h + 2 * thk + 2 * iota

@@ -66,20 +66,25 @@ class ProjectBox:
         _chkGE("wall", wall, 2.0)
 
         tiny = 0.5
+        iota = 0.1
         self._segments = segments
         self._size = size
         self.w, self.d, self.h = self._size
         self.h = self.h+wall
         self.wall = wall
-        self.off = 2*wall+tiny
 
         def mkwall(dims, ty=None):
-            screw_h = 10
-            screw_top_r = 3.0
-            screw_r = (screw_top_r/2)*0.8 # 3mm screw hole
-            rd = (screw_top_r+2*wall)+tiny
+            max_sh = self.h - wall
+            screw_h = 22 if max_sh >= 22 else max_sh
+            screw_top_r = 3.0+iota
+            screw_d = 3.0
+            screw_r = (screw_d+2*tiny)/2 # 3mm screw hole
+            nut_r = 3.0
+            nut_h = 2.4*1.2
+            rd = (screw_top_r+4*wall)+tiny
             rr = rd/2.0
-            off = self.off
+            off = 4*wall+tiny
+            self.corner_offset = 3*rr
 
             def post(rot):
                 post_l = 2*rr
@@ -91,6 +96,8 @@ class ProjectBox:
                         cube([post_w, post_l, self.h]).translate([-rr, 0, 0]),
                     ),
                     cylinder(radius=screw_r, height=screw_h).translate([0, 0, self.h-screw_h]),
+                    cylinder(radius=rr, height=nut_h).piecut(120, -30).translate([0, 0, self.h-nut_h-wall]),
+                    cylinder(radius=nut_r, height=nut_h, segments=6).translate([0, 0, self.h-nut_h-wall]),
                 ).translate([rr, rr, 0]).rotate([0, 0, rot])
 
             if ty == 't' or ty == 'm':
@@ -358,3 +365,6 @@ class pbc:
         return intersect(
             union(*l), cylinder(radius=radius, height=wall + 2 * tiny, center=True)
         ).translate([0, 0, -(wall / 2) - tiny])
+
+
+project_box_corner_offset = ProjectBox([20,20,20]).corner_offset
