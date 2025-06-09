@@ -96,7 +96,7 @@ class ProjectBox:
                         cube([post_w, post_l, self.h]).translate([-rr, 0, 0]),
                     ),
                     cylinder(radius=screw_r, height=screw_h).translate([0, 0, self.h-screw_h]),
-                    cylinder(radius=rr, height=nut_h).piecut(120, -30).translate([0, 0, self.h-nut_h-wall]),
+                    cylinder(radius=rr+4, height=nut_h).piecut(300, 150).translate([0, 0, self.h-nut_h-wall]),
                     cylinder(radius=nut_r, height=nut_h, segments=6).translate([0, 0, self.h-nut_h-wall]),
                 ).translate([rr, rr, 0]).rotate([0, 0, rot])
 
