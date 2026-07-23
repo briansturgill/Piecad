@@ -5,7 +5,6 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "piecad"
 description = '"Easy as Pie" CAD (Piecad)'
-version = "1.0.9"
 authors = [{name = "Brian Sturgill", email = "codersnext@gmail.com"}]
 license = {file = "LICENSE"}
 classifiers = ["License :: OSI Approved :: MIT License"]
