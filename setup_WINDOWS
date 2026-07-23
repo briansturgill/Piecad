@@ -1,0 +1,2 @@
+Development of Piecad under Windows must be done in WSL. Use the 'setup' script there.
+For simply using Piecad under Windows do: pip install piecad.

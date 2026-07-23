@@ -14,7 +14,6 @@ For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Prop
 
 from . import ValidationError
 
-
 _cssColors = {}
 # Basic color keywords
 _cssColors["black"] = (0, 0, 0)

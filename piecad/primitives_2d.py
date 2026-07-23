@@ -11,7 +11,6 @@ from ._poly_point_isect import (
     isect_segments_include_segments as _isect_segments_include_segments,
 )
 
-
 _unit_circles = {}
 
 
