@@ -120,7 +120,8 @@ if __name__ == "__main__":
     view(b)
     view(t)
 
-    save("/tmp/cpap_p.obj", p)
-    save("/tmp/cpap_s.obj", s)
-    save("/tmp/cpap_b.obj", b)
-    save("/tmp/cpap_t.obj", t)
+    # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
+    save("cpap_p.obj", p)
+    save("cpap_s.obj", s)
+    save("cpap_b.obj", b)
+    save("cpap_t.obj", t)

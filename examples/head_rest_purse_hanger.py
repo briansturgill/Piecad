@@ -56,5 +56,6 @@ if __name__ == "__main__":
     view(slider)
     view(hook)
 
-    save("/tmp/head_rest_purse_hanger_slider.obj", slider)
-    save("/tmp/head_rest_purse_hanger_hook.obj", hook)
+    # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
+    save("head_rest_purse_hanger_slider.obj", slider)
+    save("head_rest_purse_hanger_hook.obj", hook)

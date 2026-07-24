@@ -146,5 +146,6 @@ if __name__ == "__main__":
     sn58b = make_for("SN58B")
     view(sn28b)
     view(sn58b)
-    save("/tmp/sn28b.obj", sn28b)
-    save("/tmp/sn58b.obj", sn58b)
+    # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
+    save("sn28b.obj", sn28b)
+    save("sn58b.obj", sn58b)

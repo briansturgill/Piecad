@@ -36,4 +36,5 @@ def stand():
 if __name__ == "__main__":
     ks = stand()
     view(ks)
-    save("/tmp/knife_stand.obj", ks)
+    # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
+    save("knife_stand.obj", ks)

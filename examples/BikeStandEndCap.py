@@ -22,4 +22,5 @@ if __name__ == "__main__":
         oval(x, y).extrude(z + wall + 1).translate([0, 0, wall + 1]),
     )
     view(cap)
-    save("/tmp/cap.obj", cap)
+    # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
+    save("cap.obj", cap)

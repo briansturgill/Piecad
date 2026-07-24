@@ -11,6 +11,7 @@ import manifold3d as _m
 import trimesh
 import inspect
 import os.path
+from pathlib import Path as _Path
 
 
 def _info_str(tag):  # Must be called from inside another function.
@@ -58,11 +59,50 @@ def load(filename: str) -> Obj3d | Obj2d:
     return o
 
 
+_save_dir = None
+
+
+def _get_save_dir():
+    global _save_dir
+    import platform
+    import sys
+    import os
+
+    if _save_dir != None:
+        return _save_dir
+    _save_dir = os.getenv("PIECAD_SAVE_DIR", None)
+    if _save_dir != None:
+        return _save_dir
+    if platform.system == "Windows":
+        import winreg
+
+        sub_key = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
+        downloads_guid = "{374DE290-123F-4565-9164-39C4925E467B}"
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, sub_key) as key:
+            _save_dir = winreg.QueryValueEx(key, downloads_guid)[0]
+    else:  # Linux/Unix and MacOS
+        _save_dir = str(_Path.home() / "Downloads")
+    return _save_dir
+
+
+print(_get_save_dir())  # Usage LATER
+
+
 def save(filename: str, *objs: Obj3d | Obj2d) -> None:
     """
     Save a 3d or 2d object in a file suitable for printing, etc.
 
-    The format placed in [p:filename] is determined by the file's extention.
+    If [p filename] does not contain a path separator character (`'/'` or `'\\'`) the
+    `Downloads` directory for you platform is prepended. Thus if you set
+    [p filename] to `output.obj`, the place where the file is saved is
+    `c:\\Users\\username\\Downloads\\output.obj` on Windows or
+    `/home/username/Downloads/output.obj` on Linux and MacOS.
+    If you want a file saved in the current directory, prepend `'./'` or `'.\\'`.
+
+    You can override the `Downloads` directory by setting the global environment variable
+    `PIECAD_SAVE_DIR`.
+
+    The model format placed in [p:filename] is determined by the file's extention.
 
     The available formats for 3D are:
 
@@ -80,6 +120,9 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
 
     For 2D, only the SVG (.svg) format is available.
     """
+
+    if filename.find("/") == -1 and filename.find("\\") == -1:
+        filename = str(_Path(_get_save_dir()) / filename)
     _chkGE("len(objs)", len(objs), 1)
     dot_idx = filename.rindex(".")
     ext = filename[dot_idx + 1 :]

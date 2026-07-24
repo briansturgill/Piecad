@@ -141,7 +141,17 @@ el.replaceWith(d);
     &#34;&#34;&#34;
     Save a 3d or 2d object in a file suitable for printing, etc.
 
-    The format placed in [p:filename] is determined by the file&#39;s extention.
+    If [p filename] does not contain a path separator character (`&#39;/&#39;` or `&#39;\\&#39;`) the
+    `Downloads` directory for you platform is prepended. Thus if you set
+    [p filename] to `output.obj`, the place where the file is saved is
+    `c:\\Users\\username\\Downloads\\output.obj` on Windows or
+    `/home/username/Downloads/output.obj` on Linux and MacOS.
+    If you want a file saved in the current directory, prepend `&#39;./&#39;` or `&#39;.\\&#39;`.
+
+    You can override the `Downloads` directory by setting the global environment variable
+    `PIECAD_SAVE_DIR`.
+
+    The model format placed in [p:filename] is determined by the file&#39;s extention.
 
     The available formats for 3D are:
 
@@ -159,6 +169,9 @@ el.replaceWith(d);
 
     For 2D, only the SVG (.svg) format is available.
     &#34;&#34;&#34;
+
+    if filename.find(&#34;/&#34;) == -1 and filename.find(&#34;\\&#34;) == -1:
+        filename = str(_Path(_get_save_dir()) / filename)
     _chkGE(&#34;len(objs)&#34;, len(objs), 1)
     dot_idx = filename.rindex(&#34;.&#34;)
     ext = filename[dot_idx + 1 :]
@@ -208,7 +221,15 @@ el.replaceWith(d);
         _save_svg(filename, *objs)</code></pre>
 </details>
 <div class="desc"><p>Save a 3d or 2d object in a file suitable for printing, etc.</p>
-<p>The format placed in [p:filename] is determined by the file's extention.</p>
+<p>If [p filename] does not contain a path separator character (<code>'/'</code> or <code>'\'</code>) the
+<code>Downloads</code> directory for you platform is prepended. Thus if you set
+[p filename] to <code>output.obj</code>, the place where the file is saved is
+<code>c:\Users\username\Downloads\output.obj</code> on Windows or
+<code>/home/username/Downloads/output.obj</code> on Linux and MacOS.
+If you want a file saved in the current directory, prepend <code>'./'</code> or <code>'.\'</code>.</p>
+<p>You can override the <code>Downloads</code> directory by setting the global environment variable
+<code>PIECAD_SAVE_DIR</code>.</p>
+<p>The model format placed in [p:filename] is determined by the file's extention.</p>
 <p>The available formats for 3D are:</p>
 <table>
 <thead>

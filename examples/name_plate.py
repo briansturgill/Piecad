@@ -42,4 +42,5 @@ obj = union(txt.translate([0, 0, 2]), bottom)
 
 if __name__ == "__main__":
     view(obj)
-    save("/tmp/name_plate.obj", obj)
+    # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
+    save("name_plate.obj", obj)

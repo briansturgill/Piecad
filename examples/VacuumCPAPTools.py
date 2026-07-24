@@ -86,6 +86,7 @@ if __name__ == "__main__":
     view(a)
     view(j)
     view(n)
-    save("/tmp/v_adapter.obj", a)
-    save("/tmp/v_joiner.obj", j)
-    save("/tmp/v_nozzle.obj", n)
+    # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
+    save("v_adapter.obj", a)
+    save("v_joiner.obj", j)
+    save("v_nozzle.obj", n)

@@ -91,6 +91,7 @@ def DrainStand():
 
 
 if __name__ == "__main__":
-    save("/tmp/NeilMedDrainStandv2_stand.obj", DrainStand())
-    save("/tmp/NeilMedDrainStandv2_case.obj", DrainCase())
-    save("/tmp/NeilMedDrainStandv2_tops.obj", DrainTops())
+    # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
+    save("NeilMedDrainStandv2_stand.obj", DrainStand())
+    save("NeilMedDrainStandv2_case.obj", DrainCase())
+    save("NeilMedDrainStandv2_tops.obj", DrainTops())

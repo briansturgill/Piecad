@@ -113,16 +113,17 @@ r = KidSizedThreadedRod(40)
 w = KidSizedWrench()
 
 if __name__ == "__main__":
-    save("/tmp/kid_b.obj", b)
+    # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
+    save("kid_b.obj", b)
     view(b)
-    save("/tmp/kid_n.obj", n)
+    save("kid_n.obj", n)
     view(n)
-    save("/tmp/kid_r.obj", r)
+    save("kid_r.obj", r)
     view(r)
-    save("/tmp/kid_w.obj", w)
+    save("kid_w.obj", w)
     view(w)
 
     for h in range(2, 7):
         p = KidSizedXPiece(h)
-        save(f"/tmp/kid_{h}p.obj", p)
+        save(f"kid_{h}p.obj", p)
         view(p)
