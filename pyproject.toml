@@ -5,9 +5,13 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "piecad"
 description = '"Easy as Pie" CAD (Piecad)'
+readme = "README.md"
 authors = [{name = "Brian Sturgill", email = "codersnext@gmail.com"}]
 license = {file = "LICENSE"}
-classifiers = ["License :: OSI Approved :: MIT License"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License"
+]
 dynamic = ["version"]
 dependencies = [
     "trimesh >= 1.26.4",
@@ -20,10 +24,14 @@ dependencies = [
 
 [project.urls]
 Home = "https://github.com/briansturgill/Piecad"
+Source = "https://github.com/briansturgill/Piecad"
+Documentation = "https://briansturgill.github.io/Piecad/"
+Examples = "https://github.com/briansturgill/Piecad/blob/main/examples/README.md"
+"Bug Tracker" = "https://github.com/briansturgill/Piecad/issues"
 
 [tool.flit.sdist]
 include = ["html"]
-exclude = [".benchmarks", "isect_segments-bentley_ottmann"]
+exclude = [".benchmarks"]
 
 [tool.pytest.ini_options]
 pythonpath = [ "../piecad" ]

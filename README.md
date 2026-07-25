@@ -6,7 +6,7 @@ was poor. **Piecad** is my opinionted view of what a good, simple CAD API should
 It is written in [Python](https://www.python.org).
 Its primary focus is the creation of models for 3D printing.
 
-To install (virtual environment recommended):
+To install using [pip](https://pypi.org/project/piecad) (virtual environment recommended):
 
 ```sh
 pip install piecad
