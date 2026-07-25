@@ -57,7 +57,7 @@ class ProjectBox:
 
         For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
 
-        <iframe width="100%" height="380" src="/examples/projectbox.html"></iframe>
+        <iframe width="100%" height="380" src="../examples/projectbox.html"></iframe>
         """
         if segments == -1:
             segments = config["DefaultSegments"]

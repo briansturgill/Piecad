@@ -85,9 +85,6 @@ def _get_save_dir():
     return _save_dir
 
 
-print(_get_save_dir())  # Usage LATER
-
-
 def save(filename: str, *objs: Obj3d | Obj2d) -> None:
     """
     Save a 3d or 2d object in a file suitable for printing, etc.
