@@ -277,6 +277,7 @@ def _view_handler():
         conn.request("POST", "/", content)
         response = conn.getresponse()
     except:
+        print("Viewer unavailabe")
         _viewer_available = False
         return
 

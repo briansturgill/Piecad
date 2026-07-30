@@ -178,6 +178,42 @@ as the input objects.</p>
 <iframe width="100%" height="290" src="examples/hull2d.html"></iframe>
 <iframe width="100%" height="290" src="examples/hull3d.html"></iframe></div>
 </dd>
+<dt id="piecad.bulk_ops.hull_points"><code class="name flex">
+<span>def <span class="ident">hull_points</span></span>(<span>pts: list[tuple[float, float]] | list[tuple[float, float, float]]) ‑> <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a> | <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def hull_points(
+    pts: list[tuple[float, float]] | list[tuple[float, float, float]],
+) -&gt; Obj2d | Obj3d:
+    &#34;&#34;&#34;
+    Return a convex hull of the given list of points.
+
+    The length of points in the list determines the return type.
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;290&#34; src=&#34;examples/hull_points2d.html&#34;&gt;&lt;/iframe&gt;
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;290&#34; src=&#34;examples/hull_points3d.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+    plen = len(pts[0])
+    for p in pts[1:]:
+        if len(p) != plen:
+            raise ValidationError(&#34;Mixed point lengths in parameter: pts.&#34;)
+    if plen == 3:
+        return Obj3d(_m.Manifold.hull_points(pts))
+    elif plen == 2:
+        return Obj2d(_m.CrossSection.hull_points(pts))
+    else:
+        raise ValidationError(&#34;Points must be of len, 2 or 3&#34;)</code></pre>
+</details>
+<div class="desc"><p>Return a convex hull of the given list of points.</p>
+<p>The length of points in the list determines the return type.</p>
+<iframe width="100%" height="290" src="examples/hull_points2d.html"></iframe>
+<iframe width="100%" height="290" src="examples/hull_points3d.html"></iframe></div>
+</dd>
 <dt id="piecad.bulk_ops.intersect"><code class="name flex">
 <span>def <span class="ident">intersect</span></span>(<span>*objs: <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a> | <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a>) ‑> <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a> | <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
@@ -276,10 +312,11 @@ as the input objects.</p>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="piecad.bulk_ops.compose" href="#piecad.bulk_ops.compose">compose</a></code></li>
 <li><code><a title="piecad.bulk_ops.difference" href="#piecad.bulk_ops.difference">difference</a></code></li>
 <li><code><a title="piecad.bulk_ops.hull" href="#piecad.bulk_ops.hull">hull</a></code></li>
+<li><code><a title="piecad.bulk_ops.hull_points" href="#piecad.bulk_ops.hull_points">hull_points</a></code></li>
 <li><code><a title="piecad.bulk_ops.intersect" href="#piecad.bulk_ops.intersect">intersect</a></code></li>
 <li><code><a title="piecad.bulk_ops.union" href="#piecad.bulk_ops.union">union</a></code></li>
 </ul>

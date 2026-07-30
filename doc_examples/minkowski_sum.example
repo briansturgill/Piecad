@@ -1,0 +1,3 @@
+c = cuboid([20, 20, 5])
+s = sphere(2.5)
+out = c.minkowski_sum(s)

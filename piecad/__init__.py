@@ -121,7 +121,25 @@ class Obj3d:
         """
         return self.mo.is_empty()
 
-    def mirror(self, axes: tuple[bool, bool, bool]):
+    def minkowski_difference(self, other: Obj3d) -> Obj3d:
+        """
+        Return the minkowski_sum of this object and other.
+        The mikowski_sum is formed by sweeping the other object along the boundary of this object
+        subtracting it.
+        """
+        return Obj3d(self.mo.minkowski_difference(other.mo))
+
+    def minkowski_sum(self, other: Obj3d) -> Obj3d:
+        """
+        Return the minkowski_sum of this object and other.
+        The mikowski_sum is formed by sweeping the other object along the bound of this object
+        adding it.
+
+        <iframe width="100%" height="250" src="examples/minkowski_sum.html"></iframe>
+        """
+        return Obj3d(self.mo.minkowski_sum(other.mo))
+
+    def mirror(self, axes: tuple[bool, bool, bool]) -> Obj3d:
         """
         Mirror this object around the given axes.
 
@@ -216,6 +234,52 @@ class Obj3d:
 
         """
         return Obj2d(self.mo.project(), color=self._color)
+
+    def resize(
+        self, sizes: list[tuple[float | None, float | None, float | None]]
+    ) -> Obj3d:
+        """
+        Resize this object to a specific size on each axis.
+
+        If an axis size is specified as zero, it is automatically calculated by a specified size to
+        maintain the same size ratio between the two sizes.
+
+        If an axis size is specifed as `None` then no change is made on the size of that axis.
+        """
+        _chkV3("sizes", sizes)
+        if (
+            (sizes[0] == None or sizes[0] == 0)
+            and (sizes[1] == None and sizes[1] == 0)
+            and (sizes[2] == None or sizes[2] == 0)
+        ):
+            return self.scale(1, 1, 1)
+
+        min_x, min_y, min_z, max_x, max_y, max_z = self.bounding_box()
+        self_sizes = [max_x - min_x, max_y - min_y, max_z - min_z]
+
+        auto = False
+        for i in range(len(sizes)):
+            if sizes[i] == 0:
+                auto = True
+                break
+        sf = [1, 1, 1]
+        scale = 1
+        scaled_cnt = 0
+        for i in range(len(sizes)):
+            if sizes[i] == None:
+                continue
+            if sizes[i] == 0:
+                continue
+            scale = sf[i] = sizes[i] / self_sizes[i]
+            scaled_cnt = scaled_cnt + 1
+        if auto and scaled_cnt != 1:
+            raise ValidationError(
+                "If you're using auto, then only one size can be specified."
+            )
+        for i in range(len(sizes)):
+            if sizes[i] == 0:
+                sf[i] = scale
+        return self.scale(sf)
 
     def rotate(self, degrees: list[float, float, float]) -> Obj3d:
         """
@@ -502,6 +566,33 @@ class Obj2d:
             o2._color = self._color
             return (o1, o2)
         return o1
+
+    def resize(self, sizes: list[tuple[float | None, float | None]]) -> Obj2d:
+        """
+        Resize this object to a specific size on each axis.
+
+        If an axis size is specified as zero, it is automatically calculated by the other specified size to
+        maintain the same size ratio between the two sizes.
+
+        If an axis size is specifed as `None` then no change is made on the size of that axis.
+        """
+        _chkV2("sizes", sizes)
+        if (sizes[0] == None or sizes[0] == 0) and (sizes[1] == None and sizes[1] == 0):
+            return self.scale(1, 1)
+
+        min_x, min_y, max_x, max_y = self.bounding_box()
+        self_sizes = [max_x - min_x, max_y - min_y]
+
+        sf = [1, 1]
+        for i in range(len(sizes)):
+            if sizes[i] == None:
+                continue
+            if sizes[i] == 0:
+                continue
+            sf[i] = sizes[i] / self_sizes[i]
+            if sizes[(i + 1) % 2] == 0:
+                sf[(i + 1) % 2] = sf[i]
+        return self.scale(sf)
 
     def revolve(self, revolve_degrees: float = 360.0, segments: int = -1):
         """

@@ -101,6 +101,30 @@ def hull(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
         raise ValidationError("All objects must be of one type, Obj2d or Obj3d")
 
 
+def hull_points(
+    pts: list[tuple[float, float]] | list[tuple[float, float, float]],
+) -> Obj2d | Obj3d:
+    """
+    Return a convex hull of the given list of points.
+
+    The length of points in the list determines the return type.
+
+    <iframe width="100%" height="290" src="examples/hull_points2d.html"></iframe>
+
+    <iframe width="100%" height="290" src="examples/hull_points3d.html"></iframe>
+    """
+    plen = len(pts[0])
+    for p in pts[1:]:
+        if len(p) != plen:
+            raise ValidationError("Mixed point lengths in parameter: pts.")
+    if plen == 3:
+        return Obj3d(_m.Manifold.hull_points(pts))
+    elif plen == 2:
+        return Obj2d(_m.CrossSection.hull_points(pts))
+    else:
+        raise ValidationError("Points must be of len, 2 or 3")
+
+
 def intersect(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
     """
     Returns the object made by adding those portions that occur only in all `objs` together.

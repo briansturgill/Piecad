@@ -167,6 +167,19 @@ def test_offset(benchmark):
     assert c.num_verts() == 100
 
 
+def test_minkowski_difference():
+    r = 1
+    w = 20
+    c = cuboid([w, w, w])
+    s = geodesic_sphere(r, 20)
+    diff = c.minkowski_difference(s)
+    side = w - 2 * r
+    surface_area = 6 * side * side
+    volume = side * side * side
+    assert surface_area == diff.surface_area()
+    assert volume == diff.volume()
+
+
 def test_mirror_2d():
     r = rectangle((5, 10)).translate((3, 3)).rotate(45)
     verts = r.num_verts()
@@ -228,6 +241,48 @@ def test_project():
     c = cube(4)
     o = c.project()
     assert o.bounding_box() == (0, 0, 4, 4)
+
+
+def test_resize_2d_full():
+    s = square(10)
+    o = s.resize([20, 5])
+    assert o.bounding_box() == (0, 0, 20, 5)
+
+
+def test_resize_2d_auto():
+    r = rectangle([10, 20])
+    o = r.resize([20, 0])
+    assert o.bounding_box() == (0, 0, 20, 40)
+
+
+def test_resize_2d_ignore():
+    r = rectangle([10, 20])
+    o = r.resize([20, None])
+    assert o.bounding_box() == (0, 0, 20, 20)
+
+
+def test_resize_3d_full():
+    c = cube(10)
+    o = c.resize([20, 5, 10])
+    assert o.bounding_box() == (0, 0, 0, 20, 5, 10)
+
+
+def test_resize_3d_auto():
+    c = cuboid([10, 20, 30])
+    o = c.resize([20, 0, 0])
+    assert o.bounding_box() == (0, 0, 0, 20, 40, 60)
+
+
+def test_resize_3d_auto_fail():
+    c = cuboid([10, 20, 30])
+    with pytest.raises(ValidationError):
+        o = c.resize([20, 20, 0])
+
+
+def test_resize_3d_ignore():
+    c = cuboid([10, 20, 30])
+    o = c.resize([20, None, 50])
+    assert o.bounding_box() == (0, 0, 0, 20, 20, 50)
 
 
 def test_slice():

@@ -358,6 +358,33 @@ a default value for <code>segments</code> of <code>-1</code>.</p></div>
             return (o1, o2)
         return o1
 
+    def resize(self, sizes: list[tuple[float | None, float | None]]) -&gt; Obj2d:
+        &#34;&#34;&#34;
+        Resize this object to a specific size on each axis.
+
+        If an axis size is specified as zero, it is automatically calculated by the other specified size to
+        maintain the same size ratio between the two sizes.
+
+        If an axis size is specifed as `None` then no change is made on the size of that axis.
+        &#34;&#34;&#34;
+        _chkV2(&#34;sizes&#34;, sizes)
+        if (sizes[0] == None or sizes[0] == 0) and (sizes[1] == None and sizes[1] == 0):
+            return self.scale(1, 1)
+
+        min_x, min_y, max_x, max_y = self.bounding_box()
+        self_sizes = [max_x - min_x, max_y - min_y]
+
+        sf = [1, 1]
+        for i in range(len(sizes)):
+            if sizes[i] == None:
+                continue
+            if sizes[i] == 0:
+                continue
+            sf[i] = sizes[i] / self_sizes[i]
+            if sizes[(i + 1) % 2] == 0:
+                sf[(i + 1) % 2] = sf[i]
+        return self.scale(sf)
+
     def revolve(self, revolve_degrees: float = 360.0, segments: int = -1):
         &#34;&#34;&#34;
         Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
@@ -736,6 +763,46 @@ To understand <code>miter_limit</code>, see: <a href="https://www.angusj.com/cli
 <p>It returns a copy of this object minus the wedge.</p>
 <p>Or if <code>both</code> is <code>True</code> it returns a tuple of the object minus the wedge and the object intersected with the wedge.</p></div>
 </dd>
+<dt id="piecad.Obj2d.resize"><code class="name flex">
+<span>def <span class="ident">resize</span></span>(<span>self, sizes: list[tuple[float | None, float | None]]) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resize(self, sizes: list[tuple[float | None, float | None]]) -&gt; Obj2d:
+    &#34;&#34;&#34;
+    Resize this object to a specific size on each axis.
+
+    If an axis size is specified as zero, it is automatically calculated by the other specified size to
+    maintain the same size ratio between the two sizes.
+
+    If an axis size is specifed as `None` then no change is made on the size of that axis.
+    &#34;&#34;&#34;
+    _chkV2(&#34;sizes&#34;, sizes)
+    if (sizes[0] == None or sizes[0] == 0) and (sizes[1] == None and sizes[1] == 0):
+        return self.scale(1, 1)
+
+    min_x, min_y, max_x, max_y = self.bounding_box()
+    self_sizes = [max_x - min_x, max_y - min_y]
+
+    sf = [1, 1]
+    for i in range(len(sizes)):
+        if sizes[i] == None:
+            continue
+        if sizes[i] == 0:
+            continue
+        sf[i] = sizes[i] / self_sizes[i]
+        if sizes[(i + 1) % 2] == 0:
+            sf[(i + 1) % 2] = sf[i]
+    return self.scale(sf)</code></pre>
+</details>
+<div class="desc"><p>Resize this object to a specific size on each axis.</p>
+<p>If an axis size is specified as zero, it is automatically calculated by the other specified size to
+maintain the same size ratio between the two sizes.</p>
+<p>If an axis size is specifed as <code>None</code> then no change is made on the size of that axis.</p></div>
+</dd>
 <dt id="piecad.Obj2d.revolve"><code class="name flex">
 <span>def <span class="ident">revolve</span></span>(<span>self, revolve_degrees: float = 360.0, segments: int = -1)</span>
 </code></dt>
@@ -951,7 +1018,25 @@ To understand <code>miter_limit</code>, see: <a href="https://www.angusj.com/cli
         &#34;&#34;&#34;
         return self.mo.is_empty()
 
-    def mirror(self, axes: tuple[bool, bool, bool]):
+    def minkowski_difference(self, other: Obj3d) -&gt; Obj3d:
+        &#34;&#34;&#34;
+        Return the minkowski_sum of this object and other.
+        The mikowski_sum is formed by sweeping the other object along the boundary of this object
+        subtracting it.
+        &#34;&#34;&#34;
+        return Obj3d(self.mo.minkowski_difference(other.mo))
+
+    def minkowski_sum(self, other: Obj3d) -&gt; Obj3d:
+        &#34;&#34;&#34;
+        Return the minkowski_sum of this object and other.
+        The mikowski_sum is formed by sweeping the other object along the bound of this object
+        adding it.
+
+        &lt;iframe width=&#34;100%&#34; height=&#34;250&#34; src=&#34;examples/minkowski_sum.html&#34;&gt;&lt;/iframe&gt;
+        &#34;&#34;&#34;
+        return Obj3d(self.mo.minkowski_sum(other.mo))
+
+    def mirror(self, axes: tuple[bool, bool, bool]) -&gt; Obj3d:
         &#34;&#34;&#34;
         Mirror this object around the given axes.
 
@@ -1046,6 +1131,52 @@ To understand <code>miter_limit</code>, see: <a href="https://www.angusj.com/cli
 
         &#34;&#34;&#34;
         return Obj2d(self.mo.project(), color=self._color)
+
+    def resize(
+        self, sizes: list[tuple[float | None, float | None, float | None]]
+    ) -&gt; Obj3d:
+        &#34;&#34;&#34;
+        Resize this object to a specific size on each axis.
+
+        If an axis size is specified as zero, it is automatically calculated by a specified size to
+        maintain the same size ratio between the two sizes.
+
+        If an axis size is specifed as `None` then no change is made on the size of that axis.
+        &#34;&#34;&#34;
+        _chkV3(&#34;sizes&#34;, sizes)
+        if (
+            (sizes[0] == None or sizes[0] == 0)
+            and (sizes[1] == None and sizes[1] == 0)
+            and (sizes[2] == None or sizes[2] == 0)
+        ):
+            return self.scale(1, 1, 1)
+
+        min_x, min_y, min_z, max_x, max_y, max_z = self.bounding_box()
+        self_sizes = [max_x - min_x, max_y - min_y, max_z - min_z]
+
+        auto = False
+        for i in range(len(sizes)):
+            if sizes[i] == 0:
+                auto = True
+                break
+        sf = [1, 1, 1]
+        scale = 1
+        scaled_cnt = 0
+        for i in range(len(sizes)):
+            if sizes[i] == None:
+                continue
+            if sizes[i] == 0:
+                continue
+            scale = sf[i] = sizes[i] / self_sizes[i]
+            scaled_cnt = scaled_cnt + 1
+        if auto and scaled_cnt != 1:
+            raise ValidationError(
+                &#34;If you&#39;re using auto, then only one size can be specified.&#34;
+            )
+        for i in range(len(sizes)):
+            if sizes[i] == 0:
+                sf[i] = scale
+        return self.scale(sf)
 
     def rotate(self, degrees: list[float, float, float]) -&gt; Obj3d:
         &#34;&#34;&#34;
@@ -1288,15 +1419,58 @@ For a list of color names see: <a href="https://www.w3.org/wiki/CSS/Properties/c
 </details>
 <div class="desc"><p>Is this object empty?</p></div>
 </dd>
-<dt id="piecad.Obj3d.mirror"><code class="name flex">
-<span>def <span class="ident">mirror</span></span>(<span>self, axes: tuple[bool, bool, bool])</span>
+<dt id="piecad.Obj3d.minkowski_difference"><code class="name flex">
+<span>def <span class="ident">minkowski_difference</span></span>(<span>self, other: <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a>) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def mirror(self, axes: tuple[bool, bool, bool]):
+<pre><code class="python">def minkowski_difference(self, other: Obj3d) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Return the minkowski_sum of this object and other.
+    The mikowski_sum is formed by sweeping the other object along the boundary of this object
+    subtracting it.
+    &#34;&#34;&#34;
+    return Obj3d(self.mo.minkowski_difference(other.mo))</code></pre>
+</details>
+<div class="desc"><p>Return the minkowski_sum of this object and other.
+The mikowski_sum is formed by sweeping the other object along the boundary of this object
+subtracting it.</p></div>
+</dd>
+<dt id="piecad.Obj3d.minkowski_sum"><code class="name flex">
+<span>def <span class="ident">minkowski_sum</span></span>(<span>self, other: <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a>) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def minkowski_sum(self, other: Obj3d) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Return the minkowski_sum of this object and other.
+    The mikowski_sum is formed by sweeping the other object along the bound of this object
+    adding it.
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;250&#34; src=&#34;examples/minkowski_sum.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+    return Obj3d(self.mo.minkowski_sum(other.mo))</code></pre>
+</details>
+<div class="desc"><p>Return the minkowski_sum of this object and other.
+The mikowski_sum is formed by sweeping the other object along the bound of this object
+adding it.</p>
+<iframe width="100%" height="250" src="examples/minkowski_sum.html"></iframe></div>
+</dd>
+<dt id="piecad.Obj3d.mirror"><code class="name flex">
+<span>def <span class="ident">mirror</span></span>(<span>self, axes: tuple[bool, bool, bool]) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mirror(self, axes: tuple[bool, bool, bool]) -&gt; Obj3d:
     &#34;&#34;&#34;
     Mirror this object around the given axes.
 
@@ -1448,6 +1622,65 @@ number of vertices is present goes a long way to making sure things are healthy.
     return Obj2d(self.mo.project(), color=self._color)</code></pre>
 </details>
 <div class="desc"><p>Return a Obj2d representing this object's "shadow" on the x-y plane.</p></div>
+</dd>
+<dt id="piecad.Obj3d.resize"><code class="name flex">
+<span>def <span class="ident">resize</span></span>(<span>self, sizes: list[tuple[float | None, float | None, float | None]]) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resize(
+    self, sizes: list[tuple[float | None, float | None, float | None]]
+) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Resize this object to a specific size on each axis.
+
+    If an axis size is specified as zero, it is automatically calculated by a specified size to
+    maintain the same size ratio between the two sizes.
+
+    If an axis size is specifed as `None` then no change is made on the size of that axis.
+    &#34;&#34;&#34;
+    _chkV3(&#34;sizes&#34;, sizes)
+    if (
+        (sizes[0] == None or sizes[0] == 0)
+        and (sizes[1] == None and sizes[1] == 0)
+        and (sizes[2] == None or sizes[2] == 0)
+    ):
+        return self.scale(1, 1, 1)
+
+    min_x, min_y, min_z, max_x, max_y, max_z = self.bounding_box()
+    self_sizes = [max_x - min_x, max_y - min_y, max_z - min_z]
+
+    auto = False
+    for i in range(len(sizes)):
+        if sizes[i] == 0:
+            auto = True
+            break
+    sf = [1, 1, 1]
+    scale = 1
+    scaled_cnt = 0
+    for i in range(len(sizes)):
+        if sizes[i] == None:
+            continue
+        if sizes[i] == 0:
+            continue
+        scale = sf[i] = sizes[i] / self_sizes[i]
+        scaled_cnt = scaled_cnt + 1
+    if auto and scaled_cnt != 1:
+        raise ValidationError(
+            &#34;If you&#39;re using auto, then only one size can be specified.&#34;
+        )
+    for i in range(len(sizes)):
+        if sizes[i] == 0:
+            sf[i] = scale
+    return self.scale(sf)</code></pre>
+</details>
+<div class="desc"><p>Resize this object to a specific size on each axis.</p>
+<p>If an axis size is specified as zero, it is automatically calculated by a specified size to
+maintain the same size ratio between the two sizes.</p>
+<p>If an axis size is specifed as <code>None</code> then no change is made on the size of that axis.</p></div>
 </dd>
 <dt id="piecad.Obj3d.rotate"><code class="name flex">
 <span>def <span class="ident">rotate</span></span>(<span>self, degrees: list[float, float, float]) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
@@ -1705,6 +1938,7 @@ functions and methods.</p></div>
 <li><code><a title="piecad.Obj2d.num_verts" href="#piecad.Obj2d.num_verts">num_verts</a></code></li>
 <li><code><a title="piecad.Obj2d.offset" href="#piecad.Obj2d.offset">offset</a></code></li>
 <li><code><a title="piecad.Obj2d.piecut" href="#piecad.Obj2d.piecut">piecut</a></code></li>
+<li><code><a title="piecad.Obj2d.resize" href="#piecad.Obj2d.resize">resize</a></code></li>
 <li><code><a title="piecad.Obj2d.revolve" href="#piecad.Obj2d.revolve">revolve</a></code></li>
 <li><code><a title="piecad.Obj2d.rotate" href="#piecad.Obj2d.rotate">rotate</a></code></li>
 <li><code><a title="piecad.Obj2d.scale" href="#piecad.Obj2d.scale">scale</a></code></li>
@@ -1715,17 +1949,20 @@ functions and methods.</p></div>
 </li>
 <li>
 <h4><code><a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="piecad.Obj3d.bounding_box" href="#piecad.Obj3d.bounding_box">bounding_box</a></code></li>
 <li><code><a title="piecad.Obj3d.center" href="#piecad.Obj3d.center">center</a></code></li>
 <li><code><a title="piecad.Obj3d.color" href="#piecad.Obj3d.color">color</a></code></li>
 <li><code><a title="piecad.Obj3d.decompose" href="#piecad.Obj3d.decompose">decompose</a></code></li>
 <li><code><a title="piecad.Obj3d.is_empty" href="#piecad.Obj3d.is_empty">is_empty</a></code></li>
+<li><code><a title="piecad.Obj3d.minkowski_difference" href="#piecad.Obj3d.minkowski_difference">minkowski_difference</a></code></li>
+<li><code><a title="piecad.Obj3d.minkowski_sum" href="#piecad.Obj3d.minkowski_sum">minkowski_sum</a></code></li>
 <li><code><a title="piecad.Obj3d.mirror" href="#piecad.Obj3d.mirror">mirror</a></code></li>
 <li><code><a title="piecad.Obj3d.num_faces" href="#piecad.Obj3d.num_faces">num_faces</a></code></li>
 <li><code><a title="piecad.Obj3d.num_verts" href="#piecad.Obj3d.num_verts">num_verts</a></code></li>
 <li><code><a title="piecad.Obj3d.piecut" href="#piecad.Obj3d.piecut">piecut</a></code></li>
 <li><code><a title="piecad.Obj3d.project" href="#piecad.Obj3d.project">project</a></code></li>
+<li><code><a title="piecad.Obj3d.resize" href="#piecad.Obj3d.resize">resize</a></code></li>
 <li><code><a title="piecad.Obj3d.rotate" href="#piecad.Obj3d.rotate">rotate</a></code></li>
 <li><code><a title="piecad.Obj3d.scale" href="#piecad.Obj3d.scale">scale</a></code></li>
 <li><code><a title="piecad.Obj3d.slice" href="#piecad.Obj3d.slice">slice</a></code></li>
