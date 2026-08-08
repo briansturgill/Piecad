@@ -19,6 +19,28 @@ to check for polygon self intersections.
 
 <iframe width="100%" height="250" src="examples/version.html"></iframe>
 
+
+## Piecad Global Configuration Values
+
+```
+PiecadViewerEnabled      Use PiecadViewer if view is used.
+PiecadViewerHostAndPort  Hostname_or_Address:Port used by PiecadViewer
+LayerResolution          Resolution your output can be printed/made at.
+                           If you have multiple resolutions, choose the
+                           smallest one.
+```
+### Default values
+```python
+config["PiecadViewerEnabled"] = True
+config["PiecadViewerHostAndPort"] = "127.0.0.1:8037"
+config["LayerResolution"] = 0.1
+```
+This is just a Python dict, set them like the defaults shown above.
+
+One can also control `PiecadViewer` host and port, by setting your
+operating systems `PIECAD_VIEWER` variable in the same format as
+for the config `PiecadViewerHostAndPort`
+This environment variable is also used by the `piecad-viewer` program.
 """
 
 from __future__ import annotations
@@ -648,29 +670,11 @@ class Obj2d:
 
 
 config = {}
-config["CADViewerEnabled"] = True
-config["CADViewerHostAndPort"] = "127.0.0.1:8037"
+config["PiecadViewerEnabled"] = True
+config["PiecadViewerHostAndPort"] = "127.0.0.1:8037"
 config["DefaultUnits"] = "mm"
 config["LayerResolution"] = 0.1
 config["DefaultSegments"] = 36
-"""
-Global Configuration Values
-
-| :--- | :--- |
-|CADViewerEnabled      | Use CADViewer if view is used.
-|CADViewerHostAndPort  | Hostname_or_Address:Port used by CADViewer
-|LayerResolution       | Resolution your output can be printed/made at.
-|                      | If you have multiple resolutions, choose the smallest one.
-
-```python
-config["CADViewerEnabled"] = True
-config["CADViewerHostAndPort"] = "127.0.0.1:8037"
-config["LayerResolution"] = 0.1
-```
-
-This is just a Python dict, set them like the defaults shown above.
-
-"""
 
 
 def set_default_segments(segments: int = 36) -> None:

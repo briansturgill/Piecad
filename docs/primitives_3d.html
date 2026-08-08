@@ -516,6 +516,48 @@ greater than zero.</p>
 <p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
 <iframe width="100%" height="220" src="examples/geodesic_sphere.html"></iframe></div>
 </dd>
+<dt id="piecad.primitives_3d.lithophane"><code class="name flex">
+<span>def <span class="ident">lithophane</span></span>(<span>image_filename, width_mm=150, pixel_size=0.5, min_thickness=0.8, max_thickness=3.0) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def lithophane(
+    image_filename,
+    width_mm=150,
+    pixel_size=0.5,
+    min_thickness=0.8,
+    max_thickness=3.0,
+) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Create a 3d lithophane from a 2d image.
+
+    Specify the desired size in millimeters by setting `width_mm`.
+    Height will be calculated by using the image&#39;s aspect ratio.
+
+    Set resolution with `pixel_size`, which specifies the number of pixels per millimeter.
+
+    The range of lithophane thickness in millimeters is specified by `min_thickness` and `max_thickness`.
+    The range is usually good for white PLA filament. If using a clear filament you will need to experiment
+    to find the best range.
+    &#34;&#34;&#34;
+
+    hm = _lithophane.load_heightmap(image_filename, width_mm / pixel_size)
+
+    o = _lithophane.create_lithophane(hm, pixel_size, min_thickness, max_thickness)
+
+    return o</code></pre>
+</details>
+<div class="desc"><p>Create a 3d lithophane from a 2d image.</p>
+<p>Specify the desired size in millimeters by setting <code>width_mm</code>.
+Height will be calculated by using the image's aspect ratio.</p>
+<p>Set resolution with <code>pixel_size</code>, which specifies the number of pixels per millimeter.</p>
+<p>The range of lithophane thickness in millimeters is specified by <code>min_thickness</code> and <code>max_thickness</code>.
+The range is usually good for white PLA filament. If using a clear filament you will need to experiment
+to find the best range.</p></div>
+</dd>
 <dt id="piecad.primitives_3d.polyhedron"><code class="name flex">
 <span>def <span class="ident">polyhedron</span></span>(<span>vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
@@ -883,6 +925,7 @@ When <code>center</code> is <code>True</code>, the rounded cylinder will centere
 <li><code><a title="piecad.primitives_3d.extrude_chaining" href="#piecad.primitives_3d.extrude_chaining">extrude_chaining</a></code></li>
 <li><code><a title="piecad.primitives_3d.extrude_transforming" href="#piecad.primitives_3d.extrude_transforming">extrude_transforming</a></code></li>
 <li><code><a title="piecad.primitives_3d.geodesic_sphere" href="#piecad.primitives_3d.geodesic_sphere">geodesic_sphere</a></code></li>
+<li><code><a title="piecad.primitives_3d.lithophane" href="#piecad.primitives_3d.lithophane">lithophane</a></code></li>
 <li><code><a title="piecad.primitives_3d.polyhedron" href="#piecad.primitives_3d.polyhedron">polyhedron</a></code></li>
 <li><code><a title="piecad.primitives_3d.pyramid" href="#piecad.primitives_3d.pyramid">pyramid</a></code></li>
 <li><code><a title="piecad.primitives_3d.revolve" href="#piecad.primitives_3d.revolve">revolve</a></code></li>

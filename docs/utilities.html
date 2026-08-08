@@ -81,7 +81,9 @@ el.replaceWith(d);
     if type(mesh) == trimesh.path.Path2D:
         raise ValidationError(&#34;Currently 2d objects are no supported.&#34;)
     else:
-        o = Obj3d(_m.Manifold.create_from_verts_and_faces(mesh.vertices, mesh.faces))
+        vertices = _np.asarray(mesh.vertices, _np.float32)
+        faces = _np.asarray(mesh.faces, _np.uint32)
+        o = Obj3d(_m.Manifold(_m.Mesh(vertices, faces)))
 
     return o</code></pre>
 </details>
@@ -172,6 +174,7 @@ el.replaceWith(d);
 
     if filename.find(&#34;/&#34;) == -1 and filename.find(&#34;\\&#34;) == -1:
         filename = str(_Path(_get_save_dir()) / filename)
+        print(&#34;Saving: &#34; + filename)
     _chkGE(&#34;len(objs)&#34;, len(objs), 1)
     dot_idx = filename.rindex(&#34;.&#34;)
     ext = filename[dot_idx + 1 :]

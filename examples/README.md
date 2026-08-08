@@ -36,6 +36,9 @@
 * [kid_nail.py](kid_nail.py)
     -  Create two different sized "nails" that goes into holes on a kid's workbench.
 
+* [moon_lithophane.py](moon_lithophane.py)
+    -  Make a lithophane from a NASA photo of both sides of the moon.
+
 * [name_plate.py](name_plate.py)
     -  Create a name plate from revolved text.
 

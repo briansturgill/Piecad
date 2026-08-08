@@ -27,6 +27,8 @@ from . import (
     _chkV2,
 )
 
+from . import _lithophane
+
 
 def cone(
     height: float,
@@ -354,6 +356,33 @@ def geodesic_sphere(radius, segments=-1):
     _chkGE("segments", segments, 3)
 
     return Obj3d(_m.Manifold.sphere(radius, segments))
+
+
+def lithophane(
+    image_filename,
+    width_mm=150,
+    pixel_size=0.5,
+    min_thickness=0.8,
+    max_thickness=3.0,
+) -> Obj3d:
+    """
+    Create a 3d lithophane from a 2d image.
+
+    Specify the desired size in millimeters by setting `width_mm`.
+    Height will be calculated by using the image's aspect ratio.
+
+    Set resolution with `pixel_size`, which specifies the number of pixels per millimeter.
+
+    The range of lithophane thickness in millimeters is specified by `min_thickness` and `max_thickness`.
+    The range is usually good for white PLA filament. If using a clear filament you will need to experiment
+    to find the best range.
+    """
+
+    hm = _lithophane.load_heightmap(image_filename, width_mm / pixel_size)
+
+    o = _lithophane.create_lithophane(hm, pixel_size, min_thickness, max_thickness)
+
+    return o
 
 
 def polyhedron(
