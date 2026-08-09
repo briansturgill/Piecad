@@ -292,6 +292,9 @@ If you want a file saved in the current directory, prepend <code>'./'</code> or 
     global _view_thread
     if _viewer_available == False:
         return
+    hptmp = os.environ.get(&#34;PIECAD_VIEWER&#34;, None)
+    if hptmp != None:
+        PiecadViewerHostAndPort = hptmp
 
     _chkGO(&#34;obj&#34;, obj)
 
@@ -319,9 +322,6 @@ If you want a file saved in the current directory, prepend <code>'./'</code> or 
     view_data[&#34;color&#34;] = [210, 180, 140] if obj._color == None else obj._color
     view_data[&#34;vertices&#34;] = vertices.tolist()
     fl = faces.tolist()
-    # for one in fl:
-    #    one.insert(0, len(one))
-    # fl.insert(0, len(fl))
     view_data[&#34;faces&#34;] = fl
     _view_queue.put(view_data)
     return obj</code></pre>

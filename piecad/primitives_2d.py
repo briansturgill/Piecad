@@ -58,6 +58,72 @@ def ellipse(radii: list[float, float], segments: int = -1) -> Obj2d:
     return Obj2d(circ.scale(radii))
 
 
+from . import _path
+
+
+def path(initial_point: tuple[float, float] = (0, 0), segments: int = -1):
+    """
+    Create a Path object containing an SVG-like path starting at `initial_point`.
+    The path can contain lines, quadratic curves, cubic bezier curves, and arcs.
+    These are created by chaining calls from the returned object.
+
+    Add a line from the current point to `end`.
+    ```
+    line_to(self, end: tuple[float, float]) -> Path
+    ```
+
+    Add a quadratic bezier curve from the current point to `end`, with `control_point`.
+    ```
+    quadratic_bezier_to(
+        control_point: tuple[float, float], end: tuple[float, float]
+    ) -> Path
+    ```
+
+    Add a cubic bezier curve from the current point to `end`, with
+    control points `control_point_1` and `control_point_2`.
+    ```
+    cubic_bezier_to(
+        control_point_1: tuple[float, float],
+        control_point_2: tuple[float, float],
+        end: tuple[float, float],
+    ) -> Path
+    ```
+
+    Add an eliptical arc from the current point to `end`, with `radii` which
+    is the x, y tuple of the eliptical radius. If x and y are the same, then
+    a single float can be specified.
+
+    The x_axis_rotation gives degrees) of the ellipse relative to the x-axis
+
+    Four arcs can be made between using the above parameters, to choose the
+    one needed:
+
+    The `ccw` flag choses a counter-clockwise or a clockwise (default) arc.
+
+    The `large_arc` flag chooses the longest arc over the shortest (default) arc.
+    ```
+    arc_to(
+        radii: tuple[float, float] | float,
+        end: tuple[float, float],
+        x_axis_rotation: float = 0,
+        large_arc: bool = False,
+        ccw: bool = False,
+    ) -> Path
+    ```
+
+    The `close` method returns an `Obj2d` representing the shape of the Path.
+    ```
+    close() -> Obj2d
+    ```
+
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+
+    <iframe width="100%" height="400" src="../examples/path.html"></iframe>
+    """
+    _path.polygon = polygon
+    return _path.Path(initial_point, segments)
+
+
 import numpy as _np
 
 

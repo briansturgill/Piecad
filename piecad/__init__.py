@@ -23,30 +23,26 @@ to check for polygon self intersections.
 ## Piecad Global Configuration Values
 
 ```
-PiecadViewerEnabled      Use PiecadViewer if view is used.
-PiecadViewerHostAndPort  Hostname_or_Address:Port used by PiecadViewer
 LayerResolution          Resolution your output can be printed/made at.
                            If you have multiple resolutions, choose the
                            smallest one.
 ```
 ### Default values
 ```python
-config["PiecadViewerEnabled"] = True
-config["PiecadViewerHostAndPort"] = "127.0.0.1:8037"
 config["LayerResolution"] = 0.1
 ```
 This is just a Python dict, set them like the defaults shown above.
 
-One can also control `PiecadViewer` host and port, by setting your
-operating systems `PIECAD_VIEWER` variable in the same format as
-for the config `PiecadViewerHostAndPort`
+It is rarely necessary, but one can control `Piecad-Viewer` host and
+port, by setting your operating systems `PIECAD_VIEWER` environment
+variable.  By default this is set to: "127.0.0.1:8037".
 This environment variable is also used by the `piecad-viewer` program.
 """
 
 from __future__ import annotations
 import manifold3d as _m
 
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 
 
 def version():
@@ -670,8 +666,6 @@ class Obj2d:
 
 
 config = {}
-config["PiecadViewerEnabled"] = True
-config["PiecadViewerHostAndPort"] = "127.0.0.1:8037"
 config["DefaultUnits"] = "mm"
 config["LayerResolution"] = 0.1
 config["DefaultSegments"] = 36
@@ -761,4 +755,3 @@ from .trigonometry import *
 from .primitives_2d import *
 from .primitives_3d import *
 from ._color import _parse_color
-from .path import *

@@ -50,18 +50,19 @@ to check for polygon self intersections.</p>
 <h2 id="piecad-version">Piecad Version</h2>
 <iframe width="100%" height="250" src="examples/version.html"></iframe>
 <h2 id="piecad-global-configuration-values">Piecad Global Configuration Values</h2>
-<pre><code>PiecadViewerEnabled      Use PiecadViewer if view is used.
-PiecadViewerHostAndPort  Hostname_or_Address:Port used by PiecadViewer
-LayerResolution          Resolution your output can be printed/made at.
+<pre><code>LayerResolution          Resolution your output can be printed/made at.
                            If you have multiple resolutions, choose the
                            smallest one.
 </code></pre>
 <h3 id="default-values">Default values</h3>
-<pre><code class="language-python">config[&quot;PiecadViewerEnabled&quot;] = True
-config[&quot;PiecadViewerHostAndPort&quot;] = &quot;127.0.0.1:8037&quot;
-config[&quot;LayerResolution&quot;] = 0.1
+<pre><code class="language-python">config[&quot;LayerResolution&quot;] = 0.1
 </code></pre>
 <p>This is just a Python dict, set them like the defaults shown above.</p>
+<p>It is rarely necessary, but one can control <code>Piecad-Viewer</code> host and
+port, by setting your operating systems <code>PIECAD_VIEWER</code> environment
+variable.
+By default this is set to: "127.0.0.1:8037".
+This environment variable is also used by the <code>piecad-viewer</code> program.</p>
 </section>
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>
@@ -69,10 +70,6 @@ config[&quot;LayerResolution&quot;] = 0.1
 <dt><code class="name"><a title="piecad.bulk_ops" href="bulk_ops.html">piecad.bulk_ops</a></code></dt>
 <dd>
 <div class="desc"><p>Miscellaneous bulk operations that work on multiple objects.</p></div>
-</dd>
-<dt><code class="name"><a title="piecad.path" href="path/index.html">piecad.path</a></code></dt>
-<dd>
-<div class="desc"><p>Create a 2D object from an SVG-like path.</p></div>
 </dd>
 <dt><code class="name"><a title="piecad.primitives_2d" href="primitives_2d.html">piecad.primitives_2d</a></code></dt>
 <dd>
@@ -451,8 +448,9 @@ a default value for <code>segments</code> of <code>-1</code>.</p></div>
         return Obj2d(self.mo.translate(offsets), color=self._color)</code></pre>
 </details>
 <div class="desc"><p>Wrapper class for "CrossSections", which are 2D graphical objects.</p>
-<h2 id="attributes">Attributes</h2>
-<p>mo The Manifold::CrossSection object used by manifold3d.</p></div>
+<p>Attributes
+-----=
+mo The Manifold::CrossSection object used by manifold3d.</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="piecad.Obj2d.area"><code class="name flex">
@@ -555,7 +553,8 @@ a rectangle that would exactly contain this object.</p>
     return Obj2d(self.mo, _parse_color(cspec))</code></pre>
 </details>
 <div class="desc"><p>Assign the given color to this object.</summary></p>
-<h2 id="parameters">Parameters</h2>
+<p>Parameters
+-----=</p>
 <p>The <code>color</code> parameter has 3 formats:</p>
 <ul>
 <li>
@@ -1285,8 +1284,9 @@ maintain the same size ratio between the two sizes.</p>
         return self.mo.volume()</code></pre>
 </details>
 <div class="desc"><p>Wrapper class for "Manifolds", which are 3D graphical objects.</p>
-<h2 id="attributes">Attributes</h2>
-<p>mo The Manifold::Manifold object used by manifold3d.</p></div>
+<p>Attributes
+-----=
+mo The Manifold::Manifold object used by manifold3d.</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="piecad.Obj3d.bounding_box"><code class="name flex">
@@ -1379,7 +1379,8 @@ a cuboid that would exactly contain this object.</p>
     return Obj3d(self.mo, _parse_color(cspec))</code></pre>
 </details>
 <div class="desc"><p>Assign the given color to this object.</summary></p>
-<h2 id="parameters">Parameters</h2>
+<p>Parameters
+-----=</p>
 <p>The <code>color</code> parameter has 3 formats:</p>
 <ul>
 <li>
@@ -1925,7 +1926,6 @@ functions and methods.</p></div>
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
 <li><code><a title="piecad.bulk_ops" href="bulk_ops.html">piecad.bulk_ops</a></code></li>
-<li><code><a title="piecad.path" href="path/index.html">piecad.path</a></code></li>
 <li><code><a title="piecad.primitives_2d" href="primitives_2d.html">piecad.primitives_2d</a></code></li>
 <li><code><a title="piecad.primitives_3d" href="primitives_3d.html">piecad.primitives_3d</a></code></li>
 <li><code><a title="piecad.projectbox" href="projectbox/index.html">piecad.projectbox</a></code></li>

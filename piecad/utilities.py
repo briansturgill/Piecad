@@ -26,7 +26,7 @@ def _info_str(tag):  # Must be called from inside another function.
 
 from . import Obj2d, Obj3d, config, _chkGE, _chkGO, ValidationError
 
-_viewer_available = config["PiecadViewerEnabled"]
+_viewer_available = True
 
 
 def load(filename: str) -> Obj3d | Obj2d:
@@ -238,7 +238,7 @@ def view(obj: Obj3d | Obj2d, title: str = "") -> None:
         return
     hptmp = os.environ.get("PIECAD_VIEWER", None)
     if hptmp != None:
-        config["PiecadViewerHostAndPort"] = hptmp
+        PiecadViewerHostAndPort = hptmp
 
     _chkGO("obj", obj)
 
@@ -276,22 +276,27 @@ def _tell_view_handler_to_exit():
     _view_thread.join()
 
 
+PiecadViewerHostAndPort = "127.0.0.1:8037"
+
+
 def _view_handler():
+    import sys
+
     global _viewer_available, _viewer_started
     for i in range(10):
         if _viewer_started:
             break
         try:
-            conn = http.client.HTTPConnection(config["PiecadViewerHostAndPort"], timeout=2)
+            conn = http.client.HTTPConnection(PiecadViewerHostAndPort, timeout=2)
             content = json.dumps('{"clear":true}')
             conn.request("POST", "/", content)
             response = conn.getresponse()
             _viewer_started = True
         except TimeoutError:
             process = subprocess.Popen(
-                ["piecad-viewer"],  # Example command
-                stdout=subprocess.DEVNULL,  # Suppress output
-                stderr=subprocess.DEVNULL
+                [sys.executable, "-c", "import piecad_viewer; piecad_viewer.main()"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
             )
         except Exception as e:
             print(repr(e))
@@ -299,7 +304,7 @@ def _view_handler():
         time.sleep(3)
 
     if not _viewer_started:
-        print(f"Viewer unavailable at {config["PiecadViewerHostAndPort"]}.")
+        print(f"Viewer unavailable at {PiecadViewerHostAndPort}.")
         _viewer_available = False
         return
 

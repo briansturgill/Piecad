@@ -3,7 +3,7 @@
 """
 
 from svgpathtools import svg2paths, parse_path, Line, QuadraticBezier, CubicBezier, Arc
-from piecad import _chkGE, _chkV2, Obj2d, config, polygon
+from . import _chkGE, _chkV2, Obj2d, config
 import typing
 
 
@@ -21,7 +21,7 @@ class Path:
     _cur_pt = (0, 0)
     _beginning_pt = None
 
-    def __init__(self, initial_point: tuple[float, float] = (0,0), segments: int= -1):
+    def __init__(self, initial_point: tuple[float, float] = (0, 0), segments: int = -1):
         """
         Create an SVG-like path starting at `initial_point`. The path can contain lines, arcs, and
         quadratic and cubic bezier curves.
@@ -137,4 +137,3 @@ class Path:
             self._list.pop()
         obj = polygon([self._list], check=False)
         return obj
-

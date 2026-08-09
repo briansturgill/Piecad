@@ -111,6 +111,117 @@ el.replaceWith(d);
 <p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
 <p>Ellipses are created with the center at <code>(0,0)</code></p></div>
 </dd>
+<dt id="piecad.primitives_2d.path"><code class="name flex">
+<span>def <span class="ident">path</span></span>(<span>initial_point: tuple[float, float] = (0, 0), segments: int = -1)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def path(initial_point: tuple[float, float] = (0, 0), segments: int = -1):
+    &#34;&#34;&#34;
+    Create a Path object containing an SVG-like path starting at `initial_point`.
+    The path can contain lines, quadratic curves, cubic bezier curves, and arcs.
+    These are created by chaining calls from the returned object.
+
+    Add a line from the current point to `end`.
+    ```
+    line_to(self, end: tuple[float, float]) -&gt; Path
+    ```
+
+    Add a quadratic bezier curve from the current point to `end`, with `control_point`.
+    ```
+    quadratic_bezier_to(
+        control_point: tuple[float, float], end: tuple[float, float]
+    ) -&gt; Path
+    ```
+
+    Add a cubic bezier curve from the current point to `end`, with
+    control points `control_point_1` and `control_point_2`.
+    ```
+    cubic_bezier_to(
+        control_point_1: tuple[float, float],
+        control_point_2: tuple[float, float],
+        end: tuple[float, float],
+    ) -&gt; Path
+    ```
+
+    Add an eliptical arc from the current point to `end`, with `radii` which
+    is the x, y tuple of the eliptical radius. If x and y are the same, then
+    a single float can be specified.
+
+    The x_axis_rotation gives degrees) of the ellipse relative to the x-axis
+
+    Four arcs can be made between using the above parameters, to choose the
+    one needed:
+
+    The `ccw` flag choses a counter-clockwise or a clockwise (default) arc.
+
+    The `large_arc` flag chooses the longest arc over the shortest (default) arc.
+    ```
+    arc_to(
+        radii: tuple[float, float] | float,
+        end: tuple[float, float],
+        x_axis_rotation: float = 0,
+        large_arc: bool = False,
+        ccw: bool = False,
+    ) -&gt; Path
+    ```
+
+    The `close` method returns an `Obj2d` representing the shape of the Path.
+    ```
+    close() -&gt; Obj2d
+    ```
+
+    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;400&#34; src=&#34;../examples/path.html&#34;&gt;&lt;/iframe&gt;
+    &#34;&#34;&#34;
+    _path.polygon = polygon
+    return _path.Path(initial_point, segments)</code></pre>
+</details>
+<div class="desc"><p>Create a Path object containing an SVG-like path starting at <code>initial_point</code>.
+The path can contain lines, quadratic curves, cubic bezier curves, and arcs.
+These are created by chaining calls from the returned object.</p>
+<p>Add a line from the current point to <code>end</code>.</p>
+<pre><code>line_to(self, end: tuple[float, float]) -&gt; Path
+</code></pre>
+<p>Add a quadratic bezier curve from the current point to <code>end</code>, with <code>control_point</code>.</p>
+<pre><code>quadratic_bezier_to(
+    control_point: tuple[float, float], end: tuple[float, float]
+) -&gt; Path
+</code></pre>
+<p>Add a cubic bezier curve from the current point to <code>end</code>, with
+control points <code>control_point_1</code> and <code>control_point_2</code>.</p>
+<pre><code>cubic_bezier_to(
+    control_point_1: tuple[float, float],
+    control_point_2: tuple[float, float],
+    end: tuple[float, float],
+) -&gt; Path
+</code></pre>
+<p>Add an eliptical arc from the current point to <code>end</code>, with <code>radii</code> which
+is the x, y tuple of the eliptical radius. If x and y are the same, then
+a single float can be specified.</p>
+<p>The x_axis_rotation gives degrees) of the ellipse relative to the x-axis</p>
+<p>Four arcs can be made between using the above parameters, to choose the
+one needed:</p>
+<p>The <code>ccw</code> flag choses a counter-clockwise or a clockwise (default) arc.</p>
+<p>The <code>large_arc</code> flag chooses the longest arc over the shortest (default) arc.</p>
+<pre><code>arc_to(
+    radii: tuple[float, float] | float,
+    end: tuple[float, float],
+    x_axis_rotation: float = 0,
+    large_arc: bool = False,
+    ccw: bool = False,
+) -&gt; Path
+</code></pre>
+<p>The <code>close</code> method returns an <code>Obj2d</code> representing the shape of the Path.</p>
+<pre><code>close() -&gt; Obj2d
+</code></pre>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
+<iframe width="100%" height="400" src="../examples/path.html"></iframe></div>
+</dd>
 <dt id="piecad.primitives_2d.polygon"><code class="name flex">
 <span>def <span class="ident">polygon</span></span>(<span>paths: list[list[tuple[float, float]]], check: bool = True) ‑> <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a></span>
 </code></dt>
@@ -477,6 +588,7 @@ Also available is <code>Hack-Regular.ttf</code> (Monospaced).</p></div>
 <ul class="two-column">
 <li><code><a title="piecad.primitives_2d.circle" href="#piecad.primitives_2d.circle">circle</a></code></li>
 <li><code><a title="piecad.primitives_2d.ellipse" href="#piecad.primitives_2d.ellipse">ellipse</a></code></li>
+<li><code><a title="piecad.primitives_2d.path" href="#piecad.primitives_2d.path">path</a></code></li>
 <li><code><a title="piecad.primitives_2d.polygon" href="#piecad.primitives_2d.polygon">polygon</a></code></li>
 <li><code><a title="piecad.primitives_2d.rectangle" href="#piecad.primitives_2d.rectangle">rectangle</a></code></li>
 <li><code><a title="piecad.primitives_2d.rounded_rectangle" href="#piecad.primitives_2d.rounded_rectangle">rounded_rectangle</a></code></li>
