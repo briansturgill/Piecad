@@ -259,7 +259,7 @@ def _rounded_rectangle_hull(
     center: bool = False,
 ) -> Obj2d:
     if segments == -1:
-        segments = config["DefaultSegments"]
+        segments = Config.get_default_segments()
 
     rr = rounding_radius
     circ = circle(rr, segments)

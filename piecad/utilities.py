@@ -24,7 +24,7 @@ def _info_str(tag):  # Must be called from inside another function.
     return str
 
 
-from . import Obj2d, Obj3d, config, _chkGE, _chkGO, ValidationError
+from . import Obj2d, Obj3d, Config, _chkGE, _chkGO, ValidationError
 
 _viewer_available = True
 
@@ -186,7 +186,7 @@ def _save_svg(filename, *objs):
         bb[3] = max(obb[3], bb[3])
     width = round(bb[2] - bb[0], 5)
     height = round(bb[3] - bb[1], 5)
-    units = config["DefaultUnits"]
+    units = Config.get_default_units()
 
     txt.append('<?xml version="1.0" encoding="UTF-8"?>')
     txt.append("<!-- Created by Piecad. -->")
@@ -229,9 +229,22 @@ _viewer_started = False
 
 def view(obj: Obj3d | Obj2d, title: str = "") -> None:
     """
-    Use CADView protocol to display the geometry object.
+    Use `Piecad-Viewer` to display the geometry object.
 
     Returns obj unchanged... so that it works well in return statements.
+
+    ```
+    return union(o1, o2, o3)
+    # can be displayed in 3 parts and the whole object, like this:
+    return view(union(view(o1), view(o2), view(o3)))
+    ```
+
+    If `Piecad-Viewer` is not already started, it will be auto-started.
+
+    It is rarely necessary, but one can control `Piecad-Viewer` host and
+    port, by setting your operating systems `PIECAD_VIEWER` environment
+    variable.  By default this is set to: "127.0.0.1:8037".
+    This environment variable is also used by the `piecad-viewer` program.
     """
     global _view_thread
     if _viewer_available == False:

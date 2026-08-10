@@ -285,9 +285,22 @@ If you want a file saved in the current directory, prepend <code>'./'</code> or 
 </summary>
 <pre><code class="python">def view(obj: Obj3d | Obj2d, title: str = &#34;&#34;) -&gt; None:
     &#34;&#34;&#34;
-    Use CADView protocol to display the geometry object.
+    Use `Piecad-Viewer` to display the geometry object.
 
     Returns obj unchanged... so that it works well in return statements.
+
+    ```
+    return union(o1, o2, o3)
+    # can be displayed in 3 parts and the whole object, like this:
+    return view(union(view(o1), view(o2), view(o3)))
+    ```
+
+    If `Piecad-Viewer` is not already started, it will be auto-started.
+
+    It is rarely necessary, but one can control `Piecad-Viewer` host and
+    port, by setting your operating systems `PIECAD_VIEWER` environment
+    variable.  By default this is set to: &#34;127.0.0.1:8037&#34;.
+    This environment variable is also used by the `piecad-viewer` program.
     &#34;&#34;&#34;
     global _view_thread
     if _viewer_available == False:
@@ -326,8 +339,18 @@ If you want a file saved in the current directory, prepend <code>'./'</code> or 
     _view_queue.put(view_data)
     return obj</code></pre>
 </details>
-<div class="desc"><p>Use CADView protocol to display the geometry object.</p>
-<p>Returns obj unchanged&hellip; so that it works well in return statements.</p></div>
+<div class="desc"><p>Use <code>Piecad-Viewer</code> to display the geometry object.</p>
+<p>Returns obj unchanged&hellip; so that it works well in return statements.</p>
+<pre><code>return union(o1, o2, o3)
+# can be displayed in 3 parts and the whole object, like this:
+return view(union(view(o1), view(o2), view(o3)))
+</code></pre>
+<p>If <code>Piecad-Viewer</code> is not already started, it will be auto-started.</p>
+<p>It is rarely necessary, but one can control <code>Piecad-Viewer</code> host and
+port, by setting your operating systems <code>PIECAD_VIEWER</code> environment
+variable.
+By default this is set to: "127.0.0.1:8037".
+This environment variable is also used by the <code>piecad-viewer</code> program.</p></div>
 </dd>
 <dt id="piecad.utilities.winding"><code class="name flex">
 <span>def <span class="ident">winding</span></span>(<span>lt: list[tuple[float, float]]) ‑> str</span>

@@ -5,7 +5,7 @@
 import manifold3d as _m
 
 
-from . import Obj2d, config, _chkGT, _chkGE, _chkV2, cos, sin, ValidationError
+from . import Obj2d, Config, _chkGT, _chkGE, _chkV2, cos, sin, ValidationError
 
 from ._poly_point_isect import (
     isect_segments_include_segments as _isect_segments_include_segments,
@@ -18,12 +18,12 @@ def circle(radius: float, segments: int = -1) -> Obj2d:
     """
     Make a circle of a given radius.
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     Circles are created with the center at `(0,0)`
     """
     if segments == -1:
-        segments = config["DefaultSegments"]
+        segments = Config.get_default_segments()
     _chkGT("radius", radius, 0.0)
     _chkGE("segments", segments, 3)
 
@@ -40,12 +40,12 @@ def ellipse(radii: list[float, float], segments: int = -1) -> Obj2d:
     """
     Make an ellipse with the given radii.
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     Ellipses are created with the center at `(0,0)`
     """
     if segments == -1:
-        segments = config["DefaultSegments"]
+        segments = Config.get_default_segments()
     _chkV2("radii", radii)
     _chkGE("segments", segments, 3)
 
@@ -116,7 +116,7 @@ def path(initial_point: tuple[float, float] = (0, 0), segments: int = -1):
     close() -> Obj2d
     ```
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     <iframe width="100%" height="400" src="../examples/path.html"></iframe>
     """
@@ -213,14 +213,14 @@ def rounded_rectangle(
     The `rounded_rectangele` will have dimensions of `size` dimensions and with
     corners of `rounding_radius`.
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
     Each corner will be given approximately 1/4 of segments.
 
     By default, the bottom left corner of the square will be at `(0,0)`.
     When `center` is `True` it will cause the square to be centered at `(0,0)`.
     """
     if segments == -1:
-        segments = config["DefaultSegments"]
+        segments = Config.get_default_segments()
     _chkGE("segments", segments, 3)
     _chkV2("size", size)
     _chkGT("rounding_radius", rounding_radius, 0)

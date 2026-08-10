@@ -57,12 +57,12 @@ el.replaceWith(d);
     &#34;&#34;&#34;
     Make a circle of a given radius.
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     Circles are created with the center at `(0,0)`
     &#34;&#34;&#34;
     if segments == -1:
-        segments = config[&#34;DefaultSegments&#34;]
+        segments = Config.get_default_segments()
     _chkGT(&#34;radius&#34;, radius, 0.0)
     _chkGE(&#34;segments&#34;, segments, 3)
 
@@ -75,7 +75,7 @@ el.replaceWith(d);
     return Obj2d(circ.scale((radius, radius)))</code></pre>
 </details>
 <div class="desc"><p>Make a circle of a given radius.</p>
-<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.Config.set_default_segments"><code>Config.set_default_segments</code></a>.</p>
 <p>Circles are created with the center at <code>(0,0)</code></p></div>
 </dd>
 <dt id="piecad.primitives_2d.ellipse"><code class="name flex">
@@ -90,12 +90,12 @@ el.replaceWith(d);
     &#34;&#34;&#34;
     Make an ellipse with the given radii.
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     Ellipses are created with the center at `(0,0)`
     &#34;&#34;&#34;
     if segments == -1:
-        segments = config[&#34;DefaultSegments&#34;]
+        segments = Config.get_default_segments()
     _chkV2(&#34;radii&#34;, radii)
     _chkGE(&#34;segments&#34;, segments, 3)
 
@@ -108,7 +108,7 @@ el.replaceWith(d);
     return Obj2d(circ.scale(radii))</code></pre>
 </details>
 <div class="desc"><p>Make an ellipse with the given radii.</p>
-<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.Config.set_default_segments"><code>Config.set_default_segments</code></a>.</p>
 <p>Ellipses are created with the center at <code>(0,0)</code></p></div>
 </dd>
 <dt id="piecad.primitives_2d.path"><code class="name flex">
@@ -174,7 +174,7 @@ el.replaceWith(d);
     close() -&gt; Obj2d
     ```
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     &lt;iframe width=&#34;100%&#34; height=&#34;400&#34; src=&#34;../examples/path.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
@@ -219,7 +219,7 @@ one needed:</p>
 <p>The <code>close</code> method returns an <code>Obj2d</code> representing the shape of the Path.</p>
 <pre><code>close() -&gt; Obj2d
 </code></pre>
-<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.Config.set_default_segments"><code>Config.set_default_segments</code></a>.</p>
 <iframe width="100%" height="400" src="../examples/path.html"></iframe></div>
 </dd>
 <dt id="piecad.primitives_2d.polygon"><code class="name flex">
@@ -356,14 +356,14 @@ When <code>center</code> is <code>True</code> it will cause the rectangle to be 
     The `rounded_rectangele` will have dimensions of `size` dimensions and with
     corners of `rounding_radius`.
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
     Each corner will be given approximately 1/4 of segments.
 
     By default, the bottom left corner of the square will be at `(0,0)`.
     When `center` is `True` it will cause the square to be centered at `(0,0)`.
     &#34;&#34;&#34;
     if segments == -1:
-        segments = config[&#34;DefaultSegments&#34;]
+        segments = Config.get_default_segments()
     _chkGE(&#34;segments&#34;, segments, 3)
     _chkV2(&#34;size&#34;, size)
     _chkGT(&#34;rounding_radius&#34;, rounding_radius, 0)
@@ -437,7 +437,7 @@ When <code>center</code> is <code>True</code> it will cause the rectangle to be 
 <div class="desc"><p>Create a rectangle with rounded corners.</p>
 <p>The <code>rounded_rectangele</code> will have dimensions of <code>size</code> dimensions and with
 corners of <code>rounding_radius</code>.</p>
-<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.Config.set_default_segments"><code>Config.set_default_segments</code></a>.
 Each corner will be given approximately 1/4 of segments.</p>
 <p>By default, the bottom left corner of the square will be at <code>(0,0)</code>.
 When <code>center</code> is <code>True</code> it will cause the square to be centered at <code>(0,0)</code>.</p></div>

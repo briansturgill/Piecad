@@ -21,7 +21,7 @@ It is a good idea to show the ORIGIN in the components documentation.
 
 from piecad import (
     Obj3d,
-    config,
+    Config,
     rounded_rectangle,
     union,
     intersect,
@@ -55,12 +55,12 @@ class ProjectBox:
 
         The `wall` parameter specifies the thickness of the major walls of the box.
 
-        For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+        For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
         <iframe width="100%" height="380" src="../examples/projectbox.html"></iframe>
         """
         if segments == -1:
-            segments = config["DefaultSegments"]
+            segments = Config.get_default_segments()
         _chkGE("segments", segments, 3)
         _chkV3("size", size)
         _chkGE("wall", wall, 2.0)

@@ -49,20 +49,6 @@ You can see Manifold's web site for other packages that are used.</p>
 to check for polygon self intersections.</p>
 <h2 id="piecad-version">Piecad Version</h2>
 <iframe width="100%" height="250" src="examples/version.html"></iframe>
-<h2 id="piecad-global-configuration-values">Piecad Global Configuration Values</h2>
-<pre><code>LayerResolution          Resolution your output can be printed/made at.
-                           If you have multiple resolutions, choose the
-                           smallest one.
-</code></pre>
-<h3 id="default-values">Default values</h3>
-<pre><code class="language-python">config[&quot;LayerResolution&quot;] = 0.1
-</code></pre>
-<p>This is just a Python dict, set them like the defaults shown above.</p>
-<p>It is rarely necessary, but one can control <code>Piecad-Viewer</code> host and
-port, by setting your operating systems <code>PIECAD_VIEWER</code> environment
-variable.
-By default this is set to: "127.0.0.1:8037".
-This environment variable is also used by the <code>piecad-viewer</code> program.</p>
 </section>
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>
@@ -98,56 +84,6 @@ This environment variable is also used by the <code>piecad-viewer</code> program
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="piecad.set_default_segments"><code class="name flex">
-<span>def <span class="ident">set_default_segments</span></span>(<span>segments: int = 36) ‑> None</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def set_default_segments(segments: int = 36) -&gt; None:
-    &#34;&#34;&#34;
-    Set the default value for the number of circular segments to use.
-
-    Functions that produce circular objects need to know how
-    many segments should be used to draw the &#34;circle&#34;.
-    For example if you call the `circle` function with `segments = 4`
-    it will produce a square... in most cases undesirable, though
-    a `circle` with `segments = 6` will produce a hexagon which
-    can be useful.
-    In most cases a higher number is desired as it produces objects
-    that look truly round.
-
-    The default value of `segments` 36.
-
-    If you need a circular objects primary axes to have exact values (at the
-    90 degree marks), chose a `segments` value that is a multiple of 4.
-
-    In circular functions, if the value passed in for `segments` is `-1`, then
-    the `default_segments` value is used. Thus circular functions have
-    a default value for `segments` of `-1`.
-    &#34;&#34;&#34;
-    global _default_segments
-    _chkGE(&#34;segments&#34;, segments, 3)
-    config[&#34;DefaultSegments&#34;] = segments</code></pre>
-</details>
-<div class="desc"><p>Set the default value for the number of circular segments to use.</p>
-<p>Functions that produce circular objects need to know how
-many segments should be used to draw the "circle".
-For example if you call the <code>circle</code> function with <code>segments = 4</code>
-it will produce a square&hellip; in most cases undesirable, though
-a <code>circle</code> with <code>segments = 6</code> will produce a hexagon which
-can be useful.
-In most cases a higher number is desired as it produces objects
-that look truly round.</p>
-<p>The default value of <code>segments</code> 36.</p>
-<p>If you need a circular objects primary axes to have exact values (at the
-90 degree marks), chose a <code>segments</code> value that is a multiple of 4.</p>
-<p>In circular functions, if the value passed in for <code>segments</code> is <code>-1</code>, then
-the <code>default_segments</code> value is used. Thus circular functions have
-a default value for <code>segments</code> of <code>-1</code>.</p></div>
-</dd>
 <dt id="piecad.version"><code class="name flex">
 <span>def <span class="ident">version</span></span>(<span>)</span>
 </code></dt>
@@ -167,6 +103,161 @@ a default value for <code>segments</code> of <code>-1</code>.</p></div>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="piecad.Config"><code class="flex name class">
+<span>class <span class="ident">Config</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Config:
+    &#34;&#34;&#34;
+    User changeable global settings.
+    &#34;&#34;&#34;
+
+    _default_segments = 36
+    _default_units = &#34;mm&#34;
+    _layer_resolution = 0.1
+
+    # Prevent instantiation
+    def __new__(cls, *args, **kwargs):
+        raise TypeError(f&#34;{cls.__name__} cannot be instantiated.&#34;)
+
+    @classmethod
+    def get_default_segments(cls) -&gt; int:
+        &#34;&#34;&#34;
+        Get the default number of segments used by circular objects.
+        &#34;&#34;&#34;
+        return cls._default_segments
+
+    @classmethod
+    def set_default_segments(cls, segments: int = 36) -&gt; None:
+        &#34;&#34;&#34;
+        Set the default number of segments used by circular objects.
+
+        Functions that produce circular objects need to know how
+        many segments should be used to draw the &#34;circle&#34;.
+        For example if you call the `circle` function with `segments = 4`
+        it will produce a square... in most cases undesirable, though
+        a `circle` with `segments = 6` will produce a hexagon which
+        can be useful.
+        In most cases a higher number is desired as it produces objects
+        that look truly round.
+
+        The default value of `segments` 36.
+
+        If you need a circular objects primary axes to have exact values (at the
+        90 degree marks), chose a `segments` value that is a multiple of 4.
+
+        In circular functions, if the value passed in for `segments` is `-1`, then
+        the `default_segments` value is used. Thus circular functions have
+        a default value for `segments` of `-1`.
+        &#34;&#34;&#34;
+        _chkGE(&#34;segments&#34;, segments, 3)
+        cls._default_segments = segments
+
+    @classmethod
+    def get_default_units(cls) -&gt; str:
+        &#34;&#34;&#34;
+        Get the default units used by this script.
+        This defaults to &#34;mm&#34; for millimeters.
+        It may also be &#34;cm&#34; for centimeters or &#34;in&#34; for inches.
+        &#34;&#34;&#34;
+        return cls._default_units
+
+    @classmethod
+    def set_default_units(cls, units: str = &#34;mm&#34;) -&gt; None:
+        &#34;&#34;&#34;
+        Set the default units used in this script.
+        Most 3d printing is in &#34;mm&#34; for milimeters.
+        But it can also be &#34;cm&#34; for centimeters or &#34;in&#34; for inches.
+        &#34;&#34;&#34;
+        _chkIn(&#34;units&#34;, units, [&#34;mm&#34;, &#34;cm&#34;, &#34;in&#34;])
+        cls._default_units = units
+
+    @classmethod
+    def get_layer_resolution(cls) -&gt; str:
+        &#34;&#34;&#34;
+        Get the layer resolution using in printing in this script.
+        I you have more than one resolution, use the smallest.
+        For most 3d priting the default of 0.1 is sufficient.
+        &#34;&#34;&#34;
+        return cls._layer_resolution
+
+    @classmethod
+    def set_layer_resolution(cls, resolution: float) -&gt; None:
+        &#34;&#34;&#34;
+        Set the layer resolution using in printing in this script.
+        I you have more than one resolution, use the smallest.
+        For most 3d priting the default of 0.1 is sufficient.
+        &#34;&#34;&#34;
+        cls._layer_resolution = resolution</code></pre>
+</details>
+<div class="desc"><p>User changeable global settings.</p></div>
+<h3>Static methods</h3>
+<dl>
+<dt id="piecad.Config.get_default_segments"><code class="name flex">
+<span>def <span class="ident">get_default_segments</span></span>(<span>) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the default number of segments used by circular objects.</p></div>
+</dd>
+<dt id="piecad.Config.get_default_units"><code class="name flex">
+<span>def <span class="ident">get_default_units</span></span>(<span>) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the default units used by this script.
+This defaults to "mm" for millimeters.
+It may also be "cm" for centimeters or "in" for inches.</p></div>
+</dd>
+<dt id="piecad.Config.get_layer_resolution"><code class="name flex">
+<span>def <span class="ident">get_layer_resolution</span></span>(<span>) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the layer resolution using in printing in this script.
+I you have more than one resolution, use the smallest.
+For most 3d priting the default of 0.1 is sufficient.</p></div>
+</dd>
+<dt id="piecad.Config.set_default_segments"><code class="name flex">
+<span>def <span class="ident">set_default_segments</span></span>(<span>segments: int = 36) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the default number of segments used by circular objects.</p>
+<p>Functions that produce circular objects need to know how
+many segments should be used to draw the "circle".
+For example if you call the <code>circle</code> function with <code>segments = 4</code>
+it will produce a square&hellip; in most cases undesirable, though
+a <code>circle</code> with <code>segments = 6</code> will produce a hexagon which
+can be useful.
+In most cases a higher number is desired as it produces objects
+that look truly round.</p>
+<p>The default value of <code>segments</code> 36.</p>
+<p>If you need a circular objects primary axes to have exact values (at the
+90 degree marks), chose a <code>segments</code> value that is a multiple of 4.</p>
+<p>In circular functions, if the value passed in for <code>segments</code> is <code>-1</code>, then
+the <code>default_segments</code> value is used. Thus circular functions have
+a default value for <code>segments</code> of <code>-1</code>.</p></div>
+</dd>
+<dt id="piecad.Config.set_default_units"><code class="name flex">
+<span>def <span class="ident">set_default_units</span></span>(<span>units: str = 'mm') ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the default units used in this script.
+Most 3d printing is in "mm" for milimeters.
+But it can also be "cm" for centimeters or "in" for inches.</p></div>
+</dd>
+<dt id="piecad.Config.set_layer_resolution"><code class="name flex">
+<span>def <span class="ident">set_layer_resolution</span></span>(<span>resolution: float) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the layer resolution using in printing in this script.
+I you have more than one resolution, use the smallest.
+For most 3d priting the default of 0.1 is sufficient.</p></div>
+</dd>
+</dl>
+</dd>
 <dt id="piecad.Obj2d"><code class="flex name class">
 <span>class <span class="ident">Obj2d</span></span>
 <span>(</span><span>o: object = None, color=None)</span>
@@ -313,11 +404,11 @@ a default value for <code>segments</code> of <code>-1</code>.</p></div>
         Select `join_type` from `&#34;square&#34;`, `&#34;round&#34;`, or `&#34;miter&#34;`.
         To understand `miter_limit`, see: [Clipper2 MiterLimit](https://www.angusj.com/clipper2/Docs/Units/Clipper.Offset/Classes/ClipperOffset/Properties/MiterLimit.htm)
 
-        For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+        For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
         &#34;&#34;&#34;
         if segments == -1:
-            segments = config[&#34;DefaultSegments&#34;]
+            segments = Config.get_default_segments()
         _chkGE(&#34;segments&#34;, segments, 3)
 
         if join_type == &#34;round&#34;:
@@ -399,7 +490,7 @@ a default value for <code>segments</code> of <code>-1</code>.</p></div>
         &#34;&#34;&#34;
         Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
 
-        For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+        For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
         &#34;&#34;&#34;
         o3 = revolve(self, revolve_degrees, segments)
         o3._color = self._color
@@ -702,11 +793,11 @@ number of vertices is present goes a long way to making sure things are healthy.
     Select `join_type` from `&#34;square&#34;`, `&#34;round&#34;`, or `&#34;miter&#34;`.
     To understand `miter_limit`, see: [Clipper2 MiterLimit](https://www.angusj.com/clipper2/Docs/Units/Clipper.Offset/Classes/ClipperOffset/Properties/MiterLimit.htm)
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     &#34;&#34;&#34;
     if segments == -1:
-        segments = config[&#34;DefaultSegments&#34;]
+        segments = Config.get_default_segments()
     _chkGE(&#34;segments&#34;, segments, 3)
 
     if join_type == &#34;round&#34;:
@@ -727,7 +818,7 @@ number of vertices is present goes a long way to making sure things are healthy.
 A negative delta will cause an inset to be done.</p>
 <p>Select <code>join_type</code> from <code>"square"</code>, <code>"round"</code>, or <code>"miter"</code>.
 To understand <code>miter_limit</code>, see: <a href="https://www.angusj.com/clipper2/Docs/Units/Clipper.Offset/Classes/ClipperOffset/Properties/MiterLimit.htm">Clipper2 MiterLimit</a></p>
-<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p></div>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.Config.set_default_segments"><code>Config.set_default_segments</code></a>.</p></div>
 </dd>
 <dt id="piecad.Obj2d.piecut"><code class="name flex">
 <span>def <span class="ident">piecut</span></span>(<span>self, start_angle=0, end_angle=90, both=False) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a> | tuple[<a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a>, <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a>]</span>
@@ -827,14 +918,14 @@ maintain the same size ratio between the two sizes.</p>
     &#34;&#34;&#34;
     Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
     &#34;&#34;&#34;
     o3 = revolve(self, revolve_degrees, segments)
     o3._color = self._color
     return o3</code></pre>
 </details>
 <div class="desc"><p>Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.</p>
-<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.set_default_segments"><code>set_default_segments</code></a>.</p></div>
+<p>For <code>segments</code> see the documentation of <a href="index.html#piecad.Config.set_default_segments"><code>Config.set_default_segments</code></a>.</p></div>
 </dd>
 <dt id="piecad.Obj2d.rotate"><code class="name flex">
 <span>def <span class="ident">rotate</span></span>(<span>self, degrees: float) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
@@ -1916,10 +2007,6 @@ functions and methods.</p></div>
 <div class="toc">
 <ul>
 <li><a href="#piecad-version">Piecad Version</a></li>
-<li><a href="#piecad-global-configuration-values">Piecad Global Configuration Values</a><ul>
-<li><a href="#default-values">Default values</a></li>
-</ul>
-</li>
 </ul>
 </div>
 <ul id="index">
@@ -1935,12 +2022,22 @@ functions and methods.</p></div>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="piecad.set_default_segments" href="#piecad.set_default_segments">set_default_segments</a></code></li>
 <li><code><a title="piecad.version" href="#piecad.version">version</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
+<li>
+<h4><code><a title="piecad.Config" href="#piecad.Config">Config</a></code></h4>
+<ul class="">
+<li><code><a title="piecad.Config.get_default_segments" href="#piecad.Config.get_default_segments">get_default_segments</a></code></li>
+<li><code><a title="piecad.Config.get_default_units" href="#piecad.Config.get_default_units">get_default_units</a></code></li>
+<li><code><a title="piecad.Config.get_layer_resolution" href="#piecad.Config.get_layer_resolution">get_layer_resolution</a></code></li>
+<li><code><a title="piecad.Config.set_default_segments" href="#piecad.Config.set_default_segments">set_default_segments</a></code></li>
+<li><code><a title="piecad.Config.set_default_units" href="#piecad.Config.set_default_units">set_default_units</a></code></li>
+<li><code><a title="piecad.Config.set_layer_resolution" href="#piecad.Config.set_layer_resolution">set_layer_resolution</a></code></li>
+</ul>
+</li>
 <li>
 <h4><code><a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></code></h4>
 <ul class="two-column">

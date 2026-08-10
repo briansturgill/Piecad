@@ -7,7 +7,7 @@ import math as _math
 import numpy as _np
 
 from . import (
-    config,
+    Config,
     Obj2d,
     Obj3d,
     circle,
@@ -40,7 +40,7 @@ def cone(
     """
     Make a cone with given radii and height.
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     Why does `radius_high` not default to 0? Pointy things
     don't 3d print very well. If the model is not to be printed,
@@ -53,7 +53,7 @@ def cone(
     <iframe width="100%" height="220" src="examples/cone.html"></iframe>
     """
     if segments == -1:
-        segments = config["DefaultSegments"]
+        segments = Config.get_default_segments()
     _chkGT("height", height, 0)
     _chkGT("radius_low", radius_low, 0)
     _chkGE("radius_high", radius_high, 0)
@@ -95,14 +95,14 @@ def cylinder(height: float, radius: float, segments: int = -1, center=False) -> 
     """
     Make a cylinder of a given radius and height.
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     By default, the cylinder bottom is centered at `(0,0,0)`.
     When `center` is `True`, the cylinder will centered on `(0,0,0)`.
     (In other words, the bottom of the cylinder will be at `(0,0,-height/2.0`.)
     """
     if segments == -1:
-        segments = config["DefaultSegments"]
+        segments = Config.get_default_segments()
     _chkGT("height", height, 0)
     _chkGT("radius", radius, 0)
     _chkGE("segments", segments, 3)
@@ -118,14 +118,14 @@ def ellipsoid(
     """
     Make an ellipsoid which is elliptical on all three radii.
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     The ellipsoid is centered at `(0,0,0)`.
 
     <iframe width="100%" height="220" src="examples/ellipsoid.html"></iframe>
     """
     if segments == -1:
-        segments = config["DefaultSegments"]
+        segments = Config.get_default_segments()
     _chkV3("radius", radii)
     _chkGE("segments", segments, 3)
 
@@ -138,7 +138,7 @@ def elliptical_cylinder(
     """
     Make a elliptically shaped cylinder of given radii and height.
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     By default, the elliptical cylinder bottom is centered at `(0,0,0)`.
     When `center` is `True`, the cylinder will centered on `(0,0,0)`.
@@ -147,7 +147,7 @@ def elliptical_cylinder(
     <iframe width="100%" height="220" src="examples/elliptical_cylinder.html"></iframe>
     """
     if segments == -1:
-        segments = config["DefaultSegments"]
+        segments = Config.get_default_segments()
     _chkGT("height", height, 0)
     _chkV2("radii", radii)
     _chkGE("segments", segments, 3)
@@ -346,12 +346,12 @@ def geodesic_sphere(radius, segments=-1):
     """
     Create a geodesic sphere of a given radius.
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     <iframe width="100%" height="220" src="examples/geodesic_sphere.html"></iframe>
     """
     if segments == -1:
-        segments = config["DefaultSegments"]
+        segments = Config.get_default_segments()
     _chkGT("radius", radius, 0)
     _chkGE("segments", segments, 3)
 
@@ -453,7 +453,7 @@ def rounded_cuboid(
 
     Parameter `rounding_radius` is the size of the rounded lip at top and bottom.
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     By default, the bottom front left corner of the rounded cuboid will be at `(0,0,0)`.
     When `center` is `True` it will cause the rounded cuboid to be centered at `(0,0,0)`.
@@ -461,14 +461,14 @@ def rounded_cuboid(
     <iframe width="100%" height="250" src="examples/rounded_cuboid.html"></iframe>
     """
     if segments == -1:
-        segments = config["DefaultSegments"]
+        segments = Config.get_default_segments()
     _chkGE("segments", segments, 3)
     _chkGE("rounding_radius", rounding_radius, 0)
     _chkV3("size", size)
     if type(size) == float or type(size) == int:
         size = (size, size, size)
     l = []
-    res = config["LayerResolution"]
+    res = Config.get_layer_resolution()
     arc_segs = rounding_radius / res
     deg_per_arc_seg = 90.0 / arc_segs
     deg = 0.0
@@ -539,7 +539,7 @@ def rounded_cylinder(
 
     Parameter `rounding_radius` is the size of the rounded lip at top and bottom.
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     By default, the rounded cylinder bottom is centered at `(0,0,0)`.
     When `center` is `True`, the rounded cylinder will centered on `(0,0,0)`.
@@ -548,7 +548,7 @@ def rounded_cylinder(
     <iframe width="100%" height="250" src="examples/rounded_cylinder.html"></iframe>
     """
     if segments == -1:
-        segments = config["DefaultSegments"]
+        segments = Config.get_default_segments()
     _chkGE("segments", segments, 3)
     _chkGT("radius", radius, 0)
     rr = (
@@ -566,12 +566,12 @@ def revolve(obj: Obj2d, revolve_degrees: float = 360.0, segments: int = -1) -> O
     """
     Create a Obj3d by revolving an Obj2d around the Y-axis, then rotating it so that Y becomes Z.
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     <iframe width="100%" height="220" src="examples/revolve.html"></iframe>
     """
     if segments == -1:
-        segments = config["DefaultSegments"]
+        segments = Config.get_default_segments()
     _chkTY("obj", obj, Obj2d)
     _chkGE("segments", segments, 3)
     _chkGT("revolve_degrees", revolve_degrees, 0)
@@ -582,12 +582,12 @@ def sphere(radius: float, segments: int = -1) -> Obj3d:
     """
     Create a classical sphere of a given radius.
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     <iframe width="100%" height="220" src="examples/sphere.html"></iframe>
     """
     if segments == -1:
-        segments = config["DefaultSegments"]
+        segments = Config.get_default_segments()
     _chkGE("radius", radius, 0)
     _chkGE("segments", segments, 3)
 
@@ -600,12 +600,12 @@ def torus(outer_radius: float, inner_radius: float, segments=-1):
     """
     Create a torus with the specified radii.
 
-    For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+    For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     <iframe width="100%" height="220" src="examples/torus.html"></iframe>
     """
     if segments == -1:
-        segments = config["DefaultSegments"]
+        segments = Config.get_default_segments()
     _chkGT("outer_radius", outer_radius, 0)
     _chkGT("inner_radius", inner_radius, 0)
     _chkGE("segments", segments, 3)

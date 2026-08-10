@@ -13,14 +13,14 @@ def test_version():
 
 
 def test_set_default_segments():
-    cur = config["DefaultSegments"]
+    cur = Config.get_default_segments()
     assert cur == 36
-    set_default_segments(40)
-    cur = config["DefaultSegments"]
+    Config.set_default_segments(40)
+    cur = Config.get_default_segments()
     assert cur == 40
     rr = rounded_rectangle((10, 15), 1.0)
     assert rr.num_verts() == 44
-    set_default_segments(36)
+    Config.set_default_segments(36)
 
 
 def test_bounding_box_2d():
@@ -299,13 +299,13 @@ def test_split():
     assert o2.bounding_box() == (0.0, 0.0, 0.0, 2.0, 4.0, 4.0)
 
 
-def test_transfrom_2d():
+def test_transform_2d():
     c = circle(2)
     c2 = c.transform([[1, 0, 0], [0, 1, 0]])
     assert c2.num_verts() == c2.num_verts()
 
 
-def test_transfrom_3d():
+def test_transform_3d():
     c = cube(2)
     c2 = c.transform([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]])
     assert c2.num_verts() == c2.num_verts()

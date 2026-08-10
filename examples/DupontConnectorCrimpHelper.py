@@ -4,7 +4,7 @@ Accessories for iCrimp/IWISS SN58B and SN28B crimpers to make it easy to crimp D
 
 from piecad import *
 
-set_default_segments(100)
+Config.set_default_segments(100)
 
 CRIMPER = "SN28B"  # Either "SN58B" or "SN28B"
 

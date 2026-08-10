@@ -3,7 +3,7 @@
 """
 
 from svgpathtools import svg2paths, parse_path, Line, QuadraticBezier, CubicBezier, Arc
-from . import _chkGE, _chkV2, Obj2d, config
+from . import _chkGE, _chkV2, Obj2d, Config
 import typing
 
 
@@ -28,12 +28,12 @@ class Path:
 
         The `close` method returns an `Obj2d`
 
-        For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+        For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
         <iframe width="100%" height="400" src="../examples/path.html"></iframe>
         """
         if segments == -1:
-            segments = config["DefaultSegments"]
+            segments = Config.get_default_segments()
         _chkGE("segments", segments, 3)
         self._inital_pt = initial_point
         self._segments = segments

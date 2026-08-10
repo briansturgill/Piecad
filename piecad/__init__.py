@@ -19,24 +19,6 @@ to check for polygon self intersections.
 
 <iframe width="100%" height="250" src="examples/version.html"></iframe>
 
-
-## Piecad Global Configuration Values
-
-```
-LayerResolution          Resolution your output can be printed/made at.
-                           If you have multiple resolutions, choose the
-                           smallest one.
-```
-### Default values
-```python
-config["LayerResolution"] = 0.1
-```
-This is just a Python dict, set them like the defaults shown above.
-
-It is rarely necessary, but one can control `Piecad-Viewer` host and
-port, by setting your operating systems `PIECAD_VIEWER` environment
-variable.  By default this is set to: "127.0.0.1:8037".
-This environment variable is also used by the `piecad-viewer` program.
 """
 
 from __future__ import annotations
@@ -530,11 +512,11 @@ class Obj2d:
         Select `join_type` from `"square"`, `"round"`, or `"miter"`.
         To understand `miter_limit`, see: [Clipper2 MiterLimit](https://www.angusj.com/clipper2/Docs/Units/Clipper.Offset/Classes/ClipperOffset/Properties/MiterLimit.htm)
 
-        For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+        For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
         """
         if segments == -1:
-            segments = config["DefaultSegments"]
+            segments = Config.get_default_segments()
         _chkGE("segments", segments, 3)
 
         if join_type == "round":
@@ -616,7 +598,7 @@ class Obj2d:
         """
         Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
 
-        For `segments` see the documentation of [`set_default_segments`](index.html#piecad.set_default_segments).
+        For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
         """
         o3 = revolve(self, revolve_degrees, segments)
         o3._color = self._color
@@ -665,37 +647,93 @@ class Obj2d:
         return Obj2d(self.mo.translate(offsets), color=self._color)
 
 
-config = {}
-config["DefaultUnits"] = "mm"
-config["LayerResolution"] = 0.1
-config["DefaultSegments"] = 36
-
-
-def set_default_segments(segments: int = 36) -> None:
+class Config:
     """
-    Set the default value for the number of circular segments to use.
-
-    Functions that produce circular objects need to know how
-    many segments should be used to draw the "circle".
-    For example if you call the `circle` function with `segments = 4`
-    it will produce a square... in most cases undesirable, though
-    a `circle` with `segments = 6` will produce a hexagon which
-    can be useful.
-    In most cases a higher number is desired as it produces objects
-    that look truly round.
-
-    The default value of `segments` 36.
-
-    If you need a circular objects primary axes to have exact values (at the
-    90 degree marks), chose a `segments` value that is a multiple of 4.
-
-    In circular functions, if the value passed in for `segments` is `-1`, then
-    the `default_segments` value is used. Thus circular functions have
-    a default value for `segments` of `-1`.
+    User changeable global settings.
     """
-    global _default_segments
-    _chkGE("segments", segments, 3)
-    config["DefaultSegments"] = segments
+
+    _default_segments = 36
+    _default_units = "mm"
+    _layer_resolution = 0.1
+
+    # Prevent instantiation
+    def __new__(cls, *args, **kwargs):
+        raise TypeError(f"{cls.__name__} cannot be instantiated.")
+
+    @classmethod
+    def get_default_segments(cls) -> int:
+        """
+        Get the default number of segments used by circular objects.
+        """
+        return cls._default_segments
+
+    @classmethod
+    def set_default_segments(cls, segments: int = 36) -> None:
+        """
+        Set the default number of segments used by circular objects.
+
+        Functions that produce circular objects need to know how
+        many segments should be used to draw the "circle".
+        For example if you call the `circle` function with `segments = 4`
+        it will produce a square... in most cases undesirable, though
+        a `circle` with `segments = 6` will produce a hexagon which
+        can be useful.
+        In most cases a higher number is desired as it produces objects
+        that look truly round.
+
+        The default value of `segments` 36.
+
+        If you need a circular objects primary axes to have exact values (at the
+        90 degree marks), chose a `segments` value that is a multiple of 4.
+
+        In circular functions, if the value passed in for `segments` is `-1`, then
+        the `default_segments` value is used. Thus circular functions have
+        a default value for `segments` of `-1`.
+        """
+        _chkGE("segments", segments, 3)
+        cls._default_segments = segments
+
+    @classmethod
+    def get_default_units(cls) -> str:
+        """
+        Get the default units used by this script.
+        This defaults to "mm" for millimeters.
+        It may also be "cm" for centimeters or "in" for inches.
+        """
+        return cls._default_units
+
+    @classmethod
+    def set_default_units(cls, units: str = "mm") -> None:
+        """
+        Set the default units used in this script.
+        Most 3d printing is in "mm" for milimeters.
+        But it can also be "cm" for centimeters or "in" for inches.
+        """
+        _chkIn("units", units, ["mm", "cm", "in"])
+        cls._default_units = units
+
+    @classmethod
+    def get_layer_resolution(cls) -> str:
+        """
+        Get the layer resolution using in printing in this script.
+        I you have more than one resolution, use the smallest.
+        For most 3d priting the default of 0.1 is sufficient.
+        """
+        return cls._layer_resolution
+
+    @classmethod
+    def set_layer_resolution(cls, resolution: float) -> None:
+        """
+        Set the layer resolution using in printing in this script.
+        I you have more than one resolution, use the smallest.
+        For most 3d priting the default of 0.1 is sufficient.
+        """
+        cls._layer_resolution = resolution
+
+
+def _chkIn(name: str, val: object, const: list):
+    if val not in const:
+        raise ValidationError(f"Parameter {name} must be greater a value in {const}")
 
 
 def _chkGE(name: str, val: object, const: object):
