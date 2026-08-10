@@ -307,7 +307,7 @@ If you want a file saved in the current directory, prepend <code>'./'</code> or 
         return
     hptmp = os.environ.get(&#34;PIECAD_VIEWER&#34;, None)
     if hptmp != None:
-        PiecadViewerHostAndPort = hptmp
+        _piecad_viewer = hptmp
 
     _chkGO(&#34;obj&#34;, obj)
 

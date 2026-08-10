@@ -5,6 +5,7 @@
 import manifold3d as _m
 import math as _math
 import numpy as _np
+import trimesh
 
 from . import (
     Config,
@@ -292,8 +293,6 @@ def extrude_chaining(
     triangles = _np.array(triangles, _np.uint32)
     mesh = _m.Mesh(vertex_list, triangles)
     if diagnose != None:
-        import trimesh
-
         dot_idx = diagnose.rindex(".")
         ext = diagnose[dot_idx + 1 :]
         mesh_output = trimesh.Trimesh(vertices=vertex_list, faces=triangles)

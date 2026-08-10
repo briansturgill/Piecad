@@ -3,6 +3,7 @@
 """
 
 import manifold3d as _m
+import numpy as _np
 
 
 from . import Obj2d, Config, _chkGT, _chkGE, _chkV2, cos, sin, ValidationError
@@ -10,6 +11,10 @@ from . import Obj2d, Config, _chkGT, _chkGE, _chkV2, cos, sin, ValidationError
 from ._poly_point_isect import (
     isect_segments_include_segments as _isect_segments_include_segments,
 )
+
+from . import _text
+
+from . import _path
 
 _unit_circles = {}
 
@@ -56,9 +61,6 @@ def ellipse(radii: list[float, float], segments: int = -1) -> Obj2d:
         _unit_circles[segments] = circ
 
     return Obj2d(circ.scale(radii))
-
-
-from . import _path
 
 
 def path(initial_point: tuple[float, float] = (0, 0), segments: int = -1):
@@ -120,11 +122,8 @@ def path(initial_point: tuple[float, float] = (0, 0), segments: int = -1):
 
     <iframe width="100%" height="400" src="../examples/path.html"></iframe>
     """
-    _path.polygon = polygon
+    # _path.polygon = polygon
     return _path.Path(initial_point, segments)
-
-
-import numpy as _np
 
 
 def polygon(paths: list[list[tuple[float, float]]], check: bool = True) -> Obj2d:
@@ -335,11 +334,6 @@ def star(num_points: int, outer_radius: float, inner_radius: float = 0.0) -> Obj
     return Obj2d(_m.CrossSection([pts]))
 
 
-import importlib
-
-_text_module = None
-
-
 def text_set_font(font_name: str):
     """
     Set the current font used by `text`.
@@ -352,10 +346,7 @@ def text_set_font(font_name: str):
     The default font is `Roboto-Regular.ttf`.
     Also available is `Hack-Regular.ttf` (Monospaced).
     """
-    global _text_module
-    if _text_module == None:
-        _text_module = importlib.import_module("._text", "piecad")
-    return _text_module._set_font(font_name)
+    return _text.set_font(font_name)
 
 
 def text(sz: float, tstr: str, inter_char_space=None):
@@ -367,7 +358,4 @@ def text(sz: float, tstr: str, inter_char_space=None):
 
     The default value for the spacing between characters (`inter_char_space`) is `sz/3.0`.
     """
-    global _text_module
-    if _text_module == None:
-        _text_module = importlib.import_module("._text", "piecad")
-    return _text_module._text_func(sz, tstr, inter_char_space=None)
+    return _text.text_func(sz, tstr, inter_char_space=None)

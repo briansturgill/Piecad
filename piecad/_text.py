@@ -19,7 +19,7 @@ def _close_font():
         _font = None
 
 
-def _set_font(fname):
+def set_font(fname):
     global _font, _cmap, _glyph_set
 
     if fname[0] != "/" and fname[0] != "\\" and fname[0] != ".":
@@ -35,7 +35,7 @@ def _set_font(fname):
     _glyph_set = _font.getGlyphSet()
 
 
-_set_font("Roboto-Regular.ttf")
+set_font("Roboto-Regular.ttf")
 
 
 def _get_glyph_polygon(c):
@@ -66,13 +66,18 @@ def _get_glyph_polygon(c):
             if y > max_y:
                 max_y = y
 
+    try:
+        a = polygon
+    except NameError:
+        from . import polygon
+
     obj = polygon(paths, check=False)
     obj.width = glyph.width
     obj.max_y = max_y
     return obj
 
 
-def _text_func(sz: float, tstr: str, inter_char_space=None):
+def text_func(sz: float, tstr: str, inter_char_space=None):
     """
      Draw the unicode printable characters in `tstr` in shapes of size `sz`.
 
@@ -112,7 +117,7 @@ if __name__ == "__main__":
     s = "abcdefghijklmnopqrstuvwxyz"
     s = "!\"#$%&'()*+,-./:;<=>?@[\\]|^|_|`|{|}~"
     s = "p0123456789 !\"#$%&'()*+,-./:;<=>?@[\\]|^|_|`|{|}~"
-    c = _text_func(sz, s)
+    c = text_func(sz, s)
     x1, y1, x2, y2 = c.bounding_box()
     w = (x2 - x1) + sz * 2
     c3d = union(cube([w, h, 2]), c.extrude(2).translate([sz, sz, 2]))

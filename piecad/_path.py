@@ -133,6 +133,11 @@ class Path:
         """
         Returns an `Obj2d` shape of the path.
         """
+        try:
+            a = polygon
+        except NameError:
+            from . import polygon
+
         if len(self._list) > 1 and self._list[0] == self._list[-1]:
             self._list.pop()
         obj = polygon([self._list], check=False)
