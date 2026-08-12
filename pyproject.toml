@@ -14,7 +14,7 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = [
-    "piecad_viewer >= 1.0.2",
+    "piecad_viewer >= 1.0.4",
     "pillow >= 12.3.0",
     "trimesh[easy] >= 1.26.4",
     "fontPens >= 0.2.4",
