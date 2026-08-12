@@ -85,14 +85,14 @@ to check for polygon self intersections.</p>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="piecad.version"><code class="name flex">
-<span>def <span class="ident">version</span></span>(<span>)</span>
+<span>def <span class="ident">version</span></span>(<span>) ‑> str</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def version():
+<pre><code class="python">def version() -&gt; str:
     &#34;Piecad version&#34;
     return __version__</code></pre>
 </details>
@@ -105,7 +105,6 @@ to check for polygon self intersections.</p>
 <dl>
 <dt id="piecad.Config"><code class="flex name class">
 <span>class <span class="ident">Config</span></span>
-<span>(</span><span>*args, **kwargs)</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -117,13 +116,16 @@ to check for polygon self intersections.</p>
     User changeable global settings.
     &#34;&#34;&#34;
 
+    def __init__(self):
+        pass
+
     _default_segments = 36
     _default_units = &#34;mm&#34;
     _layer_resolution = 0.1
 
     # Prevent instantiation
-    def __new__(cls, *args, **kwargs):
-        raise TypeError(f&#34;{cls.__name__} cannot be instantiated.&#34;)
+    # def __new__(cls, *args, **kwargs):
+    # raise TypeError(f&#34;{cls.__name__} cannot be instantiated.&#34;)
 
     @classmethod
     def get_default_segments(cls) -&gt; int:
@@ -178,10 +180,10 @@ to check for polygon self intersections.</p>
         cls._default_units = units
 
     @classmethod
-    def get_layer_resolution(cls) -&gt; str:
+    def get_layer_resolution(cls) -&gt; float:
         &#34;&#34;&#34;
-        Get the layer resolution using in printing in this script.
-        I you have more than one resolution, use the smallest.
+        Get the layer resolution used in printing in this script.
+        If you have more than one resolution, use the smallest.
         For most 3d priting the default of 0.1 is sufficient.
         &#34;&#34;&#34;
         return cls._layer_resolution
@@ -189,8 +191,8 @@ to check for polygon self intersections.</p>
     @classmethod
     def set_layer_resolution(cls, resolution: float) -&gt; None:
         &#34;&#34;&#34;
-        Set the layer resolution using in printing in this script.
-        I you have more than one resolution, use the smallest.
+        Set the layer resolution used in printing in this script.
+        If you have more than one resolution, use the smallest.
         For most 3d priting the default of 0.1 is sufficient.
         &#34;&#34;&#34;
         cls._layer_resolution = resolution</code></pre>
@@ -213,11 +215,11 @@ This defaults to "mm" for millimeters.
 It may also be "cm" for centimeters or "in" for inches.</p></div>
 </dd>
 <dt id="piecad.Config.get_layer_resolution"><code class="name flex">
-<span>def <span class="ident">get_layer_resolution</span></span>(<span>) ‑> str</span>
+<span>def <span class="ident">get_layer_resolution</span></span>(<span>) ‑> float</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Get the layer resolution using in printing in this script.
-I you have more than one resolution, use the smallest.
+<div class="desc"><p>Get the layer resolution used in printing in this script.
+If you have more than one resolution, use the smallest.
 For most 3d priting the default of 0.1 is sufficient.</p></div>
 </dd>
 <dt id="piecad.Config.set_default_segments"><code class="name flex">
@@ -252,8 +254,8 @@ But it can also be "cm" for centimeters or "in" for inches.</p></div>
 <span>def <span class="ident">set_layer_resolution</span></span>(<span>resolution: float) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Set the layer resolution using in printing in this script.
-I you have more than one resolution, use the smallest.
+<div class="desc"><p>Set the layer resolution used in printing in this script.
+If you have more than one resolution, use the smallest.
 For most 3d priting the default of 0.1 is sufficient.</p></div>
 </dd>
 </dl>
@@ -275,7 +277,7 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
         mo The Manifold::CrossSection object used by manifold3d.
     &#34;&#34;&#34;
 
-    def __init__(self, o: object = None, color=None):
+    def __init__(self, o: object = None, color=None) -&gt; None:
         if o == None:
             o = _m.CrossSection()
         self.mo = o
@@ -287,7 +289,7 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
         &#34;&#34;&#34;
         return self.mo.area()
 
-    def bounding_box(self):
+    def bounding_box(self) -&gt; tuple[float, float, float, float]:
         &#34;&#34;&#34;
         Return the bounding box of this object.
 
@@ -300,7 +302,7 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
 
     def center(
         self, axes: tuple[bool, bool] = (True, True), at: tuple[float, float] = (0, 0)
-    ):
+    ) -&gt; Obj2d:
         &#34;&#34;&#34;
         Center the object on each of the `True` axes.
 
@@ -320,7 +322,7 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
         o2._color = self._color
         return o2
 
-    def color(self, cspec):
+    def color(self, cspec) -&gt; Obj2d:
         &#34;&#34;&#34;
         Assign the given color to this object.&lt;/summary&gt;
 
@@ -349,13 +351,13 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
             l.append(Obj2d(m, color=self._color))
         return l
 
-    def is_empty(self):
+    def is_empty(self) -&gt; bool:
         &#34;&#34;&#34;
         Is this object empty?
         &#34;&#34;&#34;
         return self.mo.is_empty()
 
-    def extrude(self, height: int):
+    def extrude(self, height: int) -&gt; Obj3d:
         &#34;&#34;&#34;
         Extrude this object into a Obj3d of the given height.
         &#34;&#34;&#34;
@@ -363,7 +365,7 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
         o3._color = self._color
         return o3
 
-    def mirror(self, axes: tuple[bool, bool]):
+    def mirror(self, axes: tuple[bool, bool]) -&gt; Obj2d:
         &#34;&#34;&#34;
         Mirror this object around the given axes.
 
@@ -486,7 +488,7 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
                 sf[(i + 1) % 2] = sf[i]
         return self.scale(sf)
 
-    def revolve(self, revolve_degrees: float = 360.0, segments: int = -1):
+    def revolve(self, revolve_degrees: float = 360.0, segments: int = -1) -&gt; Obj3d:
         &#34;&#34;&#34;
         Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
 
@@ -561,14 +563,14 @@ mo The Manifold::CrossSection object used by manifold3d.</p></div>
 <div class="desc"><p>The area of this Obj2d.</p></div>
 </dd>
 <dt id="piecad.Obj2d.bounding_box"><code class="name flex">
-<span>def <span class="ident">bounding_box</span></span>(<span>self)</span>
+<span>def <span class="ident">bounding_box</span></span>(<span>self) ‑> tuple[float, float, float, float]</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def bounding_box(self):
+<pre><code class="python">def bounding_box(self) -&gt; tuple[float, float, float, float]:
     &#34;&#34;&#34;
     Return the bounding box of this object.
 
@@ -585,7 +587,7 @@ a rectangle that would exactly contain this object.</p>
 <p>It can be broken up like this: <code>x1, y1, x2, y2 = obj.bounding_box()</code></p></div>
 </dd>
 <dt id="piecad.Obj2d.center"><code class="name flex">
-<span>def <span class="ident">center</span></span>(<span>self, axes: tuple[bool, bool] = (True, True), at: tuple[float, float] = (0, 0))</span>
+<span>def <span class="ident">center</span></span>(<span>self, axes: tuple[bool, bool] = (True, True), at: tuple[float, float] = (0, 0)) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
 </code></dt>
 <dd>
 <details class="source">
@@ -594,7 +596,7 @@ a rectangle that would exactly contain this object.</p>
 </summary>
 <pre><code class="python">def center(
     self, axes: tuple[bool, bool] = (True, True), at: tuple[float, float] = (0, 0)
-):
+) -&gt; Obj2d:
     &#34;&#34;&#34;
     Center the object on each of the `True` axes.
 
@@ -618,14 +620,14 @@ a rectangle that would exactly contain this object.</p>
 <p>Parameter <code>at</code> specifies the point to center on.</p></div>
 </dd>
 <dt id="piecad.Obj2d.color"><code class="name flex">
-<span>def <span class="ident">color</span></span>(<span>self, cspec)</span>
+<span>def <span class="ident">color</span></span>(<span>self, cspec) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def color(self, cspec):
+<pre><code class="python">def color(self, cspec) -&gt; Obj2d:
     &#34;&#34;&#34;
     Assign the given color to this object.&lt;/summary&gt;
 
@@ -682,14 +684,14 @@ For a list of color names see: <a href="https://www.w3.org/wiki/CSS/Properties/c
 <div class="desc"><p>Decompose this object into a list of topologically disjoint objects.</p></div>
 </dd>
 <dt id="piecad.Obj2d.extrude"><code class="name flex">
-<span>def <span class="ident">extrude</span></span>(<span>self, height: int)</span>
+<span>def <span class="ident">extrude</span></span>(<span>self, height: int) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def extrude(self, height: int):
+<pre><code class="python">def extrude(self, height: int) -&gt; Obj3d:
     &#34;&#34;&#34;
     Extrude this object into a Obj3d of the given height.
     &#34;&#34;&#34;
@@ -700,14 +702,14 @@ For a list of color names see: <a href="https://www.w3.org/wiki/CSS/Properties/c
 <div class="desc"><p>Extrude this object into a Obj3d of the given height.</p></div>
 </dd>
 <dt id="piecad.Obj2d.is_empty"><code class="name flex">
-<span>def <span class="ident">is_empty</span></span>(<span>self)</span>
+<span>def <span class="ident">is_empty</span></span>(<span>self) ‑> bool</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def is_empty(self):
+<pre><code class="python">def is_empty(self) -&gt; bool:
     &#34;&#34;&#34;
     Is this object empty?
     &#34;&#34;&#34;
@@ -716,14 +718,14 @@ For a list of color names see: <a href="https://www.w3.org/wiki/CSS/Properties/c
 <div class="desc"><p>Is this object empty?</p></div>
 </dd>
 <dt id="piecad.Obj2d.mirror"><code class="name flex">
-<span>def <span class="ident">mirror</span></span>(<span>self, axes: tuple[bool, bool])</span>
+<span>def <span class="ident">mirror</span></span>(<span>self, axes: tuple[bool, bool]) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def mirror(self, axes: tuple[bool, bool]):
+<pre><code class="python">def mirror(self, axes: tuple[bool, bool]) -&gt; Obj2d:
     &#34;&#34;&#34;
     Mirror this object around the given axes.
 
@@ -907,14 +909,14 @@ maintain the same size ratio between the two sizes.</p>
 <p>If an axis size is specifed as <code>None</code> then no change is made on the size of that axis.</p></div>
 </dd>
 <dt id="piecad.Obj2d.revolve"><code class="name flex">
-<span>def <span class="ident">revolve</span></span>(<span>self, revolve_degrees: float = 360.0, segments: int = -1)</span>
+<span>def <span class="ident">revolve</span></span>(<span>self, revolve_degrees: float = 360.0, segments: int = -1) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def revolve(self, revolve_degrees: float = 360.0, segments: int = -1):
+<pre><code class="python">def revolve(self, revolve_degrees: float = 360.0, segments: int = -1) -&gt; Obj3d:
     &#34;&#34;&#34;
     Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
 
@@ -1040,13 +1042,13 @@ maintain the same size ratio between the two sizes.</p>
         mo The Manifold::Manifold object used by manifold3d.
     &#34;&#34;&#34;
 
-    def __init__(self, o: object = None, color=None):
+    def __init__(self, o: object = None, color=None) -&gt; None:
         if o == None:
             o = _m.Manifold()
         self.mo = o
         self._color = color
 
-    def bounding_box(self):
+    def bounding_box(self) -&gt; tuple[float, float, float, float, float, float]:
         &#34;&#34;&#34;
         Return the bounding box of this object.
 
@@ -1061,7 +1063,7 @@ maintain the same size ratio between the two sizes.</p>
         self,
         axes: tuple[bool, bool, bool] = (True, True, True),
         at: tuple[float, float, float] = (0, 0, 0),
-    ):
+    ) -&gt; Obj3d:
         &#34;&#34;&#34;
         Center the object on each of the `True` axes.
 
@@ -1085,7 +1087,7 @@ maintain the same size ratio between the two sizes.</p>
         o3._color = self._color
         return o3
 
-    def color(self, cspec):
+    def color(self, cspec) -&gt; Obj3d:
         &#34;&#34;&#34;
         Assign the given color to this object.&lt;/summary&gt;
 
@@ -1114,7 +1116,7 @@ maintain the same size ratio between the two sizes.</p>
             l.append(Obj3d(m, color=self._color))
         return l
 
-    def is_empty(self):
+    def is_empty(self) -&gt; bool:
         &#34;&#34;&#34;
         Is this object empty?
 
@@ -1300,7 +1302,7 @@ maintain the same size ratio between the two sizes.</p>
 
     def slice(self, height: float) -&gt; Obj2d:
         &#34;&#34;&#34;
-        Like `project`, but a the given height.
+        Like `project`, but rather than the bottom, project at the given height.
 
         &#34;&#34;&#34;
         _chkGT(&#34;height&#34;, height, 0)
@@ -1308,8 +1310,7 @@ maintain the same size ratio between the two sizes.</p>
 
     def split(self, cutter: Obj3d) -&gt; Obj3d:
         &#34;&#34;&#34;
-        This is like doing a difference and an intersect between this the cutter
-        object simultaneously. It is faster than doing the two operations separately.
+        This more efficently does a difference and an intersect operation between this and cutter.
 
         Return is `(diff_obj, inter_obj)`.
 
@@ -1381,14 +1382,14 @@ mo The Manifold::Manifold object used by manifold3d.</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="piecad.Obj3d.bounding_box"><code class="name flex">
-<span>def <span class="ident">bounding_box</span></span>(<span>self)</span>
+<span>def <span class="ident">bounding_box</span></span>(<span>self) ‑> tuple[float, float, float, float, float, float]</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def bounding_box(self):
+<pre><code class="python">def bounding_box(self) -&gt; tuple[float, float, float, float, float, float]:
     &#34;&#34;&#34;
     Return the bounding box of this object.
 
@@ -1405,7 +1406,7 @@ a cuboid that would exactly contain this object.</p>
 <p>It can be broken up like this: <code>x1, y1, z1, x2, y2, z2 = obj.bounding_box()</code></p></div>
 </dd>
 <dt id="piecad.Obj3d.center"><code class="name flex">
-<span>def <span class="ident">center</span></span>(<span>self,<br>axes: tuple[bool, bool, bool] = (True, True, True),<br>at: tuple[float, float, float] = (0, 0, 0))</span>
+<span>def <span class="ident">center</span></span>(<span>self,<br>axes: tuple[bool, bool, bool] = (True, True, True),<br>at: tuple[float, float, float] = (0, 0, 0)) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
 <dd>
 <details class="source">
@@ -1416,7 +1417,7 @@ a cuboid that would exactly contain this object.</p>
     self,
     axes: tuple[bool, bool, bool] = (True, True, True),
     at: tuple[float, float, float] = (0, 0, 0),
-):
+) -&gt; Obj3d:
     &#34;&#34;&#34;
     Center the object on each of the `True` axes.
 
@@ -1444,14 +1445,14 @@ a cuboid that would exactly contain this object.</p>
 <p>Parameter <code>at</code> specifies the point to center on.</p></div>
 </dd>
 <dt id="piecad.Obj3d.color"><code class="name flex">
-<span>def <span class="ident">color</span></span>(<span>self, cspec)</span>
+<span>def <span class="ident">color</span></span>(<span>self, cspec) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def color(self, cspec):
+<pre><code class="python">def color(self, cspec) -&gt; Obj3d:
     &#34;&#34;&#34;
     Assign the given color to this object.&lt;/summary&gt;
 
@@ -1508,14 +1509,14 @@ For a list of color names see: <a href="https://www.w3.org/wiki/CSS/Properties/c
 <div class="desc"><p>Decompose this object into a list of topologically disjoint objects.</p></div>
 </dd>
 <dt id="piecad.Obj3d.is_empty"><code class="name flex">
-<span>def <span class="ident">is_empty</span></span>(<span>self)</span>
+<span>def <span class="ident">is_empty</span></span>(<span>self) ‑> bool</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def is_empty(self):
+<pre><code class="python">def is_empty(self) -&gt; bool:
     &#34;&#34;&#34;
     Is this object empty?
 
@@ -1835,13 +1836,13 @@ maintain the same size ratio between the two sizes.</p>
 </summary>
 <pre><code class="python">def slice(self, height: float) -&gt; Obj2d:
     &#34;&#34;&#34;
-    Like `project`, but a the given height.
+    Like `project`, but rather than the bottom, project at the given height.
 
     &#34;&#34;&#34;
     _chkGT(&#34;height&#34;, height, 0)
     return Obj2d(self.mo.slice(height), color=self._color)</code></pre>
 </details>
-<div class="desc"><p>Like <code>project</code>, but a the given height.</p></div>
+<div class="desc"><p>Like <code>project</code>, but rather than the bottom, project at the given height.</p></div>
 </dd>
 <dt id="piecad.Obj3d.split"><code class="name flex">
 <span>def <span class="ident">split</span></span>(<span>self, cutter: <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a>) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
@@ -1853,8 +1854,7 @@ maintain the same size ratio between the two sizes.</p>
 </summary>
 <pre><code class="python">def split(self, cutter: Obj3d) -&gt; Obj3d:
     &#34;&#34;&#34;
-    This is like doing a difference and an intersect between this the cutter
-    object simultaneously. It is faster than doing the two operations separately.
+    This more efficently does a difference and an intersect operation between this and cutter.
 
     Return is `(diff_obj, inter_obj)`.
 
@@ -1862,8 +1862,7 @@ maintain the same size ratio between the two sizes.</p>
     ret = self.mo.split(cutter.mo)
     return (Obj3d(ret[0], color=self._color), Obj3d(ret[1], color=self._color))</code></pre>
 </details>
-<div class="desc"><p>This is like doing a difference and an intersect between this the cutter
-object simultaneously. It is faster than doing the two operations separately.</p>
+<div class="desc"><p>This more efficently does a difference and an intersect operation between this and cutter.</p>
 <p>Return is <code>(diff_obj, inter_obj)</code>.</p></div>
 </dd>
 <dt id="piecad.Obj3d.surface_area"><code class="name flex">
@@ -1978,7 +1977,7 @@ object simultaneously. It is faster than doing the two operations separately.</p
 </dd>
 <dt id="piecad.ValidationError"><code class="flex name class">
 <span>class <span class="ident">ValidationError</span></span>
-<span>(</span><span>*args, **kwargs)</span>
+<span>(</span><span>message)</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -1991,7 +1990,8 @@ object simultaneously. It is faster than doing the two operations separately.</p
     functions and methods.
     &#34;&#34;&#34;
 
-    pass</code></pre>
+    def __init__(self, message):
+        super().__init__(message)</code></pre>
 </details>
 <div class="desc"><p>Exception class for errors detected in arguments to <strong>piecad</strong>
 functions and methods.</p></div>

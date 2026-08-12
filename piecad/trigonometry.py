@@ -8,12 +8,12 @@ come out exact, DO come out exact.
 import math as _math
 
 
-def deg_to_rad(angleInDegrees):
+def deg_to_rad(angleInDegrees: float) -> float:
     "Convert degrees to radians."
     return angleInDegrees * (_math.pi / 180)
 
 
-def rad_to_deg(angleInRadians):
+def rad_to_deg(angleInRadians: float) -> float:
     "Convert radians to degrees."
     return angleInRadians * (180 / _math.pi)
 

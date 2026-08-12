@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.item {
+    margin: 5px 0;
+}
+.ahover {
+    position: relative;
+    cursor: pointer;
+}
+.popup {
+    position: fixed;
+    top: 5%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 10px;
+    z-index: 1;
+    color: black;
+    width: max-content;
+    max-width: 100vw;
+    box-sizing: border-box;
+    padding: 10px;
+    margin: auto;
+}
+.ahover:hover .popup {
+    display: block;
+}
+.container {
+    column-count: 6;
+    column-gap: 10px;
+    column-rule: 1px solid lightblue;
+}
+code {
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    display: inline-block;
+    background: #f4f4f4;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+pre {
+    display: inline;
+}
+</style>
+</head>
+<body>
+<h1>Quick Help</h1>
+<div class="container">
+<a href="https://www.github.com/briansturgill/Piecad">Piecad github</a>
+<br>
+<a href="https://briansturgill.github.io/Piecad">Piecad documentation</a>
+<h2>Info Functions</h2>
+<p class="item">
+<a class="ahover" href="index.html#piecad.version">
+version
+<span class="popup">
+<code>version() -> 'str'</code>
+<br>
+Piecad version
+</span>
+</a>
+</p>
+<h2>Bulk Operations</h2>
+<p class="item">
+<a class="ahover" href="bulk_ops.html#piecad.bulk_ops.compose">
+compose
+<span class="popup">
+<code>compose(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d</code>
+<br>
+Returns a single object containing all the disjoint objects.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="bulk_ops.html#piecad.bulk_ops.difference">
+difference
+<span class="popup">
+<code>difference(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d</code>
+<br>
+Returns the object removing the second through the last objects from the first object.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="bulk_ops.html#piecad.bulk_ops.hull">
+hull
+<span class="popup">
+<code>hull(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d</code>
+<br>
+Return a convex hull of the given objects.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="bulk_ops.html#piecad.bulk_ops.hull_points">
+hull_points
+<span class="popup">
+<code>hull_points(pts: list[tuple[float, float]] | list[tuple[float, float, float]]) -> Obj2d | Obj3d</code>
+<br>
+Return a convex hull of the given list of points.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="bulk_ops.html#piecad.bulk_ops.intersect">
+intersect
+<span class="popup">
+<code>intersect(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d</code>
+<br>
+Returns the object made by adding those portions that occur only in all `objs` together.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="bulk_ops.html#piecad.bulk_ops.union">
+union
+<span class="popup">
+<code>union(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d</code>
+<br>
+Returns the object made by adding all the `objs` together.
+</span>
+</a>
+</p>
+<h2>2d Primitives</h2>
+<p class="item">
+<a class="ahover" href="primitives_2d.html#piecad.primitives_2d.circle">
+circle
+<span class="popup">
+<code>circle(radius: float, segments: int = -1) -> Obj2d</code>
+<br>
+Make a circle of a given radius.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_2d.html#piecad.primitives_2d.ellipse">
+ellipse
+<span class="popup">
+<code>ellipse(radii: list[float, float], segments: int = -1) -> Obj2d</code>
+<br>
+Make an ellipse with the given radii.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_2d.html#piecad.primitives_2d.path">
+path
+<span class="popup">
+<code>path(initial_point: tuple[float, float] = (0, 0), segments: int = -1) -> object</code>
+<br>
+Create a Path object containing an SVG-like path starting at `initial_point`.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_2d.html#piecad.primitives_2d.polygon">
+polygon
+<span class="popup">
+<code>polygon(paths: list[list[tuple[float, float]]], check: bool = True) -> Obj2d</code>
+<br>
+Create a polygon from a single or multiple closed paths of points.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_2d.html#piecad.primitives_2d.rectangle">
+rectangle
+<span class="popup">
+<code>rectangle(size: list[float, float], center: bool = False) -> Obj2d</code>
+<br>
+Make a rectangle of a given size.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_2d.html#piecad.primitives_2d.rounded_rectangle">
+rounded_rectangle
+<span class="popup">
+<code>rounded_rectangle(size: list[float, float], rounding_radius: float = 0.2, segments: int = -1, center: bool = False) -> Obj2d</code>
+<br>
+Create a rectangle with rounded corners.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_2d.html#piecad.primitives_2d.square">
+square
+<span class="popup">
+<code>square(size: float, center: bool = False) -> Obj2d</code>
+<br>
+Make a square of a given size.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_2d.html#piecad.primitives_2d.star">
+star
+<span class="popup">
+<code>star(num_points: int, outer_radius: float, inner_radius: float = 0.0) -> Obj2d</code>
+<br>
+Make a regular star of a given number of points.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_2d.html#piecad.primitives_2d.text">
+text
+<span class="popup">
+<code>text(sz: float, tstr: str, inter_char_space=None) -> Obj2d</code>
+<br>
+Draw the unicode printable characters in `tstr` in shapes of size `sz`.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_2d.html#piecad.primitives_2d.text_set_font">
+text_set_font
+<span class="popup">
+<code>text_set_font(font_name: str) -> None</code>
+<br>
+Set the current font used by `text`.
+</span>
+</a>
+</p>
+<h2>3d Primitives</h2>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.cone">
+cone
+<span class="popup">
+<code>cone(height: float, radius_low: float, radius_high: float = 0.2, segments: int = -1, center: bool = False) -> Obj3d</code>
+<br>
+Make a cone with given radii and height.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.cube">
+cube
+<span class="popup">
+<code>cube(size: float, center: bool = False) -> Obj3d</code>
+<br>
+Make a cube of with sides of the given size.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.cuboid">
+cuboid
+<span class="popup">
+<code>cuboid(size: list[float, float, float], center: bool = False) -> Obj3d</code>
+<br>
+Make a cuboid with the x, y, and z values given in size.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.cylinder">
+cylinder
+<span class="popup">
+<code>cylinder(height: float, radius: float, segments: int = -1, center=False) -> Obj3d</code>
+<br>
+Make a cylinder of a given radius and height.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.ellipsoid">
+ellipsoid
+<span class="popup">
+<code>ellipsoid(radii: tuple[float, float, float], segments: int = -1, center=False) -> Obj3d</code>
+<br>
+Make an ellipsoid which is an elliptical on all three radii.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.elliptical_cylinder">
+elliptical_cylinder
+<span class="popup">
+<code>elliptical_cylinder(height: float, radii: tuple[float, float], segments: int = -1, center=False) -> Obj3d</code>
+<br>
+Make a elliptically shaped cylinder of given radii and height.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.extrude">
+extrude
+<span class="popup">
+<code>extrude(obj: Obj2d, height: float) -> Obj3d</code>
+<br>
+Create a Obj3d solid from Obj2d of given height.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.extrude_chaining">
+extrude_chaining
+<span class="popup">
+<code>extrude_chaining(pairs: list[tuple[float, Obj2d]], is_convex: bool = False, diagnose: str = None) -> Obj3d</code>
+<br>
+Extrude multiple 2d objects into a single 3d Object.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.extrude_transforming">
+extrude_transforming
+<span class="popup">
+<code>extrude_transforming(obj: Obj2d, height: float, num_twist_divisions: int = 0, twist: float = 0, scale: tuple[float, float] = (1.0, 1.0)) -> Obj3d</code>
+<br>
+Create a Obj3d solid from Obj2d of given height.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.geodesic_sphere">
+geodesic_sphere
+<span class="popup">
+<code>geodesic_sphere(radius, segments=-1) -> Obj3d</code>
+<br>
+Create a geodesic sphere of a given radius.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.lithophane">
+lithophane
+<span class="popup">
+<code>lithophane(image_filename, width_mm=150, pixel_size=0.5, min_thickness=0.8, max_thickness=3.0) -> Obj3d</code>
+<br>
+Create a 3d lithophane from a 2d image.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.polyhedron">
+polyhedron
+<span class="popup">
+<code>polyhedron(vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]) -> Obj3d</code>
+<br>
+Create an Obj3d from points and a list of triangles using those points.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.pyramid">
+pyramid
+<span class="popup">
+<code>pyramid(height: int, num_sides: int, radius: float) -> Obj3d</code>
+<br>
+Make a regular pyramid with the given height and number of sides.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.revolve">
+revolve
+<span class="popup">
+<code>revolve(obj: Obj2d, revolve_degrees: float = 360.0, segments: int = -1) -> Obj3d</code>
+<br>
+Create a Obj3d by revolving an Obj2d around the Y-axis, then rotating it so that Y becomes Z.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.rounded_cuboid">
+rounded_cuboid
+<span class="popup">
+<code>rounded_cuboid(size: list[float, float, float], rounding_radius=2.0, segments: int = -1, center: bool = False) -> Obj3d</code>
+<br>
+Make a rounded_cuboid with the x, y, and z values given in size.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.rounded_cylinder">
+rounded_cylinder
+<span class="popup">
+<code>rounded_cylinder(height: float, radius: float, rounding_radius: float = 2.0, segments: int = -1, center: bool = False) -> Obj3d</code>
+<br>
+Make a rounded cylinder of a given radius and height.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.sphere">
+sphere
+<span class="popup">
+<code>sphere(radius: float, segments: int = -1) -> Obj3d</code>
+<br>
+Create a classical sphere of a given radius.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.torus">
+torus
+<span class="popup">
+<code>torus(outer_radius: float, inner_radius: float, segments=-1) -> Obj3d</code>
+<br>
+Create a torus with the specified radii.
+</span>
+</a>
+</p>
+<h2>Trigonometry (degrees)</h2>
+<p class="item">
+<a class="ahover" href="trigonometry.html#piecad.trigonometry.acos">
+acos
+<span class="popup">
+<code>acos(cosVal: float) -> float</code>
+<br>
+ArcCosine of cosVal returning angle in degrees.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="trigonometry.html#piecad.trigonometry.acosh">
+acosh
+<span class="popup">
+<code>acosh(cosVal: float) -> float</code>
+<br>
+ArcCosine of hyperbolic cosVal returning angle in degrees.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="trigonometry.html#piecad.trigonometry.asin">
+asin
+<span class="popup">
+<code>asin(sinVal: float) -> float</code>
+<br>
+ArcSine of sinVal returning angle in degrees.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="trigonometry.html#piecad.trigonometry.asinh">
+asinh
+<span class="popup">
+<code>asinh(sinVal: float) -> float</code>
+<br>
+ArcSine of hyperbolic sinVal returning angle in degrees
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="trigonometry.html#piecad.trigonometry.atan">
+atan
+<span class="popup">
+<code>atan(tanVal: float) -> float</code>
+<br>
+ArcTan of tanVal returning angle in degrees.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="trigonometry.html#piecad.trigonometry.atan2">
+atan2
+<span class="popup">
+<code>atan2(y: float, x: float) -> float</code>
+<br>
+ArcTan of quotient of y and x returning angle in degrees.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="trigonometry.html#piecad.trigonometry.atanh">
+atanh
+<span class="popup">
+<code>atanh(tanVal: float) -> float</code>
+<br>
+ArcTan of hyperbolic tanVal returning angle in degrees.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="trigonometry.html#piecad.trigonometry.cos">
+cos
+<span class="popup">
+<code>cos(angleInDegrees: float) -> float</code>
+<br>
+Cosine of angle in degrees.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="trigonometry.html#piecad.trigonometry.cosh">
+cosh
+<span class="popup">
+<code>cosh(angleInDegrees: float) -> float</code>
+<br>
+Hyperbolic cosine of angle in degrees.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="trigonometry.html#piecad.trigonometry.deg_to_rad">
+deg_to_rad
+<span class="popup">
+<code>deg_to_rad(angleInDegrees: float) -> float</code>
+<br>
+Convert degrees to radians.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="trigonometry.html#piecad.trigonometry.rad_to_deg">
+rad_to_deg
+<span class="popup">
+<code>rad_to_deg(angleInRadians: float) -> float</code>
+<br>
+Convert radians to degrees.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="trigonometry.html#piecad.trigonometry.sin">
+sin
+<span class="popup">
+<code>sin(angleInDegrees: float) -> float</code>
+<br>
+Sine of angle in degrees.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="trigonometry.html#piecad.trigonometry.sinh">
+sinh
+<span class="popup">
+<code>sinh(angleInDegrees: float) -> float</code>
+<br>
+Hyperbolic sine of angle in degrees.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="trigonometry.html#piecad.trigonometry.tan">
+tan
+<span class="popup">
+<code>tan(angleInDegrees: float) -> float</code>
+<br>
+Tangent of angle in degrees.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="trigonometry.html#piecad.trigonometry.tanh">
+tanh
+<span class="popup">
+<code>tanh(angleInDegrees: float) -> float</code>
+<br>
+Hyperbolic tangent of angle in degrees.
+</span>
+</a>
+</p>
+<h2>Utility Functions</h2>
+<p class="item">
+<a class="ahover" href="utilities.html#piecad.utilities.load">
+load
+<span class="popup">
+<code>load(filename: str) -> Obj3d | Obj2d</code>
+<br>
+Load a 3d object from a file.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="utilities.html#piecad.utilities.save">
+save
+<span class="popup">
+<code>save(filename: str, *objs: Obj3d | Obj2d) -> None</code>
+<br>
+Save a 3d or 2d object in a file suitable for printing, etc.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="utilities.html#piecad.utilities.view">
+view
+<span class="popup">
+<code>view(obj: Obj3d | Obj2d, title: str = '') -> None</code>
+<br>
+Use `Piecad-Viewer` to display the geometry object.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="utilities.html#piecad.utilities.winding">
+winding
+<span class="popup">
+<code>winding(lt: list[tuple[float, float]]) -> str</code>
+<br>
+String description of winding of a 2D polygon.
+</span>
+</a>
+</p>
+<h2>class Obj2d</h2>
+<p class="item">
+<a class="ahover" href="index.html#piecad.area">
+area
+<span class="popup">
+<code>area(self) -> 'float'</code>
+<br>
+The area of this Obj2d.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.bounding_box">
+bounding_box
+<span class="popup">
+<code>bounding_box(self) -> 'tuple[float, float, float, float]'</code>
+<br>
+Return the bounding box of this object.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.center">
+center
+<span class="popup">
+<code>center(self, axes: 'tuple[bool, bool]' = (True, True), at: 'tuple[float, float]' = (0, 0)) -> 'Obj2d'</code>
+<br>
+Center the object on each of the `True` axes.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.color">
+color
+<span class="popup">
+<code>color(self, cspec) -> 'Obj2d'</code>
+<br>
+Assign the given color to this object.</summary>
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.decompose">
+decompose
+<span class="popup">
+<code>decompose(self) -> 'list[Obj2d]'</code>
+<br>
+Decompose this object into a list of topologically disjoint objects.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.extrude">
+extrude
+<span class="popup">
+<code>extrude(self, height: 'int') -> 'Obj3d'</code>
+<br>
+Extrude this object into a Obj3d of the given height.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.is_empty">
+is_empty
+<span class="popup">
+<code>is_empty(self) -> 'bool'</code>
+<br>
+Is this object empty?
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.mirror">
+mirror
+<span class="popup">
+<code>mirror(self, axes: 'tuple[bool, bool]') -> 'Obj2d'</code>
+<br>
+Mirror this object around the given axes.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.num_verts">
+num_verts
+<span class="popup">
+<code>num_verts(self) -> 'int'</code>
+<br>
+The number of vertices in this object.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.offset">
+offset
+<span class="popup">
+<code>offset(self, delta: 'float', join_type: 'str', miter_limit: 'float' = 2.0, segments: 'int' = -1) -> 'Obj2d'</code>
+<br>
+Offset (or inset) a 2D object by a given distance called `delta`.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.piecut">
+piecut
+<span class="popup">
+<code>piecut(self, start_angle=0, end_angle=90, both=False) -> 'Obj2d | tuple[Obj2d, Obj2d]'</code>
+<br>
+Cut a wedge out of this object.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.resize">
+resize
+<span class="popup">
+<code>resize(self, sizes: 'list[tuple[float | None, float | None]]') -> 'Obj2d'</code>
+<br>
+Resize this object to a specific size on each axis.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.revolve">
+revolve
+<span class="popup">
+<code>revolve(self, revolve_degrees: 'float' = 360.0, segments: 'int' = -1) -> 'Obj3d'</code>
+<br>
+Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.rotate">
+rotate
+<span class="popup">
+<code>rotate(self, degrees: 'float') -> 'Obj2d'</code>
+<br>
+Rotate this object by the given degrees.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.scale">
+scale
+<span class="popup">
+<code>scale(self, factors: 'list[float, float]') -> 'Obj2d'</code>
+<br>
+Scale this object by the given factors.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.to_paths">
+to_paths
+<span class="popup">
+<code>to_paths(self) -> 'list[list[float, float]]'</code>
+<br>
+Return a lists of paths, each of which is a list of vertices that make up this object.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.transform">
+transform
+<span class="popup">
+<code>transform(self, matrix2x3: 'tuple[tuple[float, float, float], tuple[float, float, float]]') -> 'Obj3d'</code>
+<br>
+Transform this object with the given affine transformaton matrix.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.translate">
+translate
+<span class="popup">
+<code>translate(self, offsets: 'list[float, float]') -> 'Obj2d'</code>
+<br>
+Translate (move) this object by the given offsets.
+</span>
+</a>
+</p>
+<h2>class Obj3d</h2>
+<p class="item">
+<a class="ahover" href="index.html#piecad.bounding_box">
+bounding_box
+<span class="popup">
+<code>bounding_box(self) -> 'tuple[float, float, float, float, float, float]'</code>
+<br>
+Return the bounding box of this object.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.center">
+center
+<span class="popup">
+<code>center(self, axes: 'tuple[bool, bool, bool]' = (True, True, True), at: 'tuple[float, float, float]' = (0, 0, 0)) -> 'Obj3d'</code>
+<br>
+Center the object on each of the `True` axes.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.color">
+color
+<span class="popup">
+<code>color(self, cspec) -> 'Obj3d'</code>
+<br>
+Assign the given color to this object.</summary>
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.decompose">
+decompose
+<span class="popup">
+<code>decompose(self) -> 'list[Obj3d]'</code>
+<br>
+Decompose this object into a list of topologically disjoint objects.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.is_empty">
+is_empty
+<span class="popup">
+<code>is_empty(self) -> 'bool'</code>
+<br>
+Is this object empty?
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.minkowski_difference">
+minkowski_difference
+<span class="popup">
+<code>minkowski_difference(self, other: 'Obj3d') -> 'Obj3d'</code>
+<br>
+Return the minkowski_sum of this object and other.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.minkowski_sum">
+minkowski_sum
+<span class="popup">
+<code>minkowski_sum(self, other: 'Obj3d') -> 'Obj3d'</code>
+<br>
+Return the minkowski_sum of this object and other.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.mirror">
+mirror
+<span class="popup">
+<code>mirror(self, axes: 'tuple[bool, bool, bool]') -> 'Obj3d'</code>
+<br>
+Mirror this object around the given axes.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.num_faces">
+num_faces
+<span class="popup">
+<code>num_faces(self) -> 'int'</code>
+<br>
+The number of faces in this object.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.num_verts">
+num_verts
+<span class="popup">
+<code>num_verts(self) -> 'int'</code>
+<br>
+The number of vertices in this object.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.piecut">
+piecut
+<span class="popup">
+<code>piecut(self, start_angle=0, end_angle=90, both=False) -> 'Obj3d | tuple[Obj3d, Obj3d]'</code>
+<br>
+Cut a wedge out of this object.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.project">
+project
+<span class="popup">
+<code>project(self) -> 'Obj2d'</code>
+<br>
+Return a Obj2d representing this object's "shadow" on the x-y plane.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.resize">
+resize
+<span class="popup">
+<code>resize(self, sizes: 'list[tuple[float | None, float | None, float | None]]') -> 'Obj3d'</code>
+<br>
+Resize this object to a specific size on each axis.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.rotate">
+rotate
+<span class="popup">
+<code>rotate(self, degrees: 'list[float, float, float]') -> 'Obj3d'</code>
+<br>
+Rotate this object by the given degrees for each axis.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.scale">
+scale
+<span class="popup">
+<code>scale(self, factors: 'list[float, float, float]') -> 'Obj3d'</code>
+<br>
+Scale this object by the given factors.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.slice">
+slice
+<span class="popup">
+<code>slice(self, height: 'float') -> 'Obj2d'</code>
+<br>
+Like `project`, but rather than the bottom, project at the given height.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.split">
+split
+<span class="popup">
+<code>split(self, cutter: 'Obj3d') -> 'Obj3d'</code>
+<br>
+This more efficently does a difference and an intersect operation between this and cutter.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.surface_area">
+surface_area
+<span class="popup">
+<code>surface_area(self) -> 'float'</code>
+<br>
+The surface area of this Obj3d.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.to_verts_and_faces">
+to_verts_and_faces
+<span class="popup">
+<code>to_verts_and_faces(self) -> 'tuple[list[list[float, float, float]], list[list[int, int, int]]]'</code>
+<br>
+Return a pair containg a list of vertices and a list of faces for this object.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.transform">
+transform
+<span class="popup">
+<code>transform(self, matrix3x4: 'tuple[tuple[float, float, float, float], tuple[float, float, float, float], tuple[float, float, float, float], tuple[float, float, float, float]]') -> 'Obj3d'</code>
+<br>
+Transform this object with the given affine transformaton matrix.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.translate">
+translate
+<span class="popup">
+<code>translate(self, offsets: 'list[float, float, float]') -> 'Obj3d'</code>
+<br>
+Translate (move) this object by the given offsets.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.volume">
+volume
+<span class="popup">
+<code>volume(self) -> 'float'</code>
+<br>
+The volume of this Obj3d.
+</span>
+</a>
+</p>
+<h2>class Config</h2>
+<p class="item">
+<a class="ahover" href="index.html#piecad.get_default_segments">
+Config.get_default_segments
+<span class="popup">
+<code>Config.get_default_segments() -> 'int'</code>
+<br>
+Get the default number of segments used by circular objects.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.get_default_units">
+Config.get_default_units
+<span class="popup">
+<code>Config.get_default_units() -> 'str'</code>
+<br>
+Get the default units used by this script.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.get_layer_resolution">
+Config.get_layer_resolution
+<span class="popup">
+<code>Config.get_layer_resolution() -> 'float'</code>
+<br>
+Get the layer resolution used in printing in this script.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.set_default_segments">
+Config.set_default_segments
+<span class="popup">
+<code>Config.set_default_segments(segments: 'int' = 36) -> 'None'</code>
+<br>
+Set the default number of segments used by circular objects.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.set_default_units">
+Config.set_default_units
+<span class="popup">
+<code>Config.set_default_units(units: 'str' = 'mm') -> 'None'</code>
+<br>
+Set the default units used in this script.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.set_layer_resolution">
+Config.set_layer_resolution
+<span class="popup">
+<code>Config.set_layer_resolution(resolution: 'float') -> 'None'</code>
+<br>
+Set the layer resolution used in printing in this script.
+</span>
+</a>
+</p>
+</div>
+</body>
+</html>

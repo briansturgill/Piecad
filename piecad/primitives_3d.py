@@ -117,7 +117,7 @@ def ellipsoid(
     radii: tuple[float, float, float], segments: int = -1, center=False
 ) -> Obj3d:
     """
-    Make an ellipsoid which is elliptical on all three radii.
+    Make an ellipsoid which is an elliptical on all three radii.
 
     For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
@@ -341,7 +341,7 @@ def extrude_transforming(
     )
 
 
-def geodesic_sphere(radius, segments=-1):
+def geodesic_sphere(radius, segments=-1) -> Obj3d:
     """
     Create a geodesic sphere of a given radius.
 
@@ -595,7 +595,7 @@ def sphere(radius: float, segments: int = -1) -> Obj3d:
     return revolve(circ, segments=segments)
 
 
-def torus(outer_radius: float, inner_radius: float, segments=-1):
+def torus(outer_radius: float, inner_radius: float, segments=-1) -> Obj3d:
     """
     Create a torus with the specified radii.
 

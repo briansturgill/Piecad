@@ -112,14 +112,14 @@ el.replaceWith(d);
 <p>Ellipses are created with the center at <code>(0,0)</code></p></div>
 </dd>
 <dt id="piecad.primitives_2d.path"><code class="name flex">
-<span>def <span class="ident">path</span></span>(<span>initial_point: tuple[float, float] = (0, 0), segments: int = -1)</span>
+<span>def <span class="ident">path</span></span>(<span>initial_point: tuple[float, float] = (0, 0), segments: int = -1) ‑> object</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def path(initial_point: tuple[float, float] = (0, 0), segments: int = -1):
+<pre><code class="python">def path(initial_point: tuple[float, float] = (0, 0), segments: int = -1) -&gt; object:
     &#34;&#34;&#34;
     Create a Path object containing an SVG-like path starting at `initial_point`.
     The path can contain lines, quadratic curves, cubic bezier curves, and arcs.
@@ -508,14 +508,14 @@ When <code>center</code> is <code>True</code> it will cause the square to be cen
 <p>Stars are created with the center at <code>(0,0)</code>.</p></div>
 </dd>
 <dt id="piecad.primitives_2d.text"><code class="name flex">
-<span>def <span class="ident">text</span></span>(<span>sz: float, tstr: str, inter_char_space=None)</span>
+<span>def <span class="ident">text</span></span>(<span>sz: float, tstr: str, inter_char_space=None) ‑> <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a></span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def text(sz: float, tstr: str, inter_char_space=None):
+<pre><code class="python">def text(sz: float, tstr: str, inter_char_space=None) -&gt; Obj2d:
     &#34;&#34;&#34;
     Draw the unicode printable characters in `tstr` in shapes of size `sz`.
 
@@ -532,14 +532,14 @@ Also available is <code>Hack-Regular.ttf</code> (Monospaced).</p>
 <p>The default value for the spacing between characters (<code>inter_char_space</code>) is <code>sz/3.0</code>.</p></div>
 </dd>
 <dt id="piecad.primitives_2d.text_set_font"><code class="name flex">
-<span>def <span class="ident">text_set_font</span></span>(<span>font_name: str)</span>
+<span>def <span class="ident">text_set_font</span></span>(<span>font_name: str) ‑> None</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def text_set_font(font_name: str):
+<pre><code class="python">def text_set_font(font_name: str) -&gt; None:
     &#34;&#34;&#34;
     Set the current font used by `text`.
     Fonts are stored in the `_package_name_/fonts` directory.
@@ -551,7 +551,7 @@ Also available is <code>Hack-Regular.ttf</code> (Monospaced).</p>
     The default font is `Roboto-Regular.ttf`.
     Also available is `Hack-Regular.ttf` (Monospaced).
     &#34;&#34;&#34;
-    return _text.set_font(font_name)</code></pre>
+    _text.set_font(font_name)</code></pre>
 </details>
 <div class="desc"><p>Set the current font used by <code><a title="piecad.primitives_2d.text" href="#piecad.primitives_2d.text">text()</a></code>.
 Fonts are stored in the <code>_package_name_/fonts</code> directory.

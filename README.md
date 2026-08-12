@@ -12,20 +12,29 @@ To install using [pip](https://pypi.org/project/piecad) (virtual environment rec
 pip install piecad
 ```
 
+[QuickHelp](https://briansturgill.github.io/Piecad/qh.html)
+
 [Documentation](https://briansturgill.github.io/Piecad)
+
+[Examples](examples/README.md)
+
+[Printable CheatSheet](https://briansturgill.github.io/Piecad/cs.pdf)
 
 [Piecad-Viewer](https://github.com/briansturgill/Piecad-Viewer):
 Piecad has a `view` function which works like a 3d `print` (also does 2D).
 Piecad-Viewer provides the window that displays the model/image from each `view` call.
 You can use arrow keys to swtich between the models/images.
 
-[Examples](examples/README.md)
+Type 'h' in the Piecad-Viewer window for a list of commands.
+
+Piecad-Viewer is installed with Piecad. It is automatically started when you use
+a `view` call inside Piecad.
 
 # My Piecad development environment.
 
 I have one window where I run vi as my editor.
 
-I have another window that is `piecad_viewer`.
+I have another window that is Piecad-Viewer.
 
 I use the script below to watch for changes in all `*.py` files, the argument to
 the script is the name of the main python file. When any python file is written, python

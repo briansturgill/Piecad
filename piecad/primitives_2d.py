@@ -63,7 +63,7 @@ def ellipse(radii: list[float, float], segments: int = -1) -> Obj2d:
     return Obj2d(circ.scale(radii))
 
 
-def path(initial_point: tuple[float, float] = (0, 0), segments: int = -1):
+def path(initial_point: tuple[float, float] = (0, 0), segments: int = -1) -> object:
     """
     Create a Path object containing an SVG-like path starting at `initial_point`.
     The path can contain lines, quadratic curves, cubic bezier curves, and arcs.
@@ -334,7 +334,7 @@ def star(num_points: int, outer_radius: float, inner_radius: float = 0.0) -> Obj
     return Obj2d(_m.CrossSection([pts]))
 
 
-def text_set_font(font_name: str):
+def text_set_font(font_name: str) -> None:
     """
     Set the current font used by `text`.
     Fonts are stored in the `_package_name_/fonts` directory.
@@ -346,10 +346,10 @@ def text_set_font(font_name: str):
     The default font is `Roboto-Regular.ttf`.
     Also available is `Hack-Regular.ttf` (Monospaced).
     """
-    return _text.set_font(font_name)
+    _text.set_font(font_name)
 
 
-def text(sz: float, tstr: str, inter_char_space=None):
+def text(sz: float, tstr: str, inter_char_space=None) -> Obj2d:
     """
     Draw the unicode printable characters in `tstr` in shapes of size `sz`.
 

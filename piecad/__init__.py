@@ -27,7 +27,7 @@ import manifold3d as _m
 __version__ = "1.2.0"
 
 
-def version():
+def version() -> str:
     "Piecad version"
     return __version__
 
@@ -40,13 +40,13 @@ class Obj3d:
         mo The Manifold::Manifold object used by manifold3d.
     """
 
-    def __init__(self, o: object = None, color=None):
+    def __init__(self, o: object = None, color=None) -> None:
         if o == None:
             o = _m.Manifold()
         self.mo = o
         self._color = color
 
-    def bounding_box(self):
+    def bounding_box(self) -> tuple[float, float, float, float, float, float]:
         """
         Return the bounding box of this object.
 
@@ -61,7 +61,7 @@ class Obj3d:
         self,
         axes: tuple[bool, bool, bool] = (True, True, True),
         at: tuple[float, float, float] = (0, 0, 0),
-    ):
+    ) -> Obj3d:
         """
         Center the object on each of the `True` axes.
 
@@ -85,7 +85,7 @@ class Obj3d:
         o3._color = self._color
         return o3
 
-    def color(self, cspec):
+    def color(self, cspec) -> Obj3d:
         """
         Assign the given color to this object.</summary>
 
@@ -114,7 +114,7 @@ class Obj3d:
             l.append(Obj3d(m, color=self._color))
         return l
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
         """
         Is this object empty?
 
@@ -300,7 +300,7 @@ class Obj3d:
 
     def slice(self, height: float) -> Obj2d:
         """
-        Like `project`, but a the given height.
+        Like `project`, but rather than the bottom, project at the given height.
 
         """
         _chkGT("height", height, 0)
@@ -308,8 +308,7 @@ class Obj3d:
 
     def split(self, cutter: Obj3d) -> Obj3d:
         """
-        This is like doing a difference and an intersect between this the cutter
-        object simultaneously. It is faster than doing the two operations separately.
+        This more efficently does a difference and an intersect operation between this and cutter.
 
         Return is `(diff_obj, inter_obj)`.
 
@@ -383,7 +382,7 @@ class Obj2d:
         mo The Manifold::CrossSection object used by manifold3d.
     """
 
-    def __init__(self, o: object = None, color=None):
+    def __init__(self, o: object = None, color=None) -> None:
         if o == None:
             o = _m.CrossSection()
         self.mo = o
@@ -395,7 +394,7 @@ class Obj2d:
         """
         return self.mo.area()
 
-    def bounding_box(self):
+    def bounding_box(self) -> tuple[float, float, float, float]:
         """
         Return the bounding box of this object.
 
@@ -408,7 +407,7 @@ class Obj2d:
 
     def center(
         self, axes: tuple[bool, bool] = (True, True), at: tuple[float, float] = (0, 0)
-    ):
+    ) -> Obj2d:
         """
         Center the object on each of the `True` axes.
 
@@ -428,7 +427,7 @@ class Obj2d:
         o2._color = self._color
         return o2
 
-    def color(self, cspec):
+    def color(self, cspec) -> Obj2d:
         """
         Assign the given color to this object.</summary>
 
@@ -457,13 +456,13 @@ class Obj2d:
             l.append(Obj2d(m, color=self._color))
         return l
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
         """
         Is this object empty?
         """
         return self.mo.is_empty()
 
-    def extrude(self, height: int):
+    def extrude(self, height: int) -> Obj3d:
         """
         Extrude this object into a Obj3d of the given height.
         """
@@ -471,7 +470,7 @@ class Obj2d:
         o3._color = self._color
         return o3
 
-    def mirror(self, axes: tuple[bool, bool]):
+    def mirror(self, axes: tuple[bool, bool]) -> Obj2d:
         """
         Mirror this object around the given axes.
 
@@ -594,7 +593,7 @@ class Obj2d:
                 sf[(i + 1) % 2] = sf[i]
         return self.scale(sf)
 
-    def revolve(self, revolve_degrees: float = 360.0, segments: int = -1):
+    def revolve(self, revolve_degrees: float = 360.0, segments: int = -1) -> Obj3d:
         """
         Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
 
@@ -652,13 +651,16 @@ class Config:
     User changeable global settings.
     """
 
+    def __init__(self):
+        pass
+
     _default_segments = 36
     _default_units = "mm"
     _layer_resolution = 0.1
 
     # Prevent instantiation
-    def __new__(cls, *args, **kwargs):
-        raise TypeError(f"{cls.__name__} cannot be instantiated.")
+    # def __new__(cls, *args, **kwargs):
+    # raise TypeError(f"{cls.__name__} cannot be instantiated.")
 
     @classmethod
     def get_default_segments(cls) -> int:
@@ -713,10 +715,10 @@ class Config:
         cls._default_units = units
 
     @classmethod
-    def get_layer_resolution(cls) -> str:
+    def get_layer_resolution(cls) -> float:
         """
-        Get the layer resolution using in printing in this script.
-        I you have more than one resolution, use the smallest.
+        Get the layer resolution used in printing in this script.
+        If you have more than one resolution, use the smallest.
         For most 3d priting the default of 0.1 is sufficient.
         """
         return cls._layer_resolution
@@ -724,56 +726,56 @@ class Config:
     @classmethod
     def set_layer_resolution(cls, resolution: float) -> None:
         """
-        Set the layer resolution using in printing in this script.
-        I you have more than one resolution, use the smallest.
+        Set the layer resolution used in printing in this script.
+        If you have more than one resolution, use the smallest.
         For most 3d priting the default of 0.1 is sufficient.
         """
         cls._layer_resolution = resolution
 
 
-def _chkIn(name: str, val: object, const: list):
+def _chkIn(name: str, val: object, const: list) -> bool:
     if val not in const:
         raise ValidationError(f"Parameter {name} must be greater a value in {const}")
 
 
-def _chkGE(name: str, val: object, const: object):
+def _chkGE(name: str, val: object, const: object) -> bool:
     if val < const:
         raise ValidationError(
             f"Parameter {name} must be greater than or equal to {const}"
         )
 
 
-def _chkGT(name: str, val: object, const: object):
+def _chkGT(name: str, val: object, const: object) -> bool:
     if val <= const:
         raise ValidationError(f"Parameter {name} must be greater than {const}")
 
 
-def _chkTY(name: str, v1: object, v2: object):
+def _chkTY(name: str, v1: object, v2: object) -> bool:
     if type(v1) != v2:
         raise ValidationError(f"Parameter {name} must be of type {v1}")
 
 
-def _chkV2(name: str, v1: object):
+def _chkV2(name: str, v1: object) -> bool:
     if type(v1) != list and type(v1) != tuple:
         raise ValidationError(f"Parameter {name} must be of type list or tuple")
     if len(v1) != 2:
         raise ValidationError(f"Parameter {name} list/tuple must have length of 2.")
 
 
-def _chkV3(name: str, v1: object):
+def _chkV3(name: str, v1: object) -> bool:
     if type(v1) != list and type(v1) != tuple:
         raise ValidationError(f"Parameter {name} must be of type list or tuple")
     if len(v1) != 3:
         raise ValidationError(f"Parameter {name} list/tuple must have length of 3.")
 
 
-def _chkGO(name: str, v1: object):
+def _chkGO(name: str, v1: object) -> bool:
     ty = type(v1)
     if ty != Obj3d and ty != Obj2d:
         raise ValidationError(f"Parameter {name} must be of type, Obj2d or Obj3d")
 
 
-def _chkGOTY(name: str, ty: object):
+def _chkGOTY(name: str, ty: object) -> bool:
     if ty != Obj3d and ty != Obj2d:
         raise ValidationError(f"Parameter {name} must be of type, Obj2d or Obj3d")
 
@@ -784,7 +786,8 @@ class ValidationError(BaseException):
     functions and methods.
     """
 
-    pass
+    def __init__(self, message):
+        super().__init__(message)
 
 
 from .utilities import *

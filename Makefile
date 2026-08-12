@@ -9,6 +9,7 @@ documents:
 	(cd examples; ./mk_examples_list >README.md)
 	mv html/piecad/* docs
 	rm -rf html
+	python mkcs.py
 
 test:
 	pytest tests --benchmark-disable

@@ -191,7 +191,7 @@ When <code>center</code> is <code>True</code>, the cylinder will centered on <co
     radii: tuple[float, float, float], segments: int = -1, center=False
 ) -&gt; Obj3d:
     &#34;&#34;&#34;
-    Make an ellipsoid which is elliptical on all three radii.
+    Make an ellipsoid which is an elliptical on all three radii.
 
     For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
@@ -206,7 +206,7 @@ When <code>center</code> is <code>True</code>, the cylinder will centered on <co
 
     return sphere(1, segments=segments).scale(radii)</code></pre>
 </details>
-<div class="desc"><p>Make an ellipsoid which is elliptical on all three radii.</p>
+<div class="desc"><p>Make an ellipsoid which is an elliptical on all three radii.</p>
 <p>For <code>segments</code> see the documentation of <a href="index.html#piecad.Config.set_default_segments"><code>Config.set_default_segments</code></a>.</p>
 <p>The ellipsoid is centered at <code>(0,0,0)</code>.</p>
 <iframe width="100%" height="220" src="examples/ellipsoid.html"></iframe></div>
@@ -488,14 +488,14 @@ greater than zero.</p>
 <iframe width="100%" height="300" src="examples/extrude_transforming.html"></iframe></div>
 </dd>
 <dt id="piecad.primitives_3d.geodesic_sphere"><code class="name flex">
-<span>def <span class="ident">geodesic_sphere</span></span>(<span>radius, segments=-1)</span>
+<span>def <span class="ident">geodesic_sphere</span></span>(<span>radius, segments=-1) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def geodesic_sphere(radius, segments=-1):
+<pre><code class="python">def geodesic_sphere(radius, segments=-1) -&gt; Obj3d:
     &#34;&#34;&#34;
     Create a geodesic sphere of a given radius.
 
@@ -861,14 +861,14 @@ When <code>center</code> is <code>True</code>, the rounded cylinder will centere
 <iframe width="100%" height="220" src="examples/sphere.html"></iframe></div>
 </dd>
 <dt id="piecad.primitives_3d.torus"><code class="name flex">
-<span>def <span class="ident">torus</span></span>(<span>outer_radius: float, inner_radius: float, segments=-1)</span>
+<span>def <span class="ident">torus</span></span>(<span>outer_radius: float, inner_radius: float, segments=-1) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def torus(outer_radius: float, inner_radius: float, segments=-1):
+<pre><code class="python">def torus(outer_radius: float, inner_radius: float, segments=-1) -&gt; Obj3d:
     &#34;&#34;&#34;
     Create a torus with the specified radii.
 
