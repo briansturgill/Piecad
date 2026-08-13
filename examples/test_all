@@ -1,0 +1,5 @@
+for p in *.py; do
+  echo $p
+	python $p
+  read -p "<Enter> to continue."
+done

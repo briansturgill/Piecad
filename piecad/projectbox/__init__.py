@@ -143,7 +143,8 @@ class ProjectBox:
                 w = dims[0]-2*rr-tiny+wall
                 d = dims[1]-wall
                 h = dims[2]
-                o = cube([w, d, h])
+                # o = cube([w, d, h])
+                o = rounded_rectangle([w, d], wall-0.2).extrude(h)
                 o = o.translate([(dims[0]-w)/2, 0, -wall])
             return o
 
