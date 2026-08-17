@@ -19,3 +19,8 @@ Added several new things:  hull_points, resize, minkowskis_sum, minkowski_differ
 Changed internal Path class to be retured by a primitives_2d `path` function.
 
 Changed `set_default_segments()` to `Config.set_default_segments`.
+
+# 1.3.0
+
+Used special features of Manifold3d to allow a single object to have multiple colors.
+This necessitated a breaking change in the Piecad-Viewer protocol.

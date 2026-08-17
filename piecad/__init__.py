@@ -24,7 +24,7 @@ to check for polygon self intersections.
 from __future__ import annotations
 import manifold3d as _m
 
-__version__ = "1.2.1"
+__version__ = "1.3.0"
 
 
 def version() -> str:
@@ -40,11 +40,12 @@ class Obj3d:
         mo The Manifold::Manifold object used by manifold3d.
     """
 
-    def __init__(self, o: object = None, color=None) -> None:
+    color_map = {}
+
+    def __init__(self, o: object = None) -> None:
         if o == None:
-            o = _m.Manifold()
+            o = _m.Manifold().as_original()
         self.mo = o
-        self._color = color
 
     def bounding_box(self) -> tuple[float, float, float, float, float, float]:
         """
@@ -82,7 +83,6 @@ class Obj3d:
         if axes[2]:
             new_z = at[2] - mid_z
         o3 = self.translate((new_x, new_y, new_z))
-        o3._color = self._color
         return o3
 
     def color(self, cspec) -> Obj3d:
@@ -101,7 +101,9 @@ class Obj3d:
             * A string that is one of the basic or extended CSS color names.
               For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color/keywords)
         """
-        return Obj3d(self.mo, _parse_color(cspec))
+        mo = self.mo.as_original()
+        Obj3d.color_map[mo.original_id()] = _parse_color(cspec)
+        return Obj3d(mo)
 
     def decompose(self) -> list[Obj3d]:
         """
@@ -111,7 +113,7 @@ class Obj3d:
         ml = self.mo.decompose()
         l = []
         for m in ml:
-            l.append(Obj3d(m, color=self._color))
+            l.append(Obj3d(m))
         return l
 
     def is_empty(self) -> bool:
@@ -160,7 +162,7 @@ class Obj3d:
             uv[1] = 1
         if axes[2]:
             uv[2] = 1
-        return Obj3d(self.mo.mirror(uv), self._color)
+        return Obj3d(self.mo.mirror(uv))
 
     def num_faces(self) -> int:
         """
@@ -221,11 +223,8 @@ class Obj3d:
         )
         if both:
             o1, o2 = self.split(cutter)
-            o1._color = self._color
-            o2._color = self._color
             return (o1, o2)
         o3 = difference(self, cutter)
-        o3._color = self._color
         return o3
 
     def project(self) -> Obj2d:
@@ -233,7 +232,7 @@ class Obj3d:
         Return a Obj2d representing this object's "shadow" on the x-y plane.
 
         """
-        return Obj2d(self.mo.project(), color=self._color)
+        return Obj2d(self.mo.project())
 
     def resize(
         self, sizes: list[tuple[float | None, float | None, float | None]]
@@ -287,7 +286,7 @@ class Obj3d:
 
         """
         _chkV3("degrees", degrees)
-        return Obj3d(self.mo.rotate(degrees), color=self._color)
+        return Obj3d(self.mo.rotate(degrees))
 
     def scale(self, factors: list[float, float, float]) -> Obj3d:
         """
@@ -296,7 +295,7 @@ class Obj3d:
         If you want no change, use `1.0`, that means 100% (thus unchanged).
         """
         _chkV3("factors", factors)
-        return Obj3d(self.mo.scale(factors), color=self._color)
+        return Obj3d(self.mo.scale(factors))
 
     def slice(self, height: float) -> Obj2d:
         """
@@ -304,7 +303,7 @@ class Obj3d:
 
         """
         _chkGT("height", height, 0)
-        return Obj2d(self.mo.slice(height), color=self._color)
+        return Obj2d(self.mo.slice(height))
 
     def split(self, cutter: Obj3d) -> Obj3d:
         """
@@ -314,7 +313,7 @@ class Obj3d:
 
         """
         ret = self.mo.split(cutter.mo)
-        return (Obj3d(ret[0], color=self._color), Obj3d(ret[1], color=self._color))
+        return (Obj3d(ret[0]), Obj3d(ret[1]))
 
     def surface_area(self) -> float:
         """
@@ -358,14 +357,14 @@ class Obj3d:
         ):
             raise ValueError("Improperly sized 3x4 matrix.")
 
-        return Obj3d(self.mo.transform(matrix3x4), color=self._color)
+        return Obj3d(self.mo.transform(matrix3x4))
 
     def translate(self, offsets: list[float, float, float]) -> Obj3d:
         """
         Translate (move) this object by the given offsets.
         """
         _chkV3("offsets", offsets)
-        return Obj3d(self.mo.translate(offsets), color=self._color)
+        return Obj3d(self.mo.translate(offsets))
 
     def volume(self) -> float:
         """
@@ -467,7 +466,6 @@ class Obj2d:
         Extrude this object into a Obj3d of the given height.
         """
         o3 = Obj3d(_m.Manifold.extrude(self.mo, height))
-        o3._color = self._color
         return o3
 
     def mirror(self, axes: tuple[bool, bool]) -> Obj2d:
@@ -600,7 +598,6 @@ class Obj2d:
         For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
         """
         o3 = revolve(self, revolve_degrees, segments)
-        o3._color = self._color
         return o3
 
     def rotate(self, degrees: float) -> Obj2d:
@@ -627,7 +624,7 @@ class Obj2d:
 
     def transform(
         self, matrix2x3: tuple[tuple[float, float, float], tuple[float, float, float]]
-    ) -> Obj3d:
+    ) -> Obj2d:
         """
         Transform this object with the given affine transformaton matrix.
 

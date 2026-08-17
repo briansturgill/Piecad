@@ -138,17 +138,17 @@ def test_color_rgb_2d():
 
 def test_color_string_3d():
     c = cube(2).color("orange")
-    assert c._color == (255, 165, 0)
+    assert c.color_map[c.mo.original_id()] == (255, 165, 0)
 
 
 def test_color_hex_3d():
     c = cube(2).color("#FF00FF")
-    assert c._color == (255, 0, 255)
+    assert c.color_map[c.mo.original_id()] == (255, 0, 255)
 
 
 def test_color_rgb_3d():
     c = cube(2).color((255, 0, 255))
-    assert c._color == (255, 0, 255)
+    assert c.color_map[c.mo.original_id()] == (255, 0, 255)
 
 
 def test_is_empty_2d():

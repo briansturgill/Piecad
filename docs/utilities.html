@@ -186,11 +186,14 @@ el.replaceWith(d);
                 vertices = mesh.vert_properties[:, :3]
             else:
                 vertices = mesh.vert_properties
+
+            face_colors = _face_colors(obj, mesh)
             mesh_output = trimesh.Trimesh(
-                vertices=vertices, faces=mesh.tri_verts, process=False
+                vertices=vertices,
+                faces=mesh.tri_verts,
+                face_colors=face_colors,
+                process=False,
             )
-            if obj._color != None:
-                mesh_output.visual.vertex_colors = obj._color
             # Manifold3d has a different definition than Trimesh
             if not mesh_output.is_watertight:
                 print(&#34;WARNING: output mesh is not watertight&#34;)
@@ -203,11 +206,13 @@ el.replaceWith(d);
                     vertices = mesh.vert_properties[:, :3]
                 else:
                     vertices = mesh.vert_properties
+                face_colors = _face_colors(obj, mesh)
                 mesh_output = trimesh.Trimesh(
-                    vertices=vertices, faces=mesh.tri_verts, process=False
+                    vertices=vertices,
+                    faces=mesh.tri_verts,
+                    face_colors=face_colors,
+                    process=False,
                 )
-                if obj._color != None:
-                    mesh_output.visual.vertex_colors = obj._color
                 # Manifold3d has a different definition than Trimesh
                 if not mesh_output.is_watertight:
                     print(&#34;WARNING: output mesh is not watertight&#34;)
@@ -330,9 +335,11 @@ If you want a file saved in the current directory, prepend <code>'./'</code> or 
     else:
         vertices = mesh.vert_properties
     faces = mesh.tri_verts
+    face_colors = _face_colors(obj, mesh)
     view_data = {}
     view_data[&#34;title&#34;] = title
-    view_data[&#34;color&#34;] = [210, 180, 140] if obj._color == None else obj._color
+    fc = face_colors.tolist()
+    view_data[&#34;color&#34;] = fc
     view_data[&#34;vertices&#34;] = vertices.tolist()
     fl = faces.tolist()
     view_data[&#34;faces&#34;] = fl

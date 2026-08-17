@@ -362,7 +362,6 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
         Extrude this object into a Obj3d of the given height.
         &#34;&#34;&#34;
         o3 = Obj3d(_m.Manifold.extrude(self.mo, height))
-        o3._color = self._color
         return o3
 
     def mirror(self, axes: tuple[bool, bool]) -&gt; Obj2d:
@@ -495,7 +494,6 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
         For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
         &#34;&#34;&#34;
         o3 = revolve(self, revolve_degrees, segments)
-        o3._color = self._color
         return o3
 
     def rotate(self, degrees: float) -&gt; Obj2d:
@@ -522,7 +520,7 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
 
     def transform(
         self, matrix2x3: tuple[tuple[float, float, float], tuple[float, float, float]]
-    ) -&gt; Obj3d:
+    ) -&gt; Obj2d:
         &#34;&#34;&#34;
         Transform this object with the given affine transformaton matrix.
 
@@ -696,7 +694,6 @@ For a list of color names see: <a href="https://www.w3.org/wiki/CSS/Properties/c
     Extrude this object into a Obj3d of the given height.
     &#34;&#34;&#34;
     o3 = Obj3d(_m.Manifold.extrude(self.mo, height))
-    o3._color = self._color
     return o3</code></pre>
 </details>
 <div class="desc"><p>Extrude this object into a Obj3d of the given height.</p></div>
@@ -923,7 +920,6 @@ maintain the same size ratio between the two sizes.</p>
     For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
     &#34;&#34;&#34;
     o3 = revolve(self, revolve_degrees, segments)
-    o3._color = self._color
     return o3</code></pre>
 </details>
 <div class="desc"><p>Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.</p>
@@ -983,7 +979,7 @@ maintain the same size ratio between the two sizes.</p>
 <div class="desc"><p>Return a lists of paths, each of which is a list of vertices that make up this object.</p></div>
 </dd>
 <dt id="piecad.Obj2d.transform"><code class="name flex">
-<span>def <span class="ident">transform</span></span>(<span>self,<br>matrix2x3: tuple[tuple[float, float, float], tuple[float, float, float]]) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
+<span>def <span class="ident">transform</span></span>(<span>self,<br>matrix2x3: tuple[tuple[float, float, float], tuple[float, float, float]]) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
 </code></dt>
 <dd>
 <details class="source">
@@ -992,7 +988,7 @@ maintain the same size ratio between the two sizes.</p>
 </summary>
 <pre><code class="python">def transform(
     self, matrix2x3: tuple[tuple[float, float, float], tuple[float, float, float]]
-) -&gt; Obj3d:
+) -&gt; Obj2d:
     &#34;&#34;&#34;
     Transform this object with the given affine transformaton matrix.
 
@@ -1027,7 +1023,7 @@ maintain the same size ratio between the two sizes.</p>
 </dd>
 <dt id="piecad.Obj3d"><code class="flex name class">
 <span>class <span class="ident">Obj3d</span></span>
-<span>(</span><span>o: object = None, color=None)</span>
+<span>(</span><span>o: object = None)</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -1042,11 +1038,12 @@ maintain the same size ratio between the two sizes.</p>
         mo The Manifold::Manifold object used by manifold3d.
     &#34;&#34;&#34;
 
-    def __init__(self, o: object = None, color=None) -&gt; None:
+    color_map = {}
+
+    def __init__(self, o: object = None) -&gt; None:
         if o == None:
-            o = _m.Manifold()
+            o = _m.Manifold().as_original()
         self.mo = o
-        self._color = color
 
     def bounding_box(self) -&gt; tuple[float, float, float, float, float, float]:
         &#34;&#34;&#34;
@@ -1084,7 +1081,6 @@ maintain the same size ratio between the two sizes.</p>
         if axes[2]:
             new_z = at[2] - mid_z
         o3 = self.translate((new_x, new_y, new_z))
-        o3._color = self._color
         return o3
 
     def color(self, cspec) -&gt; Obj3d:
@@ -1103,7 +1099,9 @@ maintain the same size ratio between the two sizes.</p>
             * A string that is one of the basic or extended CSS color names.
               For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color/keywords)
         &#34;&#34;&#34;
-        return Obj3d(self.mo, _parse_color(cspec))
+        mo = self.mo.as_original()
+        Obj3d.color_map[mo.original_id()] = _parse_color(cspec)
+        return Obj3d(mo)
 
     def decompose(self) -&gt; list[Obj3d]:
         &#34;&#34;&#34;
@@ -1113,7 +1111,7 @@ maintain the same size ratio between the two sizes.</p>
         ml = self.mo.decompose()
         l = []
         for m in ml:
-            l.append(Obj3d(m, color=self._color))
+            l.append(Obj3d(m))
         return l
 
     def is_empty(self) -&gt; bool:
@@ -1162,7 +1160,7 @@ maintain the same size ratio between the two sizes.</p>
             uv[1] = 1
         if axes[2]:
             uv[2] = 1
-        return Obj3d(self.mo.mirror(uv), self._color)
+        return Obj3d(self.mo.mirror(uv))
 
     def num_faces(self) -&gt; int:
         &#34;&#34;&#34;
@@ -1223,11 +1221,8 @@ maintain the same size ratio between the two sizes.</p>
         )
         if both:
             o1, o2 = self.split(cutter)
-            o1._color = self._color
-            o2._color = self._color
             return (o1, o2)
         o3 = difference(self, cutter)
-        o3._color = self._color
         return o3
 
     def project(self) -&gt; Obj2d:
@@ -1235,7 +1230,7 @@ maintain the same size ratio between the two sizes.</p>
         Return a Obj2d representing this object&#39;s &#34;shadow&#34; on the x-y plane.
 
         &#34;&#34;&#34;
-        return Obj2d(self.mo.project(), color=self._color)
+        return Obj2d(self.mo.project())
 
     def resize(
         self, sizes: list[tuple[float | None, float | None, float | None]]
@@ -1289,7 +1284,7 @@ maintain the same size ratio between the two sizes.</p>
 
         &#34;&#34;&#34;
         _chkV3(&#34;degrees&#34;, degrees)
-        return Obj3d(self.mo.rotate(degrees), color=self._color)
+        return Obj3d(self.mo.rotate(degrees))
 
     def scale(self, factors: list[float, float, float]) -&gt; Obj3d:
         &#34;&#34;&#34;
@@ -1298,7 +1293,7 @@ maintain the same size ratio between the two sizes.</p>
         If you want no change, use `1.0`, that means 100% (thus unchanged).
         &#34;&#34;&#34;
         _chkV3(&#34;factors&#34;, factors)
-        return Obj3d(self.mo.scale(factors), color=self._color)
+        return Obj3d(self.mo.scale(factors))
 
     def slice(self, height: float) -&gt; Obj2d:
         &#34;&#34;&#34;
@@ -1306,7 +1301,7 @@ maintain the same size ratio between the two sizes.</p>
 
         &#34;&#34;&#34;
         _chkGT(&#34;height&#34;, height, 0)
-        return Obj2d(self.mo.slice(height), color=self._color)
+        return Obj2d(self.mo.slice(height))
 
     def split(self, cutter: Obj3d) -&gt; Obj3d:
         &#34;&#34;&#34;
@@ -1316,7 +1311,7 @@ maintain the same size ratio between the two sizes.</p>
 
         &#34;&#34;&#34;
         ret = self.mo.split(cutter.mo)
-        return (Obj3d(ret[0], color=self._color), Obj3d(ret[1], color=self._color))
+        return (Obj3d(ret[0]), Obj3d(ret[1]))
 
     def surface_area(self) -&gt; float:
         &#34;&#34;&#34;
@@ -1360,14 +1355,14 @@ maintain the same size ratio between the two sizes.</p>
         ):
             raise ValueError(&#34;Improperly sized 3x4 matrix.&#34;)
 
-        return Obj3d(self.mo.transform(matrix3x4), color=self._color)
+        return Obj3d(self.mo.transform(matrix3x4))
 
     def translate(self, offsets: list[float, float, float]) -&gt; Obj3d:
         &#34;&#34;&#34;
         Translate (move) this object by the given offsets.
         &#34;&#34;&#34;
         _chkV3(&#34;offsets&#34;, offsets)
-        return Obj3d(self.mo.translate(offsets), color=self._color)
+        return Obj3d(self.mo.translate(offsets))
 
     def volume(self) -&gt; float:
         &#34;&#34;&#34;
@@ -1379,6 +1374,13 @@ maintain the same size ratio between the two sizes.</p>
 <p>Attributes
 -----=
 mo The Manifold::Manifold object used by manifold3d.</p></div>
+<h3>Class variables</h3>
+<dl>
+<dt id="piecad.Obj3d.color_map"><code class="name">var <span class="ident">color_map</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="piecad.Obj3d.bounding_box"><code class="name flex">
@@ -1438,7 +1440,6 @@ a cuboid that would exactly contain this object.</p>
     if axes[2]:
         new_z = at[2] - mid_z
     o3 = self.translate((new_x, new_y, new_z))
-    o3._color = self._color
     return o3</code></pre>
 </details>
 <div class="desc"><p>Center the object on each of the <code>True</code> axes.</p>
@@ -1468,7 +1469,9 @@ a cuboid that would exactly contain this object.</p>
         * A string that is one of the basic or extended CSS color names.
           For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color/keywords)
     &#34;&#34;&#34;
-    return Obj3d(self.mo, _parse_color(cspec))</code></pre>
+    mo = self.mo.as_original()
+    Obj3d.color_map[mo.original_id()] = _parse_color(cspec)
+    return Obj3d(mo)</code></pre>
 </details>
 <div class="desc"><p>Assign the given color to this object.</summary></p>
 <p>Parameters
@@ -1503,7 +1506,7 @@ For a list of color names see: <a href="https://www.w3.org/wiki/CSS/Properties/c
     ml = self.mo.decompose()
     l = []
     for m in ml:
-        l.append(Obj3d(m, color=self._color))
+        l.append(Obj3d(m))
     return l</code></pre>
 </details>
 <div class="desc"><p>Decompose this object into a list of topologically disjoint objects.</p></div>
@@ -1597,7 +1600,7 @@ adding it.</p>
         uv[1] = 1
     if axes[2]:
         uv[2] = 1
-    return Obj3d(self.mo.mirror(uv), self._color)</code></pre>
+    return Obj3d(self.mo.mirror(uv))</code></pre>
 </details>
 <div class="desc"><p>Mirror this object around the given axes.</p>
 <p>To understand this, pretend you are holding you right hand up in front of a mirror.
@@ -1701,11 +1704,8 @@ number of vertices is present goes a long way to making sure things are healthy.
     )
     if both:
         o1, o2 = self.split(cutter)
-        o1._color = self._color
-        o2._color = self._color
         return (o1, o2)
     o3 = difference(self, cutter)
-    o3._color = self._color
     return o3</code></pre>
 </details>
 <div class="desc"><p>Cut a wedge out of this object.</p>
@@ -1725,7 +1725,7 @@ number of vertices is present goes a long way to making sure things are healthy.
     Return a Obj2d representing this object&#39;s &#34;shadow&#34; on the x-y plane.
 
     &#34;&#34;&#34;
-    return Obj2d(self.mo.project(), color=self._color)</code></pre>
+    return Obj2d(self.mo.project())</code></pre>
 </details>
 <div class="desc"><p>Return a Obj2d representing this object's "shadow" on the x-y plane.</p></div>
 </dd>
@@ -1802,7 +1802,7 @@ maintain the same size ratio between the two sizes.</p>
 
     &#34;&#34;&#34;
     _chkV3(&#34;degrees&#34;, degrees)
-    return Obj3d(self.mo.rotate(degrees), color=self._color)</code></pre>
+    return Obj3d(self.mo.rotate(degrees))</code></pre>
 </details>
 <div class="desc"><p>Rotate this object by the given degrees for each axis.</p></div>
 </dd>
@@ -1821,7 +1821,7 @@ maintain the same size ratio between the two sizes.</p>
     If you want no change, use `1.0`, that means 100% (thus unchanged).
     &#34;&#34;&#34;
     _chkV3(&#34;factors&#34;, factors)
-    return Obj3d(self.mo.scale(factors), color=self._color)</code></pre>
+    return Obj3d(self.mo.scale(factors))</code></pre>
 </details>
 <div class="desc"><p>Scale this object by the given factors.</p>
 <p>If you want no change, use <code>1.0</code>, that means 100% (thus unchanged).</p></div>
@@ -1840,7 +1840,7 @@ maintain the same size ratio between the two sizes.</p>
 
     &#34;&#34;&#34;
     _chkGT(&#34;height&#34;, height, 0)
-    return Obj2d(self.mo.slice(height), color=self._color)</code></pre>
+    return Obj2d(self.mo.slice(height))</code></pre>
 </details>
 <div class="desc"><p>Like <code>project</code>, but rather than the bottom, project at the given height.</p></div>
 </dd>
@@ -1860,7 +1860,7 @@ maintain the same size ratio between the two sizes.</p>
 
     &#34;&#34;&#34;
     ret = self.mo.split(cutter.mo)
-    return (Obj3d(ret[0], color=self._color), Obj3d(ret[1], color=self._color))</code></pre>
+    return (Obj3d(ret[0]), Obj3d(ret[1]))</code></pre>
 </details>
 <div class="desc"><p>This more efficently does a difference and an intersect operation between this and cutter.</p>
 <p>Return is <code>(diff_obj, inter_obj)</code>.</p></div>
@@ -1935,7 +1935,7 @@ maintain the same size ratio between the two sizes.</p>
     ):
         raise ValueError(&#34;Improperly sized 3x4 matrix.&#34;)
 
-    return Obj3d(self.mo.transform(matrix3x4), color=self._color)</code></pre>
+    return Obj3d(self.mo.transform(matrix3x4))</code></pre>
 </details>
 <div class="desc"><p>Transform this object with the given affine transformaton matrix.</p>
 <p>If you don't know what this is, you probably don't need it.</p></div>
@@ -1953,7 +1953,7 @@ maintain the same size ratio between the two sizes.</p>
     Translate (move) this object by the given offsets.
     &#34;&#34;&#34;
     _chkV3(&#34;offsets&#34;, offsets)
-    return Obj3d(self.mo.translate(offsets), color=self._color)</code></pre>
+    return Obj3d(self.mo.translate(offsets))</code></pre>
 </details>
 <div class="desc"><p>Translate (move) this object by the given offsets.</p></div>
 </dd>
@@ -2067,6 +2067,7 @@ functions and methods.</p></div>
 <li><code><a title="piecad.Obj3d.bounding_box" href="#piecad.Obj3d.bounding_box">bounding_box</a></code></li>
 <li><code><a title="piecad.Obj3d.center" href="#piecad.Obj3d.center">center</a></code></li>
 <li><code><a title="piecad.Obj3d.color" href="#piecad.Obj3d.color">color</a></code></li>
+<li><code><a title="piecad.Obj3d.color_map" href="#piecad.Obj3d.color_map">color_map</a></code></li>
 <li><code><a title="piecad.Obj3d.decompose" href="#piecad.Obj3d.decompose">decompose</a></code></li>
 <li><code><a title="piecad.Obj3d.is_empty" href="#piecad.Obj3d.is_empty">is_empty</a></code></li>
 <li><code><a title="piecad.Obj3d.minkowski_difference" href="#piecad.Obj3d.minkowski_difference">minkowski_difference</a></code></li>

@@ -52,4 +52,4 @@ def test_color_method_2d():
 
 def test_color_method_3d():
     c = cylinder(1, 1).color("red")
-    assert c._color == (255, 0, 0)
+    assert Obj3d.color_map[c.mo.original_id()] == (255, 0, 0)

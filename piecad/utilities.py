@@ -91,6 +91,22 @@ def _get_save_dir():
     return _save_dir
 
 
+def _face_colors(obj, mesh):
+    flen = len(mesh.tri_verts)
+    face_colors = _np.zeros((flen, 3), dtype=_np.uint8)
+    for i in range(0, len(mesh.run_index) - 1):
+        for j in range(mesh.run_index[i] // 3, mesh.run_index[i + 1] // 3):
+            id = mesh.run_original_id[i]
+            if id == -1 or id not in Obj3d.color_map:
+                color = (210, 180, 140)
+            else:
+                color = Obj3d.color_map[id]
+            face_colors[j][0] = color[0]
+            face_colors[j][1] = color[1]
+            face_colors[j][2] = color[2]
+    return face_colors
+
+
 def save(filename: str, *objs: Obj3d | Obj2d) -> None:
     """
     Save a 3d or 2d object in a file suitable for printing, etc.
@@ -138,11 +154,14 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                 vertices = mesh.vert_properties[:, :3]
             else:
                 vertices = mesh.vert_properties
+
+            face_colors = _face_colors(obj, mesh)
             mesh_output = trimesh.Trimesh(
-                vertices=vertices, faces=mesh.tri_verts, process=False
+                vertices=vertices,
+                faces=mesh.tri_verts,
+                face_colors=face_colors,
+                process=False,
             )
-            if obj._color != None:
-                mesh_output.visual.vertex_colors = obj._color
             # Manifold3d has a different definition than Trimesh
             if not mesh_output.is_watertight:
                 print("WARNING: output mesh is not watertight")
@@ -155,11 +174,13 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                     vertices = mesh.vert_properties[:, :3]
                 else:
                     vertices = mesh.vert_properties
+                face_colors = _face_colors(obj, mesh)
                 mesh_output = trimesh.Trimesh(
-                    vertices=vertices, faces=mesh.tri_verts, process=False
+                    vertices=vertices,
+                    faces=mesh.tri_verts,
+                    face_colors=face_colors,
+                    process=False,
                 )
-                if obj._color != None:
-                    mesh_output.visual.vertex_colors = obj._color
                 # Manifold3d has a different definition than Trimesh
                 if not mesh_output.is_watertight:
                     print("WARNING: output mesh is not watertight")
@@ -275,9 +296,11 @@ def view(obj: Obj3d | Obj2d, title: str = "") -> None:
     else:
         vertices = mesh.vert_properties
     faces = mesh.tri_verts
+    face_colors = _face_colors(obj, mesh)
     view_data = {}
     view_data["title"] = title
-    view_data["color"] = [210, 180, 140] if obj._color == None else obj._color
+    fc = face_colors.tolist()
+    view_data["color"] = fc
     view_data["vertices"] = vertices.tolist()
     fl = faces.tolist()
     view_data["faces"] = fl
