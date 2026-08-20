@@ -18,6 +18,8 @@ from pathlib import Path as _Path
 import numpy as _np
 from . import Obj2d, Obj3d, Config, _chkGE, _chkGO, ValidationError
 
+from . _export_3mf import export_3mf as _export_3mf
+
 
 def _info_str(tag):  # Must be called from inside another function.
     csf = inspect.stack()[2]
@@ -149,6 +151,9 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
     if type(objs[0]) == Obj3d:
         if len(objs) == 1:
             obj = objs[0]
+            if filename.endswith(".3mf"):
+                _export_3mf(filename, obj.mo, Obj3d.color_map, Config.get_default_units())
+                return
             mesh = obj.mo.to_mesh()
             if mesh.vert_properties.shape[1] > 3:
                 vertices = mesh.vert_properties[:, :3]
@@ -185,6 +190,13 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                 if not mesh_output.is_watertight:
                     print("WARNING: output mesh is not watertight")
                 scene.add_geometry(mesh_output)
+            if filename.endswith(".3mf"):
+                s_mesh = scene.to_mesh()
+                s_vertices = _np.asarray(s_mesh.vertices, _np.float32)
+                s_faces = _np.asarray(s_mesh.faces, _np.uint32)
+                mo = _m.Manifold(_m.Mesh(s_vertices, s_faces))
+                _export_3mf(filename, mo, Obj3d.color_map, Config.get_default_units())
+                return
             trimesh.exchange.export.export_scene(scene, filename, ext)
         # trimesh obj file export does not end with newline
         # currently this upsets prusa_slicer

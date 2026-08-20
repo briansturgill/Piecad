@@ -1,31 +1,18 @@
-from piecad import Config
 import manifold3d as m
 import lib3mf.Lib3MF as lib3mf
 from datetime import datetime as dt
 
-def export_3mf(filename, mo, color_map):
+def export_3mf(filename, mo, color_map, units="mm"):
     try:
         # Create a new 3MF model
         wrapper = lib3mf.Wrapper()
         model = wrapper.CreateModel()
-        units = Config.get_default_units()
         if units == "mm":
             model.SetUnit(lib3mf.ModelUnit.MilliMeter)
         elif units == "cm":
             model.SetUnit(lib3mf.ModelUnit.CentiMeter)
         elif units == "in":
             model.SetUnit(lib3mf.ModelUnit.Inch)
-
-
-
-        #title="3MF Model", desc='A 3MF Model created by Piecad.', copyright= None, license = None):
-        #mdg = model.GetMetaDataGroup()
-        #url = "http://LikeIknow.xyz/what/to/put/here"
-        #mdg.AddMetaData(url, 'Title', title, "xs:string", False)
-        #mdg.AddMetaData(url,'Designer', 'Piecad', "xs:string", False)
-        #mdg.AddMetaData(url, 'Description', desc, "xs:string", False)
-        #mdg.AddMetaData(url, 'Copyright', copyright if copyright != None else f'Copyright {dt.now().year}', "xs:string", False)
-        #mdg.AddMetaData(url, 'LicenseTerms', license if license != None else 'CC-BY-4.0', "xs:string", False)
 
         # Create a mesh object
         mesh = model.AddMeshObject()
