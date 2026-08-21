@@ -349,13 +349,13 @@ def text_set_font(font_name: str) -> None:
     _text.set_font(font_name)
 
 
-def text(sz: float, tstr: str, inter_char_space=None) -> Obj2d:
+def text(size: float, text: str, inter_char_space=None) -> Obj2d:
     """
-    Draw the unicode printable characters in `tstr` in shapes of size `sz`.
+    Draw the unicode printable characters in `text` in shapes of size `size`.
 
     The default font is `Roboto-Regular.ttf`.
     Also available is `Hack-Regular.ttf` (Monospaced).
 
-    The default value for the spacing between characters (`inter_char_space`) is `sz/3.0`.
+    The default value for the spacing between characters (`inter_char_space`) is `size/3.0`.
     """
-    return _text.text_func(sz, tstr, inter_char_space=None)
+    return _text.text_func(size, text, inter_char_space=None)

@@ -508,28 +508,28 @@ When <code>center</code> is <code>True</code> it will cause the square to be cen
 <p>Stars are created with the center at <code>(0,0)</code>.</p></div>
 </dd>
 <dt id="piecad.primitives_2d.text"><code class="name flex">
-<span>def <span class="ident">text</span></span>(<span>sz: float, tstr: str, inter_char_space=None) ‑> <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a></span>
+<span>def <span class="ident">text</span></span>(<span>size: float, text: str, inter_char_space=None) ‑> <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a></span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def text(sz: float, tstr: str, inter_char_space=None) -&gt; Obj2d:
+<pre><code class="python">def text(size: float, text: str, inter_char_space=None) -&gt; Obj2d:
     &#34;&#34;&#34;
-    Draw the unicode printable characters in `tstr` in shapes of size `sz`.
+    Draw the unicode printable characters in `text` in shapes of size `size`.
 
     The default font is `Roboto-Regular.ttf`.
     Also available is `Hack-Regular.ttf` (Monospaced).
 
-    The default value for the spacing between characters (`inter_char_space`) is `sz/3.0`.
+    The default value for the spacing between characters (`inter_char_space`) is `size/3.0`.
     &#34;&#34;&#34;
-    return _text.text_func(sz, tstr, inter_char_space=None)</code></pre>
+    return _text.text_func(size, text, inter_char_space=None)</code></pre>
 </details>
-<div class="desc"><p>Draw the unicode printable characters in <code>tstr</code> in shapes of size <code>sz</code>.</p>
+<div class="desc"><p>Draw the unicode printable characters in <code><a title="piecad.primitives_2d.text" href="#piecad.primitives_2d.text">text()</a></code> in shapes of size <code>size</code>.</p>
 <p>The default font is <code>Roboto-Regular.ttf</code>.
 Also available is <code>Hack-Regular.ttf</code> (Monospaced).</p>
-<p>The default value for the spacing between characters (<code>inter_char_space</code>) is <code>sz/3.0</code>.</p></div>
+<p>The default value for the spacing between characters (<code>inter_char_space</code>) is <code>size/3.0</code>.</p></div>
 </dd>
 <dt id="piecad.primitives_2d.text_set_font"><code class="name flex">
 <span>def <span class="ident">text_set_font</span></span>(<span>font_name: str) ‑> None</span>

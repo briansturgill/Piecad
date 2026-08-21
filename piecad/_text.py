@@ -77,22 +77,22 @@ def _get_glyph_polygon(c):
     return obj
 
 
-def text_func(sz: float, tstr: str, inter_char_space=None):
+def text_func(size: float, text: str, inter_char_space=None):
     """
-     Draw the unicode printable characters in `tstr` in shapes of size `sz`.
+     Draw the unicode printable characters in `text` in shapes of size `size`.
 
     The default font is `Roboto-Regular.ttf`.
     Also available is `Hack-Regular.ttf` (Monospaced).
 
-    The default value for the spacing between characters (`inter_char_space`) is `sz/3.0`.
+    The default value for the spacing between characters (`inter_char_space`) is `size/3.0`.
 
     """
     line_pos = 0
     if inter_char_space == None:
-        inter_char_space = sz / 3.0
+        inter_char_space = size / 3.0
     l = []
     max_y = 0
-    for c in tstr:
+    for c in text:
         poly = _get_glyph_polygon(c)
         width = poly.width
         if poly.max_y > max_y:
@@ -102,14 +102,14 @@ def text_func(sz: float, tstr: str, inter_char_space=None):
         poly = poly.translate([line_pos, 0])
         line_pos += width
         l.append(poly)
-    f = sz / max_y
+    f = size / max_y
     obj = union(*l).scale([f, f])
     return obj
 
 
 if __name__ == "__main__":
-    sz = 6
-    h = sz * 3
+    size = 6
+    h = size * 3
     s = "ASsTtUuVvWwXxYyZzA"
     s = "afiklgmnijmj"
     s = "0123456789"
@@ -117,9 +117,9 @@ if __name__ == "__main__":
     s = "abcdefghijklmnopqrstuvwxyz"
     s = "!\"#$%&'()*+,-./:;<=>?@[\\]|^|_|`|{|}~"
     s = "p0123456789 !\"#$%&'()*+,-./:;<=>?@[\\]|^|_|`|{|}~"
-    c = text_func(sz, s)
+    c = text_func(size, s)
     x1, y1, x2, y2 = c.bounding_box()
-    w = (x2 - x1) + sz * 2
-    c3d = union(cube([w, h, 2]), c.extrude(2).translate([sz, sz, 2]))
+    w = (x2 - x1) + size * 2
+    c3d = union(cube([w, h, 2]), c.extrude(2).translate([size, size, 2]))
     view(c3d)
     save("/tmp/text.obj", c3d)
