@@ -308,8 +308,9 @@ def view(obj: Obj3d | Obj2d, title: str = "") -> None:
 
     if type(obj) == Obj2d:
         color = obj._color
-        obj = Obj2d(_m.Manifold.extrude(obj.mo, 0.1))
-        obj._color = color
+        if color == None:
+            color = Config.get_default_color()
+        obj = Obj3d(_m.Manifold.extrude(obj.mo, 0.1)).color(color)
 
     if _view_thread == None:
         _view_thread = threading.Thread(target=_view_handler, daemon=True)
