@@ -333,7 +333,7 @@ Create a geodesic sphere of a given radius.
 <a class="ahover" href="primitives_3d.html#piecad.primitives_3d.lithophane">
 lithophane
 <span class="popup">
-<code>lithophane(image_filename, width_mm=150, pixel_size=0.5, min_thickness=0.8, max_thickness=3.0) -> Obj3d</code>
+<code>lithophane(image_filename: str, width_mm: int = 150, pixel_size: float = 0.5, min_thickness: float = 0.8, max_thickness: float = 3.0) -> Obj3d</code>
 <br>
 Create a 3d lithophane from a 2d image.
 </span>
@@ -343,7 +343,7 @@ Create a 3d lithophane from a 2d image.
 <a class="ahover" href="primitives_3d.html#piecad.primitives_3d.polyhedron">
 polyhedron
 <span class="popup">
-<code>polyhedron(vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]) -> Obj3d</code>
+<code>polyhedron(vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]], validate: bool = True) -> Obj3d</code>
 <br>
 Create an Obj3d from points and a list of triangles using those points.
 </span>

@@ -20,8 +20,8 @@ def _sphere(r, s):
     return o
 
 
-def _polyhedron(v, f):
-    o = polyhedron(v, f)
+def _polyhedron(v, f, validate=True):
+    o = polyhedron(v, f, validate=validate)
     o.num_verts()
     return o
 
@@ -243,3 +243,163 @@ def test_cube_from_polyhedron(benchmark):
 
     out = benchmark(_polyhedron, vertices, faces)
     assert out.num_verts() == 8
+
+
+def test_bad_data_to_polyhedron1(benchmark):
+    vertices = [
+        [0, 0, 0],
+        [0, -5, 0],
+        [0, 0, 5],
+        [2, 0, 0],
+        [2, -5, 0],
+        [2, 0, 5],
+    ]
+    bad_faces = [
+        [2, 1, 0],
+        [3, 4, 5],
+        [0, 3, 2],
+        [2, 3, 5],
+        [1, 3, 0],
+        [1, 4, 3],
+        [1, 2, 5],
+        [1, 5, 4],
+    ]
+    fixed_faces = [
+        [2, 0, 1],
+        [3, 5, 4],
+        [0, 2, 3],
+        [2, 5, 3],
+        [1, 0, 3],
+        [1, 3, 4],
+        [1, 5, 2],
+        [1, 4, 5],
+    ]
+    c = cube([16, 2, 5])
+    # We pass False to not correct the bad data.
+    out1 = benchmark(_polyhedron, vertices, bad_faces, False)
+    assert out1.num_verts() == len(vertices)
+    u1 = union(out1, c)
+    v, f = u1.to_verts_and_faces()
+    assert not trimesh.Trimesh(v, f).is_watertight
+
+
+def test_bad_data_to_polyhedron2(benchmark):
+    vertices = [
+        [0, 0, 0],
+        [0, -5, 0],
+        [0, 0, 5],
+        [2, 0, 0],
+        [2, -5, 0],
+        [2, 0, 5],
+    ]
+    bad_faces = [
+        [2, 1, 0],
+        [3, 4, 5],
+        [0, 3, 2],
+        [2, 3, 5],
+        [1, 3, 0],
+        [1, 4, 3],
+        [1, 2, 5],
+        [1, 5, 4],
+    ]
+    fixed_faces = [
+        [2, 0, 1],
+        [3, 5, 4],
+        [0, 2, 3],
+        [2, 5, 3],
+        [1, 0, 3],
+        [1, 3, 4],
+        [1, 5, 2],
+        [1, 4, 5],
+    ]
+    c = cube([16, 2, 5])
+    # We pass True to correct the bad data.
+    out1 = benchmark(_polyhedron, vertices, bad_faces, True)
+    assert out1.num_verts() == len(vertices)
+    u1 = union(out1, c)
+    v, f = u1.to_verts_and_faces()
+    assert trimesh.Trimesh(v, f).is_watertight
+
+
+def test_bad_data_to_polyhedron3(benchmark):
+    vertices = [
+        [0, 0, 0],
+        [0, -5, 0],
+        [0, 0, 5],
+        [2, 0, 0],
+        [2, -5, 0],
+        [2, 0, 5],
+    ]
+    bad_faces = [
+        [2, 1, 0],
+        [3, 4, 5],
+        [0, 3, 2],
+        [2, 3, 5],
+        [1, 3, 0],
+        [1, 4, 3],
+        [1, 2, 5],
+        [1, 5, 4],
+    ]
+    fixed_faces = [
+        [2, 0, 1],
+        [3, 5, 4],
+        [0, 2, 3],
+        [2, 5, 3],
+        [1, 0, 3],
+        [1, 3, 4],
+        [1, 5, 2],
+        [1, 4, 5],
+    ]
+    c = cube([16, 2, 5])
+    out2 = benchmark(_polyhedron, vertices, fixed_faces, False)
+    assert out2.num_verts() == len(vertices)
+    u2 = union(out2, c)
+    v, f = u2.to_verts_and_faces()
+    assert trimesh.Trimesh(v, f).is_watertight
+
+
+def test_bad_data_to_polyhedron4(benchmark):
+    vertices = [
+        [0, 0, 0],
+        [0, -5, 0],
+        [0, 0, 5],
+        [2, 0, 0],
+        [2, -5, 0],
+        [2, 0, 5],
+    ]
+    bad_faces = [
+        [2, 1, 0],
+        [3, 4, 5],
+        [0, 3, 2],
+        [2, 3, 5],
+        [1, 3, 0],
+        [1, 4, 3],
+        [1, 2, 5],
+        [1, 5, 4],
+    ]
+    fixed_faces = [
+        [2, 0, 1],
+        [3, 5, 4],
+        [0, 2, 3],
+        [2, 5, 3],
+        [1, 0, 3],
+        [1, 3, 4],
+        [1, 5, 2],
+        [1, 4, 5],
+    ]
+    c = cube([16, 2, 5])
+    out2 = benchmark(_polyhedron, vertices, fixed_faces, True)
+    assert out2.num_verts() == len(vertices)
+    u2 = union(out2, c)
+    v, f = u2.to_verts_and_faces()
+    assert trimesh.Trimesh(v, f).is_watertight
+    v, f = out2.to_verts_and_faces()
+    m1 = trimesh.Trimesh(v, f)
+    m2 = trimesh.Trimesh(vertices, fixed_faces)
+    from trimesh import comparison
+
+    mid1 = comparison.identifier_simple(m1)
+    mid2 = comparison.identifier_simple(m2)
+    import numpy as _np
+
+    assert _np.allclose(mid1, mid2, atol=1e-5)

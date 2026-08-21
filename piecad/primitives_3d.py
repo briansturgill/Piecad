@@ -358,11 +358,11 @@ def geodesic_sphere(radius, segments=-1) -> Obj3d:
 
 
 def lithophane(
-    image_filename,
-    width_mm=150,
-    pixel_size=0.5,
-    min_thickness=0.8,
-    max_thickness=3.0,
+    image_filename: str,
+    width_mm: int = 150,
+    pixel_size: float = 0.5,
+    min_thickness: float = 0.8,
+    max_thickness: float = 3.0,
 ) -> Obj3d:
     """
     Create a 3d lithophane from a 2d image.
@@ -385,7 +385,9 @@ def lithophane(
 
 
 def polyhedron(
-    vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]
+    vertices: list[tuple[float, float, float]],
+    faces: list[tuple[int, int, int]],
+    validate: bool = True,
 ) -> Obj3d:
     """
     Create an Obj3d from points and a list of triangles using those points.
@@ -405,7 +407,11 @@ def polyhedron(
 
     That isn't really helpful.
 
-    Try adding these lines just before the call to polyhedron.
+    Thus, by default we use trimesh to correct common errors.
+    This is not always perfect, so you
+    can turn this off by setting `validate` to False.
+
+    If all else fails, try adding these lines just before the call to polyhedron.
 
     ```python
     import trimesh
@@ -416,6 +422,12 @@ def polyhedron(
     Then use a program like `meshlab` to look at where things are not manifold.
 
     """
+    if validate:
+        mesh_output = trimesh.Trimesh(
+            vertices=vertices, faces=faces, force="mesh", validate=validate
+        )
+        vertices = mesh_output.vertices
+        faces = mesh_output.faces
     vertices = _np.array(vertices, _np.float32)
     faces = _np.array(faces, _np.uint32)
     mesh = _m.Mesh(vertices, faces)

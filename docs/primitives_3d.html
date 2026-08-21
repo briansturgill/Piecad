@@ -515,7 +515,7 @@ greater than zero.</p>
 <iframe width="100%" height="220" src="examples/geodesic_sphere.html"></iframe></div>
 </dd>
 <dt id="piecad.primitives_3d.lithophane"><code class="name flex">
-<span>def <span class="ident">lithophane</span></span>(<span>image_filename, width_mm=150, pixel_size=0.5, min_thickness=0.8, max_thickness=3.0) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+<span>def <span class="ident">lithophane</span></span>(<span>image_filename: str,<br>width_mm: int = 150,<br>pixel_size: float = 0.5,<br>min_thickness: float = 0.8,<br>max_thickness: float = 3.0) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
 <dd>
 <details class="source">
@@ -523,11 +523,11 @@ greater than zero.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def lithophane(
-    image_filename,
-    width_mm=150,
-    pixel_size=0.5,
-    min_thickness=0.8,
-    max_thickness=3.0,
+    image_filename: str,
+    width_mm: int = 150,
+    pixel_size: float = 0.5,
+    min_thickness: float = 0.8,
+    max_thickness: float = 3.0,
 ) -&gt; Obj3d:
     &#34;&#34;&#34;
     Create a 3d lithophane from a 2d image.
@@ -557,7 +557,7 @@ The range is usually good for white PLA filament. If using a clear filament you 
 to find the best range.</p></div>
 </dd>
 <dt id="piecad.primitives_3d.polyhedron"><code class="name flex">
-<span>def <span class="ident">polyhedron</span></span>(<span>vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+<span>def <span class="ident">polyhedron</span></span>(<span>vertices: list[tuple[float, float, float]],<br>faces: list[tuple[int, int, int]],<br>validate: bool = True) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
 <dd>
 <details class="source">
@@ -565,7 +565,9 @@ to find the best range.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def polyhedron(
-    vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]
+    vertices: list[tuple[float, float, float]],
+    faces: list[tuple[int, int, int]],
+    validate: bool = True,
 ) -&gt; Obj3d:
     &#34;&#34;&#34;
     Create an Obj3d from points and a list of triangles using those points.
@@ -585,7 +587,11 @@ to find the best range.</p></div>
 
     That isn&#39;t really helpful.
 
-    Try adding these lines just before the call to polyhedron.
+    Thus, by default we use trimesh to correct common errors.
+    This is not always perfect, so you
+    can turn this off by setting `validate` to False.
+
+    If all else fails, try adding these lines just before the call to polyhedron.
 
     ```python
     import trimesh
@@ -596,6 +602,12 @@ to find the best range.</p></div>
     Then use a program like `meshlab` to look at where things are not manifold.
 
     &#34;&#34;&#34;
+    if validate:
+        mesh_output = trimesh.Trimesh(
+            vertices=vertices, faces=faces, force=&#34;mesh&#34;, validate=validate
+        )
+        vertices = mesh_output.vertices
+        faces = mesh_output.faces
     vertices = _np.array(vertices, _np.float32)
     faces = _np.array(faces, _np.uint32)
     mesh = _m.Mesh(vertices, faces)
@@ -621,7 +633,10 @@ what you want to do another way.</p>
 </ul>
 <p>You eventually will get a message from the Manifold package saying it is not "manifold".</p>
 <p>That isn't really helpful.</p>
-<p>Try adding these lines just before the call to polyhedron.</p>
+<p>Thus, by default we use trimesh to correct common errors.
+This is not always perfect, so you
+can turn this off by setting <code>validate</code> to False.</p>
+<p>If all else fails, try adding these lines just before the call to polyhedron.</p>
 <pre><code class="language-python">import trimesh
 mesh_output = trimesh.Trimesh(vertices=vertices, faces=triangles)
 trimesh.exchange.export.export_mesh(mesh_output, &quot;mesh.obj&quot;, &quot;obj&quot;)
