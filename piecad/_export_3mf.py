@@ -2,7 +2,8 @@ import manifold3d as m
 import lib3mf.Lib3MF as lib3mf
 from datetime import datetime as dt
 
-def export_3mf(filename, mo, color_map, units="mm"):
+
+def export_3mf(filename, mo, color_map, units="mm", def_color=(210, 180, 140)):
     try:
         # Create a new 3MF model
         wrapper = lib3mf.Wrapper()
@@ -38,22 +39,31 @@ def export_3mf(filename, mo, color_map, units="mm"):
             tris.append(tri)
             mesh.AddTriangle(tri)
 
-        mesh.SetGeometry(verts, tris) # Why is this necessary?
+        mesh.SetGeometry(verts, tris)  # Why is this necessary?
 
         # Create a ColorGroup resource
         color_group = model.AddColorGroup()
-        tan = color_group.AddColor(lib3mf.Color(210, 180, 140, 255))
-        mesh.SetObjectLevelProperty(color_group.GetResourceID(), tan)
-        
+        dc = color_group.AddColor(
+            lib3mf.Color(def_color[0], def_color[1], def_color[2], 255)
+        )
+        mesh.SetObjectLevelProperty(color_group.GetResourceID(), dc)
+
         for i in range(0, len(m_mesh.run_index) - 1):
             for j in range(m_mesh.run_index[i] // 3, m_mesh.run_index[i + 1] // 3):
                 id = m_mesh.run_original_id[i]
                 if id == -1 or id not in color_map:
-                    color = (210, 180, 140)
+                    color = def_color
                 else:
                     color = color_map[id]
-                cid = color_group.AddColor(lib3mf.Color(color[0], color[1], color[2], 255))
-                mesh.SetTriangleProperties(j, lib3mf.TriangleProperties(color_group.GetResourceID(), (cid, cid, cid)))
+                cid = color_group.AddColor(
+                    lib3mf.Color(color[0], color[1], color[2], 255)
+                )
+                mesh.SetTriangleProperties(
+                    j,
+                    lib3mf.TriangleProperties(
+                        color_group.GetResourceID(), (cid, cid, cid)
+                    ),
+                )
 
         # Add mesh to build
         model.AddBuildItem(mesh, wrapper.GetIdentityTransform())
@@ -69,8 +79,9 @@ def export_3mf(filename, mo, color_map, units="mm"):
         print(f"Error: {e}")
         raise
 
+
 if __name__ == "__main__":
-    mo = m.Manifold.cube((40,40,40))
-    mo2 = m.Manifold.cube((40,40,40)).translate((4,4,4))
+    mo = m.Manifold.cube((40, 40, 40))
+    mo2 = m.Manifold.cube((40, 40, 40)).translate((4, 4, 4))
     mo = mo + mo2
     export_3mf("/home/brian/Downloads/t.3mf", mo, {})

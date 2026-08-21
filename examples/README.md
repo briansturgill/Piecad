@@ -3,6 +3,7 @@
 * [BikeStandEndCap.py](BikeStandEndCap.py)
     -  Replace an oval cap lost from my bike repair stand.
 
+Changed default color: (210, 180, 140)
 * [CPAPStand.py](CPAPStand.py)
     -  Stand I use for a ResMed CPAP, should be easily tuned to other sized machines.
 

@@ -24,6 +24,19 @@ to check for polygon self intersections.
 from __future__ import annotations
 import manifold3d as _m
 
+
+class ValidationError(BaseException):
+    """
+    Exception class for errors detected in arguments to **piecad**
+    functions and methods.
+    """
+
+    def __init__(self, message):
+        super().__init__(message)
+
+
+from ._color import _parse_color
+
 __version__ = "1.3.0"
 
 
@@ -85,13 +98,13 @@ class Obj3d:
         o3 = self.translate((new_x, new_y, new_z))
         return o3
 
-    def color(self, cspec) -> Obj3d:
+    def color(self, cspec: tuple[int, int, int] | str) -> Obj3d:
         """
         Assign the given color to this object.</summary>
 
         Parameters:
 
-            The `color` parameter has 3 formats:
+            The `cspec` parameter has 3 formats:
 
             *   A tuple of RGB color values, where each value is between
                 0 and 255. Such as: `(255, 128, 0)`
@@ -426,13 +439,13 @@ class Obj2d:
         o2._color = self._color
         return o2
 
-    def color(self, cspec) -> Obj2d:
+    def color(self, cspec: tuple[int, int, int] | str) -> Obj2d:
         """
         Assign the given color to this object.</summary>
 
         Parameters:
 
-            The `color` parameter has 3 formats:
+            The `cspec` parameter has 3 formats:
 
             *   A tuple of RGB color values, where each value is between
                 0 and 255. Such as: `(255, 128, 0)`
@@ -646,6 +659,17 @@ class Obj2d:
 class Config:
     """
     User changeable global settings.
+
+    You can use these in your script and you can also create a file called `.piecadrc`
+    in your home directory to set these values every time you run a Piecad script.
+    Your `.piecadrc` can only contain `Config` calls and `print` statements.
+
+    Example `.piecadrc`:
+
+    ```
+    Config.set_default_color("tan")
+    print("Changed default color:", Config.get_default_color())
+    ```
     """
 
     def __init__(self):
@@ -654,6 +678,7 @@ class Config:
     _default_segments = 36
     _default_units = "mm"
     _layer_resolution = 0.1
+    _default_color = _parse_color("tan")
 
     # Prevent instantiation
     # def __new__(cls, *args, **kwargs):
@@ -729,6 +754,29 @@ class Config:
         """
         cls._layer_resolution = resolution
 
+    @classmethod
+    def get_default_color(cls) -> tuple[int, int, int]:
+        """
+        Returns the RGB values for the current default color.
+        """
+        return cls._default_color
+
+    @classmethod
+    def set_default_color(cls, cspec: tuple[int, int, int] | str) -> None:
+        """
+        Assign the given color for use as a default color for objects.</summary>
+            The `cspec` parameter has 3 formats:
+
+            *   A tuple of RGB color values, where each value is between
+                0 and 255. Such as: `(255, 128, 0)`
+
+            * A string beginning with "#" followed by 6 hex digits
+                representing RGB. Such as "#FF00FF"
+            * A string that is one of the basic or extended CSS color names.
+              For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color    /keywords)
+        """
+        cls._default_color = _parse_color(cspec)
+
 
 def _chkIn(name: str, val: object, const: list) -> bool:
     if val not in const:
@@ -777,14 +825,15 @@ def _chkGOTY(name: str, ty: object) -> bool:
         raise ValidationError(f"Parameter {name} must be of type, Obj2d or Obj3d")
 
 
-class ValidationError(BaseException):
-    """
-    Exception class for errors detected in arguments to **piecad**
-    functions and methods.
-    """
+def _handle_piecadrc():
+    import os
+    from pathlib import Path as _Path
 
-    def __init__(self, message):
-        super().__init__(message)
+    fname = str(_Path(_Path.home() / ".piecadrc"))
+    if os.path.exists(fname):
+        with open(fname, "r") as f:
+            s = "".join(f.readlines())
+        exec(s, {"Config": Config, "print": print})
 
 
 from .utilities import *
@@ -792,4 +841,5 @@ from .bulk_ops import *
 from .trigonometry import *
 from .primitives_2d import *
 from .primitives_3d import *
-from ._color import _parse_color
+
+_handle_piecadrc()

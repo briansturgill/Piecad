@@ -12,8 +12,6 @@ A tuple of RGB values in as a 3 tuple: (0, 255, 255)
 For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color/keywords)
 """
 
-from . import ValidationError
-
 _cssColors = {}
 # Basic color keywords
 _cssColors["black"] = (0, 0, 0)
@@ -167,6 +165,8 @@ _cssColors["yellowgreen"] = (154, 205, 50)
 
 
 def _parse_color(c):
+    from . import ValidationError
+
     def _chk_range(v):
         if v < 0 or v > 255:
             raise ValidationError("RGB values must be between 0 and 255")

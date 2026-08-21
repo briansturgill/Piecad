@@ -114,6 +114,17 @@ to check for polygon self intersections.</p>
 <pre><code class="python">class Config:
     &#34;&#34;&#34;
     User changeable global settings.
+
+    You can use these in your script and you can also create a file called `.piecadrc`
+    in your home directory to set these values every time you run a Piecad script.
+    Your `.piecadrc` can only contain `Config` calls and `print` statements.
+
+    Example `.piecadrc`:
+
+    ```
+    Config.set_default_color(&#34;tan&#34;)
+    print(&#34;Changed default color:&#34;, Config.get_default_color())
+    ```
     &#34;&#34;&#34;
 
     def __init__(self):
@@ -122,6 +133,7 @@ to check for polygon self intersections.</p>
     _default_segments = 36
     _default_units = &#34;mm&#34;
     _layer_resolution = 0.1
+    _default_color = _parse_color(&#34;tan&#34;)
 
     # Prevent instantiation
     # def __new__(cls, *args, **kwargs):
@@ -195,11 +207,47 @@ to check for polygon self intersections.</p>
         If you have more than one resolution, use the smallest.
         For most 3d priting the default of 0.1 is sufficient.
         &#34;&#34;&#34;
-        cls._layer_resolution = resolution</code></pre>
+        cls._layer_resolution = resolution
+
+    @classmethod
+    def get_default_color(cls) -&gt; tuple[int, int, int]:
+        &#34;&#34;&#34;
+        Returns the RGB values for the current default color.
+        &#34;&#34;&#34;
+        return cls._default_color
+
+    @classmethod
+    def set_default_color(cls, cspec: tuple[int, int, int] | str) -&gt; None:
+        &#34;&#34;&#34;
+        Assign the given color for use as a default color for objects.&lt;/summary&gt;
+            The `cspec` parameter has 3 formats:
+
+            *   A tuple of RGB color values, where each value is between
+                0 and 255. Such as: `(255, 128, 0)`
+
+            * A string beginning with &#34;#&#34; followed by 6 hex digits
+                representing RGB. Such as &#34;#FF00FF&#34;
+            * A string that is one of the basic or extended CSS color names.
+              For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color    /keywords)
+        &#34;&#34;&#34;
+        cls._default_color = _parse_color(cspec)</code></pre>
 </details>
-<div class="desc"><p>User changeable global settings.</p></div>
+<div class="desc"><p>User changeable global settings.</p>
+<p>You can use these in your script and you can also create a file called <code>.piecadrc</code>
+in your home directory to set these values every time you run a Piecad script.
+Your <code>.piecadrc</code> can only contain <code><a title="piecad.Config" href="#piecad.Config">Config</a></code> calls and <code>print</code> statements.</p>
+<p>Example <code>.piecadrc</code>:</p>
+<pre><code>Config.set_default_color(&quot;tan&quot;)
+print(&quot;Changed default color:&quot;, Config.get_default_color())
+</code></pre></div>
 <h3>Static methods</h3>
 <dl>
+<dt id="piecad.Config.get_default_color"><code class="name flex">
+<span>def <span class="ident">get_default_color</span></span>(<span>) ‑> tuple[int, int, int]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the RGB values for the current default color.</p></div>
+</dd>
 <dt id="piecad.Config.get_default_segments"><code class="name flex">
 <span>def <span class="ident">get_default_segments</span></span>(<span>) ‑> int</span>
 </code></dt>
@@ -221,6 +269,21 @@ It may also be "cm" for centimeters or "in" for inches.</p></div>
 <div class="desc"><p>Get the layer resolution used in printing in this script.
 If you have more than one resolution, use the smallest.
 For most 3d priting the default of 0.1 is sufficient.</p></div>
+</dd>
+<dt id="piecad.Config.set_default_color"><code class="name flex">
+<span>def <span class="ident">set_default_color</span></span>(<span>cspec: tuple[int, int, int] | str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Assign the given color for use as a default color for objects.</summary>
+The <code>cspec</code> parameter has 3 formats:</p>
+<pre><code>*   A tuple of RGB color values, where each value is between
+    0 and 255. Such as: &lt;code&gt;(255, 128, 0)&lt;/code&gt;
+
+* A string beginning with "#" followed by 6 hex digits
+    representing RGB. Such as "#FF00FF"
+* A string that is one of the basic or extended CSS color names.
+  For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color    /keywords)
+</code></pre></div>
 </dd>
 <dt id="piecad.Config.set_default_segments"><code class="name flex">
 <span>def <span class="ident">set_default_segments</span></span>(<span>segments: int = 36) ‑> None</span>
@@ -322,13 +385,13 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
         o2._color = self._color
         return o2
 
-    def color(self, cspec) -&gt; Obj2d:
+    def color(self, cspec: tuple[int, int, int] | str) -&gt; Obj2d:
         &#34;&#34;&#34;
         Assign the given color to this object.&lt;/summary&gt;
 
         Parameters:
 
-            The `color` parameter has 3 formats:
+            The `cspec` parameter has 3 formats:
 
             *   A tuple of RGB color values, where each value is between
                 0 and 255. Such as: `(255, 128, 0)`
@@ -618,20 +681,20 @@ a rectangle that would exactly contain this object.</p>
 <p>Parameter <code>at</code> specifies the point to center on.</p></div>
 </dd>
 <dt id="piecad.Obj2d.color"><code class="name flex">
-<span>def <span class="ident">color</span></span>(<span>self, cspec) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
+<span>def <span class="ident">color</span></span>(<span>self, cspec: tuple[int, int, int] | str) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def color(self, cspec) -&gt; Obj2d:
+<pre><code class="python">def color(self, cspec: tuple[int, int, int] | str) -&gt; Obj2d:
     &#34;&#34;&#34;
     Assign the given color to this object.&lt;/summary&gt;
 
     Parameters:
 
-        The `color` parameter has 3 formats:
+        The `cspec` parameter has 3 formats:
 
         *   A tuple of RGB color values, where each value is between
             0 and 255. Such as: `(255, 128, 0)`
@@ -646,7 +709,7 @@ a rectangle that would exactly contain this object.</p>
 <div class="desc"><p>Assign the given color to this object.</summary></p>
 <p>Parameters
 -----=</p>
-<p>The <code>color</code> parameter has 3 formats:</p>
+<p>The <code>cspec</code> parameter has 3 formats:</p>
 <ul>
 <li>
 <p>A tuple of RGB color values, where each value is between
@@ -1083,13 +1146,13 @@ maintain the same size ratio between the two sizes.</p>
         o3 = self.translate((new_x, new_y, new_z))
         return o3
 
-    def color(self, cspec) -&gt; Obj3d:
+    def color(self, cspec: tuple[int, int, int] | str) -&gt; Obj3d:
         &#34;&#34;&#34;
         Assign the given color to this object.&lt;/summary&gt;
 
         Parameters:
 
-            The `color` parameter has 3 formats:
+            The `cspec` parameter has 3 formats:
 
             *   A tuple of RGB color values, where each value is between
                 0 and 255. Such as: `(255, 128, 0)`
@@ -1446,20 +1509,20 @@ a cuboid that would exactly contain this object.</p>
 <p>Parameter <code>at</code> specifies the point to center on.</p></div>
 </dd>
 <dt id="piecad.Obj3d.color"><code class="name flex">
-<span>def <span class="ident">color</span></span>(<span>self, cspec) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
+<span>def <span class="ident">color</span></span>(<span>self, cspec: tuple[int, int, int] | str) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def color(self, cspec) -&gt; Obj3d:
+<pre><code class="python">def color(self, cspec: tuple[int, int, int] | str) -&gt; Obj3d:
     &#34;&#34;&#34;
     Assign the given color to this object.&lt;/summary&gt;
 
     Parameters:
 
-        The `color` parameter has 3 formats:
+        The `cspec` parameter has 3 formats:
 
         *   A tuple of RGB color values, where each value is between
             0 and 255. Such as: `(255, 128, 0)`
@@ -1476,7 +1539,7 @@ a cuboid that would exactly contain this object.</p>
 <div class="desc"><p>Assign the given color to this object.</summary></p>
 <p>Parameters
 -----=</p>
-<p>The <code>color</code> parameter has 3 formats:</p>
+<p>The <code>cspec</code> parameter has 3 formats:</p>
 <ul>
 <li>
 <p>A tuple of RGB color values, where each value is between
@@ -2030,9 +2093,11 @@ functions and methods.</p></div>
 <li>
 <h4><code><a title="piecad.Config" href="#piecad.Config">Config</a></code></h4>
 <ul class="">
+<li><code><a title="piecad.Config.get_default_color" href="#piecad.Config.get_default_color">get_default_color</a></code></li>
 <li><code><a title="piecad.Config.get_default_segments" href="#piecad.Config.get_default_segments">get_default_segments</a></code></li>
 <li><code><a title="piecad.Config.get_default_units" href="#piecad.Config.get_default_units">get_default_units</a></code></li>
 <li><code><a title="piecad.Config.get_layer_resolution" href="#piecad.Config.get_layer_resolution">get_layer_resolution</a></code></li>
+<li><code><a title="piecad.Config.set_default_color" href="#piecad.Config.set_default_color">set_default_color</a></code></li>
 <li><code><a title="piecad.Config.set_default_segments" href="#piecad.Config.set_default_segments">set_default_segments</a></code></li>
 <li><code><a title="piecad.Config.set_default_units" href="#piecad.Config.set_default_units">set_default_units</a></code></li>
 <li><code><a title="piecad.Config.set_layer_resolution" href="#piecad.Config.set_layer_resolution">set_layer_resolution</a></code></li>

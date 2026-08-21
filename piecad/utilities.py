@@ -18,7 +18,7 @@ from pathlib import Path as _Path
 import numpy as _np
 from . import Obj2d, Obj3d, Config, _chkGE, _chkGO, ValidationError
 
-from . _export_3mf import export_3mf as _export_3mf
+from ._export_3mf import export_3mf as _export_3mf
 
 
 def _info_str(tag):  # Must be called from inside another function.
@@ -55,7 +55,7 @@ def load(filename: str) -> Obj3d | Obj2d:
     """
     dot_idx = filename.rindex(".")
     ext = filename[dot_idx + 1 :]
-    mesh = trimesh.exchange.load.load(filename, ext, force="mesh")
+    mesh = trimesh.exchange.load.load(filename, ext, force="mesh", validate=True)
     if type(mesh) == trimesh.path.Path2D:
         raise ValidationError("Currently 2d objects are no supported.")
     else:
@@ -100,7 +100,7 @@ def _face_colors(obj, mesh):
         for j in range(mesh.run_index[i] // 3, mesh.run_index[i + 1] // 3):
             id = mesh.run_original_id[i]
             if id == -1 or id not in Obj3d.color_map:
-                color = (210, 180, 140)
+                color = Config.get_default_color()
             else:
                 color = Obj3d.color_map[id]
             face_colors[j][0] = color[0]
@@ -152,7 +152,13 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
         if len(objs) == 1:
             obj = objs[0]
             if filename.endswith(".3mf"):
-                _export_3mf(filename, obj.mo, Obj3d.color_map, Config.get_default_units())
+                _export_3mf(
+                    filename,
+                    obj.mo,
+                    Obj3d.color_map,
+                    Config.get_default_units(),
+                    Config.get_default_color(),
+                )
                 return
             mesh = obj.mo.to_mesh()
             if mesh.vert_properties.shape[1] > 3:
@@ -166,6 +172,7 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                 faces=mesh.tri_verts,
                 face_colors=face_colors,
                 process=False,
+                validate=True,
             )
             # Manifold3d has a different definition than Trimesh
             if not mesh_output.is_watertight:
@@ -185,6 +192,7 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                     faces=mesh.tri_verts,
                     face_colors=face_colors,
                     process=False,
+                    validate=True,
                 )
                 # Manifold3d has a different definition than Trimesh
                 if not mesh_output.is_watertight:
@@ -195,7 +203,13 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                 s_vertices = _np.asarray(s_mesh.vertices, _np.float32)
                 s_faces = _np.asarray(s_mesh.faces, _np.uint32)
                 mo = _m.Manifold(_m.Mesh(s_vertices, s_faces))
-                _export_3mf(filename, mo, Obj3d.color_map, Config.get_default_units())
+                _export_3mf(
+                    filename,
+                    mo,
+                    Obj3d.color_map,
+                    Config.get_default_units(),
+                    Config.get_default_color(),
+                )
                 return
             trimesh.exchange.export.export_scene(scene, filename, ext)
         # trimesh obj file export does not end with newline

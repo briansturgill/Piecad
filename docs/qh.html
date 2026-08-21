@@ -636,7 +636,7 @@ Center the object on each of the `True` axes.
 <a class="ahover" href="index.html#piecad.color">
 color
 <span class="popup">
-<code>color(self, cspec) -> 'Obj2d'</code>
+<code>color(self, cspec: 'tuple[int, int, int] | str') -> 'Obj2d'</code>
 <br>
 Assign the given color to this object.</summary>
 </span>
@@ -807,7 +807,7 @@ Center the object on each of the `True` axes.
 <a class="ahover" href="index.html#piecad.color">
 color
 <span class="popup">
-<code>color(self, cspec) -> 'Obj3d'</code>
+<code>color(self, cspec: 'tuple[int, int, int] | str') -> 'Obj3d'</code>
 <br>
 Assign the given color to this object.</summary>
 </span>
@@ -1005,6 +1005,16 @@ The volume of this Obj3d.
 </p>
 <h2>class Config</h2>
 <p class="item">
+<a class="ahover" href="index.html#piecad.get_default_color">
+Config.get_default_color
+<span class="popup">
+<code>Config.get_default_color() -> 'tuple[int, int, int]'</code>
+<br>
+Returns the RGB values for the current default color.
+</span>
+</a>
+</p>
+<p class="item">
 <a class="ahover" href="index.html#piecad.get_default_segments">
 Config.get_default_segments
 <span class="popup">
@@ -1031,6 +1041,16 @@ Config.get_layer_resolution
 <code>Config.get_layer_resolution() -> 'float'</code>
 <br>
 Get the layer resolution used in printing in this script.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.set_default_color">
+Config.set_default_color
+<span class="popup">
+<code>Config.set_default_color(cspec: 'tuple[int, int, int] | str') -> 'None'</code>
+<br>
+Assign the given color for use as a default color for objects.</summary>
 </span>
 </a>
 </p>
