@@ -18,7 +18,7 @@ def export_3mf(filename, mo, color_map, units="mm", def_color=(210, 180, 140)):
         # Create a mesh object
         mesh = model.AddMeshObject()
         mesh.SetName("Mesh")
-        m_mesh = mo.to_mesh()
+        m_mesh = mo.to_mesh64()
 
         # Define cube vertices
         if m_mesh.vert_properties.shape[1] > 3:

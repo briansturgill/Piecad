@@ -14,7 +14,7 @@ def load_heightmap(filename, max_dimension):
     if scale < 1.0:
         img = img.resize((int(w * scale), int(h * scale)), Image.Resampling.LANCZOS)
 
-    img = np.asarray(img, dtype=np.float32)
+    img = np.array(img, dtype=np.float64)
 
     # Lithophane:
     # White = thin
@@ -127,10 +127,10 @@ def create_lithophane(heightmap, pixel_size, min_thickness, max_thickness, base=
             bottom[rows - 1, x + 1],
         )
 
-    vertices = np.asarray(vertices, np.float32)
-    faces = np.asarray(faces, np.int32)
+    vertices = np.array(vertices, np.float64)
+    faces = np.array(faces, np.int64)
     mesh = trimesh.Trimesh(vertices=vertices, faces=faces, process=False, validate=True)
-    vertices = np.asarray(mesh.vertices, np.float32)
-    faces = np.asarray(mesh.faces, np.uint32)
+    vertices = np.array(mesh.vertices, np.float64)
+    faces = np.array(mesh.faces, np.uint64)
 
     return Obj3d(m.Manifold(m.Mesh(vertices, faces)))

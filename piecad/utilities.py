@@ -59,9 +59,9 @@ def load(filename: str) -> Obj3d | Obj2d:
     if type(mesh) == trimesh.path.Path2D:
         raise ValidationError("Currently 2d objects are no supported.")
     else:
-        vertices = _np.asarray(mesh.vertices, _np.float32)
-        faces = _np.asarray(mesh.faces, _np.uint32)
-        o = Obj3d(_m.Manifold(_m.Mesh(vertices, faces)))
+        vertices = _np.array(mesh.vertices, _np.float64)
+        faces = _np.array(mesh.faces, _np.uint64)
+        o = Obj3d(_m.Manifold(_m.Mesh64(vertices, faces)))
 
     return o
 
@@ -160,7 +160,7 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                     Config.get_default_color(),
                 )
                 return
-            mesh = obj.mo.to_mesh()
+            mesh = obj.mo.to_mesh64()
             if mesh.vert_properties.shape[1] > 3:
                 vertices = mesh.vert_properties[:, :3]
             else:
@@ -199,10 +199,10 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                     print("WARNING: output mesh is not watertight")
                 scene.add_geometry(mesh_output)
             if filename.endswith(".3mf"):
-                s_mesh = scene.to_mesh()
-                s_vertices = _np.asarray(s_mesh.vertices, _np.float32)
-                s_faces = _np.asarray(s_mesh.faces, _np.uint32)
-                mo = _m.Manifold(_m.Mesh(s_vertices, s_faces))
+                s_mesh = scene.to_mesh64()
+                s_vertices = _np.array(s_mesh.vertices, _np.float64)
+                s_faces = _np.array(s_mesh.faces, _np.uint64)
+                mo = _m.Manifold(_m.Mesh64(s_vertices, s_faces))
                 _export_3mf(
                     filename,
                     mo,
@@ -316,7 +316,7 @@ def view(obj: Obj3d | Obj2d, title: str = "") -> None:
         _view_thread.start()
         atexit.register(_tell_view_handler_to_exit)
 
-    mesh = obj.mo.to_mesh()
+    mesh = obj.mo.to_mesh64()
     if mesh.vert_properties.shape[1] > 3:
         vertices = mesh.vert_properties[:, :3]
     else:

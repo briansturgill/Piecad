@@ -341,7 +341,7 @@ class Obj3d:
         Return a pair containg a list of vertices and a list of faces for this object.
 
         """
-        mesh = self.mo.to_mesh()
+        mesh = self.mo.to_mesh64()
         if mesh.vert_properties.shape[1] > 3:
             vertices = mesh.vert_properties[:, :3]
         else:

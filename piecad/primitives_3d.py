@@ -289,9 +289,9 @@ def extrude_chaining(
 
     add_cap(prev_vo, prev_polys, top=True)
 
-    vertex_list = _np.array(vertex_list, _np.float32)
-    triangles = _np.array(triangles, _np.uint32)
-    mesh = _m.Mesh(vertex_list, triangles)
+    vertex_list = _np.array(vertex_list, _np.float64)
+    triangles = _np.array(triangles, _np.uint64)
+    mesh = _m.Mesh64(vertex_list, triangles)
     if diagnose != None:
         dot_idx = diagnose.rindex(".")
         ext = diagnose[dot_idx + 1 :]
@@ -428,9 +428,9 @@ def polyhedron(
         )
         vertices = mesh_output.vertices
         faces = mesh_output.faces
-    vertices = _np.array(vertices, _np.float32)
-    faces = _np.array(faces, _np.uint32)
-    mesh = _m.Mesh(vertices, faces)
+    vertices = _np.array(vertices, _np.float64)
+    faces = _np.array(faces, _np.uint64)
+    mesh = _m.Mesh64(vertices, faces)
     mo = _m.Manifold(mesh)
     if mo.is_empty():
         raise ValidationError(f"Error creating Manifold: {mo.status()}.")
