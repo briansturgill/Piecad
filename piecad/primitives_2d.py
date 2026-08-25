@@ -197,9 +197,6 @@ def rectangle(size: list[float, float], center: bool = False) -> Obj2d:
     return Obj2d(_m.CrossSection.square(size, center))
 
 
-_arc_trig_vals_map = {}
-
-
 def rounded_rectangle(
     size: list[float, float],
     rounding_radius: float = 0.2,
@@ -243,53 +240,7 @@ def rounded_rectangle(
             ]
         )
     )
-
-    # segs_per_arc = segments // 4 + 1
-    # deg_per_arc = 90.0 / segs_per_arc
-    # pts = []
-    # x, y = size
-
-    # def make_arc_trig_vals(deg):
-    #    end = deg + 90
-    #    l = []
-    #    for i in range(0, segs_per_arc - 1):
-    #        l.append((cos(deg), sin(deg)))
-    #        deg += deg_per_arc
-
-    #    l.append((cos(end), sin(end)))
-    #    return l
-
-    # if segments in _arc_trig_vals_map:
-    #    arc_trig_vals = _arc_trig_vals_map[segments]
-    # else:
-    #    arc_trig_vals = (
-    #        make_arc_trig_vals(180),  # Bottom left
-    #        make_arc_trig_vals(270),  # Bottom right
-    #        make_arc_trig_vals(0),  # Top right
-    #        make_arc_trig_vals(90),  # Top left
-    #    )
-    #    _arc_trig_vals_map[segments] = arc_trig_vals
-
-    # rr = rounding_radius
-
-    # pts = []
-    # c_x_off = -x / 2.0 if center else 0.0
-    # c_y_off = -y / 2.0 if center else 0.0
-
-    # def arc(tvals, rad, x_off, y_off):
-    #    x_off += c_x_off
-    #    y_off += c_y_off
-    #    for c, s in tvals:
-    #        pts.append((x_off + rad * c, y_off + rad * s))
-
-    # bl, br, tr, tl = arc_trig_vals
-    # arc(bl, rr, rr, rr)  # Bottom left
-    # arc(br, rr, x - rr, rr)  # Bottom right
-    # arc(tr, rr, x - rr, y - rr)  # Top right
-    # arc(tl, rr, rr, y - rr)  # Top left
-
-    # return Obj2d(_m.CrossSection([pts], _m.FillRule.EvenOdd))
-
+    
 
 def square(size: float, center: bool = False) -> Obj2d:
     """
