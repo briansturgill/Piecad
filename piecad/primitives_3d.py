@@ -21,12 +21,16 @@ from . import (
     union,
     text,
     winding,
+    _chkIn,
     _chkGT,
     _chkTY,
     _chkGE,
     _chkV3,
     _chkV2,
 )
+
+from ._check_mesh import check_mesh as _check_mesh
+from ._check_mesh import quick_check_mesh as _quick_check_mesh
 
 from . import _lithophane
 
@@ -387,7 +391,7 @@ def lithophane(
 def polyhedron(
     vertices: list[tuple[float, float, float]],
     faces: list[tuple[int, int, int]],
-    validate: bool = True,
+    check: str = "interactive",
 ) -> Obj3d:
     """
     Create an Obj3d from points and a list of triangles using those points.
@@ -407,9 +411,12 @@ def polyhedron(
 
     That isn't really helpful.
 
-    Thus, by default we use trimesh to correct common errors.
-    This is not always perfect, so you
-    can turn this off by setting `validate` to False.
+    Thus, we added our own checking.
+    By default `check` is interactive. If your polyhedron is faulty it will start
+    an interactive program to help you understand what is wrong.
+    If  `check` is `"batch"` a `ValidationError` is thrown if the polyhedron is bad.
+    The `ValidationError` will have short message saying what is wrong.
+    If you set `check` to `"none"` no checking is performed... you're on your own!
 
     If all else fails, try adding these lines just before the call to polyhedron.
 
@@ -422,12 +429,13 @@ def polyhedron(
     Then use a program like `meshlab` to look at where things are not manifold.
 
     """
-    if validate:
-        mesh_output = trimesh.Trimesh(
-            vertices=vertices, faces=faces, force="mesh", validate=validate
-        )
-        vertices = mesh_output.vertices
-        faces = mesh_output.faces
+    _chkIn("check", check, ["interactive", "batch", "none"])
+    if check == "interactive":
+        _check_mesh(vertices, faces)
+    elif check == "batch":
+        msg = _quick_check_mesh(vertices, faces)
+        if msg != "":
+            raise ValidationError(f"Polyhedron is flawed: {msg}")
     vertices = _np.array(vertices, _np.float64)
     faces = _np.array(faces, _np.uint64)
     mesh = _m.Mesh64(vertices, faces)

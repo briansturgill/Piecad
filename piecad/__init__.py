@@ -37,7 +37,7 @@ class ValidationError(BaseException):
 
 from ._color import _parse_color
 
-__version__ = "1.3.0"
+__version__ = "1.4.0"
 
 
 def version() -> str:
@@ -780,7 +780,7 @@ class Config:
 
 def _chkIn(name: str, val: object, const: list) -> bool:
     if val not in const:
-        raise ValidationError(f"Parameter {name} must be greater a value in {const}")
+        raise ValidationError(f"Parameter {name} must be equal to a value in {const}")
 
 
 def _chkGE(name: str, val: object, const: object) -> bool:

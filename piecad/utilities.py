@@ -19,6 +19,8 @@ import numpy as _np
 from . import Obj2d, Obj3d, Config, _chkGE, _chkGO, ValidationError
 
 from ._export_3mf import export_3mf as _export_3mf
+from ._check_mesh import check_mesh as _check_mesh
+from ._check_mesh import quick_check_mesh as _quick_check_mesh
 
 
 def _info_str(tag):  # Must be called from inside another function.
@@ -55,7 +57,9 @@ def load(filename: str) -> Obj3d | Obj2d:
     """
     dot_idx = filename.rindex(".")
     ext = filename[dot_idx + 1 :]
-    mesh = trimesh.exchange.load.load(filename, ext, force="mesh", validate=True)
+    mesh = trimesh.exchange.load.load(
+        filename, ext, force="mesh", process=True, validate=False
+    )
     if type(mesh) == trimesh.path.Path2D:
         raise ValidationError("Currently 2d objects are no supported.")
     else:
@@ -171,8 +175,8 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                 vertices=vertices,
                 faces=mesh.tri_verts,
                 face_colors=face_colors,
-                process=False,
-                validate=True,
+                process=True,
+                validate=False,
             )
             # Manifold3d has a different definition than Trimesh
             if not mesh_output.is_watertight:
@@ -191,8 +195,8 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                     vertices=vertices,
                     faces=mesh.tri_verts,
                     face_colors=face_colors,
-                    process=False,
-                    validate=True,
+                    process=True,
+                    validate=False,
                 )
                 # Manifold3d has a different definition than Trimesh
                 if not mesh_output.is_watertight:
@@ -404,3 +408,26 @@ def winding(lt: list[tuple[float, float]]) -> str:
             lt[(i + 1) % length][1] + lt[i][1]
         )
     return wstr(winding)
+
+
+def check_mesh(
+    vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]
+) -> bool:
+    """
+    Check manifold and winding of the mesh defined in vertices and faces.
+
+    Returns true if all is well. Otherwise diagnostics will be offered and false is returned.
+    """
+    return _check_mesh(vertices, faces)
+
+
+def quick_check_mesh(
+    vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]
+) -> str:
+    """
+    Same checking as check_mesh, but no advice is offered
+
+    Returns an empty string `""` if all is well, otherwise a short string describing the problem is
+    returned.
+    """
+    return _quick_check_mesh(vertices, faces)

@@ -45,6 +45,27 @@ el.replaceWith(d);
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="piecad.utilities.check_mesh"><code class="name flex">
+<span>def <span class="ident">check_mesh</span></span>(<span>vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def check_mesh(
+    vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]
+) -&gt; bool:
+    &#34;&#34;&#34;
+    Check manifold and winding of the mesh defined in vertices and faces.
+
+    Returns true if all is well. Otherwise diagnostics will be offered and false is returned.
+    &#34;&#34;&#34;
+    return _check_mesh(vertices, faces)</code></pre>
+</details>
+<div class="desc"><p>Check manifold and winding of the mesh defined in vertices and faces.</p>
+<p>Returns true if all is well. Otherwise diagnostics will be offered and false is returned.</p></div>
+</dd>
 <dt id="piecad.utilities.load"><code class="name flex">
 <span>def <span class="ident">load</span></span>(<span>filename: str) ‑> <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a> | <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
@@ -77,7 +98,9 @@ el.replaceWith(d);
     &#34;&#34;&#34;
     dot_idx = filename.rindex(&#34;.&#34;)
     ext = filename[dot_idx + 1 :]
-    mesh = trimesh.exchange.load.load(filename, ext, force=&#34;mesh&#34;, validate=True)
+    mesh = trimesh.exchange.load.load(
+        filename, ext, force=&#34;mesh&#34;, process=True, validate=False
+    )
     if type(mesh) == trimesh.path.Path2D:
         raise ValidationError(&#34;Currently 2d objects are no supported.&#34;)
     else:
@@ -130,6 +153,29 @@ el.replaceWith(d);
 </table>
 <p>(See [<a href="https://github/mikedh/trimesh]">https://github/mikedh/trimesh]</a> for more formats.)</p>
 <p>Currently 2d objects are not supported.</p></div>
+</dd>
+<dt id="piecad.utilities.quick_check_mesh"><code class="name flex">
+<span>def <span class="ident">quick_check_mesh</span></span>(<span>vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def quick_check_mesh(
+    vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]
+) -&gt; str:
+    &#34;&#34;&#34;
+    Same checking as check_mesh, but no advice is offered
+
+    Returns an empty string `&#34;&#34;` if all is well, otherwise a short string describing the problem is
+    returned.
+    &#34;&#34;&#34;
+    return _quick_check_mesh(vertices, faces)</code></pre>
+</details>
+<div class="desc"><p>Same checking as check_mesh, but no advice is offered</p>
+<p>Returns an empty string <code>""</code> if all is well, otherwise a short string describing the problem is
+returned.</p></div>
 </dd>
 <dt id="piecad.utilities.save"><code class="name flex">
 <span>def <span class="ident">save</span></span>(<span>filename: str,<br>*objs: <a title="piecad.Obj2d" href="index.html#piecad.Obj2d">Obj2d</a> | <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a>) ‑> None</span>
@@ -201,8 +247,8 @@ el.replaceWith(d);
                 vertices=vertices,
                 faces=mesh.tri_verts,
                 face_colors=face_colors,
-                process=False,
-                validate=True,
+                process=True,
+                validate=False,
             )
             # Manifold3d has a different definition than Trimesh
             if not mesh_output.is_watertight:
@@ -221,8 +267,8 @@ el.replaceWith(d);
                     vertices=vertices,
                     faces=mesh.tri_verts,
                     face_colors=face_colors,
-                    process=False,
-                    validate=True,
+                    process=True,
+                    validate=False,
                 )
                 # Manifold3d has a different definition than Trimesh
                 if not mesh_output.is_watertight:
@@ -437,8 +483,10 @@ This environment variable is also used by the <code>piecad-viewer</code> program
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
+<ul class="two-column">
+<li><code><a title="piecad.utilities.check_mesh" href="#piecad.utilities.check_mesh">check_mesh</a></code></li>
 <li><code><a title="piecad.utilities.load" href="#piecad.utilities.load">load</a></code></li>
+<li><code><a title="piecad.utilities.quick_check_mesh" href="#piecad.utilities.quick_check_mesh">quick_check_mesh</a></code></li>
 <li><code><a title="piecad.utilities.save" href="#piecad.utilities.save">save</a></code></li>
 <li><code><a title="piecad.utilities.view" href="#piecad.utilities.view">view</a></code></li>
 <li><code><a title="piecad.utilities.winding" href="#piecad.utilities.winding">winding</a></code></li>

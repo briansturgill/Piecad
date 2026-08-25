@@ -240,7 +240,7 @@ def rounded_rectangle(
             ]
         )
     )
-    
+
 
 def square(size: float, center: bool = False) -> Obj2d:
     """

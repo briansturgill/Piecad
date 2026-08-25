@@ -343,7 +343,7 @@ Create a 3d lithophane from a 2d image.
 <a class="ahover" href="primitives_3d.html#piecad.primitives_3d.polyhedron">
 polyhedron
 <span class="popup">
-<code>polyhedron(vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]], validate: bool = True) -> Obj3d</code>
+<code>polyhedron(vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]], check: str = 'interactive') -> Obj3d</code>
 <br>
 Create an Obj3d from points and a list of triangles using those points.
 </span>
@@ -562,12 +562,32 @@ Hyperbolic tangent of angle in degrees.
 </p>
 <h2>Utility Functions</h2>
 <p class="item">
+<a class="ahover" href="utilities.html#piecad.utilities.check_mesh">
+check_mesh
+<span class="popup">
+<code>check_mesh(vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]) -> bool</code>
+<br>
+Check manifold and winding of the mesh defined in vertices and faces.
+</span>
+</a>
+</p>
+<p class="item">
 <a class="ahover" href="utilities.html#piecad.utilities.load">
 load
 <span class="popup">
 <code>load(filename: str) -> Obj3d | Obj2d</code>
 <br>
 Load a 3d object from a file.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="utilities.html#piecad.utilities.quick_check_mesh">
+quick_check_mesh
+<span class="popup">
+<code>quick_check_mesh(vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]) -> str</code>
+<br>
+Same checking as check_mesh, but no advice is offered
 </span>
 </a>
 </p>
