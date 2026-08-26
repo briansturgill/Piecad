@@ -1225,6 +1225,43 @@ maintain the same size ratio between the two sizes.</p>
             uv[2] = 1
         return Obj3d(self.mo.mirror(uv))
 
+    def miter_cut(
+        self, cut_angle: float, cut_point: tuple[float, float, float]
+    ) -&gt; tuple[Obj3d, Obj3d]:
+        &#34;&#34;&#34;
+        Cut this object into two parts using a plane defined by the `cut_angle` and `cut_point`.
+        Cut_angle is in degrees, and cut_point is a 3D point (x, y, z) through which the cut plane passes.
+        The two parts are returned as a tuple of Obj3d objects.
+        The cut plane is defined by the angle and the point through which it passes.
+        The cut is parallel to the Y plane, with the angle defining the slope of the cut.
+        &#34;&#34;&#34;
+
+        def plane_from_vectors_and_point(a, point):
+            import numpy as _np
+
+            v1 = _np.array([0, 1, 0], dtype=float)
+            v2 = _np.array([1, 0, tan(a)], dtype=float)
+
+            # normal from cross product
+            normal = _np.cross(v1, v2)
+
+            # point the plane must pass through
+            p = _np.array(point, dtype=float)
+
+            # plane offset: n·x + d = 0  →  d = -n·p
+            origin_offset = -_np.dot(normal, p)
+
+            return normal, origin_offset
+
+        cp = cut_point
+        obj = self.translate((-cp[0], -cp[1], -cp[2]))
+        normal, offset = plane_from_vectors_and_point(cut_angle, (0, 0, 0))
+        o1, o2 = obj.mo.split_by_plane(normal, offset)
+        o1 = o1.translate(cut_point)
+        o2 = o2.translate(cut_point)
+
+        return Obj3d(o1), Obj3d(o2)
+
     def num_faces(self) -&gt; int:
         &#34;&#34;&#34;
         The number of faces in this object.
@@ -1673,6 +1710,57 @@ Mirror over the y axis and you will get an image like the back of the hand you a
 Mirror over the x and y axes and you will get an image like the back of a left hand.
 For the Z axis it's the same, but each hand is upside down.</p>
 <p>From a mathmatical standpoint, mirroring is negating all the points in each axis selected.</p></div>
+</dd>
+<dt id="piecad.Obj3d.miter_cut"><code class="name flex">
+<span>def <span class="ident">miter_cut</span></span>(<span>self, cut_angle: float, cut_point: tuple[float, float, float]) ‑> tuple[<a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a>, <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def miter_cut(
+    self, cut_angle: float, cut_point: tuple[float, float, float]
+) -&gt; tuple[Obj3d, Obj3d]:
+    &#34;&#34;&#34;
+    Cut this object into two parts using a plane defined by the `cut_angle` and `cut_point`.
+    Cut_angle is in degrees, and cut_point is a 3D point (x, y, z) through which the cut plane passes.
+    The two parts are returned as a tuple of Obj3d objects.
+    The cut plane is defined by the angle and the point through which it passes.
+    The cut is parallel to the Y plane, with the angle defining the slope of the cut.
+    &#34;&#34;&#34;
+
+    def plane_from_vectors_and_point(a, point):
+        import numpy as _np
+
+        v1 = _np.array([0, 1, 0], dtype=float)
+        v2 = _np.array([1, 0, tan(a)], dtype=float)
+
+        # normal from cross product
+        normal = _np.cross(v1, v2)
+
+        # point the plane must pass through
+        p = _np.array(point, dtype=float)
+
+        # plane offset: n·x + d = 0  →  d = -n·p
+        origin_offset = -_np.dot(normal, p)
+
+        return normal, origin_offset
+
+    cp = cut_point
+    obj = self.translate((-cp[0], -cp[1], -cp[2]))
+    normal, offset = plane_from_vectors_and_point(cut_angle, (0, 0, 0))
+    o1, o2 = obj.mo.split_by_plane(normal, offset)
+    o1 = o1.translate(cut_point)
+    o2 = o2.translate(cut_point)
+
+    return Obj3d(o1), Obj3d(o2)</code></pre>
+</details>
+<div class="desc"><p>Cut this object into two parts using a plane defined by the <code>cut_angle</code> and <code>cut_point</code>.
+Cut_angle is in degrees, and cut_point is a 3D point (x, y, z) through which the cut plane passes.
+The two parts are returned as a tuple of Obj3d objects.
+The cut plane is defined by the angle and the point through which it passes.
+The cut is parallel to the Y plane, with the angle defining the slope of the cut.</p></div>
 </dd>
 <dt id="piecad.Obj3d.num_faces"><code class="name flex">
 <span>def <span class="ident">num_faces</span></span>(<span>self) ‑> int</span>
@@ -2138,6 +2226,7 @@ functions and methods.</p></div>
 <li><code><a title="piecad.Obj3d.minkowski_difference" href="#piecad.Obj3d.minkowski_difference">minkowski_difference</a></code></li>
 <li><code><a title="piecad.Obj3d.minkowski_sum" href="#piecad.Obj3d.minkowski_sum">minkowski_sum</a></code></li>
 <li><code><a title="piecad.Obj3d.mirror" href="#piecad.Obj3d.mirror">mirror</a></code></li>
+<li><code><a title="piecad.Obj3d.miter_cut" href="#piecad.Obj3d.miter_cut">miter_cut</a></code></li>
 <li><code><a title="piecad.Obj3d.num_faces" href="#piecad.Obj3d.num_faces">num_faces</a></code></li>
 <li><code><a title="piecad.Obj3d.num_verts" href="#piecad.Obj3d.num_verts">num_verts</a></code></li>
 <li><code><a title="piecad.Obj3d.piecut" href="#piecad.Obj3d.piecut">piecut</a></code></li>

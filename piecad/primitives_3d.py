@@ -3,7 +3,6 @@
 """
 
 import manifold3d as _m
-import math as _math
 import numpy as _np
 import trimesh
 

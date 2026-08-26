@@ -199,6 +199,20 @@ def test_mirror_3d():
     assert verts == r.mirror((True, True, True)).num_verts()
 
 
+def test_miter_cut_pos():
+    c = cuboid([50, 5, 20])
+    cut_point = (0, 0, 0)
+    o1, o2 = c.miter_cut(45, cut_point)
+    assert union(o1, o2).bounding_box() == c.bounding_box()
+
+
+def test_miter_cut_neg():
+    c = cuboid([50, 5, 20])
+    cut_point = (0, 0, 20)
+    o1, o2 = c.miter_cut(-45, cut_point)
+    assert union(o1, o2).bounding_box() == c.bounding_box()
+
+
 def test_num_faces_3d():
     c = cube(2)
     assert c.num_faces() == 12

@@ -23,6 +23,7 @@ to check for polygon self intersections.
 
 from __future__ import annotations
 import manifold3d as _m
+from .trigonometry import tan, cos, sin
 
 
 class ValidationError(BaseException):
@@ -37,7 +38,7 @@ class ValidationError(BaseException):
 
 from ._color import _parse_color
 
-__version__ = "1.4.0"
+__version__ = "1.4.1"
 
 
 def version() -> str:
@@ -176,6 +177,43 @@ class Obj3d:
         if axes[2]:
             uv[2] = 1
         return Obj3d(self.mo.mirror(uv))
+
+    def miter_cut(
+        self, cut_angle: float, cut_point: tuple[float, float, float]
+    ) -> tuple[Obj3d, Obj3d]:
+        """
+        Cut this object into two parts using a plane defined by the `cut_angle` and `cut_point`.
+        Cut_angle is in degrees, and cut_point is a 3D point (x, y, z) through which the cut plane passes.
+        The two parts are returned as a tuple of Obj3d objects.
+        The cut plane is defined by the angle and the point through which it passes.
+        The cut is parallel to the Y plane, with the angle defining the slope of the cut.
+        """
+
+        def plane_from_vectors_and_point(a, point):
+            import numpy as _np
+
+            v1 = _np.array([0, 1, 0], dtype=float)
+            v2 = _np.array([1, 0, tan(a)], dtype=float)
+
+            # normal from cross product
+            normal = _np.cross(v1, v2)
+
+            # point the plane must pass through
+            p = _np.array(point, dtype=float)
+
+            # plane offset: n·x + d = 0  →  d = -n·p
+            origin_offset = -_np.dot(normal, p)
+
+            return normal, origin_offset
+
+        cp = cut_point
+        obj = self.translate((-cp[0], -cp[1], -cp[2]))
+        normal, offset = plane_from_vectors_and_point(cut_angle, (0, 0, 0))
+        o1, o2 = obj.mo.split_by_plane(normal, offset)
+        o1 = o1.translate(cut_point)
+        o2 = o2.translate(cut_point)
+
+        return Obj3d(o1), Obj3d(o2)
 
     def num_faces(self) -> int:
         """
