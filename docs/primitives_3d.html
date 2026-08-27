@@ -607,7 +607,8 @@ to find the best range.</p></div>
     &#34;&#34;&#34;
     _chkIn(&#34;check&#34;, check, [&#34;interactive&#34;, &#34;batch&#34;, &#34;none&#34;])
     if check == &#34;interactive&#34;:
-        _check_mesh(vertices, faces)
+        if not _check_mesh(vertices, faces):
+            return Obj3d()
     elif check == &#34;batch&#34;:
         msg = _quick_check_mesh(vertices, faces)
         if msg != &#34;&#34;:
