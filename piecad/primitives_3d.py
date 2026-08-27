@@ -430,7 +430,8 @@ def polyhedron(
     """
     _chkIn("check", check, ["interactive", "batch", "none"])
     if check == "interactive":
-        _check_mesh(vertices, faces)
+        if not _check_mesh(vertices, faces):
+            return Obj3d()
     elif check == "batch":
         msg = _quick_check_mesh(vertices, faces)
         if msg != "":
