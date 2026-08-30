@@ -625,7 +625,7 @@ def tetrahedron(
 
     A tetrahedron is a triangular object.
 
-    <iframe width="100%" height="220" src="examples/tetrhedron.html"></iframe>
+    <iframe width="100%" height="220" src="examples/tetrahedron.html"></iframe>
     """
 
     def _volume(vertices, faces) -> float:
