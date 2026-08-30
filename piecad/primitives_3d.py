@@ -615,6 +615,44 @@ def sphere(radius: float, segments: int = -1) -> Obj3d:
     return revolve(circ, segments=segments)
 
 
+def tetrahedron(
+    vertices: list[tuple[float, float, float]] | float | int = None,
+) -> Obj3d:
+    """
+    Create a tetrahedron with 4 `vertices`.
+    Or, if `vertices` is given as a single number, a regular tetrahedron of side size `vertices` is returned.
+    If no vertex is given as an argument, a regular unit tetrahedron (size: 1) is returned.
+    """
+
+    def _volume(vertices, faces) -> float:
+        vertices = _np.array(vertices)
+        volume = 0.0
+
+        for face in faces:
+            v0, v1, v2 = vertices[face[0]], vertices[face[1]], vertices[face[2]]
+            # Signed volume contribution from this triangle
+            volume += _np.dot(v0, _np.cross(v1, v2))
+
+        return volume / 6.0
+
+    if vertices == None or type(vertices) == float or type(vertices) == int:
+        size = vertices
+        if size == None:
+            size = 1
+        t = _m.Manifold.tetrahedron()
+        if size != 1:
+            t = t.scale((size, size, size))
+        return Obj3d(t)
+    _chkTY("vertices", vertices, list)
+
+    ccw_faces = [[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]]
+    cw_faces = [[0, 1, 2], [0, 3, 1], [0, 2, 3], [1, 3, 2]]
+    faces = ccw_faces
+    if _volume(vertices, faces) < 0:
+        faces = cw_faces
+    return polyhedron(vertices, faces, "none")
+
+
 def torus(outer_radius: float, inner_radius: float, segments=-1) -> Obj3d:
     """
     Create a torus with the specified radii.

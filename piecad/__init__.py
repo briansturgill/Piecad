@@ -838,6 +838,11 @@ def _chkTY(name: str, v1: object, v2: object) -> bool:
         raise ValidationError(f"Parameter {name} must be of type {v1}")
 
 
+def _chkNum(name: str, v1: object) -> bool:
+    if type(v1) != float and type(v1) != int:
+        raise ValidationError(f"Parameter {name} must be of type float or int")
+
+
 def _chkV2(name: str, v1: object) -> bool:
     if type(v1) != list and type(v1) != tuple:
         raise ValidationError(f"Parameter {name} must be of type list or tuple")

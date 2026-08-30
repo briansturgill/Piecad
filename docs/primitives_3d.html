@@ -884,6 +884,55 @@ When <code>center</code> is <code>True</code>, the rounded cylinder will centere
 <p>For <code>segments</code> see the documentation of <a href="index.html#piecad.Config.set_default_segments"><code>Config.set_default_segments</code></a>.</p>
 <iframe width="100%" height="220" src="examples/sphere.html"></iframe></div>
 </dd>
+<dt id="piecad.primitives_3d.tetrahedron"><code class="name flex">
+<span>def <span class="ident">tetrahedron</span></span>(<span>vertices: list[tuple[float, float, float]] | float | int = None) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def tetrahedron(
+    vertices: list[tuple[float, float, float]] | float | int = None,
+) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Create a tetrahedron with 4 `vertices`.
+    Or, if `vertices` is given as a single number, a regular tetrahedron of side size `vertices` is returned.
+    If no vertex is given as an argument, a regular unit tetrahedron (size: 1) is returned.
+    &#34;&#34;&#34;
+
+    def _volume(vertices, faces) -&gt; float:
+        vertices = _np.array(vertices)
+        volume = 0.0
+
+        for face in faces:
+            v0, v1, v2 = vertices[face[0]], vertices[face[1]], vertices[face[2]]
+            # Signed volume contribution from this triangle
+            volume += _np.dot(v0, _np.cross(v1, v2))
+
+        return volume / 6.0
+
+    if vertices == None or type(vertices) == float or type(vertices) == int:
+        size = vertices
+        if size == None:
+            size = 1
+        t = _m.Manifold.tetrahedron()
+        if size != 1:
+            t = t.scale((size, size, size))
+        return Obj3d(t)
+    _chkTY(&#34;vertices&#34;, vertices, list)
+
+    ccw_faces = [[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]]
+    cw_faces = [[0, 1, 2], [0, 3, 1], [0, 2, 3], [1, 3, 2]]
+    faces = ccw_faces
+    if _volume(vertices, faces) &lt; 0:
+        faces = cw_faces
+    return polyhedron(vertices, faces, &#34;none&#34;)</code></pre>
+</details>
+<div class="desc"><p>Create a tetrahedron with 4 <code>vertices</code>.
+Or, if <code>vertices</code> is given as a single number, a regular tetrahedron of side size <code>vertices</code> is returned.
+If no vertex is given as an argument, a regular unit tetrahedron (size: 1) is returned.</p></div>
+</dd>
 <dt id="piecad.primitives_3d.torus"><code class="name flex">
 <span>def <span class="ident">torus</span></span>(<span>outer_radius: float, inner_radius: float, segments=-1) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
@@ -954,6 +1003,7 @@ When <code>center</code> is <code>True</code>, the rounded cylinder will centere
 <li><code><a title="piecad.primitives_3d.rounded_cuboid" href="#piecad.primitives_3d.rounded_cuboid">rounded_cuboid</a></code></li>
 <li><code><a title="piecad.primitives_3d.rounded_cylinder" href="#piecad.primitives_3d.rounded_cylinder">rounded_cylinder</a></code></li>
 <li><code><a title="piecad.primitives_3d.sphere" href="#piecad.primitives_3d.sphere">sphere</a></code></li>
+<li><code><a title="piecad.primitives_3d.tetrahedron" href="#piecad.primitives_3d.tetrahedron">tetrahedron</a></code></li>
 <li><code><a title="piecad.primitives_3d.torus" href="#piecad.primitives_3d.torus">torus</a></code></li>
 </ul>
 </li>

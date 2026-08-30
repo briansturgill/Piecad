@@ -2,6 +2,15 @@ import pytest
 from piecad import *
 
 
+def _tetrahedron(verts):
+    if verts == None:
+        o = tetrahedron()
+    else:
+        o = tetrahedron(verts)
+    o.num_verts()
+    return o
+
+
 def _torus(_or, ir, segs):
     o = torus(_or, ir, segs)
     o.num_verts()
@@ -201,3 +210,27 @@ def test_extrude_chaining_fan(benchmark):
         is_convex=True,
     )
     assert o.num_verts() == 200
+
+
+def test_tetrahedron(benchmark):
+    # A set of 4 arbitrary points
+    p = [[1, 2, 3], [4, 5, 1], [2, 7, 4], [5, 3, 6]]
+
+    # Test all permutations of the 4 points
+    from itertools import permutations
+
+    oM = tetrahedron(p)
+
+    for i, perm in enumerate(permutations(p)):
+        # print(f"\nPermutation {i+1}: {perm}")
+        o = tetrahedron([perm[0], perm[1], perm[2], perm[3]])
+        assert o.bounding_box() == oM.bounding_box()
+        assert o.volume() == oM.volume()
+
+    o = tetrahedron(None)
+    assert o.bounding_box() == (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0)
+    assert o.volume() == 2.6666666666666665
+
+    o = benchmark(_tetrahedron, 5)
+    assert o.bounding_box() == (-5.0, -5.0, -5.0, 5.0, 5.0, 5.0)
+    assert o.volume() == 333.3333333333333

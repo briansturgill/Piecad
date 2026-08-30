@@ -16,6 +16,7 @@ dynamic = ["version"]
 dependencies = [
     "piecad_viewer >= 1.1.0",
     "pillow >= 12.3.0",
+    "lib3mf>=2.5.0",
     "trimesh[easy] >= 1.26.4",
     "fontPens >= 0.2.4",
     "fontTools >= 4.57.0",
