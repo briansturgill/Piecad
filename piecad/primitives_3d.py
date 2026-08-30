@@ -619,9 +619,13 @@ def tetrahedron(
     vertices: list[tuple[float, float, float]] | float | int = None,
 ) -> Obj3d:
     """
-    Create a tetrahedron with 4 `vertices`.
+    Create a tetrahedron from 4 `vertices`.
     Or, if `vertices` is given as a single number, a regular tetrahedron of side size `vertices` is returned.
     If no vertex is given as an argument, a regular unit tetrahedron (size: 1) is returned.
+
+    A tetrahedron is a triangular object.
+
+    <iframe width="100%" height="220" src="examples/tetrhedron.html"></iframe>
     """
 
     def _volume(vertices, faces) -> float:

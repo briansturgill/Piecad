@@ -38,7 +38,7 @@ class ValidationError(BaseException):
 
 from ._color import _parse_color
 
-__version__ = "1.4.1"
+__version__ = "1.4.2"
 
 
 def version() -> str:
@@ -118,6 +118,22 @@ class Obj3d:
         mo = self.mo.as_original()
         Obj3d.color_map[mo.original_id()] = _parse_color(cspec)
         return Obj3d(mo)
+
+    def corner(
+        self,
+        at: tuple[float, float, float] = (0, 0, 0),
+    ) -> Obj3d:
+        """
+        Move the bounding box minimum corner to (0, 0, 0).
+
+        Parameter `at` specifies an alternate point to move the corner to.
+        """
+        xmin, ymin, zmin, xmax, ymax, zmax = self.bounding_box()
+        new_x = at[0] - xmin
+        new_y = at[1] - ymin
+        new_z = at[2] - zmin
+        o3 = self.translate((new_x, new_y, new_z))
+        return o3
 
     def decompose(self) -> list[Obj3d]:
         """
@@ -494,6 +510,19 @@ class Obj2d:
               For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color/keywords)
         """
         return Obj2d(self.mo, _parse_color(cspec))
+
+    def corner(self, at: tuple[float, float] = (0, 0)) -> Obj2d:
+        """
+        Move the bounding box minimum corner to (0, 0).
+
+        Parameter `at` specifies an alternate point to move the corner to.
+        """
+        xmin, ymin, xmax, ymax = self.bounding_box()
+        new_x = at[0] - xmin
+        new_y = at[1] - ymin
+        o2 = self.translate((new_x, new_y))
+        o2._color = self._color
+        return o2
 
     def decompose(self) -> list[Obj2d]:
         """

@@ -405,7 +405,7 @@ tetrahedron
 <span class="popup">
 <code>tetrahedron(vertices: list[tuple[float, float, float]] | float | int = None) -> Obj3d</code>
 <br>
-Create a tetrahedron with 4 `vertices`.
+Create a tetrahedron from 4 `vertices`.
 </span>
 </a>
 </p>
@@ -673,6 +673,16 @@ Assign the given color to this object.</summary>
 </a>
 </p>
 <p class="item">
+<a class="ahover" href="index.html#piecad.corner">
+corner
+<span class="popup">
+<code>corner(self, at: 'tuple[float, float]' = (0, 0)) -> 'Obj2d'</code>
+<br>
+Move the bounding box minimum corner to (0, 0).
+</span>
+</a>
+</p>
+<p class="item">
 <a class="ahover" href="index.html#piecad.decompose">
 decompose
 <span class="popup">
@@ -840,6 +850,16 @@ color
 <code>color(self, cspec: 'tuple[int, int, int] | str') -> 'Obj3d'</code>
 <br>
 Assign the given color to this object.</summary>
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.corner">
+corner
+<span class="popup">
+<code>corner(self, at: 'tuple[float, float, float]' = (0, 0, 0)) -> 'Obj3d'</code>
+<br>
+Move the bounding box minimum corner to (0, 0, 0).
 </span>
 </a>
 </p>

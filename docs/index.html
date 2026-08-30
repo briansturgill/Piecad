@@ -403,6 +403,19 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
         &#34;&#34;&#34;
         return Obj2d(self.mo, _parse_color(cspec))
 
+    def corner(self, at: tuple[float, float] = (0, 0)) -&gt; Obj2d:
+        &#34;&#34;&#34;
+        Move the bounding box minimum corner to (0, 0).
+
+        Parameter `at` specifies an alternate point to move the corner to.
+        &#34;&#34;&#34;
+        xmin, ymin, xmax, ymax = self.bounding_box()
+        new_x = at[0] - xmin
+        new_y = at[1] - ymin
+        o2 = self.translate((new_x, new_y))
+        o2._color = self._color
+        return o2
+
     def decompose(self) -&gt; list[Obj2d]:
         &#34;&#34;&#34;
         Decompose this object into a list of topologically disjoint objects.
@@ -722,6 +735,30 @@ representing RGB. Such as "#FF00FF"</p>
 <li>A string that is one of the basic or extended CSS color names.
 For a list of color names see: <a href="https://www.w3.org/wiki/CSS/Properties/color/keywords">Color keywords</a></li>
 </ul></div>
+</dd>
+<dt id="piecad.Obj2d.corner"><code class="name flex">
+<span>def <span class="ident">corner</span></span>(<span>self, at: tuple[float, float] = (0, 0)) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def corner(self, at: tuple[float, float] = (0, 0)) -&gt; Obj2d:
+    &#34;&#34;&#34;
+    Move the bounding box minimum corner to (0, 0).
+
+    Parameter `at` specifies an alternate point to move the corner to.
+    &#34;&#34;&#34;
+    xmin, ymin, xmax, ymax = self.bounding_box()
+    new_x = at[0] - xmin
+    new_y = at[1] - ymin
+    o2 = self.translate((new_x, new_y))
+    o2._color = self._color
+    return o2</code></pre>
+</details>
+<div class="desc"><p>Move the bounding box minimum corner to (0, 0).</p>
+<p>Parameter <code>at</code> specifies an alternate point to move the corner to.</p></div>
 </dd>
 <dt id="piecad.Obj2d.decompose"><code class="name flex">
 <span>def <span class="ident">decompose</span></span>(<span>self) ‑> list[<a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a>]</span>
@@ -1166,6 +1203,22 @@ maintain the same size ratio between the two sizes.</p>
         Obj3d.color_map[mo.original_id()] = _parse_color(cspec)
         return Obj3d(mo)
 
+    def corner(
+        self,
+        at: tuple[float, float, float] = (0, 0, 0),
+    ) -&gt; Obj3d:
+        &#34;&#34;&#34;
+        Move the bounding box minimum corner to (0, 0, 0).
+
+        Parameter `at` specifies an alternate point to move the corner to.
+        &#34;&#34;&#34;
+        xmin, ymin, zmin, xmax, ymax, zmax = self.bounding_box()
+        new_x = at[0] - xmin
+        new_y = at[1] - ymin
+        new_z = at[2] - zmin
+        o3 = self.translate((new_x, new_y, new_z))
+        return o3
+
     def decompose(self) -&gt; list[Obj3d]:
         &#34;&#34;&#34;
         Decompose this object into a list of topologically disjoint objects.
@@ -1589,6 +1642,33 @@ representing RGB. Such as "#FF00FF"</p>
 <li>A string that is one of the basic or extended CSS color names.
 For a list of color names see: <a href="https://www.w3.org/wiki/CSS/Properties/color/keywords">Color keywords</a></li>
 </ul></div>
+</dd>
+<dt id="piecad.Obj3d.corner"><code class="name flex">
+<span>def <span class="ident">corner</span></span>(<span>self, at: tuple[float, float, float] = (0, 0, 0)) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def corner(
+    self,
+    at: tuple[float, float, float] = (0, 0, 0),
+) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Move the bounding box minimum corner to (0, 0, 0).
+
+    Parameter `at` specifies an alternate point to move the corner to.
+    &#34;&#34;&#34;
+    xmin, ymin, zmin, xmax, ymax, zmax = self.bounding_box()
+    new_x = at[0] - xmin
+    new_y = at[1] - ymin
+    new_z = at[2] - zmin
+    o3 = self.translate((new_x, new_y, new_z))
+    return o3</code></pre>
+</details>
+<div class="desc"><p>Move the bounding box minimum corner to (0, 0, 0).</p>
+<p>Parameter <code>at</code> specifies an alternate point to move the corner to.</p></div>
 </dd>
 <dt id="piecad.Obj3d.decompose"><code class="name flex">
 <span>def <span class="ident">decompose</span></span>(<span>self) ‑> list[<a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a>]</span>
@@ -2198,6 +2278,7 @@ functions and methods.</p></div>
 <li><code><a title="piecad.Obj2d.bounding_box" href="#piecad.Obj2d.bounding_box">bounding_box</a></code></li>
 <li><code><a title="piecad.Obj2d.center" href="#piecad.Obj2d.center">center</a></code></li>
 <li><code><a title="piecad.Obj2d.color" href="#piecad.Obj2d.color">color</a></code></li>
+<li><code><a title="piecad.Obj2d.corner" href="#piecad.Obj2d.corner">corner</a></code></li>
 <li><code><a title="piecad.Obj2d.decompose" href="#piecad.Obj2d.decompose">decompose</a></code></li>
 <li><code><a title="piecad.Obj2d.extrude" href="#piecad.Obj2d.extrude">extrude</a></code></li>
 <li><code><a title="piecad.Obj2d.is_empty" href="#piecad.Obj2d.is_empty">is_empty</a></code></li>
@@ -2221,6 +2302,7 @@ functions and methods.</p></div>
 <li><code><a title="piecad.Obj3d.center" href="#piecad.Obj3d.center">center</a></code></li>
 <li><code><a title="piecad.Obj3d.color" href="#piecad.Obj3d.color">color</a></code></li>
 <li><code><a title="piecad.Obj3d.color_map" href="#piecad.Obj3d.color_map">color_map</a></code></li>
+<li><code><a title="piecad.Obj3d.corner" href="#piecad.Obj3d.corner">corner</a></code></li>
 <li><code><a title="piecad.Obj3d.decompose" href="#piecad.Obj3d.decompose">decompose</a></code></li>
 <li><code><a title="piecad.Obj3d.is_empty" href="#piecad.Obj3d.is_empty">is_empty</a></code></li>
 <li><code><a title="piecad.Obj3d.minkowski_difference" href="#piecad.Obj3d.minkowski_difference">minkowski_difference</a></code></li>

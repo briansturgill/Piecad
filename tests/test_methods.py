@@ -151,6 +151,22 @@ def test_color_rgb_3d():
     assert c.color_map[c.mo.original_id()] == (255, 0, 255)
 
 
+def test_corner_3d():
+    rr = rounded_rectangle((10, 20), 4).extrude(2)
+    rr = rr.translate((3, 6, 20))
+    assert rr.bounding_box() == (3.0, 6.0, 20.0, 13.0, 26.0, 22.0)
+    rr = rr.corner()
+    assert rr.bounding_box() == (0.0, 0.0, 0.0, 10.0, 20.0, 2.0)
+
+
+def test_center_2d():
+    rr = rounded_rectangle((10, 20), 4)
+    rr = rr.translate((3, 6))
+    assert rr.bounding_box() == (3.0, 6.0, 13.0, 26.0)
+    rr = rr.corner()
+    assert rr.bounding_box() == (0.0, 0.0, 10.0, 20.0)
+
+
 def test_is_empty_2d():
     o = Obj2d()
     assert o.is_empty()

@@ -896,9 +896,13 @@ When <code>center</code> is <code>True</code>, the rounded cylinder will centere
     vertices: list[tuple[float, float, float]] | float | int = None,
 ) -&gt; Obj3d:
     &#34;&#34;&#34;
-    Create a tetrahedron with 4 `vertices`.
+    Create a tetrahedron from 4 `vertices`.
     Or, if `vertices` is given as a single number, a regular tetrahedron of side size `vertices` is returned.
     If no vertex is given as an argument, a regular unit tetrahedron (size: 1) is returned.
+
+    A tetrahedron is a triangular object.
+
+    &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/tetrhedron.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
 
     def _volume(vertices, faces) -&gt; float:
@@ -929,9 +933,11 @@ When <code>center</code> is <code>True</code>, the rounded cylinder will centere
         faces = cw_faces
     return polyhedron(vertices, faces, &#34;none&#34;)</code></pre>
 </details>
-<div class="desc"><p>Create a tetrahedron with 4 <code>vertices</code>.
+<div class="desc"><p>Create a tetrahedron from 4 <code>vertices</code>.
 Or, if <code>vertices</code> is given as a single number, a regular tetrahedron of side size <code>vertices</code> is returned.
-If no vertex is given as an argument, a regular unit tetrahedron (size: 1) is returned.</p></div>
+If no vertex is given as an argument, a regular unit tetrahedron (size: 1) is returned.</p>
+<p>A tetrahedron is a triangular object.</p>
+<iframe width="100%" height="220" src="examples/tetrhedron.html"></iframe></div>
 </dd>
 <dt id="piecad.primitives_3d.torus"><code class="name flex">
 <span>def <span class="ident">torus</span></span>(<span>outer_radius: float, inner_radius: float, segments=-1) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
