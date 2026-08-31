@@ -8,19 +8,26 @@ import json
 import queue
 import threading
 import manifold3d as _m
-import trimesh
 import inspect
 import os.path
 import subprocess
 import sys
 import time
 from pathlib import Path as _Path
-import numpy as _np
-from . import Obj2d, Obj3d, Config, _chkGE, _chkGO, ValidationError
+from . import Obj2d, Obj3d, Config, _chkGE, _chkGO, ValidationError, np, trimesh
 
 from ._export_3mf import export_3mf as _export_3mf
 from ._check_mesh import check_mesh as _check_mesh
 from ._check_mesh import quick_check_mesh as _quick_check_mesh
+
+__all__ = [
+    "check_mesh",
+    "load",
+    "quick_check_mesh",
+    "save",
+    "view",
+    "winding",
+]
 
 
 def _info_str(tag):  # Must be called from inside another function.
@@ -63,8 +70,8 @@ def load(filename: str) -> Obj3d | Obj2d:
     if type(mesh) == trimesh.path.Path2D:
         raise ValidationError("Currently 2d objects are no supported.")
     else:
-        vertices = _np.array(mesh.vertices, _np.float64)
-        faces = _np.array(mesh.faces, _np.uint64)
+        vertices = np.array(mesh.vertices, np.float64)
+        faces = np.array(mesh.faces, np.uint64)
         o = Obj3d(_m.Manifold(_m.Mesh64(vertices, faces)))
 
     return o
@@ -99,7 +106,7 @@ def _get_save_dir():
 
 def _face_colors(obj, mesh):
     flen = len(mesh.tri_verts)
-    face_colors = _np.zeros((flen, 3), dtype=_np.uint8)
+    face_colors = np.zeros((flen, 3), dtype=np.uint8)
     for i in range(0, len(mesh.run_index) - 1):
         for j in range(mesh.run_index[i] // 3, mesh.run_index[i + 1] // 3):
             id = mesh.run_original_id[i]
@@ -204,8 +211,8 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                 scene.add_geometry(mesh_output)
             if filename.endswith(".3mf"):
                 s_mesh = scene.to_mesh64()
-                s_vertices = _np.array(s_mesh.vertices, _np.float64)
-                s_faces = _np.array(s_mesh.faces, _np.uint64)
+                s_vertices = np.array(s_mesh.vertices, np.float64)
+                s_faces = np.array(s_mesh.faces, np.uint64)
                 mo = _m.Manifold(_m.Mesh64(s_vertices, s_faces))
                 _export_3mf(
                     filename,

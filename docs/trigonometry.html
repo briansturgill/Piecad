@@ -57,7 +57,7 @@ come out exact, DO come out exact.</p>
 </summary>
 <pre><code class="python">def acos(cosVal: float) -&gt; float:
     &#34;ArcCosine of cosVal returning angle in degrees.&#34;
-    return rad_to_deg(_math.acos(cosVal))</code></pre>
+    return rad_to_deg(math.acos(cosVal))</code></pre>
 </details>
 <div class="desc"><p>ArcCosine of cosVal returning angle in degrees.</p></div>
 </dd>
@@ -71,7 +71,7 @@ come out exact, DO come out exact.</p>
 </summary>
 <pre><code class="python">def acosh(cosVal: float) -&gt; float:
     &#34;ArcCosine of hyperbolic cosVal returning angle in degrees.&#34;
-    return rad_to_deg(_math.acosh(cosVal))</code></pre>
+    return rad_to_deg(math.acosh(cosVal))</code></pre>
 </details>
 <div class="desc"><p>ArcCosine of hyperbolic cosVal returning angle in degrees.</p></div>
 </dd>
@@ -85,7 +85,7 @@ come out exact, DO come out exact.</p>
 </summary>
 <pre><code class="python">def asin(sinVal: float) -&gt; float:
     &#34;ArcSine of sinVal returning angle in degrees.&#34;
-    return rad_to_deg(_math.asin(sinVal))</code></pre>
+    return rad_to_deg(math.asin(sinVal))</code></pre>
 </details>
 <div class="desc"><p>ArcSine of sinVal returning angle in degrees.</p></div>
 </dd>
@@ -99,7 +99,7 @@ come out exact, DO come out exact.</p>
 </summary>
 <pre><code class="python">def asinh(sinVal: float) -&gt; float:
     &#34;ArcSine of hyperbolic sinVal returning angle in degrees&#34;
-    return rad_to_deg(_math.asinh(sinVal))</code></pre>
+    return rad_to_deg(math.asinh(sinVal))</code></pre>
 </details>
 <div class="desc"><p>ArcSine of hyperbolic sinVal returning angle in degrees</p></div>
 </dd>
@@ -113,7 +113,7 @@ come out exact, DO come out exact.</p>
 </summary>
 <pre><code class="python">def atan(tanVal: float) -&gt; float:
     &#34;ArcTan of tanVal returning angle in degrees.&#34;
-    return rad_to_deg(_math.atan(tanVal))</code></pre>
+    return rad_to_deg(math.atan(tanVal))</code></pre>
 </details>
 <div class="desc"><p>ArcTan of tanVal returning angle in degrees.</p></div>
 </dd>
@@ -127,7 +127,7 @@ come out exact, DO come out exact.</p>
 </summary>
 <pre><code class="python">def atan2(y: float, x: float) -&gt; float:
     &#34;ArcTan of quotient of y and x returning angle in degrees.&#34;
-    return rad_to_deg(_math.atan2(y, x))</code></pre>
+    return rad_to_deg(math.atan2(y, x))</code></pre>
 </details>
 <div class="desc"><p>ArcTan of quotient of y and x returning angle in degrees.</p></div>
 </dd>
@@ -141,7 +141,7 @@ come out exact, DO come out exact.</p>
 </summary>
 <pre><code class="python">def atanh(tanVal: float) -&gt; float:
     &#34;ArcTan of hyperbolic tanVal returning angle in degrees.&#34;
-    return rad_to_deg(_math.atanh(tanVal))</code></pre>
+    return rad_to_deg(math.atanh(tanVal))</code></pre>
 </details>
 <div class="desc"><p>ArcTan of hyperbolic tanVal returning angle in degrees.</p></div>
 </dd>
@@ -158,7 +158,7 @@ come out exact, DO come out exact.</p>
     angleInDegrees = abs(angleInDegrees % 360.0)
     if angleInDegrees in _quickCos:
         return _quickCos[angleInDegrees]
-    return _math.cos(deg_to_rad(angleInDegrees))</code></pre>
+    return math.cos(deg_to_rad(angleInDegrees))</code></pre>
 </details>
 <div class="desc"><p>Cosine of angle in degrees.</p></div>
 </dd>
@@ -172,7 +172,7 @@ come out exact, DO come out exact.</p>
 </summary>
 <pre><code class="python">def cosh(angleInDegrees: float) -&gt; float:
     &#34;Hyperbolic cosine of angle in degrees.&#34;
-    return _math.cosh(deg_to_rad(angleInDegrees))</code></pre>
+    return math.cosh(deg_to_rad(angleInDegrees))</code></pre>
 </details>
 <div class="desc"><p>Hyperbolic cosine of angle in degrees.</p></div>
 </dd>
@@ -186,7 +186,7 @@ come out exact, DO come out exact.</p>
 </summary>
 <pre><code class="python">def deg_to_rad(angleInDegrees: float) -&gt; float:
     &#34;Convert degrees to radians.&#34;
-    return angleInDegrees * (_math.pi / 180)</code></pre>
+    return angleInDegrees * (math.pi / 180)</code></pre>
 </details>
 <div class="desc"><p>Convert degrees to radians.</p></div>
 </dd>
@@ -200,7 +200,7 @@ come out exact, DO come out exact.</p>
 </summary>
 <pre><code class="python">def rad_to_deg(angleInRadians: float) -&gt; float:
     &#34;Convert radians to degrees.&#34;
-    return angleInRadians * (180 / _math.pi)</code></pre>
+    return angleInRadians * (180 / math.pi)</code></pre>
 </details>
 <div class="desc"><p>Convert radians to degrees.</p></div>
 </dd>
@@ -217,7 +217,7 @@ come out exact, DO come out exact.</p>
     angleInDegrees = abs(angleInDegrees % 360.0)
     if angleInDegrees in _quickSin:
         return _quickSin[angleInDegrees]
-    return _math.sin(deg_to_rad(angleInDegrees))</code></pre>
+    return math.sin(deg_to_rad(angleInDegrees))</code></pre>
 </details>
 <div class="desc"><p>Sine of angle in degrees.</p></div>
 </dd>
@@ -231,7 +231,7 @@ come out exact, DO come out exact.</p>
 </summary>
 <pre><code class="python">def sinh(angleInDegrees: float) -&gt; float:
     &#34;Hyperbolic sine of angle in degrees.&#34;
-    return _math.sinh(deg_to_rad(angleInDegrees))</code></pre>
+    return math.sinh(deg_to_rad(angleInDegrees))</code></pre>
 </details>
 <div class="desc"><p>Hyperbolic sine of angle in degrees.</p></div>
 </dd>
@@ -248,7 +248,7 @@ come out exact, DO come out exact.</p>
     angleInDegrees = abs(angleInDegrees % 360.0)
     if angleInDegrees in _quickTan:
         return _quickTan[angleInDegrees]
-    return _math.tan(deg_to_rad(angleInDegrees))</code></pre>
+    return math.tan(deg_to_rad(angleInDegrees))</code></pre>
 </details>
 <div class="desc"><p>Tangent of angle in degrees.</p></div>
 </dd>
@@ -262,7 +262,7 @@ come out exact, DO come out exact.</p>
 </summary>
 <pre><code class="python">def tanh(angleInDegrees: float) -&gt; float:
     &#34;Hyperbolic tangent of angle in degrees.&#34;
-    return _math.tanh(deg_to_rad(angleInDegrees))</code></pre>
+    return math.tanh(deg_to_rad(angleInDegrees))</code></pre>
 </details>
 <div class="desc"><p>Hyperbolic tangent of angle in degrees.</p></div>
 </dd>

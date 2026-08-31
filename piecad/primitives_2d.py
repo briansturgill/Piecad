@@ -3,7 +3,6 @@
 """
 
 import manifold3d as _m
-import numpy as _np
 
 
 from . import Obj2d, Config, _chkGT, _chkGE, _chkV2, cos, sin, ValidationError

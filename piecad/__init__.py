@@ -21,8 +21,11 @@ to check for polygon self intersections.
 
 """
 
-from __future__ import annotations
+from __future__ import annotations as _annotations
 import manifold3d as _m
+import math
+import trimesh
+import numpy as np
 from .trigonometry import tan, cos, sin
 
 
@@ -206,19 +209,17 @@ class Obj3d:
         """
 
         def plane_from_vectors_and_point(a, point):
-            import numpy as _np
-
-            v1 = _np.array([0, 1, 0], dtype=float)
-            v2 = _np.array([1, 0, tan(a)], dtype=float)
+            v1 = np.array([0, 1, 0], dtype=float)
+            v2 = np.array([1, 0, tan(a)], dtype=float)
 
             # normal from cross product
-            normal = _np.cross(v1, v2)
+            normal = np.cross(v1, v2)
 
             # point the plane must pass through
-            p = _np.array(point, dtype=float)
+            p = np.array(point, dtype=float)
 
             # plane offset: n·x + d = 0  →  d = -n·p
-            origin_offset = -_np.dot(normal, p)
+            origin_offset = -np.dot(normal, p)
 
             return normal, origin_offset
 
@@ -915,3 +916,8 @@ from .primitives_2d import *
 from .primitives_3d import *
 
 _handle_piecadrc()
+del trigonometry
+del utilities
+del bulk_ops
+del primitives_2d
+del primitives_3d

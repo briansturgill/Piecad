@@ -3,7 +3,6 @@ Make a holder for multiple sizes of lids.
 """
 
 from piecad import *
-from math import atan2
 
 Config.set_default_segments(100)
 

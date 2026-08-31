@@ -3,8 +3,6 @@
 """
 
 import manifold3d as _m
-import numpy as _np
-import trimesh
 
 from . import (
     Config,
@@ -26,6 +24,8 @@ from . import (
     _chkGE,
     _chkV3,
     _chkV2,
+    np,
+    trimesh,
 )
 
 from ._check_mesh import check_mesh as _check_mesh
@@ -292,8 +292,8 @@ def extrude_chaining(
 
     add_cap(prev_vo, prev_polys, top=True)
 
-    vertex_list = _np.array(vertex_list, _np.float64)
-    triangles = _np.array(triangles, _np.uint64)
+    vertex_list = np.array(vertex_list, np.float64)
+    triangles = np.array(triangles, np.uint64)
     mesh = _m.Mesh64(vertex_list, triangles)
     if diagnose != None:
         dot_idx = diagnose.rindex(".")
@@ -420,7 +420,6 @@ def polyhedron(
     If all else fails, try adding these lines just before the call to polyhedron.
 
     ```python
-    import trimesh
     mesh_output = trimesh.Trimesh(vertices=vertices, faces=triangles)
     trimesh.exchange.export.export_mesh(mesh_output, "mesh.obj", "obj")
     ```
@@ -436,8 +435,8 @@ def polyhedron(
         msg = _quick_check_mesh(vertices, faces)
         if msg != "":
             raise ValidationError(f"Polyhedron is flawed: {msg}")
-    vertices = _np.array(vertices, _np.float64)
-    faces = _np.array(faces, _np.uint64)
+    vertices = np.array(vertices, np.float64)
+    faces = np.array(faces, np.uint64)
     mesh = _m.Mesh64(vertices, faces)
     mo = _m.Manifold(mesh)
     if mo.is_empty():
@@ -629,13 +628,13 @@ def tetrahedron(
     """
 
     def _volume(vertices, faces) -> float:
-        vertices = _np.array(vertices)
+        vertices = np.array(vertices)
         volume = 0.0
 
         for face in faces:
             v0, v1, v2 = vertices[face[0]], vertices[face[1]], vertices[face[2]]
             # Signed volume contribution from this triangle
-            volume += _np.dot(v0, _np.cross(v1, v2))
+            volume += np.dot(v0, np.cross(v1, v2))
 
         return volume / 6.0
 

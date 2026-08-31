@@ -1,20 +1,19 @@
 import pytest
 from piecad import *
-import math as _math
 
 
 def test_deg_to_rad():
-    assert deg_to_rad(360) == _math.pi * 2
-    assert deg_to_rad(180) == _math.pi
-    assert deg_to_rad(90) == _math.pi / 2
-    assert deg_to_rad(45) == _math.pi / 4
+    assert deg_to_rad(360) == math.pi * 2
+    assert deg_to_rad(180) == math.pi
+    assert deg_to_rad(90) == math.pi / 2
+    assert deg_to_rad(45) == math.pi / 4
 
 
 def test_rad_to_deg():
-    assert rad_to_deg(_math.pi * 2) == 360
-    assert rad_to_deg(_math.pi) == 180
-    assert rad_to_deg(_math.pi / 2) == 90
-    assert rad_to_deg(_math.pi / 4) == 45
+    assert rad_to_deg(math.pi * 2) == 360
+    assert rad_to_deg(math.pi) == 180
+    assert rad_to_deg(math.pi / 2) == 90
+    assert rad_to_deg(math.pi / 4) == 45
 
 
 def test_deg_to_rad_and_back():
@@ -74,22 +73,22 @@ def test_special_cached_trig_values():
     ]
     rvals = [
         0,
-        _math.pi / 6,
-        _math.pi / 4,
-        _math.pi / 3,
-        _math.pi / 2,
-        2 * _math.pi / 3,
-        3 * _math.pi / 4,
-        5 * _math.pi / 6,
-        _math.pi,
-        7 * _math.pi / 6,
-        5 * _math.pi / 4,
-        4 * _math.pi / 3,
-        3 * _math.pi / 2,
-        5 * _math.pi / 3,
-        7 * _math.pi / 4,
-        11 * _math.pi / 6,
-        2 * _math.pi,
+        math.pi / 6,
+        math.pi / 4,
+        math.pi / 3,
+        math.pi / 2,
+        2 * math.pi / 3,
+        3 * math.pi / 4,
+        5 * math.pi / 6,
+        math.pi,
+        7 * math.pi / 6,
+        5 * math.pi / 4,
+        4 * math.pi / 3,
+        3 * math.pi / 2,
+        5 * math.pi / 3,
+        7 * math.pi / 4,
+        11 * math.pi / 6,
+        2 * math.pi,
     ]
 
     def _equalish(v1, v2):
@@ -100,13 +99,13 @@ def test_special_cached_trig_values():
     assert len(dvals) == len(rvals)
     for i in range(len(dvals)):
         assert _equalish(deg_to_rad(dvals[i]), rvals[i])
-        assert _equalish(cos(dvals[i]), _math.cos(rvals[i]))
-        assert _equalish(sin(dvals[i]), _math.sin(rvals[i]))
-        assert _equalish(tan(dvals[i]), _math.tan(rvals[i]))
+        assert _equalish(cos(dvals[i]), math.cos(rvals[i]))
+        assert _equalish(sin(dvals[i]), math.sin(rvals[i]))
+        assert _equalish(tan(dvals[i]), math.tan(rvals[i]))
 
 
 def test_trig_bare_sin_speed(benchmark):
-    benchmark(_math.sin, 1.23)
+    benchmark(math.sin, 1.23)
 
 
 def test_trig_cache_hit_sin_speed(benchmark):
@@ -118,7 +117,7 @@ def test_trig_cache_miss_sin_speed(benchmark):
 
 
 def test_trig_bare_cos_speed(benchmark):
-    benchmark(_math.cos, 1.23)
+    benchmark(math.cos, 1.23)
 
 
 def test_trig_cache_hit_cos_speed(benchmark):

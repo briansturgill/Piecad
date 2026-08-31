@@ -401,8 +401,8 @@ Lines will be added creating an <code>obj</code>-shaped 3d solid.</p>
 
     add_cap(prev_vo, prev_polys, top=True)
 
-    vertex_list = _np.array(vertex_list, _np.float64)
-    triangles = _np.array(triangles, _np.uint64)
+    vertex_list = np.array(vertex_list, np.float64)
+    triangles = np.array(triangles, np.uint64)
     mesh = _m.Mesh64(vertex_list, triangles)
     if diagnose != None:
         dot_idx = diagnose.rindex(&#34;.&#34;)
@@ -597,7 +597,6 @@ to find the best range.</p></div>
     If all else fails, try adding these lines just before the call to polyhedron.
 
     ```python
-    import trimesh
     mesh_output = trimesh.Trimesh(vertices=vertices, faces=triangles)
     trimesh.exchange.export.export_mesh(mesh_output, &#34;mesh.obj&#34;, &#34;obj&#34;)
     ```
@@ -613,8 +612,8 @@ to find the best range.</p></div>
         msg = _quick_check_mesh(vertices, faces)
         if msg != &#34;&#34;:
             raise ValidationError(f&#34;Polyhedron is flawed: {msg}&#34;)
-    vertices = _np.array(vertices, _np.float64)
-    faces = _np.array(faces, _np.uint64)
+    vertices = np.array(vertices, np.float64)
+    faces = np.array(faces, np.uint64)
     mesh = _m.Mesh64(vertices, faces)
     mo = _m.Manifold(mesh)
     if mo.is_empty():
@@ -646,8 +645,7 @@ If
 The <code>ValidationError</code> will have short message saying what is wrong.
 If you set <code>check</code> to <code>"none"</code> no checking is performed&hellip; you're on your own!</p>
 <p>If all else fails, try adding these lines just before the call to polyhedron.</p>
-<pre><code class="language-python">import trimesh
-mesh_output = trimesh.Trimesh(vertices=vertices, faces=triangles)
+<pre><code class="language-python">mesh_output = trimesh.Trimesh(vertices=vertices, faces=triangles)
 trimesh.exchange.export.export_mesh(mesh_output, &quot;mesh.obj&quot;, &quot;obj&quot;)
 </code></pre>
 <p>Then use a program like <code>meshlab</code> to look at where things are not manifold.</p></div>
@@ -906,13 +904,13 @@ When <code>center</code> is <code>True</code>, the rounded cylinder will centere
     &#34;&#34;&#34;
 
     def _volume(vertices, faces) -&gt; float:
-        vertices = _np.array(vertices)
+        vertices = np.array(vertices)
         volume = 0.0
 
         for face in faces:
             v0, v1, v2 = vertices[face[0]], vertices[face[1]], vertices[face[2]]
             # Signed volume contribution from this triangle
-            volume += _np.dot(v0, _np.cross(v1, v2))
+            volume += np.dot(v0, np.cross(v1, v2))
 
         return volume / 6.0
 

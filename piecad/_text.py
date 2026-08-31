@@ -5,7 +5,7 @@ from fontTools.ttLib.removeOverlaps import removeOverlaps
 import fontTools
 import fontPens.flattenPen
 from importlib import resources as impresources
-from . import fonts
+from . import _fonts
 
 _font = None
 _glyph_set = None
@@ -23,7 +23,7 @@ def set_font(fname):
     global _font, _cmap, _glyph_set
 
     if fname[0] != "/" and fname[0] != "\\" and fname[0] != ".":
-        font_file = impresources.files(fonts) / fname
+        font_file = impresources.files(_fonts) / fname
     else:
         font_file = fname
 

@@ -104,8 +104,8 @@ el.replaceWith(d);
     if type(mesh) == trimesh.path.Path2D:
         raise ValidationError(&#34;Currently 2d objects are no supported.&#34;)
     else:
-        vertices = _np.array(mesh.vertices, _np.float64)
-        faces = _np.array(mesh.faces, _np.uint64)
+        vertices = np.array(mesh.vertices, np.float64)
+        faces = np.array(mesh.faces, np.uint64)
         o = Obj3d(_m.Manifold(_m.Mesh64(vertices, faces)))
 
     return o</code></pre>
@@ -276,8 +276,8 @@ returned.</p></div>
                 scene.add_geometry(mesh_output)
             if filename.endswith(&#34;.3mf&#34;):
                 s_mesh = scene.to_mesh64()
-                s_vertices = _np.array(s_mesh.vertices, _np.float64)
-                s_faces = _np.array(s_mesh.faces, _np.uint64)
+                s_vertices = np.array(s_mesh.vertices, np.float64)
+                s_faces = np.array(s_mesh.faces, np.uint64)
                 mo = _m.Manifold(_m.Mesh64(s_vertices, s_faces))
                 _export_3mf(
                     filename,

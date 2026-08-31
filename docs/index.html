@@ -1290,19 +1290,17 @@ maintain the same size ratio between the two sizes.</p>
         &#34;&#34;&#34;
 
         def plane_from_vectors_and_point(a, point):
-            import numpy as _np
-
-            v1 = _np.array([0, 1, 0], dtype=float)
-            v2 = _np.array([1, 0, tan(a)], dtype=float)
+            v1 = np.array([0, 1, 0], dtype=float)
+            v2 = np.array([1, 0, tan(a)], dtype=float)
 
             # normal from cross product
-            normal = _np.cross(v1, v2)
+            normal = np.cross(v1, v2)
 
             # point the plane must pass through
-            p = _np.array(point, dtype=float)
+            p = np.array(point, dtype=float)
 
             # plane offset: n·x + d = 0  →  d = -n·p
-            origin_offset = -_np.dot(normal, p)
+            origin_offset = -np.dot(normal, p)
 
             return normal, origin_offset
 
@@ -1811,19 +1809,17 @@ For the Z axis it's the same, but each hand is upside down.</p>
     &#34;&#34;&#34;
 
     def plane_from_vectors_and_point(a, point):
-        import numpy as _np
-
-        v1 = _np.array([0, 1, 0], dtype=float)
-        v2 = _np.array([1, 0, tan(a)], dtype=float)
+        v1 = np.array([0, 1, 0], dtype=float)
+        v2 = np.array([1, 0, tan(a)], dtype=float)
 
         # normal from cross product
-        normal = _np.cross(v1, v2)
+        normal = np.cross(v1, v2)
 
         # point the plane must pass through
-        p = _np.array(point, dtype=float)
+        p = np.array(point, dtype=float)
 
         # plane offset: n·x + d = 0  →  d = -n·p
-        origin_offset = -_np.dot(normal, p)
+        origin_offset = -np.dot(normal, p)
 
         return normal, origin_offset
 

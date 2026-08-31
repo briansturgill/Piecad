@@ -12,7 +12,6 @@ Wrench, Nuts, Bolts, Pieces with Holes, for Kids.
 # v2.1
 
 from piecad import *
-from math import sqrt
 
 kid_circle = 34.0
 kid_nut = 24.0
@@ -75,7 +74,7 @@ def KidSizedNut():
 
 
 def KidSizedBoltInsert(isHead=False):
-    x = sqrt(kid_circle)
+    x = math.sqrt(kid_circle)
     if isHead:
         x = x + (kid_tolerance / 4.0)
     return cube([x, x, kid_height - 6]).translate([-x / 2.0, -x / 2.0, 0])
