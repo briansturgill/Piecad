@@ -273,7 +273,7 @@ one needed:</p>
             for i in range(0, n):
                 segments.append((path[i], path[(i + 1) % n]))
 
-        isects = _isect_segments_include_segments(segments)
+        isects = _find_self_intersections(segments)
 
         if len(isects) &gt; 0:
             txt = []

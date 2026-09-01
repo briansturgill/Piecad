@@ -7,8 +7,8 @@ import manifold3d as _m
 
 from . import Obj2d, Config, _chkGT, _chkGE, _chkV2, cos, sin, ValidationError
 
-from ._poly_point_isect import (
-    isect_segments_include_segments as _isect_segments_include_segments,
+from ._bently_ottmann import (
+    find_self_intersections as _find_self_intersections,
 )
 
 from . import _text
@@ -168,7 +168,7 @@ def polygon(paths: list[list[tuple[float, float]]], check: bool = True) -> Obj2d
             for i in range(0, n):
                 segments.append((path[i], path[(i + 1) % n]))
 
-        isects = _isect_segments_include_segments(segments)
+        isects = _find_self_intersections(segments)
 
         if len(isects) > 0:
             txt = []

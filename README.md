@@ -95,7 +95,8 @@ You can see Manifold's web site for other packages that are used.
 Piecad uses the [trimesh](https://github.com/mikedh/trimesh) package for mesh loading/saving and
 for Piecad-Viewer.
 
-Piecad also uses [isect_segments-bentley_ottmann](https://github.com/ideasman42/isect_segments-bentley_ottmann)
-to check for polygon self intersections. Also, [fontTools](https://github.com/fonttools/fonttools) and [fontPens](https://github.com/robotools/fontPens) are used to support text.
+Piecad, Manifold and Trimesh uses the [numpy](https://numpy.org/) package for numeric and array processing.
+
+Also used are [fontTools](https://github.com/fonttools/fonttools) and [fontPens](https://github.com/robotools/fontPens) to support text.
 
 We include two fonts: `Hack-Regular.tts` and `Roboto-Regular.tts`, see `piecad/fonts` for the licenses.

@@ -182,6 +182,12 @@ def test_polygon_self_intersect():
         _polygon([poly])
 
 
+def test_polygon_self_intersect2():
+    poly = [(0, 0), (10, 10), (0, 10), (10, 0)]
+    with pytest.raises(ValidationError):
+        _polygon([poly])
+
+
 import numpy as _np
 
 _arc_trig_vals_map = {}
