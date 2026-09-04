@@ -201,36 +201,56 @@ class Obj3d:
         self, cut_angle: float, cut_point: tuple[float, float, float]
     ) -> tuple[Obj3d, Obj3d]:
         """
-        Cut this object into two parts using a plane defined by the `cut_angle` and `cut_point`.
-        Cut_angle is in degrees, and cut_point is a 3D point (x, y, z) through which the cut plane passes.
+        This works similarly to a miter saw.
+        It cuts this object into two parts using a plane defined by the `cut_angle` and `cut_point`.
+        Cut_angle is in degrees, and cut_point is a point through which the cut plane passes.
+        The cut is parallel to the Y axis, with the angle defining the slope of the cut.
         The two parts are returned as a tuple of Obj3d objects.
-        The cut plane is defined by the angle and the point through which it passes.
-        The cut is parallel to the Y plane, with the angle defining the slope of the cut.
+        The returned order is the one with the least x, or then the least z, or then the least volume.
         """
 
-        def plane_from_vectors_and_point(a, point):
-            v1 = np.array([0, 1, 0], dtype=float)
-            v2 = np.array([1, 0, tan(a)], dtype=float)
+        _chkNum("cut_angle", cut_angle)
+        if cut_angle < -90 or cut_angle > 90:
+            raise ValidationError(
+                "Parameter cut_angle must be between -90 and 90 degrees."
+            )
 
-            # normal from cross product
-            normal = np.cross(v1, v2)
+        _chkV3("cut_point", cut_point)
+        for value in cut_point:
+            _chkNum("cut_point", value)
 
-            # point the plane must pass through
-            p = np.array(point, dtype=float)
+        # A direction vector in the X-Z plane at cut_angle.
+        cut_direction = np.array(
+            [cos(cut_angle), 0.0, sin(cut_angle)],
+            dtype=float,
+        )
 
-            # plane offset: n·x + d = 0  →  d = -n·p
-            origin_offset = -np.dot(normal, p)
+        # The plane is parallel to the Y-axis.
+        y_direction = np.array([0.0, 1.0, 0.0], dtype=float)
 
-            return normal, origin_offset
+        # Plane normal.
+        normal = np.cross(y_direction, cut_direction)
 
-        cp = cut_point
-        obj = self.translate((-cp[0], -cp[1], -cp[2]))
-        normal, offset = plane_from_vectors_and_point(cut_angle, (0, 0, 0))
-        o1, o2 = obj.mo.split_by_plane(normal, offset)
-        o1 = o1.translate(cut_point)
-        o2 = o2.translate(cut_point)
+        # Plane equation:
+        #     normal · point + offset = 0
+        # The plane passes through cut_point.
+        offset = float(np.dot(normal, np.array(cut_point, dtype=float)))
 
-        return Obj3d(o1), Obj3d(o2)
+        first, second = self.mo.split_by_plane(normal, offset)
+        fxmin, fymin, fzmin, fxmax, fymax, fzmax = first.bounding_box()
+        sxmin, symin, szmin, sxmax, symax, szmax = second.bounding_box()
+        if fxmin < sxmin:
+            return Obj3d(first), Obj3d(second)
+        elif sxmin < fxmin:
+            return Obj3d(second), Obj3d(first)
+        elif fzmin < szmin:
+            return Obj3d(first), Obj3d(second)
+        elif szmin < fzmin:
+            return Obj3d(second), Obj3d(first)
+        elif first.volume() < second.volume():
+            return Obj3d(first), Obj3d(second)
+        else:
+            return Obj3d(second), Obj3d(first)
 
     def num_faces(self) -> int:
         """

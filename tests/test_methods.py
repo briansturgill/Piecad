@@ -2,6 +2,13 @@ import pytest
 from piecad import *
 
 
+def _equalish(t1, t2):
+    for i in range(len(t1)):
+        if abs(t1[i] - t2[i]) > 1e-12:
+            return False
+    return True
+
+
 def _offset(o, d, jt):
     o = o.offset(d, jt)
     o.num_verts()
@@ -219,14 +226,20 @@ def test_miter_cut_pos():
     c = cuboid([50, 5, 20])
     cut_point = (0, 0, 0)
     o1, o2 = c.miter_cut(45, cut_point)
-    assert union(o1, o2).bounding_box() == c.bounding_box()
+    assert _equalish(o1.bounding_box(), (0.0, 0.0, 0.0, 20.0, 5.0, 20.0))
+    assert _equalish(union(o1, o2).bounding_box(), c.bounding_box())
+    view(o1)
+    view(o2)
 
 
 def test_miter_cut_neg():
     c = cuboid([50, 5, 20])
     cut_point = (0, 0, 20)
     o1, o2 = c.miter_cut(-45, cut_point)
-    assert union(o1, o2).bounding_box() == c.bounding_box()
+    assert _equalish(o1.bounding_box(), (0.0, 0.0, 0.0, 20.0, 5.0, 20.0))
+    assert _equalish(union(o1, o2).bounding_box(), c.bounding_box())
+    view(o1)
+    view(o2)
 
 
 def test_num_faces_3d():
