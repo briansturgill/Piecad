@@ -162,6 +162,8 @@ _cssColors["violet"] = (238, 130, 238)
 _cssColors["wheat"] = (245, 222, 179)
 _cssColors["whitesmoke"] = (245, 245, 245)
 _cssColors["yellowgreen"] = (154, 205, 50)
+# Not in CSS, but seem necessary.
+_cssColors["copper"] = (184, 115, 51)
 
 
 def _parse_color(c):
