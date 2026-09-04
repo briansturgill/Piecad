@@ -84,6 +84,54 @@ to check for polygon self intersections.</p>
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="piecad.near_eq"><code class="name flex">
+<span>def <span class="ident">near_eq</span></span>(<span>a, b, epsilon=1e-12) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def near_eq(a, b, epsilon=_epsilon) -&gt; bool:
+    &#34;&#34;&#34;
+    If `a` is near `b` (within epsilon) then return True` else `return False`
+    &#34;&#34;&#34;
+    return a - epsilon &gt;= b and a + epsilon &lt;= b</code></pre>
+</details>
+<div class="desc"><p>If <code>a</code> is near <code>b</code> (within epsilon) then return True<code> else </code>return False`</p></div>
+</dd>
+<dt id="piecad.near_ge"><code class="name flex">
+<span>def <span class="ident">near_ge</span></span>(<span>a, b, epsilon=1e-12) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def near_ge(a, b, epsilon=_epsilon) -&gt; bool:
+    &#34;&#34;&#34;
+    If `a - epsilon` is greater than or equal to `b` then `return True` else `return False`
+    &#34;&#34;&#34;
+    return a - epsilon &gt;= b</code></pre>
+</details>
+<div class="desc"><p>If <code>a - epsilon</code> is greater than or equal to <code>b</code> then <code>return True</code> else <code>return False</code></p></div>
+</dd>
+<dt id="piecad.near_le"><code class="name flex">
+<span>def <span class="ident">near_le</span></span>(<span>a, b, epsilon=1e-12) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def near_le(a, b, epsilon=_epsilon) -&gt; bool:
+    &#34;&#34;&#34;
+    If `a + epsilon` is less than or equal to `b` then `return True` else `return False`
+    &#34;&#34;&#34;
+    return a + epsilon &lt;= b</code></pre>
+</details>
+<div class="desc"><p>If <code>a + epsilon</code> is less than or equal to <code>b</code> then <code>return True</code> else <code>return False</code></p></div>
+</dd>
 <dt id="piecad.version"><code class="name flex">
 <span>def <span class="ident">version</span></span>(<span>) ‑> str</span>
 </code></dt>
@@ -1328,7 +1376,7 @@ maintain the same size ratio between the two sizes.</p>
             return Obj3d(first), Obj3d(second)
         elif szmin &lt; fzmin:
             return Obj3d(second), Obj3d(first)
-        elif first.volume() &lt; second.volume():
+        elif near_le(first.volume(), second.volume()):
             return Obj3d(first), Obj3d(second)
         else:
             return Obj3d(second), Obj3d(first)
@@ -1867,7 +1915,7 @@ For the Z axis it's the same, but each hand is upside down.</p>
         return Obj3d(first), Obj3d(second)
     elif szmin &lt; fzmin:
         return Obj3d(second), Obj3d(first)
-    elif first.volume() &lt; second.volume():
+    elif near_le(first.volume(), second.volume()):
         return Obj3d(first), Obj3d(second)
     else:
         return Obj3d(second), Obj3d(first)</code></pre>
@@ -2290,6 +2338,9 @@ functions and methods.</p></div>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="piecad.near_eq" href="#piecad.near_eq">near_eq</a></code></li>
+<li><code><a title="piecad.near_ge" href="#piecad.near_ge">near_ge</a></code></li>
+<li><code><a title="piecad.near_le" href="#piecad.near_le">near_le</a></code></li>
 <li><code><a title="piecad.version" href="#piecad.version">version</a></code></li>
 </ul>
 </li>

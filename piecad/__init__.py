@@ -247,7 +247,7 @@ class Obj3d:
             return Obj3d(first), Obj3d(second)
         elif szmin < fzmin:
             return Obj3d(second), Obj3d(first)
-        elif first.volume() < second.volume():
+        elif near_le(first.volume(), second.volume()):
             return Obj3d(first), Obj3d(second)
         else:
             return Obj3d(second), Obj3d(first)
@@ -927,6 +927,30 @@ def _handle_piecadrc():
         with open(fname, "r") as f:
             s = "".join(f.readlines())
         exec(s, {"Config": Config, "print": print})
+
+
+_epsilon = _m.Manifold.cube().get_tolerance()
+
+
+def near_eq(a, b, epsilon=_epsilon) -> bool:
+    """
+    If `a` is near `b` (within epsilon) then return True` else `return False`
+    """
+    return a - epsilon >= b and a + epsilon <= b
+
+
+def near_le(a, b, epsilon=_epsilon) -> bool:
+    """
+    If `a + epsilon` is less than or equal to `b` then `return True` else `return False`
+    """
+    return a + epsilon <= b
+
+
+def near_ge(a, b, epsilon=_epsilon) -> bool:
+    """
+    If `a - epsilon` is greater than or equal to `b` then `return True` else `return False`
+    """
+    return a - epsilon >= b
 
 
 from .utilities import *
