@@ -48,7 +48,6 @@
 * [pbox_intercom.py](pbox_intercom.py)
     -  Intercom ProjectBox Example
 
-Saving: /home/brian/Downloads/star_3d.obj
 * [star3d.py](star3d.py)
     -  Use 2D stars to make a 3D star.
 
