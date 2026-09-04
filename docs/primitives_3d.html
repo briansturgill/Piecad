@@ -902,18 +902,6 @@ When <code>center</code> is <code>True</code>, the rounded cylinder will centere
 
     &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/tetrahedron.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
-
-    def _volume(vertices, faces) -&gt; float:
-        vertices = np.array(vertices)
-        volume = 0.0
-
-        for face in faces:
-            v0, v1, v2 = vertices[face[0]], vertices[face[1]], vertices[face[2]]
-            # Signed volume contribution from this triangle
-            volume += np.dot(v0, np.cross(v1, v2))
-
-        return volume / 6.0
-
     if vertices == None or type(vertices) == float or type(vertices) == int:
         size = vertices
         if size == None:
@@ -923,12 +911,36 @@ When <code>center</code> is <code>True</code>, the rounded cylinder will centere
             t = t.scale((size, size, size))
         return Obj3d(t)
     _chkTY(&#34;vertices&#34;, vertices, list)
+    if len(vertices) != 4:
+        raise ValidationError(
+            &#34;You must provide exactly four vertices to define a tetrahedron.&#34;
+        )
+
+    v0, v1, v2, v3 = (np.asarray(v, dtype=np.float64) for v in vertices)
+
+    # Columns describe the target tetrahedron&#39;s three edge vectors.
+    linear = np.column_stack(
+        (
+            v1 - v0,
+            v2 - v0,
+            v3 - v0,
+        )
+    )
+
+    det = np.linalg.det(linear)
+    # A zero determinant means the points are coplanar or otherwise degenerate.
+    if abs(det) &lt; 1e-12:
+        raise ValidationError(
+            &#34;Your four given points are coplanar. A flat tetrahedron is not allowed.&#34;
+        )
 
     ccw_faces = [[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]]
     cw_faces = [[0, 1, 2], [0, 3, 1], [0, 2, 3], [1, 3, 2]]
-    faces = ccw_faces
-    if _volume(vertices, faces) &lt; 0:
+    if det &lt; 0:
         faces = cw_faces
+    else:
+        faces = ccw_faces
+
     return polyhedron(vertices, faces, &#34;none&#34;)</code></pre>
 </details>
 <div class="desc"><p>Create a tetrahedron from 4 <code>vertices</code>.
