@@ -73,6 +73,7 @@ def star3d(
 
     return union(*objs)
 
+
 if __name__ == "__main__":
     Config.set_default_color("copper")
     st3d = star3d(5, 60)
