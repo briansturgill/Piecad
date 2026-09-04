@@ -73,8 +73,8 @@ def star3d(
 
     return union(*objs)
 
-
-Config.set_default_color("copper")
-st3d = star3d(5, 60)
-save("star_3d.3mf", st3d)
-view(st3d)
+if __name__ == "__main__":
+    Config.set_default_color("copper")
+    st3d = star3d(5, 60)
+    save("star_3d.3mf", st3d)
+    view(st3d)
