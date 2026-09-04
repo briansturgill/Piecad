@@ -626,18 +626,6 @@ def tetrahedron(
 
     <iframe width="100%" height="220" src="examples/tetrahedron.html"></iframe>
     """
-
-    def _volume(vertices, faces) -> float:
-        vertices = np.array(vertices)
-        volume = 0.0
-
-        for face in faces:
-            v0, v1, v2 = vertices[face[0]], vertices[face[1]], vertices[face[2]]
-            # Signed volume contribution from this triangle
-            volume += np.dot(v0, np.cross(v1, v2))
-
-        return volume / 6.0
-
     if vertices == None or type(vertices) == float or type(vertices) == int:
         size = vertices
         if size == None:
@@ -647,12 +635,36 @@ def tetrahedron(
             t = t.scale((size, size, size))
         return Obj3d(t)
     _chkTY("vertices", vertices, list)
+    if len(vertices) != 4:
+        raise ValidationError(
+            "You must provide exactly four vertices to define a tetrahedron."
+        )
+
+    v0, v1, v2, v3 = (np.asarray(v, dtype=np.float64) for v in vertices)
+
+    # Columns describe the target tetrahedron's three edge vectors.
+    linear = np.column_stack(
+        (
+            v1 - v0,
+            v2 - v0,
+            v3 - v0,
+        )
+    )
+
+    det = np.linalg.det(linear)
+    # A zero determinant means the points are coplanar or otherwise degenerate.
+    if abs(det) < 1e-12:
+        raise ValidationError(
+            "Your four given points are coplanar. A flat tetrahedron is not allowed."
+        )
 
     ccw_faces = [[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]]
     cw_faces = [[0, 1, 2], [0, 3, 1], [0, 2, 3], [1, 3, 2]]
-    faces = ccw_faces
-    if _volume(vertices, faces) < 0:
+    if det < 0:
         faces = cw_faces
+    else:
+        faces = ccw_faces
+
     return polyhedron(vertices, faces, "none")
 
 

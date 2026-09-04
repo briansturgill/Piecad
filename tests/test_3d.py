@@ -234,3 +234,14 @@ def test_tetrahedron(benchmark):
     o = benchmark(_tetrahedron, 5)
     assert o.bounding_box() == (-5.0, -5.0, -5.0, 5.0, 5.0, 5.0)
     assert o.volume() == 333.3333333333333
+
+
+def test_tetrahedron_coplanar():
+    verts = [
+        (0, 0, 0),
+        (1, 0, 0),
+        (0, 1, 0),
+        (1, 1, 0),
+    ]
+    with pytest.raises(ValidationError):
+        tetrahedron(verts)
