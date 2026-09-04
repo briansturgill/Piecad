@@ -38,7 +38,7 @@ def star3d(
     for i in range(2):
         s = star(num_points, outer_radius, inner_radius)
         if i == 0:
-            s = s.offset(-1.0, "round").offset(1.5, "round")
+            s = s.offset(-1.0, "round").offset(2.0, "round")
         s = s.extrude(flat_height).translate((0, 0, cur_height))
         objs.append(s)
         cur_height += flat_height
@@ -63,6 +63,7 @@ def star3d(
         right_pt_low = (0, ic_half, o_z)
         top_pt = (0, 0, i_z)
         t = tetrahedron([front_pt_low, left_pt_low, right_pt_low, top_pt])
+        t = t.color("gold")
         return t
 
     wing = make_wing()
@@ -73,6 +74,7 @@ def star3d(
     return union(*objs)
 
 
+Config.set_default_color("copper")
 st3d = star3d(5, 60)
-save("star_3d.obj", st3d)
+save("star_3d.3mf", st3d)
 view(st3d)
