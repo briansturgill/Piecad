@@ -385,6 +385,15 @@ class Obj3d:
         _chkV3("factors", factors)
         return Obj3d(self.mo.scale(factors))
 
+    def simplify(self, tolerance: float = 0) -> Obj3d:
+        """
+        Return a simplified version of this object.
+
+        Using a tolerance of 0 means that the current tolerance will be used.
+        """
+        _chkGE("tolerance", tolerance, 0)
+        return Obj3d(self.mo.simplify(tolerance))
+
     def slice(self, height: float) -> Obj2d:
         """
         Like `project`, but rather than the bottom, project at the given height.
@@ -716,6 +725,15 @@ class Obj2d:
         """
         _chkV2("factors", factors)
         return Obj2d(self.mo.scale(factors), color=self._color)
+
+    def simplify(self, tolerance: float = 0) -> Obj2d:
+        """
+        Return a simplified version of this object.
+
+        Using a tolerance of 0 means that the current tolerance will be used.
+        """
+        _chkGE("tolerance", tolerance, 0)
+        return Obj2d(self.mo.simplify(tolerance))
 
     def to_paths(self) -> list[list[float, float]]:
         """

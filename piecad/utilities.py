@@ -3,15 +3,10 @@
 """
 
 import atexit
-import http.client
-import json
-import queue
 import threading
 import manifold3d as _m
 import inspect
 import os.path
-import subprocess
-import sys
 import time
 from pathlib import Path as _Path
 from . import Obj2d, Obj3d, Config, _chkGE, _chkGO, ValidationError, np, trimesh
@@ -26,6 +21,7 @@ __all__ = [
     "quick_check_mesh",
     "save",
     "view",
+    "view_all_now",
     "winding",
 ]
 
@@ -36,8 +32,6 @@ def _info_str(tag):  # Must be called from inside another function.
     str = f"{tag}@{os.path.basename(info.filename)}:{info.lineno}"
     return str
 
-
-_viewer_available = True
 
 
 def load(filename: str) -> Obj3d | Obj2d:
@@ -83,14 +77,14 @@ _save_dir = None
 def _get_save_dir():
     global _save_dir
 
-    if _save_dir != None:
+    if _save_dir is not None:
         return _save_dir
 
     import platform
     import os
 
     _save_dir = os.getenv("PIECAD_SAVE_DIR", None)
-    if _save_dir != None:
+    if _save_dir is not None:
         return _save_dir
     if platform.system == "Windows":
         import winreg
@@ -104,7 +98,7 @@ def _get_save_dir():
     return _save_dir
 
 
-def _face_colors(obj, mesh):
+def _face_colors(mesh):
     flen = len(mesh.tri_verts)
     face_colors = np.zeros((flen, 3), dtype=np.uint8)
     for i in range(0, len(mesh.run_index) - 1):
@@ -177,7 +171,7 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
             else:
                 vertices = mesh.vert_properties
 
-            face_colors = _face_colors(obj, mesh)
+            face_colors = _face_colors(mesh)
             mesh_output = trimesh.Trimesh(
                 vertices=vertices,
                 faces=mesh.tri_verts,
@@ -197,7 +191,7 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                     vertices = mesh.vert_properties[:, :3]
                 else:
                     vertices = mesh.vert_properties
-                face_colors = _face_colors(obj, mesh)
+                face_colors = _face_colors(mesh)
                 mesh_output = trimesh.Trimesh(
                     vertices=vertices,
                     faces=mesh.tri_verts,
@@ -260,7 +254,7 @@ def _save_svg(filename, *objs):
     off_y = 0 - bb[1]
     y_size = bb[3] - bb[1]
     for obj in objs:
-        color = obj._color if obj._color != None else (128, 128, 128)
+        color = obj._color if obj._color is not None else (128, 128, 128)
         txt.append(f'<g><path fill="rgb({color[0]},{color[1]},{color[2]})" d="')
         paths = obj.to_paths()
         for path in paths:
@@ -281,9 +275,8 @@ def _save_svg(filename, *objs):
         f.write("\n".join(txt))
 
 
-_view_queue = queue.Queue()
-_view_thread = None
-_viewer_started = False
+_view_meshes = []
+_view_meshes_titles = []
 
 
 def view(obj: Obj3d | Obj2d, title: str = "") -> None:
@@ -292,25 +285,17 @@ def view(obj: Obj3d | Obj2d, title: str = "") -> None:
 
     Returns obj unchanged... so that it works well in return statements.
 
+    If you have trouble viewing and are using a graphical debugger,
+    see the `view_all_now()` function below.
+
     ```
     return union(o1, o2, o3)
     # can be displayed in 3 parts and the whole object, like this:
     return view(union(view(o1), view(o2), view(o3)))
     ```
 
-    If `Piecad-Viewer` is not already started, it will be auto-started.
-
-    It is rarely necessary, but one can control `Piecad-Viewer` host and
-    port, by setting your operating systems `PIECAD_VIEWER` environment
-    variable.  By default this is set to: "127.0.0.1:8037".
-    This environment variable is also used by the `piecad-viewer` program.
     """
-    global _view_thread
-    if _viewer_available == False:
-        return
-    hptmp = os.environ.get("PIECAD_VIEWER", None)
-    if hptmp != None:
-        _piecad_viewer = hptmp
+    global _view_meshes, _view_meshes_titles
 
     _chkGO("obj", obj)
 
@@ -319,14 +304,9 @@ def view(obj: Obj3d | Obj2d, title: str = "") -> None:
 
     if type(obj) == Obj2d:
         color = obj._color
-        if color == None:
+        if color is not None:
             color = Config.get_default_color()
         obj = Obj3d(_m.Manifold.extrude(obj.mo, 0.1)).color(color)
-
-    if _view_thread == None:
-        _view_thread = threading.Thread(target=_view_handler, daemon=True)
-        _view_thread.start()
-        atexit.register(_tell_view_handler_to_exit)
 
     mesh = obj.mo.to_mesh64()
     if mesh.vert_properties.shape[1] > 3:
@@ -334,62 +314,46 @@ def view(obj: Obj3d | Obj2d, title: str = "") -> None:
     else:
         vertices = mesh.vert_properties
     faces = mesh.tri_verts
-    face_colors = _face_colors(obj, mesh)
-    view_data = {}
-    view_data["title"] = title
-    fc = face_colors.tolist()
-    view_data["color"] = fc
-    view_data["vertices"] = vertices.tolist()
-    fl = faces.tolist()
-    view_data["faces"] = fl
-    _view_queue.put(view_data)
+    mesh_output = trimesh.Trimesh(
+                vertices=vertices,
+                faces=faces,
+                face_colors=_face_colors(mesh),
+                process=True,
+                validate=False,
+            )
+    if len(_view_meshes) == 0:
+        atexit.register(_wait_for_view_handler_exit)
+    _view_meshes.append(mesh_output)
+    _view_meshes_titles.append(title)
     return obj
 
+_viewer_closed_event = threading.Event()
 
-def _tell_view_handler_to_exit():
-    _view_queue.put(None)
-    _view_thread.join()
-
-
-_piecad_viewer = "127.0.0.1:8037"
+def _matplot_closed():
+    _viewer_closed_event.set()
 
 
-def _view_handler():
-    global _viewer_available, _viewer_started
-    for i in range(10):
-        if _viewer_started:
-            break
-        try:
-            conn = http.client.HTTPConnection(_piecad_viewer, timeout=2)
-            content = json.dumps('{"clear":true}')
-            conn.request("POST", "/", content)
-            response = conn.getresponse()
-            _viewer_started = True
-        except TimeoutError:
-            process = subprocess.Popen(
-                [sys.executable, "-c", "import piecad_viewer; piecad_viewer.main()"],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-        except Exception as e:
-            print(repr(e))
+def _wait_for_view_handler_exit():
+    if len(_view_meshes) > 0:
+        view_all_now()
 
-        time.sleep(3)
-
-    if not _viewer_started:
-        print(f"Viewer unavailable at {_piecad_viewer}.")
-        _viewer_available = False
-        return
-
-    while True:
-        view_data = _view_queue.get()
-        if view_data == None:
-            break
-        content = json.dumps(view_data)
-        view_data = None
-        conn.request("POST", "/", content)
-        response = conn.getresponse()
-        content = None
+def view_all_now() -> None:
+    """
+    The `view()` function mearly records a list of objects to be displayed.
+    By default, a function to view the meshes is called from `atexit`.
+    Unfortunately a number of graphical debuggers (e.g. Visual Studio Code
+    and PyCharm) have a short timeout for `atexit` functions.
+    To avoid this issue, use `view_all_now()` at the end of your script to
+    display all objects recorded by `view()` with no timeout.
+    Alternatively run the script witout debugging.
+    """
+    from . _viewer import show_meshes
+    v = show_meshes(_view_meshes, "Piecad CAD Viewer", _view_meshes_titles)
+    _viewer_closed_event.wait()
+    v.clear()
+    _view_meshes.clear()
+    _view_meshes_titles.clear()
+    _viewer_closed_event.clear()
 
 
 def winding(lt: list[tuple[float, float]]) -> str:
