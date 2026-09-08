@@ -195,6 +195,44 @@ class MeshViewer:
                 weight="bold",
             )
 
+    def _shade_colors(
+        self,
+        vertices: np.ndarray,
+        faces: np.ndarray,
+        base_colors: np.ndarray,
+    ) -> np.ndarray:
+        """Apply simple directional (Lambertian) shading to face colors."""
+        triangles = vertices[faces]
+        normals = np.cross(
+            triangles[:, 1] - triangles[:, 0],
+            triangles[:, 2] - triangles[:, 0],
+        )
+        norm_lengths = np.linalg.norm(normals, axis=1, keepdims=True)
+        norm_lengths[norm_lengths == 0] = 1.0
+        normals = normals / norm_lengths
+
+        # Light coming from roughly the camera direction, for a
+        # consistent "headlamp" look.
+        elevation = np.deg2rad(self._view[0])
+        azimuth = np.deg2rad(self._view[1])
+        light_dir = np.array(
+            [
+                np.cos(elevation) * np.cos(azimuth),
+                np.cos(elevation) * np.sin(azimuth),
+                np.sin(elevation),
+            ]
+        )
+
+        intensity = np.abs(np.einsum("ij,j->i", normals, light_dir))
+
+        ambient = 0.4
+        diffuse = 0.6
+        brightness = (ambient + diffuse * intensity).clip(0.0, 1.0)
+
+        shaded = base_colors.copy()
+        shaded[:, 0:3] *= brightness[:, None]
+        return shaded
+
     def _draw_mesh(self) -> None:
         from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
@@ -218,7 +256,11 @@ class MeshViewer:
                 face_colors = all_colors[visible]
 
         if face_colors is None:
-            face_colors = (0.35, 0.65, 0.95, 0.3)
+            face_colors = np.tile(
+                (0.35, 0.65, 0.95, 0.3), (visible.sum(), 1)
+            )
+
+        face_colors = self._shade_colors(vertices, faces[visible], face_colors)
 
         collection = Poly3DCollection(
             polygons,
