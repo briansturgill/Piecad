@@ -131,3 +131,4 @@ if __name__ == "__main__":
     save("lh_d5.obj", d5)
     save("lh_tb.obj", tb)
     save("lh_sup.obj", sup)
+    view_all_now()

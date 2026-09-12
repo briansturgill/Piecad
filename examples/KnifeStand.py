@@ -38,3 +38,4 @@ if __name__ == "__main__":
     view(ks)
     # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
     save("knife_stand.obj", ks)
+    view_all_now()

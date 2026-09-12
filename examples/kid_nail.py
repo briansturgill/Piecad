@@ -52,3 +52,4 @@ if __name__ == "__main__":
     save("kid_nail_small.obj", s)
     view(l)
     save("kid_nail_large.obj", l)
+    view_all_now()

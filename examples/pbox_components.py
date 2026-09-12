@@ -178,3 +178,4 @@ if __name__ == "__main__":
     view(doppler_motion_sensor())
     view(round_buzzer(20, 3))
     view(round_buzzer_hole(3))
+    view_all_now()

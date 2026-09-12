@@ -125,3 +125,4 @@ if __name__ == "__main__":
     save("cpap_s.obj", s)
     save("cpap_b.obj", b)
     save("cpap_t.obj", t)
+    view_all_now()

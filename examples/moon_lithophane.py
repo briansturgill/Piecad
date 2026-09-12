@@ -9,3 +9,4 @@ if __name__ == "__main__":
     o = o.rotate((90, 0, 45))
     save("moon_lithophane.obj", o)
     view(o)
+    view_all_now()

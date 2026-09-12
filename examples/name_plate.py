@@ -44,3 +44,4 @@ if __name__ == "__main__":
     view(obj)
     # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
     save("name_plate.obj", obj)
+    view_all_now()

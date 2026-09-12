@@ -95,3 +95,4 @@ if __name__ == "__main__":
     save("NeilMedDrainStandv2_stand.obj", DrainStand())
     save("NeilMedDrainStandv2_case.obj", DrainCase())
     save("NeilMedDrainStandv2_tops.obj", DrainTops())
+    view_all_now()

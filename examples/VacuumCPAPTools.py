@@ -90,3 +90,4 @@ if __name__ == "__main__":
     save("v_adapter.obj", a)
     save("v_joiner.obj", j)
     save("v_nozzle.obj", n)
+    view_all_now()

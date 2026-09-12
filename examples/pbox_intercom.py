@@ -89,3 +89,4 @@ if __name__ == "__main__":
     save("box_k.obj", back)
     save("box_t.obj", top)
     save("box_m.obj", bottom)
+    view_all_now()

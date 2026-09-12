@@ -35,12 +35,15 @@ def star3d(
 
     offset = outer_radius * 0.1
     cur_height = 0
+    layer_color = "gold"
     for i in range(2):
         s = star(num_points, outer_radius, inner_radius)
         if i == 0:
             s = s.offset(-1.0, "round").offset(2.0, "round")
         s = s.extrude(flat_height).translate((0, 0, cur_height))
+        s = s.color(layer_color)
         objs.append(s)
+        layer_color = "blue"
         cur_height += flat_height
         outer_radius -= offset
         inner_radius -= offset * ratio
@@ -75,7 +78,8 @@ def star3d(
 
 
 if __name__ == "__main__":
-    Config.set_default_color("copper")
+    Config.set_default_color("gold")
     st3d = star3d(5, 60)
     save("star_3d.3mf", st3d)
     view(st3d)
+    view_all_now()

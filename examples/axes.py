@@ -17,3 +17,4 @@ if __name__ == "__main__":
     view(axes)
     # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
     save("axes.obj", axes)
+    view_all_now()

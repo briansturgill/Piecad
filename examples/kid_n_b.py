@@ -126,3 +126,5 @@ if __name__ == "__main__":
         p = KidSizedXPiece(h)
         save(f"kid_{h}p.obj", p)
         view(p)
+
+    view_all_now()
