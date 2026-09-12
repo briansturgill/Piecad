@@ -427,7 +427,7 @@ def polyhedron(
     Then use a program like `meshlab` to look at where things are not manifold.
 
     """
-    _chkIn("check", check, ["interactive", "batch", "none"])
+    _chkIn("check", check, ["interactive", "batch", "repair", "none"])
     if check == "interactive":
         if not _check_mesh(vertices, faces):
             return Obj3d()
@@ -435,6 +435,10 @@ def polyhedron(
         msg = _quick_check_mesh(vertices, faces)
         if msg != "":
             raise ValidationError(f"Polyhedron is flawed: {msg}")
+    elif check == "repair":
+        mesh_output = trimesh.Trimesh(vertices=vertices, faces=faces, process=True, validate=True)
+        vertices = mesh_output.vertices
+        faces = mesh_output.faces
     vertices = np.array(vertices, np.float64)
     faces = np.array(faces, np.uint64)
     mesh = _m.Mesh64(vertices, faces)
