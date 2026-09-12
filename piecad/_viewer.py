@@ -66,6 +66,7 @@ class MeshViewer:
         self.fig = None
         self.ax = None
         self.help_text = None
+        self._dragging = False
 
     @staticmethod
     def _mesh_arrays(mesh: Any) -> tuple[np.ndarray, np.ndarray]:
@@ -382,6 +383,40 @@ class MeshViewer:
             self._view = (max(-90.0, self._view[0] - 15.0), self._view[1])
             self._draw_mesh()
 
+    def _on_mouse_release(self, event) -> None:
+        # Mouse-driven rotation is handled internally by Axes3D, which
+        # updates self.ax.elev/azim directly without going through
+        # self._view. Resync here so shading/culling (which are
+        # computed from self._view) reflect the new camera orientation.
+        if self.ax is None:
+            return
+
+        view = (float(self.ax.elev), float(self.ax.azim))
+        if view != self._view:
+            self._view = view
+            self._draw_mesh()
+
+    def _on_mouse_press(self, event) -> None:
+        if event.button == 1 and event.inaxes is self.ax:
+            self._dragging = True
+
+    def _on_mouse_move(self, event) -> None:
+        # Axes3D's own motion handler (connected earlier, inside
+        # mouse_init) already updated self.ax.elev/azim for this event
+        # by the time this runs, so resyncing here keeps shading and
+        # culling live during the drag instead of only on release.
+        if not self._dragging or self.ax is None:
+            return
+
+        view = (float(self.ax.elev), float(self.ax.azim))
+        if view != self._view:
+            self._view = view
+            self._draw_mesh()
+
+    def _on_mouse_release_stop_drag(self, event) -> None:
+        self._dragging = False
+        self._on_mouse_release(event)
+
     def show(self, block: bool = True) -> "MeshViewer":
         plt.ion()
         self.fig = plt.figure(figsize=(10, 8))
@@ -397,6 +432,11 @@ class MeshViewer:
         )
 
         self.fig.canvas.mpl_connect("key_press_event", self._on_key)
+        self.fig.canvas.mpl_connect("button_press_event", self._on_mouse_press)
+        self.fig.canvas.mpl_connect("motion_notify_event", self._on_mouse_move)
+        self.fig.canvas.mpl_connect(
+            "button_release_event", self._on_mouse_release_stop_drag
+        )
 
         self._draw_mesh()
         self._toggle_help()
