@@ -348,7 +348,7 @@ def view_all_now() -> None:
     Alternatively run the script witout debugging.
     """
     from . _viewer import show_meshes
-    v = show_meshes(_view_meshes, "Piecad CAD Viewer", _view_meshes_titles)
+    v = show_meshes(_view_meshes, _view_meshes_titles)
     _viewer_closed_event.wait()
     v.clear()
     _view_meshes.clear()

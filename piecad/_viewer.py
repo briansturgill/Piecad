@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import trimesh
 
+main_title = "Piecad CAD Viewer - Type 'h' for help."
+
 _HELP = """Piecad CAD Viewer
 
 a              Toggle axis marker
@@ -17,7 +19,7 @@ C              Toggle colors
 f              Toggle fullscreen
 g              Toggle grid
 h, ? or ESC    View/dismiss this help
-q, ESC         Quit CAD Viewer
+q              Quit CAD Viewer
 w              Toggle wireframe
 z              Reset view
 
@@ -45,17 +47,16 @@ class MeshViewer:
     def __init__(
         self,
         meshes: list[Any] | None = None,
-        title: str = "Piecad CAD Viewer",
         mesh_titles: list[Any] = [""],
     ):
         self.meshes = list(meshes or [])
-        self.title = title
+        self.title = main_title
         self.titles = mesh_titles  # Individual mesh titles
-        self.index = len(meshes) - 1
+        self.index = 0
 
         self.wireframe = False
         self.culling = False
-        self.colors_visible = False
+        self.colors_visible = True
         self.axis_visible = True
         self.grid_visible = True
         self.help_visible = True
@@ -121,11 +122,11 @@ class MeshViewer:
             self._draw_mesh()
 
     def add_mesh(self, mesh: Any, mesh_title: str = "") -> None:
-        """Add a mesh and make it the current mesh."""
+        """Add a mesh."""
         self._mesh_arrays(mesh)
         self.meshes.append(mesh)
         self.titles.append(mesh_title)
-        self.index = len(self.meshes) - 1
+        self.index = 0
 
         if self.fig is not None:
             self._draw_mesh()
@@ -327,7 +328,7 @@ class MeshViewer:
             self._toggle_help()
             return
 
-        if key == "q" or key in {"escape", "esc"}:
+        if key == "q":
             plt.close(self.fig)
             return
 
@@ -447,17 +448,15 @@ class MeshViewer:
 
 def _create_viewer(
     meshes: list[Any] | None = None,
-    title: str = "Piecad CAD Viewer",
     mesh_titles: list[str] | None = None,
 ) -> MeshViewer:
     """Create a non-blocking viewer."""
-    return MeshViewer(meshes, title, mesh_titles).show(block=False)
+    return MeshViewer(meshes, mesh_titles).show(block=False)
 
 
 def show_meshes(
     meshes: list[Any] | None = None,
-    title: str = "Piecad CAD Viewer",
     mesh_titles: list[str] | None = None,
 ) -> MeshViewer:
     """Display meshes and return the viewer after closing."""
-    return MeshViewer(meshes, title, mesh_titles).show(block=True)
+    return MeshViewer(meshes, mesh_titles).show(block=True)
