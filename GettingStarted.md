@@ -34,11 +34,11 @@ A first program:
 from piecad import *    # Much more efficient to type when using a `*` import.
 
 # center, by default centers at (0,0,0)
-cb1 = cuboid((25, 20, 10)).center()
-cb2 = cube(4).translate((0, 0, 5))
+cb1 = cuboid((25, 20, 10)).center().color("blue")
+cb2 = cube(4).translate((0, 0, 5)).color("red")
 cb = union(cb1, cb2)
 # corner, is like center, but it puts the minimum boundig box corner at *(0, 0, 0)"
-cb = cb.corner().color("red")
+cb = cb.corner()
 
 # Technically `cube` is like a 3d square and `cuboid` is like a 3d rectangle.
 # For convenience, `cube` and `cuboid` accept each others argument style.
@@ -53,6 +53,6 @@ view(cb)
 save("cb.3mf", cb)
 
 # Visual Studio Code and Pycharm have timeouts during "atexit" execution... 
-# Use `view_all_now()` to view with out the timeout.
+# Use `view_all_now()` to view without the timeout.
 view_all_now()
 ```
