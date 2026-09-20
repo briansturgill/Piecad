@@ -9,31 +9,37 @@ import matplotlib.pyplot as plt
 import numpy as np
 import trimesh
 
-main_title = "Piecad CAD Viewer - Type 'h' for help."
+if 'q' in plt.rcParams['keymap.quit']:
+    plt.rcParams['keymap.quit'].remove('q')
 
-_HELP = """Piecad CAD Viewer
+main_title = "Piecad Viewer - Type 'h' for help."
 
-a              Toggle axis marker
-c              Toggle culling
-C              Toggle colors
-f              Toggle fullscreen
-g              Toggle grid
-h, ? or ESC    View/dismiss this help
-q              Quit CAD Viewer
-w              Toggle wireframe
-z              Reset view
+_HELP = """Piecad Viewer
 
-LEFT           Previous object
-RIGHT          Next object
-SHIFT-LEFT     Rotate image left
-SHIFT-RIGHT    Rotate image right
-SHIFT-UP       Rotate image up
-SHIFT-DOWN     Rotate image down
+
+    a              Toggle axis marker
+    c              Toggle culling
+    f              Toggle fullscreen
+    g              Toggle grid
+    h, ?, or ESC   View/dismiss this help
+    SHIFT-Q        Quit Piecad Viewer
+    r, z           Reset view
+    s              Save screenshot
+    t              Toggle transparency
+    w              Toggle wireframe
+
+Arrow Keys:
+    Left           Previous object
+    Right          Next object
+    SHIFT-Left     Rotate image left
+    SHIFT-Right    Rotate image right
+    SHIFT-Up       Rotate image up
+    SHIFT-Down     Rotate image down
 
 Mouse:
-  Left drag    Rotate
-  Middle drag  Move/pan
-  Right drag   Zoom
+    Left drag                     Rotate
+    Middle drag, SHIFT-Left drag  Move/pan
+    Right drag,  CTRL-Left drag   Zoom
 """
 
 
@@ -68,6 +74,8 @@ class MeshViewer:
         self.ax = None
         self.help_text = None
         self._dragging = False
+        self.shift_pressed = False
+        self.ctrl_pressed = False
 
     @staticmethod
     def _mesh_arrays(mesh: Any) -> tuple[np.ndarray, np.ndarray]:
@@ -315,20 +323,32 @@ class MeshViewer:
         self.help_text.set_visible(self.help_visible)
         self.fig.canvas.draw_idle()
 
+    def _on_key_release(self, event) -> None:
+        raw_key = event.key or ""
+        key = raw_key.lower()
+
+        if key == "control":
+            self.ctrl_pressed = False
+
+        if key == "shift":
+            self.shift_pressed = False
+
+
     def _on_key(self, event) -> None:
         raw_key = event.key or ""
         key = raw_key.lower()
 
-        if raw_key in {"C", "shift+c"}:
-            self.colors_visible = not self.colors_visible
-            self._draw_mesh()
-            return
+        if key == "control":
+            self.ctrl_pressed = True
+
+        if key == "shift":
+            self.shift_pressed = True
 
         if key in {"h", "?"} or key in {"escape", "esc"}:
             self._toggle_help()
             return
 
-        if key == "q":
+        if raw_key in {"shift+q", "Q"}:
             plt.close(self.fig)
             return
 
@@ -349,6 +369,11 @@ class MeshViewer:
             self.grid_visible = not self.grid_visible
             self.ax.grid(self.grid_visible)
             self.fig.canvas.draw_idle()
+
+        if key == "t":
+            self.colors_visible = not self.colors_visible
+            self._draw_mesh()
+            return
 
         elif key == "w":
             self.wireframe = not self.wireframe
@@ -401,6 +426,34 @@ class MeshViewer:
         if event.button == 1 and event.inaxes is self.ax:
             self._dragging = True
 
+        if self.ctrl_pressed and event.button == 1:  # Left click
+            fake_event = type(event)(
+                name=event.name,
+                canvas=event.canvas,
+                x=event.x,
+                y=event.y,
+                button=3,  # right button
+                key=event.key,
+                step=getattr(event, 'step', None),
+                dblclick=getattr(event, 'dblclick', False),
+                guiEvent=event.guiEvent
+            )
+            self.fig.canvas.callbacks.process('button_press_event', fake_event)
+
+        if self.shift_pressed and event.button == 1:  # Left click
+            fake_event = type(event)(
+                name=event.name,
+                canvas=event.canvas,
+                x=event.x,
+                y=event.y,
+                button=2,  # Middle button
+                key=event.key,
+                step=getattr(event, 'step', None),
+                dblclick=getattr(event, 'dblclick', False),
+                guiEvent=event.guiEvent
+            )
+            self.fig.canvas.callbacks.process('button_press_event', fake_event)
+
     def _on_mouse_move(self, event) -> None:
         # Axes3D's own motion handler (connected earlier, inside
         # mouse_init) already updated self.ax.elev/azim for this event
@@ -433,6 +486,7 @@ class MeshViewer:
         )
 
         self.fig.canvas.mpl_connect("key_press_event", self._on_key)
+        self.fig.canvas.mpl_connect("key_release_event", self._on_key_release)
         self.fig.canvas.mpl_connect("button_press_event", self._on_mouse_press)
         self.fig.canvas.mpl_connect("motion_notify_event", self._on_mouse_move)
         self.fig.canvas.mpl_connect(
