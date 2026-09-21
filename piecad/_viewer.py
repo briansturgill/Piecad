@@ -9,9 +9,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import trimesh
 
-if 'q' in plt.rcParams['keymap.quit']:
-    plt.rcParams['keymap.quit'].remove('q')
-
 main_title = "Piecad Viewer - Type 'h' for help."
 
 _HELP = """Piecad Viewer
@@ -22,7 +19,7 @@ _HELP = """Piecad Viewer
     f              Toggle fullscreen
     g              Toggle grid
     h, ?, or ESC   View/dismiss this help
-    SHIFT-Q        Quit Piecad Viewer
+    q              Quit Piecad Viewer
     r, z           Reset view
     s              Save screenshot
     t              Toggle transparency
@@ -348,7 +345,7 @@ class MeshViewer:
             self._toggle_help()
             return
 
-        if raw_key in {"shift+q", "Q"}:
+        if raw_key in {"q"}:
             plt.close(self.fig)
             return
 
