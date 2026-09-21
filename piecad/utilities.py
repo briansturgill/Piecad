@@ -33,7 +33,6 @@ def _info_str(tag):  # Must be called from inside another function.
     return str
 
 
-
 def load(filename: str) -> Obj3d | Obj2d:
     """
     Load a 3d object from a file.
@@ -315,19 +314,21 @@ def view(obj: Obj3d | Obj2d, title: str = "") -> None:
         vertices = mesh.vert_properties
     faces = mesh.tri_verts
     mesh_output = trimesh.Trimesh(
-                vertices=vertices,
-                faces=faces,
-                face_colors=_face_colors(mesh),
-                process=True,
-                validate=False,
-            )
+        vertices=vertices,
+        faces=faces,
+        face_colors=_face_colors(mesh),
+        process=True,
+        validate=False,
+    )
     if len(_view_meshes) == 0:
         atexit.register(_wait_for_view_handler_exit)
     _view_meshes.append(mesh_output)
     _view_meshes_titles.append(title)
     return obj
 
+
 _viewer_closed_event = threading.Event()
+
 
 def _matplot_closed():
     _viewer_closed_event.set()
@@ -336,6 +337,7 @@ def _matplot_closed():
 def _wait_for_view_handler_exit():
     if len(_view_meshes) > 0:
         view_all_now()
+
 
 def view_all_now() -> None:
     """
@@ -347,7 +349,8 @@ def view_all_now() -> None:
     display all objects recorded by `view()` with no timeout.
     Alternatively run the script witout debugging.
     """
-    from . _viewer import show_meshes
+    from ._viewer import show_meshes
+
     v = show_meshes(_view_meshes, _view_meshes_titles)
     _viewer_closed_event.wait()
     v.clear()

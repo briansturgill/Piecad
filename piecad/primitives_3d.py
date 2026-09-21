@@ -34,6 +34,29 @@ from ._check_mesh import quick_check_mesh as _quick_check_mesh
 from . import _lithophane
 
 
+def chamfer(
+    obj: Obj3d,
+    radius: float = 2.0,
+    include: list[tuple[float, float, float]] = None,
+    exclude: list[tuple[float, float, float]] = None,
+    angle_tolerance: float = 1e-6,
+) -> Obj3d:
+    """
+    EXPERIMENTAL - interface may change in future releases.
+    Chamfer the edges of an `Obj3d` object.
+    """
+    from ._f_and_c import _f_and_c
+
+    return _f_and_c(
+        obj,
+        fillet=False,
+        radius=radius,
+        include=include,
+        exclude=exclude,
+        angle_tolerance=angle_tolerance,
+    )
+
+
 def cone(
     height: float,
     radius_low: float,
@@ -360,6 +383,29 @@ def geodesic_sphere(radius, segments=-1) -> Obj3d:
     return Obj3d(_m.Manifold.sphere(radius, segments))
 
 
+def fillet(
+    obj: Obj3d,
+    radius: float = 2.0,
+    include: list[tuple[float, float, float]] = None,
+    exclude: list[tuple[float, float, float]] = None,
+    angle_tolerance: float = 1e-6,
+) -> Obj3d:
+    """
+    EXPERIMENTAL - interface may change in future releases.
+    Fillet the edges of an `Obj3d` object.
+    """
+    from ._f_and_c import _f_and_c
+
+    return _f_and_c(
+        obj,
+        fillet=True,
+        radius=radius,
+        include=include,
+        exclude=exclude,
+        angle_tolerance=angle_tolerance,
+    )
+
+
 def lithophane(
     image_filename: str,
     width_mm: int = 150,
@@ -436,7 +482,9 @@ def polyhedron(
         if msg != "":
             raise ValidationError(f"Polyhedron is flawed: {msg}")
     elif check == "repair":
-        mesh_output = trimesh.Trimesh(vertices=vertices, faces=faces, process=True, validate=True)
+        mesh_output = trimesh.Trimesh(
+            vertices=vertices, faces=faces, process=True, validate=True
+        )
         vertices = mesh_output.vertices
         faces = mesh_output.faces
     vertices = np.array(vertices, np.float64)

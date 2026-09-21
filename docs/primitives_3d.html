@@ -45,6 +45,39 @@ el.replaceWith(d);
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="piecad.primitives_3d.chamfer"><code class="name flex">
+<span>def <span class="ident">chamfer</span></span>(<span>obj: <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a>,<br>radius: float = 2.0,<br>include: list[tuple[float, float, float]] = None,<br>exclude: list[tuple[float, float, float]] = None,<br>angle_tolerance: float = 1e-06) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def chamfer(
+    obj: Obj3d,
+    radius: float = 2.0,
+    include: list[tuple[float, float, float]] = None,
+    exclude: list[tuple[float, float, float]] = None,
+    angle_tolerance: float = 1e-6,
+) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    EXPERIMENTAL - interface may change in future releases.
+    Chamfer the edges of an `Obj3d` object.
+    &#34;&#34;&#34;
+    from ._f_and_c import _f_and_c
+
+    return _f_and_c(
+        obj,
+        fillet=False,
+        radius=radius,
+        include=include,
+        exclude=exclude,
+        angle_tolerance=angle_tolerance,
+    )</code></pre>
+</details>
+<div class="desc"><p>EXPERIMENTAL - interface may change in future releases.
+Chamfer the edges of an <code>Obj3d</code> object.</p></div>
+</dd>
 <dt id="piecad.primitives_3d.cone"><code class="name flex">
 <span>def <span class="ident">cone</span></span>(<span>height: float,<br>radius_low: float,<br>radius_high: float = 0.2,<br>segments: int = -1,<br>center: bool = False) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
@@ -487,6 +520,39 @@ greater than zero.</p>
 <p>Parammeter <code>scale</code> specifes scaling factors applied at each division.</p>
 <iframe width="100%" height="300" src="examples/extrude_transforming.html"></iframe></div>
 </dd>
+<dt id="piecad.primitives_3d.fillet"><code class="name flex">
+<span>def <span class="ident">fillet</span></span>(<span>obj: <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a>,<br>radius: float = 2.0,<br>include: list[tuple[float, float, float]] = None,<br>exclude: list[tuple[float, float, float]] = None,<br>angle_tolerance: float = 1e-06) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fillet(
+    obj: Obj3d,
+    radius: float = 2.0,
+    include: list[tuple[float, float, float]] = None,
+    exclude: list[tuple[float, float, float]] = None,
+    angle_tolerance: float = 1e-6,
+) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    EXPERIMENTAL - interface may change in future releases.
+    Fillet the edges of an `Obj3d` object.
+    &#34;&#34;&#34;
+    from ._f_and_c import _f_and_c
+
+    return _f_and_c(
+        obj,
+        fillet=True,
+        radius=radius,
+        include=include,
+        exclude=exclude,
+        angle_tolerance=angle_tolerance,
+    )</code></pre>
+</details>
+<div class="desc"><p>EXPERIMENTAL - interface may change in future releases.
+Fillet the edges of an <code>Obj3d</code> object.</p></div>
+</dd>
 <dt id="piecad.primitives_3d.geodesic_sphere"><code class="name flex">
 <span>def <span class="ident">geodesic_sphere</span></span>(<span>radius, segments=-1) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
@@ -604,7 +670,7 @@ to find the best range.</p></div>
     Then use a program like `meshlab` to look at where things are not manifold.
 
     &#34;&#34;&#34;
-    _chkIn(&#34;check&#34;, check, [&#34;interactive&#34;, &#34;batch&#34;, &#34;none&#34;])
+    _chkIn(&#34;check&#34;, check, [&#34;interactive&#34;, &#34;batch&#34;, &#34;repair&#34;, &#34;none&#34;])
     if check == &#34;interactive&#34;:
         if not _check_mesh(vertices, faces):
             return Obj3d()
@@ -612,6 +678,12 @@ to find the best range.</p></div>
         msg = _quick_check_mesh(vertices, faces)
         if msg != &#34;&#34;:
             raise ValidationError(f&#34;Polyhedron is flawed: {msg}&#34;)
+    elif check == &#34;repair&#34;:
+        mesh_output = trimesh.Trimesh(
+            vertices=vertices, faces=faces, process=True, validate=True
+        )
+        vertices = mesh_output.vertices
+        faces = mesh_output.faces
     vertices = np.array(vertices, np.float64)
     faces = np.array(faces, np.uint64)
     mesh = _m.Mesh64(vertices, faces)
@@ -1002,6 +1074,7 @@ If no vertex is given as an argument, a regular unit tetrahedron (size: 1) is re
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="piecad.primitives_3d.chamfer" href="#piecad.primitives_3d.chamfer">chamfer</a></code></li>
 <li><code><a title="piecad.primitives_3d.cone" href="#piecad.primitives_3d.cone">cone</a></code></li>
 <li><code><a title="piecad.primitives_3d.cube" href="#piecad.primitives_3d.cube">cube</a></code></li>
 <li><code><a title="piecad.primitives_3d.cuboid" href="#piecad.primitives_3d.cuboid">cuboid</a></code></li>
@@ -1011,6 +1084,7 @@ If no vertex is given as an argument, a regular unit tetrahedron (size: 1) is re
 <li><code><a title="piecad.primitives_3d.extrude" href="#piecad.primitives_3d.extrude">extrude</a></code></li>
 <li><code><a title="piecad.primitives_3d.extrude_chaining" href="#piecad.primitives_3d.extrude_chaining">extrude_chaining</a></code></li>
 <li><code><a title="piecad.primitives_3d.extrude_transforming" href="#piecad.primitives_3d.extrude_transforming">extrude_transforming</a></code></li>
+<li><code><a title="piecad.primitives_3d.fillet" href="#piecad.primitives_3d.fillet">fillet</a></code></li>
 <li><code><a title="piecad.primitives_3d.geodesic_sphere" href="#piecad.primitives_3d.geodesic_sphere">geodesic_sphere</a></code></li>
 <li><code><a title="piecad.primitives_3d.lithophane" href="#piecad.primitives_3d.lithophane">lithophane</a></code></li>
 <li><code><a title="piecad.primitives_3d.polyhedron" href="#piecad.primitives_3d.polyhedron">polyhedron</a></code></li>

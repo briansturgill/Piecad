@@ -263,9 +263,7 @@ class MeshViewer:
                 face_colors = all_colors[visible]
 
         if face_colors is None:
-            face_colors = np.tile(
-                (0.35, 0.65, 0.95, 0.3), (visible.sum(), 1)
-            )
+            face_colors = np.tile((0.35, 0.65, 0.95, 0.3), (visible.sum(), 1))
 
         face_colors = self._shade_colors(vertices, faces[visible], face_colors)
 
@@ -329,7 +327,6 @@ class MeshViewer:
 
         if key == "shift":
             self.shift_pressed = False
-
 
     def _on_key(self, event) -> None:
         raw_key = event.key or ""
@@ -431,11 +428,11 @@ class MeshViewer:
                 y=event.y,
                 button=3,  # right button
                 key=event.key,
-                step=getattr(event, 'step', None),
-                dblclick=getattr(event, 'dblclick', False),
-                guiEvent=event.guiEvent
+                step=getattr(event, "step", None),
+                dblclick=getattr(event, "dblclick", False),
+                guiEvent=event.guiEvent,
             )
-            self.fig.canvas.callbacks.process('button_press_event', fake_event)
+            self.fig.canvas.callbacks.process("button_press_event", fake_event)
 
         if self.shift_pressed and event.button == 1:  # Left click
             fake_event = type(event)(
@@ -445,11 +442,11 @@ class MeshViewer:
                 y=event.y,
                 button=2,  # Middle button
                 key=event.key,
-                step=getattr(event, 'step', None),
-                dblclick=getattr(event, 'dblclick', False),
-                guiEvent=event.guiEvent
+                step=getattr(event, "step", None),
+                dblclick=getattr(event, "dblclick", False),
+                guiEvent=event.guiEvent,
             )
-            self.fig.canvas.callbacks.process('button_press_event', fake_event)
+            self.fig.canvas.callbacks.process("button_press_event", fake_event)
 
     def _on_mouse_move(self, event) -> None:
         # Axes3D's own motion handler (connected earlier, inside

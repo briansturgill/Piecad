@@ -260,6 +260,16 @@ Set the current font used by `text`.
 </p>
 <h2>3d Primitives</h2>
 <p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.chamfer">
+chamfer
+<span class="popup">
+<code>chamfer(obj: Obj3d, radius: float = 2.0, include: list[tuple[float, float, float]] = None, exclude: list[tuple[float, float, float]] = None, angle_tolerance: float = 1e-06) -> Obj3d</code>
+<br>
+EXPERIMENTAL - interface may change in future releases.
+</span>
+</a>
+</p>
+<p class="item">
 <a class="ahover" href="primitives_3d.html#piecad.primitives_3d.cone">
 cone
 <span class="popup">
@@ -346,6 +356,16 @@ extrude_transforming
 <code>extrude_transforming(obj: Obj2d, height: float, num_twist_divisions: int = 0, twist: float = 0, scale: tuple[float, float] = (1.0, 1.0)) -> Obj3d</code>
 <br>
 Create a Obj3d solid from Obj2d of given height.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.fillet">
+fillet
+<span class="popup">
+<code>fillet(obj: Obj3d, radius: float = 2.0, include: list[tuple[float, float, float]] = None, exclude: list[tuple[float, float, float]] = None, angle_tolerance: float = 1e-06) -> Obj3d</code>
+<br>
+EXPERIMENTAL - interface may change in future releases.
 </span>
 </a>
 </p>
@@ -652,6 +672,16 @@ Use `Piecad-Viewer` to display the geometry object.
 </a>
 </p>
 <p class="item">
+<a class="ahover" href="utilities.html#piecad.utilities.view_all_now">
+view_all_now
+<span class="popup">
+<code>view_all_now() -> None</code>
+<br>
+The `view()` function mearly records a list of objects to be displayed.
+</span>
+</a>
+</p>
+<p class="item">
 <a class="ahover" href="utilities.html#piecad.utilities.winding">
 winding
 <span class="popup">
@@ -819,6 +849,16 @@ scale
 <code>scale(self, factors: 'list[float, float]') -> 'Obj2d'</code>
 <br>
 Scale this object by the given factors.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.simplify">
+simplify
+<span class="popup">
+<code>simplify(self, tolerance: 'float' = 0) -> 'Obj2d'</code>
+<br>
+Return a simplified version of this object.
 </span>
 </a>
 </p>
@@ -1020,6 +1060,16 @@ scale
 <code>scale(self, factors: 'list[float, float, float]') -> 'Obj3d'</code>
 <br>
 Scale this object by the given factors.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.simplify">
+simplify
+<span class="popup">
+<code>simplify(self, tolerance: 'float' = 0) -> 'Obj3d'</code>
+<br>
+Return a simplified version of this object.
 </span>
 </a>
 </p>

@@ -228,8 +228,6 @@ def test_miter_cut_pos():
     o1, o2 = c.miter_cut(45, cut_point)
     assert _equalish(o1.bounding_box(), (0.0, 0.0, 0.0, 20.0, 5.0, 20.0))
     assert _equalish(union(o1, o2).bounding_box(), c.bounding_box())
-    view(o1)
-    view(o2)
 
 
 def test_miter_cut_neg():
@@ -238,8 +236,6 @@ def test_miter_cut_neg():
     o1, o2 = c.miter_cut(-45, cut_point)
     assert _equalish(o1.bounding_box(), (0.0, 0.0, 0.0, 20.0, 5.0, 20.0))
     assert _equalish(union(o1, o2).bounding_box(), c.bounding_box())
-    view(o1)
-    view(o2)
 
 
 def test_num_faces_3d():

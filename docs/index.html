@@ -636,6 +636,15 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
         _chkV2(&#34;factors&#34;, factors)
         return Obj2d(self.mo.scale(factors), color=self._color)
 
+    def simplify(self, tolerance: float = 0) -&gt; Obj2d:
+        &#34;&#34;&#34;
+        Return a simplified version of this object.
+
+        Using a tolerance of 0 means that the current tolerance will be used.
+        &#34;&#34;&#34;
+        _chkGE(&#34;tolerance&#34;, tolerance, 0)
+        return Obj2d(self.mo.simplify(tolerance))
+
     def to_paths(self) -&gt; list[list[float, float]]:
         &#34;&#34;&#34;
         Return a lists of paths, each of which is a list of vertices that make up this object.
@@ -1110,6 +1119,26 @@ maintain the same size ratio between the two sizes.</p>
 <div class="desc"><p>Scale this object by the given factors.</p>
 <p>If you want no change, use <code>1.0</code>, that means 100% (thus unchanged).</p></div>
 </dd>
+<dt id="piecad.Obj2d.simplify"><code class="name flex">
+<span>def <span class="ident">simplify</span></span>(<span>self, tolerance: float = 0) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def simplify(self, tolerance: float = 0) -&gt; Obj2d:
+    &#34;&#34;&#34;
+    Return a simplified version of this object.
+
+    Using a tolerance of 0 means that the current tolerance will be used.
+    &#34;&#34;&#34;
+    _chkGE(&#34;tolerance&#34;, tolerance, 0)
+    return Obj2d(self.mo.simplify(tolerance))</code></pre>
+</details>
+<div class="desc"><p>Return a simplified version of this object.</p>
+<p>Using a tolerance of 0 means that the current tolerance will be used.</p></div>
+</dd>
 <dt id="piecad.Obj2d.to_paths"><code class="name flex">
 <span>def <span class="ident">to_paths</span></span>(<span>self) ‑> list[list[float, float]]</span>
 </code></dt>
@@ -1513,6 +1542,15 @@ maintain the same size ratio between the two sizes.</p>
         &#34;&#34;&#34;
         _chkV3(&#34;factors&#34;, factors)
         return Obj3d(self.mo.scale(factors))
+
+    def simplify(self, tolerance: float = 0) -&gt; Obj3d:
+        &#34;&#34;&#34;
+        Return a simplified version of this object.
+
+        Using a tolerance of 0 means that the current tolerance will be used.
+        &#34;&#34;&#34;
+        _chkGE(&#34;tolerance&#34;, tolerance, 0)
+        return Obj3d(self.mo.simplify(tolerance))
 
     def slice(self, height: float) -&gt; Obj2d:
         &#34;&#34;&#34;
@@ -2142,6 +2180,26 @@ maintain the same size ratio between the two sizes.</p>
 <div class="desc"><p>Scale this object by the given factors.</p>
 <p>If you want no change, use <code>1.0</code>, that means 100% (thus unchanged).</p></div>
 </dd>
+<dt id="piecad.Obj3d.simplify"><code class="name flex">
+<span>def <span class="ident">simplify</span></span>(<span>self, tolerance: float = 0) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def simplify(self, tolerance: float = 0) -&gt; Obj3d:
+    &#34;&#34;&#34;
+    Return a simplified version of this object.
+
+    Using a tolerance of 0 means that the current tolerance will be used.
+    &#34;&#34;&#34;
+    _chkGE(&#34;tolerance&#34;, tolerance, 0)
+    return Obj3d(self.mo.simplify(tolerance))</code></pre>
+</details>
+<div class="desc"><p>Return a simplified version of this object.</p>
+<p>Using a tolerance of 0 means that the current tolerance will be used.</p></div>
+</dd>
 <dt id="piecad.Obj3d.slice"><code class="name flex">
 <span>def <span class="ident">slice</span></span>(<span>self, height: float) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
 </code></dt>
@@ -2378,6 +2436,7 @@ functions and methods.</p></div>
 <li><code><a title="piecad.Obj2d.revolve" href="#piecad.Obj2d.revolve">revolve</a></code></li>
 <li><code><a title="piecad.Obj2d.rotate" href="#piecad.Obj2d.rotate">rotate</a></code></li>
 <li><code><a title="piecad.Obj2d.scale" href="#piecad.Obj2d.scale">scale</a></code></li>
+<li><code><a title="piecad.Obj2d.simplify" href="#piecad.Obj2d.simplify">simplify</a></code></li>
 <li><code><a title="piecad.Obj2d.to_paths" href="#piecad.Obj2d.to_paths">to_paths</a></code></li>
 <li><code><a title="piecad.Obj2d.transform" href="#piecad.Obj2d.transform">transform</a></code></li>
 <li><code><a title="piecad.Obj2d.translate" href="#piecad.Obj2d.translate">translate</a></code></li>
@@ -2404,6 +2463,7 @@ functions and methods.</p></div>
 <li><code><a title="piecad.Obj3d.resize" href="#piecad.Obj3d.resize">resize</a></code></li>
 <li><code><a title="piecad.Obj3d.rotate" href="#piecad.Obj3d.rotate">rotate</a></code></li>
 <li><code><a title="piecad.Obj3d.scale" href="#piecad.Obj3d.scale">scale</a></code></li>
+<li><code><a title="piecad.Obj3d.simplify" href="#piecad.Obj3d.simplify">simplify</a></code></li>
 <li><code><a title="piecad.Obj3d.slice" href="#piecad.Obj3d.slice">slice</a></code></li>
 <li><code><a title="piecad.Obj3d.split" href="#piecad.Obj3d.split">split</a></code></li>
 <li><code><a title="piecad.Obj3d.surface_area" href="#piecad.Obj3d.surface_area">surface_area</a></code></li>

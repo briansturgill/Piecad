@@ -242,7 +242,7 @@ returned.</p></div>
             else:
                 vertices = mesh.vert_properties
 
-            face_colors = _face_colors(obj, mesh)
+            face_colors = _face_colors(mesh)
             mesh_output = trimesh.Trimesh(
                 vertices=vertices,
                 faces=mesh.tri_verts,
@@ -262,7 +262,7 @@ returned.</p></div>
                     vertices = mesh.vert_properties[:, :3]
                 else:
                     vertices = mesh.vert_properties
-                face_colors = _face_colors(obj, mesh)
+                face_colors = _face_colors(mesh)
                 mesh_output = trimesh.Trimesh(
                     vertices=vertices,
                     faces=mesh.tri_verts,
@@ -364,25 +364,17 @@ If you want a file saved in the current directory, prepend <code>'./'</code> or 
 
     Returns obj unchanged... so that it works well in return statements.
 
+    If you have trouble viewing and are using a graphical debugger,
+    see the `view_all_now()` function below.
+
     ```
     return union(o1, o2, o3)
     # can be displayed in 3 parts and the whole object, like this:
     return view(union(view(o1), view(o2), view(o3)))
     ```
 
-    If `Piecad-Viewer` is not already started, it will be auto-started.
-
-    It is rarely necessary, but one can control `Piecad-Viewer` host and
-    port, by setting your operating systems `PIECAD_VIEWER` environment
-    variable.  By default this is set to: &#34;127.0.0.1:8037&#34;.
-    This environment variable is also used by the `piecad-viewer` program.
     &#34;&#34;&#34;
-    global _view_thread
-    if _viewer_available == False:
-        return
-    hptmp = os.environ.get(&#34;PIECAD_VIEWER&#34;, None)
-    if hptmp != None:
-        _piecad_viewer = hptmp
+    global _view_meshes, _view_meshes_titles
 
     _chkGO(&#34;obj&#34;, obj)
 
@@ -391,14 +383,9 @@ If you want a file saved in the current directory, prepend <code>'./'</code> or 
 
     if type(obj) == Obj2d:
         color = obj._color
-        if color == None:
+        if color is not None:
             color = Config.get_default_color()
         obj = Obj3d(_m.Manifold.extrude(obj.mo, 0.1)).color(color)
-
-    if _view_thread == None:
-        _view_thread = threading.Thread(target=_view_handler, daemon=True)
-        _view_thread.start()
-        atexit.register(_tell_view_handler_to_exit)
 
     mesh = obj.mo.to_mesh64()
     if mesh.vert_properties.shape[1] &gt; 3:
@@ -406,29 +393,62 @@ If you want a file saved in the current directory, prepend <code>'./'</code> or 
     else:
         vertices = mesh.vert_properties
     faces = mesh.tri_verts
-    face_colors = _face_colors(obj, mesh)
-    view_data = {}
-    view_data[&#34;title&#34;] = title
-    fc = face_colors.tolist()
-    view_data[&#34;color&#34;] = fc
-    view_data[&#34;vertices&#34;] = vertices.tolist()
-    fl = faces.tolist()
-    view_data[&#34;faces&#34;] = fl
-    _view_queue.put(view_data)
+    mesh_output = trimesh.Trimesh(
+        vertices=vertices,
+        faces=faces,
+        face_colors=_face_colors(mesh),
+        process=True,
+        validate=False,
+    )
+    if len(_view_meshes) == 0:
+        atexit.register(_wait_for_view_handler_exit)
+    _view_meshes.append(mesh_output)
+    _view_meshes_titles.append(title)
     return obj</code></pre>
 </details>
 <div class="desc"><p>Use <code>Piecad-Viewer</code> to display the geometry object.</p>
 <p>Returns obj unchanged&hellip; so that it works well in return statements.</p>
+<p>If you have trouble viewing and are using a graphical debugger,
+see the <code><a title="piecad.utilities.view_all_now" href="#piecad.utilities.view_all_now">view_all_now()</a></code> function below.</p>
 <pre><code>return union(o1, o2, o3)
 # can be displayed in 3 parts and the whole object, like this:
 return view(union(view(o1), view(o2), view(o3)))
-</code></pre>
-<p>If <code>Piecad-Viewer</code> is not already started, it will be auto-started.</p>
-<p>It is rarely necessary, but one can control <code>Piecad-Viewer</code> host and
-port, by setting your operating systems <code>PIECAD_VIEWER</code> environment
-variable.
-By default this is set to: "127.0.0.1:8037".
-This environment variable is also used by the <code>piecad-viewer</code> program.</p></div>
+</code></pre></div>
+</dd>
+<dt id="piecad.utilities.view_all_now"><code class="name flex">
+<span>def <span class="ident">view_all_now</span></span>(<span>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def view_all_now() -&gt; None:
+    &#34;&#34;&#34;
+    The `view()` function mearly records a list of objects to be displayed.
+    By default, a function to view the meshes is called from `atexit`.
+    Unfortunately a number of graphical debuggers (e.g. Visual Studio Code
+    and PyCharm) have a short timeout for `atexit` functions.
+    To avoid this issue, use `view_all_now()` at the end of your script to
+    display all objects recorded by `view()` with no timeout.
+    Alternatively run the script witout debugging.
+    &#34;&#34;&#34;
+    from ._viewer import show_meshes
+
+    v = show_meshes(_view_meshes, _view_meshes_titles)
+    _viewer_closed_event.wait()
+    v.clear()
+    _view_meshes.clear()
+    _view_meshes_titles.clear()
+    _viewer_closed_event.clear()</code></pre>
+</details>
+<div class="desc"><p>The <code><a title="piecad.utilities.view" href="#piecad.utilities.view">view()</a></code> function mearly records a list of objects to be displayed.
+By default, a function to view the meshes is called from <code>atexit</code>.
+Unfortunately a number of graphical debuggers (e.g. Visual Studio Code
+and PyCharm) have a short timeout for <code>atexit</code> functions.
+To avoid this issue, use <code><a title="piecad.utilities.view_all_now" href="#piecad.utilities.view_all_now">view_all_now()</a></code> at the end of your script to
+display all objects recorded by <code><a title="piecad.utilities.view" href="#piecad.utilities.view">view()</a></code> with no timeout.
+Alternatively run the script witout debugging.</p></div>
 </dd>
 <dt id="piecad.utilities.winding"><code class="name flex">
 <span>def <span class="ident">winding</span></span>(<span>lt: list[tuple[float, float]]) ‑> str</span>
@@ -489,6 +509,7 @@ This environment variable is also used by the <code>piecad-viewer</code> program
 <li><code><a title="piecad.utilities.quick_check_mesh" href="#piecad.utilities.quick_check_mesh">quick_check_mesh</a></code></li>
 <li><code><a title="piecad.utilities.save" href="#piecad.utilities.save">save</a></code></li>
 <li><code><a title="piecad.utilities.view" href="#piecad.utilities.view">view</a></code></li>
+<li><code><a title="piecad.utilities.view_all_now" href="#piecad.utilities.view_all_now">view_all_now</a></code></li>
 <li><code><a title="piecad.utilities.winding" href="#piecad.utilities.winding">winding</a></code></li>
 </ul>
 </li>
