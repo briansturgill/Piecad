@@ -653,7 +653,12 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
         &#34;&#34;&#34;
         Return a lists of paths, each of which is a list of vertices that make up this object.
         &#34;&#34;&#34;
-        return self.mo.to_polygons()
+        from copy import deepcopy
+
+        paths = self.mo.to_polygons()
+        paths = deepcopy(paths)
+        paths = [[tuple(float(coord) for coord in pt) for pt in path] for path in paths]
+        return paths
 
     def transform(
         self, matrix2x3: tuple[tuple[float, float, float], tuple[float, float, float]]
@@ -1155,7 +1160,12 @@ maintain the same size ratio between the two sizes.</p>
     &#34;&#34;&#34;
     Return a lists of paths, each of which is a list of vertices that make up this object.
     &#34;&#34;&#34;
-    return self.mo.to_polygons()</code></pre>
+    from copy import deepcopy
+
+    paths = self.mo.to_polygons()
+    paths = deepcopy(paths)
+    paths = [[tuple(float(coord) for coord in pt) for pt in path] for path in paths]
+    return paths</code></pre>
 </details>
 <div class="desc"><p>Return a lists of paths, each of which is a list of vertices that make up this object.</p></div>
 </dd>
@@ -1589,9 +1599,9 @@ maintain the same size ratio between the two sizes.</p>
             vertices = mesh.vert_properties[:, :3]
         else:
             vertices = mesh.vert_properties
-        v = [tuple(vert) for vert in vertices]
-        v = [tuple(tri) for tri in tri_verts]
-        return (vertices, mesh.tri_verts)
+        v = [tuple(float(coord) for coord in vert) for vert in vertices]
+        f = [tuple(int(coord) for coord in tri) for tri in mesh.tri_verts]
+        return (v, f)
 
     def transform(
         self,
@@ -2275,9 +2285,9 @@ maintain the same size ratio between the two sizes.</p>
         vertices = mesh.vert_properties[:, :3]
     else:
         vertices = mesh.vert_properties
-    v = [tuple(vert) for vert in vertices]
-    v = [tuple(tri) for tri in tri_verts]
-    return (vertices, mesh.tri_verts)</code></pre>
+    v = [tuple(float(coord) for coord in vert) for vert in vertices]
+    f = [tuple(int(coord) for coord in tri) for tri in mesh.tri_verts]
+    return (v, f)</code></pre>
 </details>
 <div class="desc"><p>Return a pair containg a list of vertices and a list of faces for this object.</p></div>
 </dd>

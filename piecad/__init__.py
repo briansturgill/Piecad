@@ -427,9 +427,9 @@ class Obj3d:
             vertices = mesh.vert_properties[:, :3]
         else:
             vertices = mesh.vert_properties
-        v = [tuple(vert) for vert in vertices]
-        v = [tuple(tri) for tri in tri_verts]
-        return (vertices, mesh.tri_verts)
+        v = [tuple(float(coord) for coord in vert) for vert in vertices]
+        f = [tuple(int(coord) for coord in tri) for tri in mesh.tri_verts]
+        return (v, f)
 
     def transform(
         self,
@@ -738,7 +738,12 @@ class Obj2d:
         """
         Return a lists of paths, each of which is a list of vertices that make up this object.
         """
-        return self.mo.to_polygons()
+        from copy import deepcopy
+
+        paths = self.mo.to_polygons()
+        paths = deepcopy(paths)
+        paths = [[tuple(float(coord) for coord in pt) for pt in path] for path in paths]
+        return paths
 
     def transform(
         self, matrix2x3: tuple[tuple[float, float, float], tuple[float, float, float]]

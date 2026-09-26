@@ -348,3 +348,48 @@ def test_transform_3d():
     c = cube(2)
     c2 = c.transform([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]])
     assert c2.num_verts() == c2.num_verts()
+
+
+def test_to_verts_and_faces():
+    v_expect = [
+        (0.0, 0.0, 0.0),
+        (0.0, 0.0, 10.0),
+        (0.0, 10.0, 0.0),
+        (0.0, 10.0, 10.0),
+        (10.0, 0.0, 0.0),
+        (10.0, 0.0, 10.0),
+        (10.0, 10.0, 0.0),
+        (10.0, 10.0, 10.0),
+    ]
+    f_expect = [
+        (1, 0, 4),
+        (2, 4, 0),
+        (1, 3, 0),
+        (3, 1, 5),
+        (3, 2, 0),
+        (3, 7, 2),
+        (5, 4, 6),
+        (5, 1, 4),
+        (6, 4, 2),
+        (7, 6, 2),
+        (7, 3, 5),
+        (7, 5, 6),
+    ]
+    c = cube(10)
+    v_ret, f_ret = c.to_verts_and_faces()
+    assert v_expect == v_ret
+    assert f_expect == f_ret
+    assert len(v_ret) == 8
+    assert len(v_ret[0]) == 3
+    assert len(f_ret) == 12
+    assert len(f_ret[0]) == 3
+
+
+def test_to_paths():
+    path_expect = [[(0.0, 0.0), (10.0, 0.0), (10.0, 10.0), (0.0, 10.0)]]
+    s = square(10)
+    path_ret = s.to_paths()
+    assert path_ret == path_expect
+    assert len(path_ret) == 1
+    assert len(path_ret[0]) == 4
+    assert len(path_ret[0][0]) == 2
