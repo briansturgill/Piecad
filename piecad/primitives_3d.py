@@ -26,12 +26,14 @@ from . import (
     _chkV2,
     np,
     trimesh,
+    obj3d_from_vertices_and_faces,
 )
 
 from ._check_mesh import check_mesh as _check_mesh
 from ._check_mesh import quick_check_mesh as _quick_check_mesh
 
 from . import _lithophane
+from .lin_math import Mat3, Vec3
 
 
 def chamfer(
@@ -317,16 +319,12 @@ def extrude_chaining(
 
     vertex_list = np.array(vertex_list, np.float64)
     triangles = np.array(triangles, np.uint64)
-    mesh = _m.Mesh64(vertex_list, triangles)
     if diagnose != None:
         dot_idx = diagnose.rindex(".")
         ext = diagnose[dot_idx + 1 :]
         mesh_output = trimesh.Trimesh(vertices=vertex_list, faces=triangles)
         trimesh.exchange.export.export_mesh(mesh_output, diagnose, ext)
-    mo = _m.Manifold(mesh)
-    if mo.is_empty():
-        raise ValidationError(f"Error creating Manifold: {mo.status()}.")
-    return Obj3d(mo)
+    return obj3d_from_vertices_and_faces(vertex_list, triangles)
 
 
 def extrude_transforming(
@@ -474,26 +472,8 @@ def polyhedron(
 
     """
     _chkIn("check", check, ["interactive", "batch", "repair", "none"])
-    if check == "interactive":
-        if not _check_mesh(vertices, faces):
-            return Obj3d()
-    elif check == "batch":
-        msg = _quick_check_mesh(vertices, faces)
-        if msg != "":
-            raise ValidationError(f"Polyhedron is flawed: {msg}")
-    elif check == "repair":
-        mesh_output = trimesh.Trimesh(
-            vertices=vertices, faces=faces, process=True, validate=True
-        )
-        vertices = mesh_output.vertices
-        faces = mesh_output.faces
-    vertices = np.array(vertices, np.float64)
-    faces = np.array(faces, np.uint64)
-    mesh = _m.Mesh64(vertices, faces)
-    mo = _m.Manifold(mesh)
-    if mo.is_empty():
-        raise ValidationError(f"Error creating Manifold: {mo.status()}.")
-    return Obj3d(mo)
+    o = obj3d_from_vertices_and_faces(vertices, faces, check)
+    return o
 
 
 def pyramid(height: int, num_sides: int, radius: float) -> Obj3d:
@@ -692,24 +672,16 @@ def tetrahedron(
             "You must provide exactly four vertices to define a tetrahedron."
         )
 
-    v0, v1, v2, v3 = (np.asarray(v, dtype=np.float64) for v in vertices)
-
+    v0, v1, v2, v3 = vertices
     # Columns describe the target tetrahedron's three edge vectors.
-    linear = np.column_stack(
-        (
-            v1 - v0,
-            v2 - v0,
-            v3 - v0,
-        )
-    )
+    linear = [Vec3.sub(v1, v0), Vec3.sub(v2, v0), Vec3.sub(v3, v0)]
 
-    det = np.linalg.det(linear)
+    det = Mat3.determinant(linear)
     # A zero determinant means the points are coplanar or otherwise degenerate.
     if abs(det) < 1e-12:
         raise ValidationError(
             "Your four given points are coplanar. A flat tetrahedron is not allowed."
         )
-
     ccw_faces = [[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]]
     cw_faces = [[0, 1, 2], [0, 3, 1], [0, 2, 3], [1, 3, 2]]
     if det < 0:

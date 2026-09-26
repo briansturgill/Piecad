@@ -57,6 +57,10 @@ to check for polygon self intersections.</p>
 <dd>
 <div class="desc"><p>Miscellaneous bulk operations that work on multiple objects.</p></div>
 </dd>
+<dt><code class="name"><a title="piecad.lin_math" href="lin_math.html">piecad.lin_math</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt><code class="name"><a title="piecad.primitives_2d" href="primitives_2d.html">piecad.primitives_2d</a></code></dt>
 <dd>
 <div class="desc"><p>Create 2D objects such as circles and retangles.</p></div>
@@ -1578,7 +1582,7 @@ maintain the same size ratio between the two sizes.</p>
 
     def to_verts_and_faces(
         self,
-    ) -&gt; tuple[list[list[float, float, float]], list[list[int, int, int]]]:
+    ) -&gt; tuple[list[tuple[float, float, float]], list[tuple[int, int, int]]]:
         &#34;&#34;&#34;
         Return a pair containg a list of vertices and a list of faces for this object.
 
@@ -1588,6 +1592,8 @@ maintain the same size ratio between the two sizes.</p>
             vertices = mesh.vert_properties[:, :3]
         else:
             vertices = mesh.vert_properties
+        v = [tuple(vert) for vert in vertices]
+        v = [tuple(tri) for tri in tri_verts]
         return (vertices, mesh.tri_verts)
 
     def transform(
@@ -2256,7 +2262,7 @@ maintain the same size ratio between the two sizes.</p>
 <div class="desc"><p>The surface area of this Obj3d.</p></div>
 </dd>
 <dt id="piecad.Obj3d.to_verts_and_faces"><code class="name flex">
-<span>def <span class="ident">to_verts_and_faces</span></span>(<span>self) ‑> tuple[list[list[float, float, float]], list[list[int, int, int]]]</span>
+<span>def <span class="ident">to_verts_and_faces</span></span>(<span>self) ‑> tuple[list[tuple[float, float, float]], list[tuple[int, int, int]]]</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -2265,7 +2271,7 @@ maintain the same size ratio between the two sizes.</p>
 </summary>
 <pre><code class="python">def to_verts_and_faces(
     self,
-) -&gt; tuple[list[list[float, float, float]], list[list[int, int, int]]]:
+) -&gt; tuple[list[tuple[float, float, float]], list[tuple[int, int, int]]]:
     &#34;&#34;&#34;
     Return a pair containg a list of vertices and a list of faces for this object.
 
@@ -2275,6 +2281,8 @@ maintain the same size ratio between the two sizes.</p>
         vertices = mesh.vert_properties[:, :3]
     else:
         vertices = mesh.vert_properties
+    v = [tuple(vert) for vert in vertices]
+    v = [tuple(tri) for tri in tri_verts]
     return (vertices, mesh.tri_verts)</code></pre>
 </details>
 <div class="desc"><p>Return a pair containg a list of vertices and a list of faces for this object.</p></div>
@@ -2387,6 +2395,7 @@ functions and methods.</p></div>
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
 <li><code><a title="piecad.bulk_ops" href="bulk_ops.html">piecad.bulk_ops</a></code></li>
+<li><code><a title="piecad.lin_math" href="lin_math.html">piecad.lin_math</a></code></li>
 <li><code><a title="piecad.primitives_2d" href="primitives_2d.html">piecad.primitives_2d</a></code></li>
 <li><code><a title="piecad.primitives_3d" href="primitives_3d.html">piecad.primitives_3d</a></code></li>
 <li><code><a title="piecad.projectbox" href="projectbox/index.html">piecad.projectbox</a></code></li>

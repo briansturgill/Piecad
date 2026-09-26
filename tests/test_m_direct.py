@@ -1,6 +1,5 @@
 import manifold3d as _m
 import pytest
-import numpy as _np
 from piecad import cos, sin
 
 
@@ -53,13 +52,12 @@ def test_mo_cube(benchmark):
 
 
 def _from_verts_and_triangles(v, f):
-    if hasattr(_m.Manifold, "create_from_verts_and_triangles"):
-        o = _m.Manifold.create_from_verts_and_triangles(v, f)
-    else:
-        v = _np.array(v, _np.float32)
-        f = _np.array(f, _np.uint32)
-        mesh = _m.Mesh(v, f)
-        o = _m.Manifold(mesh)
+    import numpy as _np
+
+    v = _np.array(v, _np.float64)
+    f = _np.array(f, _np.uint64)
+    mesh64 = _m.Mesh64(v, f)
+    o = _m.Manifold(mesh64)
     o.num_vert()
     return o
 

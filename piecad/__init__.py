@@ -420,7 +420,7 @@ class Obj3d:
 
     def to_verts_and_faces(
         self,
-    ) -> tuple[list[list[float, float, float]], list[list[int, int, int]]]:
+    ) -> tuple[list[tuple[float, float, float]], list[tuple[int, int, int]]]:
         """
         Return a pair containg a list of vertices and a list of faces for this object.
 
@@ -430,6 +430,8 @@ class Obj3d:
             vertices = mesh.vert_properties[:, :3]
         else:
             vertices = mesh.vert_properties
+        v = [tuple(vert) for vert in vertices]
+        v = [tuple(tri) for tri in tri_verts]
         return (vertices, mesh.tri_verts)
 
     def transform(
@@ -976,6 +978,7 @@ from .bulk_ops import *
 from .trigonometry import *
 from .primitives_2d import *
 from .primitives_3d import *
+from .lin_math import *
 
 _handle_piecadrc()
 del trigonometry
@@ -983,3 +986,4 @@ del utilities
 del bulk_ops
 del primitives_2d
 del primitives_3d
+del lin_math

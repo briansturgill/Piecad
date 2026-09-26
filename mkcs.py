@@ -12,6 +12,7 @@ class FInfo:
 sections = {
         "piecad": "Info Functions",
         "piecad.bulk_ops": "Bulk Operations",
+        "piecad.lin_math": "Linear Math",
         "piecad.primitives_2d": "2d Primitives",
         "piecad.primitives_3d": "3d Primitives",
         "piecad.trigonometry": "Trigonometry (degrees)",

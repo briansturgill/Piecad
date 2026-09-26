@@ -157,6 +157,7 @@ Returns the object made by adding all the `objs` together.
 </span>
 </a>
 </p>
+<h2>Linear Math</h2>
 <h2>2d Primitives</h2>
 <p class="item">
 <a class="ahover" href="primitives_2d.html#piecad.primitives_2d.circle">
@@ -642,6 +643,16 @@ Load a 3d object from a file.
 </a>
 </p>
 <p class="item">
+<a class="ahover" href="utilities.html#piecad.utilities.obj3d_from_vertices_and_faces">
+obj3d_from_vertices_and_faces
+<span class="popup">
+<code>obj3d_from_vertices_and_faces(vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]], check: str = 'none') -> Obj3d</code>
+<br>
+Create an Obj3d instance from vertices and faces with optional mesh checking and repair.
+</span>
+</a>
+</p>
+<p class="item">
 <a class="ahover" href="utilities.html#piecad.utilities.quick_check_mesh">
 quick_check_mesh
 <span class="popup">
@@ -1107,7 +1118,7 @@ The surface area of this Obj3d.
 <a class="ahover" href="index.html#piecad.to_verts_and_faces">
 to_verts_and_faces
 <span class="popup">
-<code>to_verts_and_faces(self) -> 'tuple[list[list[float, float, float]], list[list[int, int, int]]]'</code>
+<code>to_verts_and_faces(self) -> 'tuple[list[tuple[float, float, float]], list[tuple[int, int, int]]]'</code>
 <br>
 Return a pair containg a list of vertices and a list of faces for this object.
 </span>

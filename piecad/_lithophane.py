@@ -1,6 +1,6 @@
 import numpy as np
 from PIL import Image
-from . import Obj3d
+from .utilities import obj3d_from_vertices_and_faces
 import manifold3d as m
 import trimesh
 
@@ -133,4 +133,4 @@ def create_lithophane(heightmap, pixel_size, min_thickness, max_thickness, base=
     vertices = np.array(mesh.vertices, np.float64)
     faces = np.array(mesh.faces, np.uint64)
 
-    return Obj3d(m.Manifold(m.Mesh(vertices, faces)))
+    return obj3d_from_vertices_and_faces(vertices, faces)

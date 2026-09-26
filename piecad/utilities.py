@@ -19,6 +19,7 @@ __all__ = [
     "check_mesh",
     "load",
     "quick_check_mesh",
+    "obj3d_from_vertices_and_faces",
     "save",
     "view",
     "view_all_now",
@@ -65,9 +66,8 @@ def load(filename: str) -> Obj3d | Obj2d:
     else:
         vertices = np.array(mesh.vertices, np.float64)
         faces = np.array(mesh.faces, np.uint64)
-        o = Obj3d(_m.Manifold(_m.Mesh64(vertices, faces)))
 
-    return o
+    return obj3d_from_vertices_and_faces(vertices, faces)
 
 
 _save_dir = None
@@ -185,7 +185,7 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
         else:
             scene = trimesh.Scene()
             for obj in objs:
-                mesh = obj.mo.to_mesh()
+                mesh = obj.mo.to_mesh64()
                 if mesh.vert_properties.shape[1] > 3:
                     vertices = mesh.vert_properties[:, :3]
                 else:
@@ -405,3 +405,45 @@ def quick_check_mesh(
     returned.
     """
     return _quick_check_mesh(vertices, faces)
+
+
+def obj3d_from_vertices_and_faces(
+    vertices: list[tuple[float, float, float]],
+    faces: list[tuple[int, int, int]],
+    check: str = "none",
+) -> Obj3d:
+    """
+    Create an Obj3d instance from vertices and faces with optional mesh checking and repair.
+    Used internally within the Piecad framework, but might be useful to advanced users.
+
+    Parameters:
+    - faces: List of face tuples (int, int, int)
+    - vertices: List of vertex tuples (float, float, float)
+    - check: One of "interactive", "batch", "repair", "none"
+
+    Returns:
+    - Obj3d instance
+
+    Raises:
+    - ValidationError if the mesh is flawed in batch mode or if manifold creation fails.
+    """
+    if check == "interactive":
+        if not _check_mesh(vertices, faces):
+            return Obj3d()
+    elif check == "batch":
+        msg = _quick_check_mesh(vertices, faces)
+        if msg != "":
+            raise ValidationError(f"Polyhedron is flawed: {msg}")
+    elif check == "repair":
+        mesh_output = trimesh.Trimesh(
+            vertices=vertices, faces=faces, process=True, validate=True
+        )
+        vertices = mesh_output.vertices
+        faces = mesh_output.faces
+    vertices = np.array(vertices, np.float64)
+    faces = np.array(faces, np.uint64)
+    mesh = _m.Mesh64(vertices, faces)
+    mo = _m.Manifold(mesh)
+    if mo.is_empty():
+        raise ValidationError(f"Error creating Manifold: {mo.status()}.")
+    return Obj3d(mo)
