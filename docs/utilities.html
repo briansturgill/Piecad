@@ -103,9 +103,6 @@ el.replaceWith(d);
     )
     if type(mesh) == trimesh.path.Path2D:
         raise ValidationError(&#34;Currently 2d objects are no supported.&#34;)
-    else:
-        vertices = np.array(mesh.vertices, np.float64)
-        faces = np.array(mesh.faces, np.uint64)
 
     return obj3d_from_vertices_and_faces(vertices, faces)</code></pre>
 </details>

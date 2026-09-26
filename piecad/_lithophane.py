@@ -1,4 +1,3 @@
-import numpy as np
 from PIL import Image
 from .utilities import obj3d_from_vertices_and_faces
 import manifold3d as m
@@ -14,18 +13,11 @@ def load_heightmap(filename, max_dimension):
     if scale < 1.0:
         img = img.resize((int(w * scale), int(h * scale)), Image.Resampling.LANCZOS)
 
-    img = np.array(img, dtype=np.float64)
-
-    # Lithophane:
-    # White = thin
-    # Black = thick
-    img = 1.0 - img / 255.0
-
     return img
 
 
 def add_vertex(v, vertices, lookup):
-    key = tuple(np.round(v, 5))
+    key = tuple(round(coordinate, 5) for coordinate in v)
     if key in lookup:
         return lookup[key]
 
@@ -36,27 +28,28 @@ def add_vertex(v, vertices, lookup):
 
 def create_lithophane(heightmap, pixel_size, min_thickness, max_thickness, base=0.0):
 
-    rows, cols = heightmap.shape
+    cols, rows = heightmap.size
 
     vertices = []
     lookup = {}
     faces = []
 
-    top = np.zeros((rows, cols), dtype=int)
-    bottom = np.zeros((rows, cols), dtype=int)
+    top = [[0 for _ in range(cols)] for _ in range(rows)]
+    bottom = [[0 for _ in range(cols)] for _ in range(rows)]
 
     for y in range(rows):
         for x in range(cols):
 
-            z = min_thickness + heightmap[y, x] * (max_thickness - min_thickness)
+            height = 1.0 - heightmap.getpixel((x, y)) / 255.0
+            z = min_thickness + height * (max_thickness - min_thickness)
 
-            top[y, x] = add_vertex(
+            top[y][x] = add_vertex(
                 (x * pixel_size, (rows - 1 - y) * pixel_size, z),
                 vertices,
                 lookup,
             )
 
-            bottom[y, x] = add_vertex(
+            bottom[y][x] = add_vertex(
                 (x * pixel_size, (rows - 1 - y) * pixel_size, base),
                 vertices,
                 lookup,
@@ -66,10 +59,10 @@ def create_lithophane(heightmap, pixel_size, min_thickness, max_thickness, base=
     for y in range(rows - 1):
         for x in range(cols - 1):
 
-            a = top[y, x]
-            b = top[y, x + 1]
-            c = top[y + 1, x]
-            d = top[y + 1, x + 1]
+            a = top[y][x]
+            b = top[y][x + 1]
+            c = top[y + 1][x]
+            d = top[y + 1][x + 1]
 
             faces.append((a, c, b))
             faces.append((b, c, d))
@@ -78,10 +71,10 @@ def create_lithophane(heightmap, pixel_size, min_thickness, max_thickness, base=
     for y in range(rows - 1):
         for x in range(cols - 1):
 
-            a = bottom[y, x]
-            b = bottom[y + 1, x]
-            c = bottom[y, x + 1]
-            d = bottom[y + 1, x + 1]
+            a = bottom[y][x]
+            b = bottom[y + 1][x]
+            c = bottom[y][x + 1]
+            d = bottom[y + 1][x + 1]
 
             faces.append((a, b, c))
             faces.append((c, b, d))
@@ -94,43 +87,44 @@ def create_lithophane(heightmap, pixel_size, min_thickness, max_thickness, base=
     # Left
     for y in range(rows - 1):
         quad(
-            top[y, 0],
-            top[y + 1, 0],
-            bottom[y, 0],
-            bottom[y + 1, 0],
+            top[y][0],
+            top[y + 1][0],
+            bottom[y][0],
+            bottom[y + 1][0],
         )
 
     # Right
     for y in range(rows - 1):
         quad(
-            top[y + 1, cols - 1],
-            top[y, cols - 1],
-            bottom[y + 1, cols - 1],
-            bottom[y, cols - 1],
+            top[y + 1][cols - 1],
+            top[y][cols - 1],
+            bottom[y + 1][cols - 1],
+            bottom[y][cols - 1],
         )
 
     # Top edge
     for x in range(cols - 1):
         quad(
-            top[0, x + 1],
-            top[0, x],
-            bottom[0, x + 1],
-            bottom[0, x],
+            top[0][x + 1],
+            top[0][x],
+            bottom[0][x + 1],
+            bottom[0][x],
         )
 
     # Bottom edge
     for x in range(cols - 1):
         quad(
-            top[rows - 1, x],
-            top[rows - 1, x + 1],
-            bottom[rows - 1, x],
-            bottom[rows - 1, x + 1],
+            top[rows - 1][x],
+            top[rows - 1][x + 1],
+            bottom[rows - 1][x],
+            bottom[rows - 1][x + 1],
         )
 
-    vertices = np.array(vertices, np.float64)
-    faces = np.array(faces, np.int64)
     mesh = trimesh.Trimesh(vertices=vertices, faces=faces, process=False, validate=True)
-    vertices = np.array(mesh.vertices, np.float64)
-    faces = np.array(mesh.faces, np.uint64)
+
+    vertices = [
+        tuple(float(coordinate) for coordinate in vertex) for vertex in mesh.vertices
+    ]
+    faces = [tuple(int(index) for index in face) for face in mesh.faces]
 
     return obj3d_from_vertices_and_faces(vertices, faces)

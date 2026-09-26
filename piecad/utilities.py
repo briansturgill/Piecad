@@ -8,8 +8,9 @@ import manifold3d as _m
 import inspect
 import os.path
 import time
+import numpy as np
 from pathlib import Path as _Path
-from . import Obj2d, Obj3d, Config, _chkGE, _chkGO, ValidationError, np, trimesh
+from . import Obj2d, Obj3d, Config, _chkGE, _chkGO, ValidationError, trimesh
 
 from ._export_3mf import export_3mf as _export_3mf
 from ._check_mesh import check_mesh as _check_mesh
@@ -63,9 +64,6 @@ def load(filename: str) -> Obj3d | Obj2d:
     )
     if type(mesh) == trimesh.path.Path2D:
         raise ValidationError("Currently 2d objects are no supported.")
-    else:
-        vertices = np.array(mesh.vertices, np.float64)
-        faces = np.array(mesh.faces, np.uint64)
 
     return obj3d_from_vertices_and_faces(vertices, faces)
 

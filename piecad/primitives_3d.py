@@ -24,7 +24,6 @@ from . import (
     _chkGE,
     _chkV3,
     _chkV2,
-    np,
     trimesh,
     obj3d_from_vertices_and_faces,
 )
@@ -317,8 +316,6 @@ def extrude_chaining(
 
     add_cap(prev_vo, prev_polys, top=True)
 
-    vertex_list = np.array(vertex_list, np.float64)
-    triangles = np.array(triangles, np.uint64)
     if diagnose != None:
         dot_idx = diagnose.rindex(".")
         ext = diagnose[dot_idx + 1 :]

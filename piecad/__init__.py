@@ -25,8 +25,8 @@ from __future__ import annotations as _annotations
 import manifold3d as _m
 import math
 import trimesh
-import numpy as np
 from .trigonometry import tan, cos, sin
+from .lin_math import Vec3
 
 
 class ValidationError(BaseException):
@@ -220,21 +220,18 @@ class Obj3d:
             _chkNum("cut_point", value)
 
         # A direction vector in the X-Z plane at cut_angle.
-        cut_direction = np.array(
-            [cos(cut_angle), 0.0, sin(cut_angle)],
-            dtype=float,
-        )
+        cut_direction = (cos(cut_angle), 0.0, sin(cut_angle))
 
         # The plane is parallel to the Y-axis.
-        y_direction = np.array([0.0, 1.0, 0.0], dtype=float)
+        y_direction = (0.0, 1.0, 0.0)
 
         # Plane normal.
-        normal = np.cross(y_direction, cut_direction)
+        normal = Vec3.cross(y_direction, cut_direction)
 
         # Plane equation:
         #     normal · point + offset = 0
         # The plane passes through cut_point.
-        offset = float(np.dot(normal, np.array(cut_point, dtype=float)))
+        offset = Vec3.dot(normal, cut_point)
 
         first, second = self.mo.split_by_plane(normal, offset)
         fxmin, fymin, fzmin, fxmax, fymax, fzmax = first.bounding_box()
@@ -978,7 +975,6 @@ from .bulk_ops import *
 from .trigonometry import *
 from .primitives_2d import *
 from .primitives_3d import *
-from .lin_math import *
 
 _handle_piecadrc()
 del trigonometry

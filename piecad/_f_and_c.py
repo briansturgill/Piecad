@@ -8,12 +8,9 @@ from . import *
 from ._cutter import cutter
 
 
-def face_normal(vertices: np.ndarray, face: Sequence[int]) -> np.ndarray:
+def face_normal(vertices: list[tuple[float, float, float]], face: list[int]) -> Vec3:
     """Return a normalized polygon normal using Newell's method."""
-    if len(face) < 3:
-        raise ValueError(f"A face needs at least three vertices: {face}")
-
-    normal = np.zeros(3, dtype=float)
+    normal = [0, 0, 0]
 
     for current_index, next_index in zip(face, face[1:] + face[:1]):
         current = vertices[current_index]
@@ -23,11 +20,7 @@ def face_normal(vertices: np.ndarray, face: Sequence[int]) -> np.ndarray:
         normal[1] += (current[2] - next_vertex[2]) * (current[0] + next_vertex[0])
         normal[2] += (current[0] - next_vertex[0]) * (current[1] + next_vertex[1])
 
-    length = np.linalg.norm(normal)
-    if length == 0:
-        raise ValueError(f"Degenerate face has no normal: {face}")
-
-    return normal / length
+    return Vec3.normalize(normal)
 
 
 def classify_edges(
@@ -60,11 +53,8 @@ def classify_edges(
         Boundary edges and non-manifold edges are ignored because they do not
         have exactly two adjacent faces.
     """
-    vertex_array = np.asarray(vertices, dtype=float)
-    if vertex_array.ndim != 2 or vertex_array.shape[1] != 3:
-        raise ValueError("vertices must be an Nx3 collection")
 
-    normals = [face_normal(vertex_array, list(face)) for face in faces]
+    normals = [face_normal(vertices, list(face)) for face in faces]
 
     # Maps an undirected edge to:
     # [(face_index, directed_start_vertex, directed_end_vertex), ...]
@@ -93,18 +83,18 @@ def classify_edges(
         first_face, start, end = adjacent_faces[0]
         second_face, _, _ = adjacent_faces[1]
 
-        edge_vector = vertex_array[end] - vertex_array[start]
-        edge_length = np.linalg.norm(edge_vector)
+        edge_vector = Vec3.sub(vertex_array[end], vertex_array[start])
+        edge_length = Vec3.length(edge_vector)
         if edge_length == 0:
             continue
 
-        edge_direction = edge_vector / edge_length
+        edge_direction = Vec3.div(edge_vector, edge_length)
         first_normal = normals[first_face]
         second_normal = normals[second_face]
 
         signed_angle = atan2(
-            np.dot(edge_direction, np.cross(first_normal, second_normal)),
-            np.dot(first_normal, second_normal),
+            Vec3.dot(edge_direction, Vec3.cross(first_normal, second_normal)),
+            Vec3.dot(first_normal, second_normal),
         )
 
         # With outward-facing, consistently wound faces:

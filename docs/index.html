@@ -1382,21 +1382,18 @@ maintain the same size ratio between the two sizes.</p>
             _chkNum(&#34;cut_point&#34;, value)
 
         # A direction vector in the X-Z plane at cut_angle.
-        cut_direction = np.array(
-            [cos(cut_angle), 0.0, sin(cut_angle)],
-            dtype=float,
-        )
+        cut_direction = (cos(cut_angle), 0.0, sin(cut_angle))
 
         # The plane is parallel to the Y-axis.
-        y_direction = np.array([0.0, 1.0, 0.0], dtype=float)
+        y_direction = (0.0, 1.0, 0.0)
 
         # Plane normal.
-        normal = np.cross(y_direction, cut_direction)
+        normal = Vec3.cross(y_direction, cut_direction)
 
         # Plane equation:
         #     normal · point + offset = 0
         # The plane passes through cut_point.
-        offset = float(np.dot(normal, np.array(cut_point, dtype=float)))
+        offset = Vec3.dot(normal, cut_point)
 
         first, second = self.mo.split_by_plane(normal, offset)
         fxmin, fymin, fzmin, fxmax, fymax, fzmax = first.bounding_box()
@@ -1932,21 +1929,18 @@ For the Z axis it's the same, but each hand is upside down.</p>
         _chkNum(&#34;cut_point&#34;, value)
 
     # A direction vector in the X-Z plane at cut_angle.
-    cut_direction = np.array(
-        [cos(cut_angle), 0.0, sin(cut_angle)],
-        dtype=float,
-    )
+    cut_direction = (cos(cut_angle), 0.0, sin(cut_angle))
 
     # The plane is parallel to the Y-axis.
-    y_direction = np.array([0.0, 1.0, 0.0], dtype=float)
+    y_direction = (0.0, 1.0, 0.0)
 
     # Plane normal.
-    normal = np.cross(y_direction, cut_direction)
+    normal = Vec3.cross(y_direction, cut_direction)
 
     # Plane equation:
     #     normal · point + offset = 0
     # The plane passes through cut_point.
-    offset = float(np.dot(normal, np.array(cut_point, dtype=float)))
+    offset = Vec3.dot(normal, cut_point)
 
     first, second = self.mo.split_by_plane(normal, offset)
     fxmin, fymin, fzmin, fxmax, fymax, fzmax = first.bounding_box()

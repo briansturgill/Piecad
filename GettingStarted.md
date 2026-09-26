@@ -7,11 +7,10 @@ a signature of the function and a brief description.
 Click the link attached to the name to see more details..
 
 In addition to the various functions and classes that make up Piecad, there are
-3 names of importance: `np` (a short hand for numpy), `trimesh` and `math`.
+2 names of importance: `trimesh` and `math`.
 
-Numpy is a numeric package for Python... there are many useful things for
-computational geometry. Trimesh handles meshes, the guts for 3d objects.
-Math is the Python math library.  You won't need to import any of these,
+Trimesh handles meshes, the guts for 3d objects.
+Math is the Python math library.  You won't need to import either of these,
 they are used within Piecad and so are already imported, but as they are
 used a lot, we passed the names into Piecad's namespace.
 
