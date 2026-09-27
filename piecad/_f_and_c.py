@@ -152,8 +152,6 @@ def _f_and_c(
 
     if fillet:
         o = difference(obj, *to_fill)
-        view(union(*to_fill))
     else:
         o = difference(obj, *to_cut)
-        view(union(*to_cut))
     return o

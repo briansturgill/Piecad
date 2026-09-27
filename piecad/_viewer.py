@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import subprocess
-import tempfile
-from pathlib import Path
+from math import cos, radians, sin
+from numbers import Integral
 from typing import Any
+
 import matplotlib.pyplot as plt
 
-import numpy as np
-import trimesh
+from .lin_math import Vec3
 
 main_title = "Piecad Viewer - Type 'h' for help."
 
@@ -75,24 +74,28 @@ class MeshViewer:
         self.ctrl_pressed = False
 
     @staticmethod
-    def _mesh_arrays(mesh: Any) -> tuple[np.ndarray, np.ndarray]:
-        """Return vertices and triangular faces from a Trimesh-like object."""
+    def _mesh_arrays(
+        mesh: Any,
+    ) -> tuple[list[tuple[float, float, float]], list[tuple[int, int, int]]]:
+        """Return vertices and triangular faces as plain Python tuples."""
         if not hasattr(mesh, "vertices") or not hasattr(mesh, "faces"):
             raise TypeError("Meshes must be trimesh.Trimesh objects.")
 
-        vertices = np.asarray(mesh.vertices, dtype=float)
-        faces = np.asarray(mesh.faces, dtype=np.int64)
+        vertices = [tuple(float(value) for value in vertex) for vertex in mesh.vertices]
+        faces = [tuple(int(index) for index in face) for face in mesh.faces]
 
-        if vertices.ndim != 2 or vertices.shape[1] != 3:
+        if any(len(vertex) != 3 for vertex in vertices):
             raise ValueError("Mesh vertices must have shape (N, 3).")
 
-        if faces.ndim != 2 or faces.shape[1] != 3:
+        if any(len(face) != 3 for face in faces):
             raise ValueError("Mesh faces must have shape (N, 3).")
 
         return vertices, faces
 
     @staticmethod
-    def _face_colors(mesh: Any, count: int) -> np.ndarray | None:
+    def _face_colors(
+        mesh: Any, count: int
+    ) -> list[tuple[float, float, float, float]] | None:
         """Get Trimesh per-face colors as Matplotlib RGBA values."""
         if not hasattr(mesh, "visual"):
             return None
@@ -101,21 +104,22 @@ class MeshViewer:
         if colors is None:
             return None
 
-        colors = np.asarray(colors)
-
         if len(colors) != count:
             return None
 
-        if colors.dtype.kind in "ui":
-            colors = colors.astype(float) / 255.0
-        else:
-            colors = colors.astype(float)
+        normalized_colors = []
+        for color in colors:
+            if len(color) not in (3, 4):
+                return None
+            if all(isinstance(channel, Integral) for channel in color):
+                converted = [float(channel) / 255.0 for channel in color]
+            else:
+                converted = [float(channel) for channel in color]
+            if len(converted) == 3:
+                converted.append(int(255 * 0.3) / 255.0)
+            normalized_colors.append(tuple(converted))
 
-        if colors.shape[1] == 3:
-            alpha = np.full(len(colors), int(255 * 0.3), dtype=np.uint8)
-            colors = np.hstack((colors, alpha))
-
-        return colors
+        return normalized_colors
 
     def clear(self) -> None:
         """Remove every mesh and its associated viewer data."""
@@ -143,36 +147,36 @@ class MeshViewer:
 
     def _visible_faces(
         self,
-        vertices: np.ndarray,
-        faces: np.ndarray,
-    ) -> np.ndarray:
+        vertices: list[tuple[float, float, float]],
+        faces: list[tuple[int, int, int]],
+    ) -> list[bool]:
         if not self.culling:
-            return np.ones(len(faces), dtype=bool)
+            return [True] * len(faces)
 
-        triangles = vertices[faces]
-        normals = np.cross(
-            triangles[:, 1] - triangles[:, 0],
-            triangles[:, 2] - triangles[:, 0],
+        elevation = radians(self._view[0])
+        azimuth = radians(self._view[1])
+        camera = (
+            cos(elevation) * cos(azimuth),
+            cos(elevation) * sin(azimuth),
+            sin(elevation),
         )
 
-        elevation = np.deg2rad(self._view[0])
-        azimuth = np.deg2rad(self._view[1])
+        visible = []
+        for face in faces:
+            first, second, third = (vertices[index] for index in face)
+            normal = Vec3.cross(Vec3.sub(second, first), Vec3.sub(third, first))
+            visible.append(Vec3.dot(normal, camera) > 0)
+        return visible
 
-        camera = np.array(
-            [
-                np.cos(elevation) * np.cos(azimuth),
-                np.cos(elevation) * np.sin(azimuth),
-                np.sin(elevation),
-            ]
-        )
-
-        return np.einsum("ij,j->i", normals, camera) > 0
-
-    def _draw_axis(self, vertices: np.ndarray) -> None:
+    def _draw_axis(self, vertices: list[tuple[float, float, float]]) -> None:
         if not self.axis_visible:
             return
 
-        model_size = float(np.ptp(vertices, axis=0).max())
+        model_size = max(
+            max(vertex[axis] for vertex in vertices)
+            - min(vertex[axis] for vertex in vertices)
+            for axis in range(3)
+        )
         length = max(self._axis_length, model_size * 0.25)
 
         endpoints = (
@@ -204,40 +208,38 @@ class MeshViewer:
 
     def _shade_colors(
         self,
-        vertices: np.ndarray,
-        faces: np.ndarray,
-        base_colors: np.ndarray,
-    ) -> np.ndarray:
+        vertices: list[tuple[float, float, float]],
+        faces: list[tuple[int, int, int]],
+        base_colors: list[tuple[float, float, float, float]],
+    ) -> list[tuple[float, float, float, float]]:
         """Apply simple directional (Lambertian) shading to face colors."""
-        triangles = vertices[faces]
-        normals = np.cross(
-            triangles[:, 1] - triangles[:, 0],
-            triangles[:, 2] - triangles[:, 0],
-        )
-        norm_lengths = np.linalg.norm(normals, axis=1, keepdims=True)
-        norm_lengths[norm_lengths == 0] = 1.0
-        normals = normals / norm_lengths
-
         # Light coming from roughly the camera direction, for a
         # consistent "headlamp" look.
-        elevation = np.deg2rad(self._view[0])
-        azimuth = np.deg2rad(self._view[1])
-        light_dir = np.array(
-            [
-                np.cos(elevation) * np.cos(azimuth),
-                np.cos(elevation) * np.sin(azimuth),
-                np.sin(elevation),
-            ]
+        elevation = radians(self._view[0])
+        azimuth = radians(self._view[1])
+        light_dir = (
+            cos(elevation) * cos(azimuth),
+            cos(elevation) * sin(azimuth),
+            sin(elevation),
         )
 
-        intensity = np.abs(np.einsum("ij,j->i", normals, light_dir))
-
-        ambient = 0.4
-        diffuse = 0.6
-        brightness = (ambient + diffuse * intensity).clip(0.0, 1.0)
-
-        shaded = base_colors.copy()
-        shaded[:, 0:3] *= brightness[:, None]
+        shaded = []
+        for face, color in zip(faces, base_colors):
+            first, second, third = (vertices[index] for index in face)
+            normal = Vec3.cross(Vec3.sub(second, first), Vec3.sub(third, first))
+            normal_length = Vec3.length(normal)
+            if normal_length > 0.0:
+                normal = Vec3.normalize(normal)
+            intensity = abs(Vec3.dot(normal, light_dir))
+            brightness = max(0.0, min(1.0, 0.4 + 0.6 * intensity))
+            shaded.append(
+                (
+                    color[0] * brightness,
+                    color[1] * brightness,
+                    color[2] * brightness,
+                    color[3],
+                )
+            )
         return shaded
 
     def _draw_mesh(self) -> None:
@@ -254,18 +256,23 @@ class MeshViewer:
         vertices, faces = self._mesh_arrays(mesh)
         visible = self._visible_faces(vertices, faces)
 
-        polygons = [vertices[face] for face in faces[visible]]
+        visible_faces = [face for face, is_visible in zip(faces, visible) if is_visible]
+        polygons = [[vertices[index] for index in face] for face in visible_faces]
 
         face_colors = None
         if self.colors_visible:
             all_colors = self._face_colors(mesh, len(faces))
             if all_colors is not None:
-                face_colors = all_colors[visible]
+                face_colors = [
+                    color
+                    for color, is_visible in zip(all_colors, visible)
+                    if is_visible
+                ]
 
         if face_colors is None:
-            face_colors = np.tile((0.35, 0.65, 0.95, 0.3), (visible.sum(), 1))
+            face_colors = [(0.35, 0.65, 0.95, 0.3)] * len(visible_faces)
 
-        face_colors = self._shade_colors(vertices, faces[visible], face_colors)
+        face_colors = self._shade_colors(vertices, visible_faces, face_colors)
 
         collection = Poly3DCollection(
             polygons,
@@ -275,10 +282,10 @@ class MeshViewer:
         )
         self.ax.add_collection3d(collection)
 
-        minimum = vertices.min(axis=0)
-        maximum = vertices.max(axis=0)
-        center = (minimum + maximum) / 2.0
-        radius = float(np.ptp(vertices, axis=0).max()) / 2.0
+        minimum = tuple(min(vertex[axis] for vertex in vertices) for axis in range(3))
+        maximum = tuple(max(vertex[axis] for vertex in vertices) for axis in range(3))
+        center = tuple((minimum[axis] + maximum[axis]) / 2.0 for axis in range(3))
+        radius = max(maximum[axis] - minimum[axis] for axis in range(3)) / 2.0
         radius = max(radius, 1.0)
 
         self.ax.set_xlim(center[0] - radius, center[0] + radius)
