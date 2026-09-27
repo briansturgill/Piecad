@@ -384,9 +384,7 @@ def move_pad_to_pad_xy(
     source_frame = _basis_from_xy(source_x_dir, source_y_dir)
     target_frame = _basis_from_xy(target_x_dir, target_y_dir)
     rotation = _matrix_multiply(target_frame, _matrix_transpose(source_frame))
-    return new_obj.transform(
-        _rigid_transform(rotation, source_corner, target_corner)
-    )
+    return new_obj.transform(_rigid_transform(rotation, source_corner, target_corner))
 
 
 if __name__ == "__main__":
