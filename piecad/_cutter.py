@@ -22,7 +22,7 @@ def cutter(
     v2: tuple[float, float, float],
     n1: tuple[float, float, float],
     n2: tuple[float, float, float],
-    radius: float = 1.0,
+    radius: float,
 ) -> Obj3d:
     """
     Create a cutter surface: rectangular base with 1/4 cylinder on top.
@@ -129,6 +129,7 @@ def chamfer_cutter(bevel_size, length):
     cut = cut.miter_cut(-45, (0, 0, 0))[0]
     cut = cut.rotate((0, 135, 0)).corner()
     cut = cut.rotate((0, 0, -90)).corner()
+    cut = cut.rotate((180, 0, 0)).corner()
     _, _, _, _, _, zmax = cut.bounding_box()
     cut = cut.translate((0, 0, bevel_size - zmax))
     return cut

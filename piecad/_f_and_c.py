@@ -39,8 +39,6 @@ def face_normal(
 def classify_edges(
     vertices: Sequence[Sequence[float]],
     faces: Sequence[Sequence[int]],
-    *,
-    angle_tolerance: float = 1e-6,
 ) -> tuple[list[tuple[int, int]], list[tuple[int, int]]]:
     """
     Classify mesh edges as inner (concave) or outer (convex) fillet edges.
@@ -51,9 +49,6 @@ def classify_edges(
         faces:
             Polygon faces represented by vertex-index loops.  Faces must use
             consistent winding, with outward-facing normals.
-        angle_tolerance:
-            Ignore nearly coplanar edges whose dihedral angle is within this
-            tolerance, in radians.
 
     Returns:
         A tuple of:
@@ -66,6 +61,8 @@ def classify_edges(
         Boundary edges and non-manifold edges are ignored because they do not
         have exactly two adjacent faces.
     """
+    angle_tolerance = 1e-6
+
     if not vertices or any(len(vertex) != 3 for vertex in vertices):
         raise ValueError("vertices must be an Nx3 collection")
 
@@ -115,43 +112,76 @@ def classify_edges(
         # With outward-facing, consistently wound faces:
         # positive = convex/outer, negative = concave/inner.
         if signed_angle > angle_tolerance:
-            outer_edges.append((edge, signed_angle, first_normal, second_normal))
+            outer_edges.append(
+                (edge, edge_length, signed_angle, first_normal, second_normal)
+            )
         elif signed_angle < -angle_tolerance:
-            inner_edges.append((edge, signed_angle, first_normal, second_normal))
+            inner_edges.append(
+                (edge, edge_length, signed_angle, first_normal, second_normal)
+            )
 
     return inner_edges, outer_edges
 
 
-def _f_and_c(
+def do_f_and_c(
     obj: Obj3d,
     fillet: bool,
     radius: float = 2,
+    min_edge_length: float = 2.0,
+    angle_range: tuple[float, float] = (60, 120),
     include: list[tuple[float, float, float]] = None,
     exclude: list[tuple[float, float, float]] = None,
-    angle_tolerance: float = 1e-6,
-):
+) -> Obj3d:
+    """
+    Fillet or chamfer the edges of an `Obj3d` object.
+    This function is used internally by the `fillet` and `chamfer` functions.
+    """
     vertices, faces = obj.to_verts_and_faces()
-
-    inner_edges, outer_edges = classify_edges(vertices, faces)
+    _, outer_edges = classify_edges(vertices, faces)
 
     to_fill = []
     to_cut = []
 
     for t in outer_edges:
-        edge, signed_angle, first_normal, second_normal = t
+        edge, edge_length, signed_angle, first_normal, second_normal = t
+        abs_angle = abs(signed_angle)
+        if (
+            abs_angle < angle_range[0]
+            or abs_angle > angle_range[1]
+            or edge_length < min_edge_length
+        ):
+            continue
         v1, v2 = edge
         v1 = vertices[v1]
         v2 = vertices[v2]
 
         if fillet:
-            fill = cutter(fillet, v1, v2, first_normal, second_normal, radius=radius)
+            fill = cutter(
+                fillet,
+                v1,
+                v2,
+                first_normal,
+                second_normal,
+                radius=radius,
+            )
             to_fill.append(fill)
         else:
-            cut = cutter(fillet, v1, v2, first_normal, second_normal, radius=radius)
+            cut = cutter(
+                fillet,
+                v1,
+                v2,
+                first_normal,
+                second_normal,
+                radius=radius,
+            )
             to_cut.append(cut)
 
     if fillet:
         o = difference(obj, *to_fill)
+        # view(union(*to_fill))
     else:
         o = difference(obj, *to_cut)
+        # view(union(*to_cut))
+
+    obj = o.simplify()
     return o

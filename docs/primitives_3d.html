@@ -46,7 +46,7 @@ el.replaceWith(d);
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="piecad.primitives_3d.chamfer"><code class="name flex">
-<span>def <span class="ident">chamfer</span></span>(<span>obj: <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a>,<br>radius: float = 2.0,<br>include: list[tuple[float, float, float]] = None,<br>exclude: list[tuple[float, float, float]] = None,<br>angle_tolerance: float = 1e-06) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+<span>def <span class="ident">chamfer</span></span>(<span>obj: <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a>,<br>radius: float = 2.0,<br>handle_inward_also: bool = False,<br>include: list[tuple[float, float, float]] = None,<br>exclude: list[tuple[float, float, float]] = None) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
 <dd>
 <details class="source">
@@ -56,23 +56,22 @@ el.replaceWith(d);
 <pre><code class="python">def chamfer(
     obj: Obj3d,
     radius: float = 2.0,
+    handle_inward_also: bool = False,
     include: list[tuple[float, float, float]] = None,
     exclude: list[tuple[float, float, float]] = None,
-    angle_tolerance: float = 1e-6,
 ) -&gt; Obj3d:
     &#34;&#34;&#34;
     EXPERIMENTAL - interface may change in future releases.
     Chamfer the edges of an `Obj3d` object.
     &#34;&#34;&#34;
-    from ._f_and_c import _f_and_c
+    from ._f_and_c import do_f_and_c
 
-    return _f_and_c(
+    return do_f_and_c(
         obj,
         fillet=False,
         radius=radius,
         include=include,
         exclude=exclude,
-        angle_tolerance=angle_tolerance,
     )</code></pre>
 </details>
 <div class="desc"><p>EXPERIMENTAL - interface may change in future releases.
@@ -515,7 +514,7 @@ greater than zero.</p>
 <iframe width="100%" height="300" src="examples/extrude_transforming.html"></iframe></div>
 </dd>
 <dt id="piecad.primitives_3d.fillet"><code class="name flex">
-<span>def <span class="ident">fillet</span></span>(<span>obj: <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a>,<br>radius: float = 2.0,<br>include: list[tuple[float, float, float]] = None,<br>exclude: list[tuple[float, float, float]] = None,<br>angle_tolerance: float = 1e-06) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+<span>def <span class="ident">fillet</span></span>(<span>obj: <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a>,<br>radius: float = 2.0,<br>handle_inward_also: bool = False,<br>include: list[tuple[float, float, float]] = None,<br>exclude: list[tuple[float, float, float]] = None) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
 <dd>
 <details class="source">
@@ -525,23 +524,22 @@ greater than zero.</p>
 <pre><code class="python">def fillet(
     obj: Obj3d,
     radius: float = 2.0,
+    handle_inward_also: bool = False,
     include: list[tuple[float, float, float]] = None,
     exclude: list[tuple[float, float, float]] = None,
-    angle_tolerance: float = 1e-6,
 ) -&gt; Obj3d:
     &#34;&#34;&#34;
     EXPERIMENTAL - interface may change in future releases.
     Fillet the edges of an `Obj3d` object.
     &#34;&#34;&#34;
-    from ._f_and_c import _f_and_c
+    from ._f_and_c import do_f_and_c
 
-    return _f_and_c(
+    return do_f_and_c(
         obj,
         fillet=True,
         radius=radius,
         include=include,
         exclude=exclude,
-        angle_tolerance=angle_tolerance,
     )</code></pre>
 </details>
 <div class="desc"><p>EXPERIMENTAL - interface may change in future releases.

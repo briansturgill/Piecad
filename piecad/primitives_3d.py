@@ -38,23 +38,22 @@ from .lin_math import Mat3, Vec3
 def chamfer(
     obj: Obj3d,
     radius: float = 2.0,
+    handle_inward_also: bool = False,
     include: list[tuple[float, float, float]] = None,
     exclude: list[tuple[float, float, float]] = None,
-    angle_tolerance: float = 1e-6,
 ) -> Obj3d:
     """
     EXPERIMENTAL - interface may change in future releases.
     Chamfer the edges of an `Obj3d` object.
     """
-    from ._f_and_c import _f_and_c
+    from ._f_and_c import do_f_and_c
 
-    return _f_and_c(
+    return do_f_and_c(
         obj,
         fillet=False,
         radius=radius,
         include=include,
         exclude=exclude,
-        angle_tolerance=angle_tolerance,
     )
 
 
@@ -381,23 +380,22 @@ def geodesic_sphere(radius, segments=-1) -> Obj3d:
 def fillet(
     obj: Obj3d,
     radius: float = 2.0,
+    handle_inward_also: bool = False,
     include: list[tuple[float, float, float]] = None,
     exclude: list[tuple[float, float, float]] = None,
-    angle_tolerance: float = 1e-6,
 ) -> Obj3d:
     """
     EXPERIMENTAL - interface may change in future releases.
     Fillet the edges of an `Obj3d` object.
     """
-    from ._f_and_c import _f_and_c
+    from ._f_and_c import do_f_and_c
 
-    return _f_and_c(
+    return do_f_and_c(
         obj,
         fillet=True,
         radius=radius,
         include=include,
         exclude=exclude,
-        angle_tolerance=angle_tolerance,
     )
 
 

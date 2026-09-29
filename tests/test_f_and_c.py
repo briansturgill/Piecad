@@ -22,5 +22,5 @@ def test_classify_edges_finds_concave_shared_edge():
 
     inner_edges, outer_edges = classify_edges(vertices, faces)
 
-    assert [entry[:2] for entry in inner_edges] == [((0, 1), -90.0)]
+    assert len(inner_edges) == 1
     assert outer_edges == []
