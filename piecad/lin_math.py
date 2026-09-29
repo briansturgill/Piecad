@@ -1,6 +1,11 @@
 from __future__ import annotations
+from collections import namedtuple as _namedtuple
 from typing import Tuple, List
+import manifold3d as _m
 import math
+
+_const = _namedtuple("_const", ["epsilon"])
+Const = _const(epsilon=_m.Manifold.cube().get_tolerance())
 
 
 class Vec2:
@@ -279,6 +284,6 @@ class Geom:
         v0, v1, v2 = vl[0], vl[1], vl[2]
         normal = Vec3.cross(Vec3.sub(v1, v0), Vec3.sub(v2, v0))
         for v in vl[3:]:
-            if abs(Vec3.dot(normal, Vec3.sub(v, v0))) > 1e-6:
+            if abs(Vec3.dot(normal, Vec3.sub(v, v0))) > Const.epsilon:
                 return False
         return True

@@ -26,6 +26,7 @@ from . import (
     _chkV2,
     trimesh,
     obj3d_from_vertices_and_faces,
+    Const,
 )
 
 from ._check_mesh import check_mesh as _check_mesh
@@ -673,7 +674,7 @@ def tetrahedron(
 
     det = Mat3.determinant(linear)
     # A zero determinant means the points are coplanar or otherwise degenerate.
-    if abs(det) < 1e-12:
+    if abs(det) < Const.epsilon:
         raise ValidationError(
             "Your four given points are coplanar. A flat tetrahedron is not allowed."
         )

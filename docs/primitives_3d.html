@@ -968,7 +968,7 @@ When <code>center</code> is <code>True</code>, the rounded cylinder will centere
 
     det = Mat3.determinant(linear)
     # A zero determinant means the points are coplanar or otherwise degenerate.
-    if abs(det) &lt; 1e-12:
+    if abs(det) &lt; Const.epsilon:
         raise ValidationError(
             &#34;Your four given points are coplanar. A flat tetrahedron is not allowed.&#34;
         )

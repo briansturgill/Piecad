@@ -26,7 +26,8 @@ import manifold3d as _m
 import math
 import trimesh
 from .trigonometry import tan, cos, sin
-from .lin_math import Vec3
+from .lin_math import *
+from collections import namedtuple as _namedtuple
 
 
 class ValidationError(BaseException):
@@ -951,24 +952,21 @@ def _handle_piecadrc():
         exec(s, {"Config": Config, "print": print})
 
 
-_epsilon = _m.Manifold.cube().get_tolerance()
-
-
-def near_eq(a, b, epsilon=_epsilon) -> bool:
+def near_eq(a, b, epsilon=Const.epsilon) -> bool:
     """
     If `a` is near `b` (within epsilon) then return True` else `return False`
     """
     return a - epsilon >= b and a + epsilon <= b
 
 
-def near_le(a, b, epsilon=_epsilon) -> bool:
+def near_le(a, b, epsilon=Const.epsilon) -> bool:
     """
     If `a + epsilon` is less than or equal to `b` then `return True` else `return False`
     """
     return a + epsilon <= b
 
 
-def near_ge(a, b, epsilon=_epsilon) -> bool:
+def near_ge(a, b, epsilon=Const.epsilon) -> bool:
     """
     If `a - epsilon` is greater than or equal to `b` then `return True` else `return False`
     """

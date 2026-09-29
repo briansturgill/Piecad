@@ -1,6 +1,6 @@
 import math
 
-from . import Config, Obj3d, ValidationError, cube, cuboid, cylinder, difference
+from . import Config, Obj3d, ValidationError, cube, cuboid, cylinder, difference, Const
 from ._pad_align import move_pad_to_pad_xy
 from .lin_math import Vec3
 
@@ -11,7 +11,7 @@ def _scale_vector(vector, scalar):
 
 def _normalize(vector):
     length = Vec3.length(vector)
-    if length < 1e-12:
+    if length < Const.epsilon:
         raise ValidationError("Cannot normalize a zero-length vector")
     return Vec3.normalize(vector)
 
@@ -45,20 +45,20 @@ def cutter(
 
     edge_dir = Vec3.sub(v2, v1)
     edge_length = Vec3.length(edge_dir)
-    if edge_length < 1e-12:
+    if edge_length < Const.epsilon:
         raise ValidationError("Edge endpoints must be distinct")
     edge_dir = Vec3.normalize(edge_dir)
 
     perp_in_f1 = Vec3.cross(edge_dir, n1)
     perp_in_f1_len = Vec3.length(perp_in_f1)
-    if perp_in_f1_len > 1e-12:
+    if perp_in_f1_len > Const.epsilon:
         perp_in_f1 = Vec3.normalize(perp_in_f1)
     else:
         raise ValidationError("Edge is parallel to face normal 1")
 
     perp_in_f2 = Vec3.cross(edge_dir, n2)
     perp_in_f2_len = Vec3.length(perp_in_f2)
-    if perp_in_f2_len > 1e-12:
+    if perp_in_f2_len > Const.epsilon:
         perp_in_f2 = Vec3.normalize(perp_in_f2)
     else:
         raise ValidationError("Edge is parallel to face normal 2")
@@ -89,7 +89,7 @@ def cutter(
         obj = chamfer_cutter(radius, edge_length)
     outward = Vec3.add(n1, n2)
     outward_length = Vec3.length(outward)
-    if outward_length < 1e-12:
+    if outward_length < Const.epsilon:
         raise ValidationError("Adjacent face normals must not be opposite")
 
     # The base rectangle fixes the transform's local +Z direction as

@@ -20,7 +20,7 @@ chamfer_cutter/fillet_filler elsewhere in this project):
 
 from math import asin, atan2, degrees, sqrt
 
-from .lin_math import Vec3
+from .lin_math import Vec3, Const
 
 
 def _matrix_multiply(first, second):
@@ -49,14 +49,6 @@ def _basis_from_columns(*columns):
 
 def _scale_vector(vector, scale):
     return tuple(component * scale for component in vector)
-
-
-# def _vectors_close(first, second, *, rtol=1e-9, atol=1e-9):
-#     return all(
-#         abs(a - b) <= atol + rtol * abs(b)
-#         for first_row, second_row in zip(first, second)
-#         for a, b in zip(first_row, second_row)
-#     )
 
 
 def _quaternion_from_rotation_matrix(rotation):
@@ -116,96 +108,11 @@ def _rigid_transform(rotation, source_corner, target_corner):
     )
 
 
-# def _rectangle_frame(points, name):
-#     """Return a corner and right-handed frame from four ordered rectangle points."""
-#     if len(points) != 4 or any(len(point) != 3 for point in points):
-#         raise ValueError(f"{name} must contain exactly four 3D points.")
-#
-#     corner, x_corner, opposite, y_corner = points
-#     x_edge = Vec3.sub(x_corner, corner)
-#     y_edge = Vec3.sub(y_corner, corner)
-#     x_length = Vec3.length(x_edge)
-#     y_length = Vec3.length(y_edge)
-#     if x_length < 1e-12 or y_length < 1e-12:
-#         raise ValueError(f"{name} contains a zero-length rectangle edge.")
-#
-#     x_axis = Vec3.normalize(x_edge)
-#     y_projection = Vec3.sub(
-#         y_edge, _scale_vector(x_axis, Vec3.dot(y_edge, x_axis))
-#     )
-#     y_projection_length = Vec3.length(y_projection)
-#     if y_projection_length < 1e-12:
-#         raise ValueError(f"{name} rectangle edges must not be parallel.")
-#     y_axis = Vec3.normalize(y_projection)
-#     z_axis = Vec3.cross(x_axis, y_axis)
-#
-#     expected_opposite = Vec3.add(Vec3.add(corner, x_edge), y_edge)
-#     if not _vectors_close((opposite,), (expected_opposite,)):
-#         raise ValueError(f"{name} points must be ordered around a rectangle.")
-#
-#     return corner, _basis_from_columns(x_axis, y_axis, z_axis), (x_length, y_length)
-#
-#
-# def rectangular_pad_transform(source_points, target_points):
-#     """
-#     Return a rigid 3x4 transform mapping four source pad corners to four target
-#     pad corners.
-#
-#     Points must correspond in winding order:
-#     ``[corner, corner + x, corner + x + y, corner + y]``.  The returned
-#     transform contains no scale or shear; its rotation is constructed through
-#     a quaternion and its translation maps the source corner exactly.
-#     """
-#     source_corner, source_frame, source_size = _rectangle_frame(
-#         source_points, "source_points"
-#     )
-#     target_corner, target_frame, target_size = _rectangle_frame(
-#         target_points, "target_points"
-#     )
-#     if not _vectors_close((source_size,), (target_size,)):
-#         raise ValueError("Source and target rectangular pads must have the same size.")
-#
-#     rotation = _matrix_multiply(target_frame, _matrix_transpose(source_frame))
-#     return _rigid_transform(rotation, source_corner, target_corner)
-#
-#
-# def move_rectangular_pad(new_obj, source_points, target_points):
-#     """Rigidly place ``new_obj`` so its four source pad corners match targets."""
-#     return new_obj.transform(rectangular_pad_transform(source_points, target_points))
-
-
 def _normalize(v):
     n = Vec3.length(v)
-    if n < 1e-12:
+    if n < Const.epsilon:
         raise ValueError(f"Cannot normalize a near-zero vector: {v}")
     return Vec3.normalize(v)
-
-
-# def _orthonormal_basis(x_dir, normal):
-#     """
-#     Build a right-handed orthonormal basis (ex, ey, ez) for a pad, where
-#     ez is the (unit) plane normal and ex is the (unit) edge direction,
-#     re-orthogonalized against the normal so it lies exactly in the pad
-#     plane (this tolerates x_dir/normal that aren't perfectly
-#     perpendicular due to numerical noise).
-#
-#     Returns a 3x3 matrix whose *columns* are ex, ey, ez.
-#
-#     NOTE: Because ey is derived as cross(ez, ex), this only pins down
-#     the pad's plane and its x edge; it does not know which side of that
-#     edge the pad's other in-plane direction should point. The two-edge
-#     `_basis_from_xy` path handles asymmetric footprints explicitly.
-#     """
-#     ez = _normalize(normal)
-#     x_proj = Vec3.sub(x_dir, _scale_vector(ez, Vec3.dot(x_dir, ez)))
-#     if Vec3.length(x_proj) < 1e-9:
-#         raise ValueError(
-#             "x_dir is parallel (or too close) to the normal; "
-#             "cannot derive an in-plane edge direction."
-#         )
-#     ex = _normalize(x_proj)
-#     ey = Vec3.cross(ez, ex)
-#     return _basis_from_columns(ex, ey, ez)
 
 
 def _basis_from_xy(x_dir, y_dir):
@@ -225,7 +132,7 @@ def _basis_from_xy(x_dir, y_dir):
     # Re-orthogonalize y_dir against x_dir so the pair is exactly
     # perpendicular even if the inputs have numerical noise.
     y_proj = Vec3.sub(y_dir, _scale_vector(ex, Vec3.dot(y_dir, ex)))
-    if Vec3.length(y_proj) < 1e-9:
+    if Vec3.length(y_proj) < Const.epsilon:
         raise ValueError(
             "y_dir is parallel (or too close) to x_dir; cannot derive "
             "an in-plane basis."
@@ -248,7 +155,7 @@ def _rotation_to_xyz_degrees(R):
     sy = max(-1.0, min(1.0, -R[2][0]))
     cy = sqrt(1.0 - sy * sy)
 
-    if cy > 1e-8:
+    if cy > Const.epsilon:
         rx = atan2(R[2][1], R[2][2])
         ry = asin(sy)
         rz = atan2(R[1][0], R[0][0])

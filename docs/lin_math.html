@@ -69,7 +69,7 @@ el.replaceWith(d);
         v0, v1, v2 = vl[0], vl[1], vl[2]
         normal = Vec3.cross(Vec3.sub(v1, v0), Vec3.sub(v2, v0))
         for v in vl[3:]:
-            if abs(Vec3.dot(normal, Vec3.sub(v, v0))) &gt; 1e-6:
+            if abs(Vec3.dot(normal, Vec3.sub(v, v0))) &gt; Const.epsilon:
                 return False
         return True</code></pre>
 </details>
@@ -94,7 +94,7 @@ def coplanar(vl: List[Tuple[float, float, float]]) -&gt; bool:
     v0, v1, v2 = vl[0], vl[1], vl[2]
     normal = Vec3.cross(Vec3.sub(v1, v0), Vec3.sub(v2, v0))
     for v in vl[3:]:
-        if abs(Vec3.dot(normal, Vec3.sub(v, v0))) &gt; 1e-6:
+        if abs(Vec3.dot(normal, Vec3.sub(v, v0))) &gt; Const.epsilon:
             return False
     return True</code></pre>
 </details>

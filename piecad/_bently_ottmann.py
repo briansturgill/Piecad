@@ -1,4 +1,5 @@
 from typing import List, Tuple, Optional
+from .lin_math import Const
 
 Point = Tuple[float, float]
 Segment = Tuple[Point, Point]
@@ -6,7 +7,10 @@ Intersection = Tuple[Point, Segment, Segment]
 
 
 def segment_intersection(
-    s1: Segment, s2: Segment, include_endpoint_touches: bool = False, eps: float = 1e-10
+    s1: Segment,
+    s2: Segment,
+    include_endpoint_touches: bool = False,
+    eps: float = Const.epsilon,
 ) -> Optional[Point]:
     """
     Return the intersection point of two line segments.
@@ -49,7 +53,9 @@ def segment_intersection(
 
 
 def find_self_intersections(
-    segments: List[Segment], include_endpoint_touches: bool = False, eps: float = 1e-10
+    segments: List[Segment],
+    include_endpoint_touches: bool = False,
+    eps: float = Const.epsilon,
 ) -> List[Intersection]:
     """
     Find all self-intersections in a polygon represented by segments.
