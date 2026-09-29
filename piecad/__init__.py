@@ -26,7 +26,7 @@ import manifold3d as _m
 import math
 import trimesh
 from .trigonometry import tan, cos, sin
-from .lin_math import *
+from .lin_math import Vec3
 from collections import namedtuple as _namedtuple
 
 
@@ -950,6 +950,15 @@ def _handle_piecadrc():
         with open(fname, "r") as f:
             s = "".join(f.readlines())
         exec(s, {"Config": Config, "print": print})
+
+
+_const = _namedtuple("_const", ["epsilon"])
+Const = _const(epsilon=_m.Manifold.cube().get_tolerance())
+"""
+`Const` a namedtuple holding global constants for the Piecad library.
+
+Const.epsilon - The default epsilon value for precision comparisons.
+"""
 
 
 def near_eq(a, b, epsilon=Const.epsilon) -> bool:

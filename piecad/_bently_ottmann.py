@@ -1,5 +1,5 @@
 from typing import List, Tuple, Optional
-from .lin_math import Const
+from . import Const
 
 Point = Tuple[float, float]
 Segment = Tuple[Point, Point]

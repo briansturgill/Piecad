@@ -1,11 +1,6 @@
 from __future__ import annotations
-from collections import namedtuple as _namedtuple
 from typing import Tuple, List
-import manifold3d as _m
 import math
-
-_const = _namedtuple("_const", ["epsilon"])
-Const = _const(epsilon=_m.Manifold.cube().get_tolerance())
 
 
 class Vec2:
@@ -279,6 +274,8 @@ class Geom:
         """
         Checks if a list of vectors are coplanar.
         """
+        from . import Const
+
         if len(vl) < 4:
             return True
         v0, v1, v2 = vl[0], vl[1], vl[2]

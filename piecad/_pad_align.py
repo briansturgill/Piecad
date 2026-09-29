@@ -20,7 +20,8 @@ chamfer_cutter/fillet_filler elsewhere in this project):
 
 from math import asin, atan2, degrees, sqrt
 
-from .lin_math import Vec3, Const
+from .lin_math import Vec3
+from . import Const
 
 
 def _matrix_multiply(first, second):
