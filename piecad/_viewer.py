@@ -64,6 +64,9 @@ class MeshViewer:
         self.help_visible = True
 
         self._view = (30.0, -60.0)
+        self._view_limits: (
+            tuple[tuple[float, float], tuple[float, float], tuple[float, float]] | None
+        ) = None
         self._axis_length = 50.0  # 5 cm for millimetre model coordinates
 
         self.fig = None
@@ -128,7 +131,7 @@ class MeshViewer:
         self.index = -1
 
         if self.fig is not None:
-            self._draw_mesh()
+            self._draw_mesh(reset_limits=True)
 
     def add_mesh(self, mesh: Any, mesh_title: str = "") -> None:
         """Add a mesh."""
@@ -138,7 +141,7 @@ class MeshViewer:
         self.index = 0
 
         if self.fig is not None:
-            self._draw_mesh()
+            self._draw_mesh(reset_limits=True)
 
     def _current_mesh(self) -> Any:
         if not self.meshes:
@@ -242,8 +245,17 @@ class MeshViewer:
             )
         return shaded
 
-    def _draw_mesh(self) -> None:
+    def _draw_mesh(self, reset_limits: bool = False) -> None:
         from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
+        if reset_limits:
+            self._view_limits = None
+        elif self._view_limits is not None:
+            self._view_limits = (
+                self.ax.get_xlim(),
+                self.ax.get_ylim(),
+                self.ax.get_zlim(),
+            )
 
         self.ax.clear()
 
@@ -288,9 +300,19 @@ class MeshViewer:
         radius = max(maximum[axis] - minimum[axis] for axis in range(3)) / 2.0
         radius = max(radius, 1.0)
 
-        self.ax.set_xlim(center[0] - radius, center[0] + radius)
-        self.ax.set_ylim(center[1] - radius, center[1] + radius)
-        self.ax.set_zlim(center[2] - radius, center[2] + radius)
+        limits = self._view_limits or (
+            (center[0] - radius, center[0] + radius),
+            (center[1] - radius, center[1] + radius),
+            (center[2] - radius, center[2] + radius),
+        )
+        self.ax.set_xlim(*limits[0])
+        self.ax.set_ylim(*limits[1])
+        self.ax.set_zlim(*limits[2])
+        self._view_limits = (
+            self.ax.get_xlim(),
+            self.ax.get_ylim(),
+            self.ax.get_zlim(),
+        )
         self.ax.set_box_aspect((1, 1, 1))
         self.ax.view_init(elev=self._view[0], azim=self._view[1])
 
@@ -380,19 +402,19 @@ class MeshViewer:
             self.wireframe = not self.wireframe
             self._draw_mesh()
 
-        elif key == "z":
+        elif key in {"r", "z"}:
             self._view = (30.0, -60.0)
-            self._draw_mesh()
+            self._draw_mesh(reset_limits=True)
 
         elif key == "left":
             if self.meshes:
                 self.index = (self.index - 1) % len(self.meshes)
-                self._draw_mesh()
+                self._draw_mesh(reset_limits=True)
 
         elif key == "right":
             if self.meshes:
                 self.index = (self.index + 1) % len(self.meshes)
-                self._draw_mesh()
+                self._draw_mesh(reset_limits=True)
 
         elif key == "shift+left":
             self._view = (self._view[0], self._view[1] - 15.0)

@@ -1,5 +1,6 @@
 from types import SimpleNamespace
 
+import matplotlib.pyplot as plt
 import pytest
 
 from piecad._viewer import MeshViewer
@@ -75,3 +76,50 @@ def test_shade_colors_returns_rgba_tuples():
     assert [channel for color in shaded for channel in color] == pytest.approx(
         [0.7, 0.35, 0.175, 0.3]
     )
+
+
+def test_redraw_preserves_zoom_and_reset_remains_in_effect():
+    mesh = SimpleNamespace(
+        vertices=[(0, 0, 0), (10, 0, 0), (0, 10, 0)],
+        faces=[(0, 1, 2)],
+    )
+    viewer = MeshViewer([mesh], ["mesh"])
+    viewer.fig = plt.figure()
+    viewer.ax = viewer.fig.add_subplot(111, projection="3d")
+
+    try:
+        viewer._draw_mesh()
+        initial_limits = (
+            viewer.ax.get_xlim(),
+            viewer.ax.get_ylim(),
+            viewer.ax.get_zlim(),
+        )
+
+        zoomed_limits = ((-1, 1), (-2, 2), (-3, 3))
+        viewer.ax.set_xlim(*zoomed_limits[0])
+        viewer.ax.set_ylim(*zoomed_limits[1])
+        viewer.ax.set_zlim(*zoomed_limits[2])
+
+        viewer._on_key(SimpleNamespace(key="c"))
+        assert (
+            viewer.ax.get_xlim(),
+            viewer.ax.get_ylim(),
+            viewer.ax.get_zlim(),
+        ) == zoomed_limits
+
+        viewer._on_key(SimpleNamespace(key="r"))
+        reset_limits = (
+            viewer.ax.get_xlim(),
+            viewer.ax.get_ylim(),
+            viewer.ax.get_zlim(),
+        )
+        assert reset_limits == initial_limits
+
+        viewer._on_key(SimpleNamespace(key="c"))
+        assert (
+            viewer.ax.get_xlim(),
+            viewer.ax.get_ylim(),
+            viewer.ax.get_zlim(),
+        ) == reset_limits
+    finally:
+        plt.close(viewer.fig)
