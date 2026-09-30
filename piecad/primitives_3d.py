@@ -39,7 +39,6 @@ from .lin_math import Mat3, Vec3
 def chamfer(
     obj: Obj3d,
     radius: float = 2.0,
-    handle_inward_also: bool = False,
     include: list[tuple[float, float, float]] = None,
     exclude: list[tuple[float, float, float]] = None,
 ) -> Obj3d:
@@ -381,7 +380,6 @@ def geodesic_sphere(radius, segments=-1) -> Obj3d:
 def fillet(
     obj: Obj3d,
     radius: float = 2.0,
-    handle_inward_also: bool = False,
     include: list[tuple[float, float, float]] = None,
     exclude: list[tuple[float, float, float]] = None,
 ) -> Obj3d:
