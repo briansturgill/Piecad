@@ -127,7 +127,7 @@ def fillet_cutter(radius, height):
 def chamfer_cutter(bevel_size, length):
     length = float(length)
     bevel_size = float(bevel_size)
-    #width = math.sqrt(bevel_size * bevel_size / 2)
+    # width = math.sqrt(bevel_size * bevel_size / 2)
     cut = cube((length, bevel_size, bevel_size))
     cut = cut.rotate((0, 0, 90))
     cut = cut.miter_cut(-45, (0, 0, 0))[0]
