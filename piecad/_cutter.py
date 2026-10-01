@@ -104,6 +104,11 @@ def cutter(
 
 def fillet_cutter(radius, height):
     segments = math.ceil(2 * radius / Config.get_layer_resolution())
+    if segments < 4:
+        segments = 4
+    elif segments > 25:
+        segments = 25
+
     height = float(height)
     radius = float(radius)
 
@@ -115,23 +120,22 @@ def fillet_cutter(radius, height):
     )
     cutter = difference(cb, ck)
     cutter = cutter.rotate((-135, 0, 0)).corner()
-    _, _, _, _, _, zmax = cutter.bounding_box()
-    cutter = cutter.translate((0, 0, radius - zmax))
+    cutter = cutter.translate((0, 0, 0.002))
     return cutter
 
 
 def chamfer_cutter(bevel_size, length):
     length = float(length)
     bevel_size = float(bevel_size)
-    width = math.sqrt(bevel_size * bevel_size / 2)
-    cut = cube((length, width, width))
+    #width = math.sqrt(bevel_size * bevel_size / 2)
+    cut = cube((length, bevel_size, bevel_size))
     cut = cut.rotate((0, 0, 90))
     cut = cut.miter_cut(-45, (0, 0, 0))[0]
     cut = cut.rotate((0, 135, 0)).corner()
     cut = cut.rotate((0, 0, -90)).corner()
     cut = cut.rotate((180, 0, 0)).corner()
-    _, _, _, _, _, zmax = cut.bounding_box()
-    cut = cut.translate((0, 0, bevel_size - zmax))
+    _, _, zmin, _, _, zmax = cut.bounding_box()
+    cut = cut.translate((0, 0, bevel_size - zmax - zmin))
     return cut
 
 

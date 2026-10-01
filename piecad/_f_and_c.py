@@ -183,5 +183,4 @@ def do_f_and_c(
         o = difference(obj, *to_cut)
         # view(union(*to_cut))
 
-    obj = o.simplify()
-    return o
+    return o.simplify()
