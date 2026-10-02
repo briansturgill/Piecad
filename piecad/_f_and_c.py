@@ -126,11 +126,11 @@ def classify_edges(
 def do_f_and_c(
     obj: Obj3d,
     fillet: bool,
-    radius: float = 2,
-    min_edge_length: float = 2.0,
-    angle_range: tuple[float, float] = (60, 120),
-    include: list[tuple[float, float, float]] = None,
-    exclude: list[tuple[float, float, float]] = None,
+    radius: float,  # For chamfers, this is the bevel size applied to the edges.
+    min_edge_length,
+    angle_range,
+    include: list[tuple[float, float, float, float, float, float]] | None,
+    exclude: list[tuple[float, float, float, float, float, float]] | None,
 ) -> Obj3d:
     """
     Fillet or chamfer the edges of an `Obj3d` object.
@@ -151,9 +151,36 @@ def do_f_and_c(
             or edge_length < min_edge_length
         ):
             continue
+
         v1, v2 = edge
         v1 = vertices[v1]
         v2 = vertices[v2]
+
+        if include is not None:
+            inside_include = False
+            for bbox in include:
+                xmin, ymin, zmin, xmax, ymax, zmax = bbox
+                if (
+                    xmin <= v1[0] <= xmax and ymin <= v1[1] <= ymax and zmin <= v1[2] <= zmax
+                    and xmin <= v2[0] <= xmax and ymin <= v2[1] <= ymax and zmin <= v2[2] <= zmax
+                ):
+                    inside_include = True
+                    break
+            if not inside_include:
+                continue
+
+        if exclude is not None:
+            inside_exclude = False
+            for bbox in exclude:
+                xmin, ymin, zmin, xmax, ymax, zmax = bbox
+                if (
+                    xmin <= v1[0] <= xmax and ymin <= v1[1] <= ymax and zmin <= v1[2] <= zmax
+                    and xmin <= v2[0] <= xmax and ymin <= v2[1] <= ymax and zmin <= v2[2] <= zmax
+                ):
+                    inside_exclude = True
+                    break
+            if inside_exclude:
+                continue
 
         if fillet:
             fill = cutter(

@@ -38,20 +38,47 @@ from .lin_math import Mat3, Vec3
 
 def chamfer(
     obj: Obj3d,
-    radius: float = 2.0,
-    include: list[tuple[float, float, float]] = None,
-    exclude: list[tuple[float, float, float]] = None,
+    bevel_size: float = 2.0,
+    min_edge_length: float = 2.0,
+    angle_range: tuple[float, float] = (80, 100),
+    include: list[tuple[float, float, float, float, float, float]] = None,
+    exclude: list[tuple[float, float, float, float, float, float]] = None,
 ) -> Obj3d:
     """
     EXPERIMENTAL - interface may change in future releases.
-    Chamfer the edges of an `Obj3d` object.
+    Chamfer the outward-facing edges of an `Obj3d` object.
+
+    The `bevel_size` parameter controls the width of the chamfer applied to the edges of the object.
+
+    The `min_edge_length` parameter specifies the minimum length of edges to consider for chamfering.
+    This is useful in avoiding the chamfering of circular objects. Circular edges often chamfer poorly.
+
+    The `angle_range` parameter specifies the range of angles (in degrees) for edges to be
+    considered for chamfering. (The angle is between the two faces adjacent to the edge.)
+    The further one gets from 90 degrees, the more likely that difficulties may arise during
+    the chamfering process.
+
+    The `include` and `exclude` parameters allow you to specify which edges should be chamfered or ignored.
+    By default, all outward-facing edges of the object will be chamfered.
+    Both the `include` and `exclude` lists are "bounding boxes" that define the regions of
+    space in which edges will be considered for chamfering or ignored.
+    Each bounding box is a sextuple of the form `(xmin, ymin, zmin, xmax, ymax, zmax)`.
+    Only edges that have both endpoints within the bounding boxes are selected.
+    If the include list is provided, only the edges selected in the list will be chamfered.
+    If the exclude list is provided, the edges selected in the list will be ignored.
+    The exclude list always takes precedence over the include list.
+
+    If you want a similar size between fillets and chamfers, choose a bevel_size
+    for the chamfer that is approximately half the size of the radius you would use for a fillet.
     """
     from ._f_and_c import do_f_and_c
 
     return do_f_and_c(
         obj,
         fillet=False,
-        radius=radius,
+        min_edge_length=min_edge_length,
+        angle_range=angle_range,
+        radius=bevel_size,
         include=include,
         exclude=exclude,
     )
@@ -379,13 +406,38 @@ def geodesic_sphere(radius, segments=-1) -> Obj3d:
 
 def fillet(
     obj: Obj3d,
-    radius: float = 2.0,
-    include: list[tuple[float, float, float]] = None,
-    exclude: list[tuple[float, float, float]] = None,
+    radius: float = 4.0,
+    min_edge_length: float = 2.0,
+    angle_range: tuple[float, float] = (80, 100),
+    include: list[tuple[float, float, float, float, float, float]] = None,
+    exclude: list[tuple[float, float, float, float, float, float]] = None,
 ) -> Obj3d:
     """
     EXPERIMENTAL - interface may change in future releases.
     Fillet the edges of an `Obj3d` object.
+
+    The `radius` parameter specifies the  radius of the quarter cylinder that defines the fillet.
+
+    The `min_edge_length` parameter specifies the minimum length of edges to consider for filleting.
+    This is useful in avoiding the filleting of circular objects. Circular edges often fillet poorly.
+
+    The `angle_range` parameter specifies the range of angles (in degrees) for edges to be
+    considered for filleting. (The angle is between the two faces adjacent to the edge.)
+    The further one gets from 90 degrees, the more likely that difficulties may arise during
+    the filleting process.
+
+    The `include` and `exclude` parameters allow you to specify which edges should be filleted or ignored.
+    By default, all outward-facing edges of the object will be filleted.
+    Both the `include` and `exclude` lists are "bounding boxes" that define the regions of
+    space in which edges will be considered for filleting or ignored.
+    Each bounding box is a sextuple of the form `(xmin, ymin, zmin, xmax, ymax, zmax)`.
+    Only edges that have both endpoints within the bounding boxes are selected.
+    If the include list is provided, only the edges selected in the list will be filleted.
+    If the exclude list is provided, the edges selected in the list will be ignored.
+    The exclude list always takes precedence over the include list.
+
+    If you want a similar size between fillets and chamfers, choose a bevel_size
+    for the chamfer that is approximately half the size of the radius you would use for a fillet.
     """
     from ._f_and_c import do_f_and_c
 
@@ -393,6 +445,8 @@ def fillet(
         obj,
         fillet=True,
         radius=radius,
+        min_edge_length=min_edge_length,
+        angle_range=angle_range,
         include=include,
         exclude=exclude,
     )
