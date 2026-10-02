@@ -162,6 +162,9 @@ def test_cutter_base_rectangle_matches_requested_footprint():
     second_order = cutter(True, v1, v2, n2, n1, radius=radius)
 
     assert first_order.volume() == pytest.approx(second_order.volume())
-    assert Vec3.length(
-        Vec3.sub(first_order.bounding_box()[:3], second_order.bounding_box()[:3])
-    ) < 1e-6
+    assert (
+        Vec3.length(
+            Vec3.sub(first_order.bounding_box()[:3], second_order.bounding_box()[:3])
+        )
+        < 1e-6
+    )

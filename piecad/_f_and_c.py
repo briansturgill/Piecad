@@ -161,8 +161,12 @@ def do_f_and_c(
             for bbox in include:
                 xmin, ymin, zmin, xmax, ymax, zmax = bbox
                 if (
-                    xmin <= v1[0] <= xmax and ymin <= v1[1] <= ymax and zmin <= v1[2] <= zmax
-                    and xmin <= v2[0] <= xmax and ymin <= v2[1] <= ymax and zmin <= v2[2] <= zmax
+                    xmin <= v1[0] <= xmax
+                    and ymin <= v1[1] <= ymax
+                    and zmin <= v1[2] <= zmax
+                    and xmin <= v2[0] <= xmax
+                    and ymin <= v2[1] <= ymax
+                    and zmin <= v2[2] <= zmax
                 ):
                     inside_include = True
                     break
@@ -174,8 +178,12 @@ def do_f_and_c(
             for bbox in exclude:
                 xmin, ymin, zmin, xmax, ymax, zmax = bbox
                 if (
-                    xmin <= v1[0] <= xmax and ymin <= v1[1] <= ymax and zmin <= v1[2] <= zmax
-                    and xmin <= v2[0] <= xmax and ymin <= v2[1] <= ymax and zmin <= v2[2] <= zmax
+                    xmin <= v1[0] <= xmax
+                    and ymin <= v1[1] <= ymax
+                    and zmin <= v1[2] <= zmax
+                    and xmin <= v2[0] <= xmax
+                    and ymin <= v2[1] <= ymax
+                    and zmin <= v2[2] <= zmax
                 ):
                     inside_exclude = True
                     break

@@ -46,7 +46,7 @@ el.replaceWith(d);
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="piecad.primitives_3d.chamfer"><code class="name flex">
-<span>def <span class="ident">chamfer</span></span>(<span>obj: <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a>,<br>radius: float = 2.0,<br>include: list[tuple[float, float, float]] = None,<br>exclude: list[tuple[float, float, float]] = None) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+<span>def <span class="ident">chamfer</span></span>(<span>obj: <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a>,<br>bevel_size: float = 2.0,<br>min_edge_length: float = 2.0,<br>angle_range: tuple[float, float] = (80, 100),<br>include: list[tuple[float, float, float, float, float, float]] = None,<br>exclude: list[tuple[float, float, float, float, float, float]] = None) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
 <dd>
 <details class="source">
@@ -55,26 +55,71 @@ el.replaceWith(d);
 </summary>
 <pre><code class="python">def chamfer(
     obj: Obj3d,
-    radius: float = 2.0,
-    include: list[tuple[float, float, float]] = None,
-    exclude: list[tuple[float, float, float]] = None,
+    bevel_size: float = 2.0,
+    min_edge_length: float = 2.0,
+    angle_range: tuple[float, float] = (80, 100),
+    include: list[tuple[float, float, float, float, float, float]] = None,
+    exclude: list[tuple[float, float, float, float, float, float]] = None,
 ) -&gt; Obj3d:
     &#34;&#34;&#34;
     EXPERIMENTAL - interface may change in future releases.
-    Chamfer the edges of an `Obj3d` object.
+    Chamfer the outward-facing edges of an `Obj3d` object.
+
+    The `bevel_size` parameter controls the width of the chamfer applied to the edges of the object.
+
+    The `min_edge_length` parameter specifies the minimum length of edges to consider for chamfering.
+    This is useful in avoiding the chamfering of circular objects. Circular edges often chamfer poorly.
+
+    The `angle_range` parameter specifies the range of angles (in degrees) for edges to be
+    considered for chamfering. (The angle is between the two faces adjacent to the edge.)
+    The further one gets from 90 degrees, the more likely that difficulties may arise during
+    the chamfering process.
+
+    The `include` and `exclude` parameters allow you to specify which edges should be chamfered or ignored.
+    By default, all outward-facing edges of the object will be chamfered.
+    Both the `include` and `exclude` lists are &#34;bounding boxes&#34; that define the regions of
+    space in which edges will be considered for chamfering or ignored.
+    Each bounding box is a sextuple of the form `(xmin, ymin, zmin, xmax, ymax, zmax)`.
+    Only edges that have both endpoints within the bounding boxes are selected.
+    If the include list is provided, only the edges selected in the list will be chamfered.
+    If the exclude list is provided, the edges selected in the list will be ignored.
+    The exclude list always takes precedence over the include list.
+
+    If you want a similar size between fillets and chamfers, choose a bevel_size
+    for the chamfer that is approximately half the size of the radius you would use for a fillet.
     &#34;&#34;&#34;
     from ._f_and_c import do_f_and_c
 
     return do_f_and_c(
         obj,
         fillet=False,
-        radius=radius,
+        min_edge_length=min_edge_length,
+        angle_range=angle_range,
+        radius=bevel_size,
         include=include,
         exclude=exclude,
     )</code></pre>
 </details>
 <div class="desc"><p>EXPERIMENTAL - interface may change in future releases.
-Chamfer the edges of an <code>Obj3d</code> object.</p></div>
+Chamfer the outward-facing edges of an <code>Obj3d</code> object.</p>
+<p>The <code>bevel_size</code> parameter controls the width of the chamfer applied to the edges of the object.</p>
+<p>The <code>min_edge_length</code> parameter specifies the minimum length of edges to consider for chamfering.
+This is useful in avoiding the chamfering of circular objects. Circular edges often chamfer poorly.</p>
+<p>The <code>angle_range</code> parameter specifies the range of angles (in degrees) for edges to be
+considered for chamfering. (The angle is between the two faces adjacent to the edge.)
+The further one gets from 90 degrees, the more likely that difficulties may arise during
+the chamfering process.</p>
+<p>The <code>include</code> and <code>exclude</code> parameters allow you to specify which edges should be chamfered or ignored.
+By default, all outward-facing edges of the object will be chamfered.
+Both the <code>include</code> and <code>exclude</code> lists are "bounding boxes" that define the regions of
+space in which edges will be considered for chamfering or ignored.
+Each bounding box is a sextuple of the form <code>(xmin, ymin, zmin, xmax, ymax, zmax)</code>.
+Only edges that have both endpoints within the bounding boxes are selected.
+If the include list is provided, only the edges selected in the list will be chamfered.
+If the exclude list is provided, the edges selected in the list will be ignored.
+The exclude list always takes precedence over the include list.</p>
+<p>If you want a similar size between fillets and chamfers, choose a bevel_size
+for the chamfer that is approximately half the size of the radius you would use for a fillet.</p></div>
 </dd>
 <dt id="piecad.primitives_3d.cone"><code class="name flex">
 <span>def <span class="ident">cone</span></span>(<span>height: float,<br>radius_low: float,<br>radius_high: float = 0.2,<br>segments: int = -1,<br>center: bool = False) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
@@ -513,7 +558,7 @@ greater than zero.</p>
 <iframe width="100%" height="300" src="examples/extrude_transforming.html"></iframe></div>
 </dd>
 <dt id="piecad.primitives_3d.fillet"><code class="name flex">
-<span>def <span class="ident">fillet</span></span>(<span>obj: <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a>,<br>radius: float = 2.0,<br>include: list[tuple[float, float, float]] = None,<br>exclude: list[tuple[float, float, float]] = None) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
+<span>def <span class="ident">fillet</span></span>(<span>obj: <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a>,<br>radius: float = 4.0,<br>min_edge_length: float = 2.0,<br>angle_range: tuple[float, float] = (80, 100),<br>include: list[tuple[float, float, float, float, float, float]] = None,<br>exclude: list[tuple[float, float, float, float, float, float]] = None) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>
 </code></dt>
 <dd>
 <details class="source">
@@ -522,13 +567,38 @@ greater than zero.</p>
 </summary>
 <pre><code class="python">def fillet(
     obj: Obj3d,
-    radius: float = 2.0,
-    include: list[tuple[float, float, float]] = None,
-    exclude: list[tuple[float, float, float]] = None,
+    radius: float = 4.0,
+    min_edge_length: float = 2.0,
+    angle_range: tuple[float, float] = (80, 100),
+    include: list[tuple[float, float, float, float, float, float]] = None,
+    exclude: list[tuple[float, float, float, float, float, float]] = None,
 ) -&gt; Obj3d:
     &#34;&#34;&#34;
     EXPERIMENTAL - interface may change in future releases.
     Fillet the edges of an `Obj3d` object.
+
+    The `radius` parameter specifies the  radius of the quarter cylinder that defines the fillet.
+
+    The `min_edge_length` parameter specifies the minimum length of edges to consider for filleting.
+    This is useful in avoiding the filleting of circular objects. Circular edges often fillet poorly.
+
+    The `angle_range` parameter specifies the range of angles (in degrees) for edges to be
+    considered for filleting. (The angle is between the two faces adjacent to the edge.)
+    The further one gets from 90 degrees, the more likely that difficulties may arise during
+    the filleting process.
+
+    The `include` and `exclude` parameters allow you to specify which edges should be filleted or ignored.
+    By default, all outward-facing edges of the object will be filleted.
+    Both the `include` and `exclude` lists are &#34;bounding boxes&#34; that define the regions of
+    space in which edges will be considered for filleting or ignored.
+    Each bounding box is a sextuple of the form `(xmin, ymin, zmin, xmax, ymax, zmax)`.
+    Only edges that have both endpoints within the bounding boxes are selected.
+    If the include list is provided, only the edges selected in the list will be filleted.
+    If the exclude list is provided, the edges selected in the list will be ignored.
+    The exclude list always takes precedence over the include list.
+
+    If you want a similar size between fillets and chamfers, choose a bevel_size
+    for the chamfer that is approximately half the size of the radius you would use for a fillet.
     &#34;&#34;&#34;
     from ._f_and_c import do_f_and_c
 
@@ -536,12 +606,33 @@ greater than zero.</p>
         obj,
         fillet=True,
         radius=radius,
+        min_edge_length=min_edge_length,
+        angle_range=angle_range,
         include=include,
         exclude=exclude,
     )</code></pre>
 </details>
 <div class="desc"><p>EXPERIMENTAL - interface may change in future releases.
-Fillet the edges of an <code>Obj3d</code> object.</p></div>
+Fillet the edges of an <code>Obj3d</code> object.</p>
+<p>The <code>radius</code> parameter specifies the
+radius of the quarter cylinder that defines the fillet.</p>
+<p>The <code>min_edge_length</code> parameter specifies the minimum length of edges to consider for filleting.
+This is useful in avoiding the filleting of circular objects. Circular edges often fillet poorly.</p>
+<p>The <code>angle_range</code> parameter specifies the range of angles (in degrees) for edges to be
+considered for filleting. (The angle is between the two faces adjacent to the edge.)
+The further one gets from 90 degrees, the more likely that difficulties may arise during
+the filleting process.</p>
+<p>The <code>include</code> and <code>exclude</code> parameters allow you to specify which edges should be filleted or ignored.
+By default, all outward-facing edges of the object will be filleted.
+Both the <code>include</code> and <code>exclude</code> lists are "bounding boxes" that define the regions of
+space in which edges will be considered for filleting or ignored.
+Each bounding box is a sextuple of the form <code>(xmin, ymin, zmin, xmax, ymax, zmax)</code>.
+Only edges that have both endpoints within the bounding boxes are selected.
+If the include list is provided, only the edges selected in the list will be filleted.
+If the exclude list is provided, the edges selected in the list will be ignored.
+The exclude list always takes precedence over the include list.</p>
+<p>If you want a similar size between fillets and chamfers, choose a bevel_size
+for the chamfer that is approximately half the size of the radius you would use for a fillet.</p></div>
 </dd>
 <dt id="piecad.primitives_3d.geodesic_sphere"><code class="name flex">
 <span>def <span class="ident">geodesic_sphere</span></span>(<span>radius, segments=-1) ‑> <a title="piecad.Obj3d" href="index.html#piecad.Obj3d">Obj3d</a></span>

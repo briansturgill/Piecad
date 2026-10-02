@@ -264,7 +264,7 @@ Set the current font used by `text`.
 <a class="ahover" href="primitives_3d.html#piecad.primitives_3d.chamfer">
 chamfer
 <span class="popup">
-<code>chamfer(obj: Obj3d, radius: float = 2.0, include: list[tuple[float, float, float]] = None, exclude: list[tuple[float, float, float]] = None) -> Obj3d</code>
+<code>chamfer(obj: Obj3d, bevel_size: float = 2.0, min_edge_length: float = 2.0, angle_range: tuple[float, float] = (80, 100), include: list[tuple[float, float, float, float, float, float]] = None, exclude: list[tuple[float, float, float, float, float, float]] = None) -> Obj3d</code>
 <br>
 EXPERIMENTAL - interface may change in future releases.
 </span>
@@ -364,7 +364,7 @@ Create a Obj3d solid from Obj2d of given height.
 <a class="ahover" href="primitives_3d.html#piecad.primitives_3d.fillet">
 fillet
 <span class="popup">
-<code>fillet(obj: Obj3d, radius: float = 2.0, include: list[tuple[float, float, float]] = None, exclude: list[tuple[float, float, float]] = None) -> Obj3d</code>
+<code>fillet(obj: Obj3d, radius: float = 4.0, min_edge_length: float = 2.0, angle_range: tuple[float, float] = (80, 100), include: list[tuple[float, float, float, float, float, float]] = None, exclude: list[tuple[float, float, float, float, float, float]] = None) -> Obj3d</code>
 <br>
 EXPERIMENTAL - interface may change in future releases.
 </span>
