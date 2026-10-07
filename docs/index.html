@@ -1597,10 +1597,16 @@ maintain the same size ratio between the two sizes.</p>
         return self.mo.surface_area()
 
     def to_verts_and_faces(
-        self,
+        self, np: bool = False
     ) -&gt; tuple[list[tuple[float, float, float]], list[tuple[int, int, int]]]:
         &#34;&#34;&#34;
         Return a pair containg a list of vertices and a list of faces for this object.
+
+        Manifold3d uses numpy arrays to avoid an array copy. For most uses, python lists of tuples are
+        more efficient. However, if you are using numpy for further processing, you may want to set `np=True`,
+        to preserve the arrays as numpy arrays.
+        Numpy is faster at vectorizable operations, but is often 10x slower for smaller operations such as `cross` and `dot`,
+        so you may want to do timing tests.
 
         &#34;&#34;&#34;
         mesh = self.mo.to_mesh64()
@@ -1608,8 +1614,10 @@ maintain the same size ratio between the two sizes.</p>
             vertices = mesh.vert_properties[:, :3]
         else:
             vertices = mesh.vert_properties
-        v = [tuple(float(coord) for coord in vert) for vert in vertices]
-        f = [tuple(int(coord) for coord in tri) for tri in mesh.tri_verts]
+        if np:
+            return (vertices, mesh.tri_verts)
+        v = list(map(tuple, vertices.tolist()))
+        f = list(map(tuple, mesh.tri_verts.tolist()))
         return (v, f)
 
     def transform(
@@ -2275,7 +2283,7 @@ maintain the same size ratio between the two sizes.</p>
 <div class="desc"><p>The surface area of this Obj3d.</p></div>
 </dd>
 <dt id="piecad.Obj3d.to_verts_and_faces"><code class="name flex">
-<span>def <span class="ident">to_verts_and_faces</span></span>(<span>self) ‑> tuple[list[tuple[float, float, float]], list[tuple[int, int, int]]]</span>
+<span>def <span class="ident">to_verts_and_faces</span></span>(<span>self, np: bool = False) ‑> tuple[list[tuple[float, float, float]], list[tuple[int, int, int]]]</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -2283,10 +2291,16 @@ maintain the same size ratio between the two sizes.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def to_verts_and_faces(
-    self,
+    self, np: bool = False
 ) -&gt; tuple[list[tuple[float, float, float]], list[tuple[int, int, int]]]:
     &#34;&#34;&#34;
     Return a pair containg a list of vertices and a list of faces for this object.
+
+    Manifold3d uses numpy arrays to avoid an array copy. For most uses, python lists of tuples are
+    more efficient. However, if you are using numpy for further processing, you may want to set `np=True`,
+    to preserve the arrays as numpy arrays.
+    Numpy is faster at vectorizable operations, but is often 10x slower for smaller operations such as `cross` and `dot`,
+    so you may want to do timing tests.
 
     &#34;&#34;&#34;
     mesh = self.mo.to_mesh64()
@@ -2294,11 +2308,18 @@ maintain the same size ratio between the two sizes.</p>
         vertices = mesh.vert_properties[:, :3]
     else:
         vertices = mesh.vert_properties
-    v = [tuple(float(coord) for coord in vert) for vert in vertices]
-    f = [tuple(int(coord) for coord in tri) for tri in mesh.tri_verts]
+    if np:
+        return (vertices, mesh.tri_verts)
+    v = list(map(tuple, vertices.tolist()))
+    f = list(map(tuple, mesh.tri_verts.tolist()))
     return (v, f)</code></pre>
 </details>
-<div class="desc"><p>Return a pair containg a list of vertices and a list of faces for this object.</p></div>
+<div class="desc"><p>Return a pair containg a list of vertices and a list of faces for this object.</p>
+<p>Manifold3d uses numpy arrays to avoid an array copy. For most uses, python lists of tuples are
+more efficient. However, if you are using numpy for further processing, you may want to set <code>np=True</code>,
+to preserve the arrays as numpy arrays.
+Numpy is faster at vectorizable operations, but is often 10x slower for smaller operations such as <code>cross</code> and <code>dot</code>,
+so you may want to do timing tests.</p></div>
 </dd>
 <dt id="piecad.Obj3d.transform"><code class="name flex">
 <span>def <span class="ident">transform</span></span>(<span>self,<br>matrix3x4: tuple[tuple[float, float, float, float], tuple[float, float, float, float], tuple[float, float, float, float], tuple[float, float, float, float]]) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>

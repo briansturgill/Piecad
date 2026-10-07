@@ -417,10 +417,16 @@ class Obj3d:
         return self.mo.surface_area()
 
     def to_verts_and_faces(
-        self,
+        self, np: bool = False
     ) -> tuple[list[tuple[float, float, float]], list[tuple[int, int, int]]]:
         """
         Return a pair containg a list of vertices and a list of faces for this object.
+
+        Manifold3d uses numpy arrays to avoid an array copy. For most uses, python lists of tuples are
+        more efficient. However, if you are using numpy for further processing, you may want to set `np=True`,
+        to preserve the arrays as numpy arrays.
+        Numpy is faster at vectorizable operations, but is often 10x slower for smaller operations such as `cross` and `dot`,
+        so you may want to do timing tests.
 
         """
         mesh = self.mo.to_mesh64()
@@ -428,8 +434,10 @@ class Obj3d:
             vertices = mesh.vert_properties[:, :3]
         else:
             vertices = mesh.vert_properties
-        v = [tuple(float(coord) for coord in vert) for vert in vertices]
-        f = [tuple(int(coord) for coord in tri) for tri in mesh.tri_verts]
+        if np:
+            return (vertices, mesh.tri_verts)
+        v = list(map(tuple, vertices.tolist()))
+        f = list(map(tuple, mesh.tri_verts.tolist()))
         return (v, f)
 
     def transform(

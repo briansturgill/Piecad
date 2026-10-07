@@ -1,5 +1,6 @@
 import pytest
 from piecad import *
+import numpy as np
 
 
 def _equalish(t1, t2):
@@ -350,7 +351,7 @@ def test_transform_3d():
     assert c2.num_verts() == c2.num_verts()
 
 
-def test_to_verts_and_faces():
+def test_to_verts_and_faces(benchmark):
     v_expect = [
         (0.0, 0.0, 0.0),
         (0.0, 0.0, 10.0),
@@ -376,13 +377,58 @@ def test_to_verts_and_faces():
         (7, 5, 6),
     ]
     c = cube(10)
-    v_ret, f_ret = c.to_verts_and_faces()
+    v_ret, f_ret = benchmark(c.to_verts_and_faces)
     assert v_expect == v_ret
     assert f_expect == f_ret
     assert len(v_ret) == 8
     assert len(v_ret[0]) == 3
     assert len(f_ret) == 12
     assert len(f_ret[0]) == 3
+
+
+def test_to_verts_and_faces_np(benchmark):
+    v_expect = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [0.0, 0.0, 10.0],
+            [0.0, 10.0, 0.0],
+            [0.0, 10.0, 10.0],
+            [10.0, 0.0, 0.0],
+            [10.0, 0.0, 10.0],
+            [10.0, 10.0, 0.0],
+            [10.0, 10.0, 10.0],
+        ],
+        dtype=np.float64,
+    )
+    f_expect = np.array(
+        [
+            [1, 0, 4],
+            [2, 4, 0],
+            [1, 3, 0],
+            [3, 1, 5],
+            [3, 2, 0],
+            [3, 7, 2],
+            [5, 4, 6],
+            [5, 1, 4],
+            [6, 4, 2],
+            [7, 6, 2],
+            [7, 3, 5],
+            [7, 5, 6],
+        ],
+        dtype=np.uint64,
+    )
+    c = cube(10)
+    v_ret, f_ret = benchmark(c.to_verts_and_faces, np=True)
+    diff = v_expect == v_ret
+    assert np.all(diff)
+    diff = f_expect == f_ret
+    assert np.all(diff)
+    assert len(v_ret) == 8
+    assert len(v_ret[0]) == 3
+    assert len(f_ret) == 12
+    assert len(f_ret[0]) == 3
+    assert isinstance(v_ret[0][0], np.float64)
+    assert isinstance(f_ret[0][0], np.ulonglong)
 
 
 def test_to_paths():
