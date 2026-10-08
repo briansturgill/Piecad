@@ -188,6 +188,17 @@ def test_polygon_self_intersect2():
         _polygon([poly])
 
 
+def test_path_uses_initial_point_and_keeps_instances_independent():
+    first = path((5, 7))
+    first.line_to((8, 7)).line_to((8, 9))
+    first_shape = first.close()
+    assert first_shape.bounding_box() == (5, 7, 8, 9)
+
+    second = path((20, 30))
+    second.line_to((22, 30)).line_to((22, 32))
+    assert second.close().bounding_box() == (20, 30, 22, 32)
+
+
 import numpy as _np
 
 _arc_trig_vals_map = {}

@@ -16,11 +16,6 @@ def _xy(cplex):
 
 
 class Path:
-    _ll = []
-    _list = []
-    _cur_pt = (0, 0)
-    _beginning_pt = None
-
     def __init__(self, initial_point: tuple[float, float] = (0, 0), segments: int = -1):
         """
         Create an SVG-like path starting at `initial_point`. The path can contain lines, arcs, and
@@ -36,6 +31,8 @@ class Path:
             segments = Config.get_default_segments()
         _chkGE("segments", segments, 3)
         self._initial_pt = initial_point
+        self._cur_pt = initial_point
+        self._list = []
         self._segments = segments
 
     def _add(self, o: object):

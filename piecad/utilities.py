@@ -65,7 +65,7 @@ def load(filename: str) -> Obj3d | Obj2d:
     if type(mesh) == trimesh.path.Path2D:
         raise ValidationError("2D objects are not currently supported.")
 
-    return obj3d_from_vertices_and_faces(vertices, faces)
+    return obj3d_from_vertices_and_faces(mesh.vertices, mesh.faces)
 
 
 _save_dir = None
@@ -83,7 +83,7 @@ def _get_save_dir():
     _save_dir = os.getenv("PIECAD_SAVE_DIR", None)
     if _save_dir is not None:
         return _save_dir
-    if platform.system == "Windows":
+    if platform.system() == "Windows":
         import winreg
 
         sub_key = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
@@ -300,9 +300,7 @@ def view(obj: Obj3d | Obj2d, title: str = "") -> None:
         title = _info_str("view")
 
     if type(obj) == Obj2d:
-        color = obj._color
-        if color is not None:
-            color = Config.get_default_color()
+        color = obj._color if obj._color is not None else Config.get_default_color()
         obj = Obj3d(_m.Manifold.extrude(obj.mo, 0.1)).color(color)
 
     mesh = obj.mo.to_mesh64()

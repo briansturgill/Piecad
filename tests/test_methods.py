@@ -20,6 +20,11 @@ def test_version():
     assert type(version()) == str
 
 
+def test_validation_error_is_caught_by_exception_handler():
+    with pytest.raises(Exception):
+        raise ValidationError("invalid parameter")
+
+
 def test_set_default_segments():
     cur = Config.get_default_segments()
     assert cur == 36

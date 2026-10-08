@@ -30,7 +30,7 @@ from .lin_math import Vec3
 from collections import namedtuple as _namedtuple
 
 
-class ValidationError(BaseException):
+class ValidationError(Exception):
     """
     Exception class for errors detected in arguments to **piecad**
     functions and methods.
