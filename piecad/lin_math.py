@@ -1,5 +1,22 @@
+"""
+This is a small package of linear algebra functions for 2D and 3D vectors.
+It is used internally in Piecad because Numpy is actually rather slow for small vector operations.
+Consider the Numpy "cross" function, it is about 65 times slower than the simple ones below.
+Additionally Numpy wraps data with types like `np.float64` which has overhead and can cause problems
+in normal python code.  In short, Numpy is a bad fit for this Computation Geometry package.
+
+This linear algebra package is unusual in that it does not work from a class, but rather is a
+series of "static" methods designed to operate on plain tuples representing vectors.
+This is because Python is much more efficent at making a plain tuple than a class.
+Also accessing elements of a tuple is faster than accessing elements of a python list or a class attribute.
+Tuples are also more memory efficient.
+
+This is an ADVANCED package intended for users who are familiar with linear algebra and its use in
+Computational Geometry.
+For speed reasons none of its functions perform any type checking on their inputs.
+"""
+
 from __future__ import annotations
-from typing import Tuple, List
 import math
 
 
@@ -9,49 +26,49 @@ class Vec2:
     """
 
     @staticmethod
-    def abs(v1: Tuple[float, float]) -> Tuple[float, float]:
+    def abs(v1: tuple[float, float]) -> tuple[float, float]:
         """
         Returns the absolute value of the vector v1.
         """
         return (math.fabs(v1[0]), math.fabs(v1[1]))
 
     @staticmethod
-    def add(v1: Tuple[float, float], v2: Tuple[float, float]) -> Tuple[float, float]:
+    def add(v1: tuple[float, float], v2: tuple[float, float]) -> tuple[float, float]:
         """
         Returns a vector that is vector v1 added to vector v2)
         """
         return (v1[0] + v2[0], v1[1] + v2[1])
 
     @staticmethod
-    def mul(v1: Tuple[float, float], v2: Tuple[float, float]) -> Tuple[float, float]:
+    def mul(v1: tuple[float, float], v2: tuple[float, float]) -> tuple[float, float]:
         """
         Returns a vector that is vector v1 multiplied by vector v2.
         """
         return (v1[0] * v2[0], v1[1] * v2[1])
 
     @staticmethod
-    def neg(v1: Tuple[float, float]) -> Tuple[float, float]:
+    def neg(v1: tuple[float, float]) -> tuple[float, float]:
         """
         Returns a vector that is the negation of vector v1.
         """
         return (-v1[0], -v1[1])
 
     @staticmethod
-    def pos(v1: Tuple[float, float]) -> Tuple[float, float]:
+    def pos(v1: tuple[float, float]) -> tuple[float, float]:
         """
         Returns a vector that is the positive of vector v1 (same as vector v1).
         """
         return v1
 
     @staticmethod
-    def sub(v1: Tuple[float, float], v2: Tuple[float, float]) -> Tuple[float, float]:
+    def sub(v1: tuple[float, float], v2: tuple[float, float]) -> tuple[float, float]:
         """
         Returns a vector that is vector v1 subtracted by vector v2.
         """
         return (v1[0] - v2[0], v1[1] - v2[1])
 
     @staticmethod
-    def div(v1: Tuple[float, float], v2: Tuple[float, float]) -> Tuple[float, float]:
+    def div(v1: tuple[float, float], v2: tuple[float, float]) -> tuple[float, float]:
         """
         Returns a vector that is vector v1 divided by vector v2.
         """
@@ -59,15 +76,15 @@ class Vec2:
 
     @staticmethod
     def cross(
-        v1: Tuple[float, float], v2: Tuple[float, float]
-    ) -> Tuple[float, float, float]:
+        v1: tuple[float, float], v2: tuple[float, float]
+    ) -> tuple[float, float, float]:
         """
         Returns the cross product of vector v1 with vector v2.
         """
         return (0, 0, v1[0] * v2[1] - v1[1] * v2[0])
 
     @staticmethod
-    def distance(v1: Tuple[float, float], v2: Tuple[float, float]) -> float:
+    def distance(v1: tuple[float, float], v2: tuple[float, float]) -> float:
         """
         Returns the distance between vector v1 and vector v2.
         """
@@ -76,21 +93,21 @@ class Vec2:
         return math.sqrt(x * x + y * y)
 
     @staticmethod
-    def dot(v1: Tuple[float, float], v2: Tuple[float, float]) -> float:
+    def dot(v1: tuple[float, float], v2: tuple[float, float]) -> float:
         """
         Returns the dot product of vector v1 with vector v2.
         """
         return v1[0] * v2[0] + v1[1] * v2[1]
 
     @staticmethod
-    def length(v1: Tuple[float, float]) -> float:
+    def length(v1: tuple[float, float]) -> float:
         """
         Returns the length of vector v1.
         """
         return math.sqrt(v1[0] * v1[0] + v1[1] * v1[1])
 
     @staticmethod
-    def normalize(v1: Tuple[float, float]) -> Tuple[float, float]:
+    def normalize(v1: tuple[float, float]) -> tuple[float, float]:
         """
         Returns a normalized (unit length) vector in the same direction as vector v1.
         If the vector has zero length, returns a zero vector.
@@ -101,13 +118,13 @@ class Vec2:
         return (0, 0)
 
     @staticmethod
-    def squaredDistance(v1: Tuple[float, float], v2: Tuple[float, float]) -> float:
+    def squaredDistance(v1: tuple[float, float], v2: tuple[float, float]) -> float:
         x = v2[0] - v1[0]
         y = v2[1] - v1[1]
         return x * x + y * y
 
     @staticmethod
-    def squaredLength(v1: Tuple[float, float]) -> float:
+    def squaredLength(v1: tuple[float, float]) -> float:
         return v1[0] * v1[0] + v1[1] * v1[1]
 
 
@@ -117,7 +134,7 @@ class Vec3:
     """
 
     @staticmethod
-    def abs(v1: Tuple[float, float, float]) -> Tuple[float, float, float]:
+    def abs(v1: tuple[float, float, float]) -> tuple[float, float, float]:
         """
         Returns a vector that is the absolute value of the given vector.
         """
@@ -125,8 +142,8 @@ class Vec3:
 
     @staticmethod
     def add(
-        v1: Tuple[float, float, float], v2: Tuple[float, float, float]
-    ) -> Tuple[float, float, float]:
+        v1: tuple[float, float, float], v2: tuple[float, float, float]
+    ) -> tuple[float, float, float]:
         """
         Returns a vector that is vector v1 added to vector v2)
         """
@@ -134,22 +151,22 @@ class Vec3:
 
     @staticmethod
     def mul(
-        v1: Tuple[float, float, float], v2: Tuple[float, float, float]
-    ) -> Tuple[float, float, float]:
+        v1: tuple[float, float, float], v2: tuple[float, float, float]
+    ) -> tuple[float, float, float]:
         """
         Returns a vector that is vector v1 multiplied by vector v2.
         """
         return (v1[0] * v2[0], v1[1] * v2[1], v1[2] * v2[2])
 
     @staticmethod
-    def neg(v1: Tuple[float, float, float]) -> Tuple[float, float, float]:
+    def neg(v1: tuple[float, float, float]) -> tuple[float, float, float]:
         """
         Returns a vector that is the negation of vector v1.
         """
         return (-v1[0], -v1[1], -v1[2])
 
     @staticmethod
-    def pos(v1: Tuple[float, float, float]) -> Tuple[float, float, float]:
+    def pos(v1: tuple[float, float, float]) -> tuple[float, float, float]:
         """
         Returns a vector that is the positive of vector v1 (same as vector v1).
         """
@@ -157,8 +174,8 @@ class Vec3:
 
     @staticmethod
     def sub(
-        v1: Tuple[float, float, float], v2: Tuple[float, float, float]
-    ) -> Tuple[float, float, float]:
+        v1: tuple[float, float, float], v2: tuple[float, float, float]
+    ) -> tuple[float, float, float]:
         """
         Subtracts vector v2 from vector v1.
         """
@@ -166,8 +183,8 @@ class Vec3:
 
     @staticmethod
     def div(
-        v1: Tuple[float, float, float], v2: Tuple[float, float, float]
-    ) -> Tuple[float, float, float]:
+        v1: tuple[float, float, float], v2: tuple[float, float, float]
+    ) -> tuple[float, float, float]:
         """
         Returns a vector that is vector v1 divided by vector v2.
         """
@@ -175,8 +192,8 @@ class Vec3:
 
     @staticmethod
     def cross(
-        v1: Tuple[float, float, float], v2: Tuple[float, float, float]
-    ) -> Tuple[float, float, float]:
+        v1: tuple[float, float, float], v2: tuple[float, float, float]
+    ) -> tuple[float, float, float]:
         """
         Computes the cross product of vector v1 with vector v2.
         """
@@ -191,7 +208,7 @@ class Vec3:
 
     @staticmethod
     def distance(
-        v1: Tuple[float, float, float], v2: Tuple[float, float, float]
+        v1: tuple[float, float, float], v2: tuple[float, float, float]
     ) -> float:
         """
         Calculates the Euclidian distance between vector v1 and v2 vector.
@@ -202,21 +219,21 @@ class Vec3:
         return (x * x + y * y + z * z) ** 0.5
 
     @staticmethod
-    def dot(v1: Tuple[float, float, float], v2: Tuple[float, float, float]) -> float:
+    def dot(v1: tuple[float, float, float], v2: tuple[float, float, float]) -> float:
         """
         Calculates the dot product of vector v1 with vector v2.
         """
         return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
 
     @staticmethod
-    def length(v1: Tuple[float, float, float]) -> float:
+    def length(v1: tuple[float, float, float]) -> float:
         """
         Calculates the length (magnitude) of the vector.
         """
         return (v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2]) ** 0.5
 
     @staticmethod
-    def normalize(v1: Tuple[float, float, float]) -> Tuple[float, float, float]:
+    def normalize(v1: tuple[float, float, float]) -> tuple[float, float, float]:
         """
         Normalizes the vector (makes it have a length of 1).
         """
@@ -230,7 +247,7 @@ class Vec3:
 
     @staticmethod
     def squaredDistance(
-        v1: Tuple[float, float, float], v2: Tuple[float, float, float]
+        v1: tuple[float, float, float], v2: tuple[float, float, float]
     ) -> float:
         """
         Calculates the squared Euclidian distance between v1 vector and v2 vector.
@@ -241,7 +258,7 @@ class Vec3:
         return x * x + y * y + z * z
 
     @staticmethod
-    def squaredLength(v1: Tuple[float, float, float]) -> float:
+    def squaredLength(v1: tuple[float, float, float]) -> float:
         """
         Calculates the squared length of the vector.
         """
@@ -253,7 +270,7 @@ class Vec3:
 
 class Mat3:
     @staticmethod
-    def determinant(m: List[Tuple[float, float, float]]) -> float:
+    def determinant(m: list[tuple[float, float, float]]) -> float:
         """
         Calculates the determinant of a 3x3 matrix.
         """
@@ -270,7 +287,7 @@ class Geom:
     """
 
     @staticmethod
-    def coplanar(vl: List[Tuple[float, float, float]]) -> bool:
+    def coplanar(vl: list[tuple[float, float, float]]) -> bool:
         """
         Checks if a list of vectors are coplanar.
         """

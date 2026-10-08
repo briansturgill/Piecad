@@ -4,7 +4,7 @@ all: test documents
 documents:
 	black piecad/*.py tests/*.py doc_examples/*.example examples/*.py
 	rm -rf docs/*
-	pdoc3 --html piecad --force
+	pdoc3 --html piecad --template-dir templates-pdoc3 --force
 	(cd doc_examples; ./mk_doc_examples)
 	(cd examples; ./mk_examples_list >README.md)
 	mv html/piecad/* docs
