@@ -39,7 +39,7 @@ def load(filename: str) -> Obj3d | Obj2d:
     """
     Load a 3d object from a file.
 
-    The format read from `filename` is determined by the file's extention.
+    The format read from `filename` is determined by the file's extension.
 
     The available formats for 3D are:
 
@@ -63,7 +63,7 @@ def load(filename: str) -> Obj3d | Obj2d:
         filename, ext, force="mesh", process=True, validate=False
     )
     if type(mesh) == trimesh.path.Path2D:
-        raise ValidationError("Currently 2d objects are no supported.")
+        raise ValidationError("2D objects are not currently supported.")
 
     return obj3d_from_vertices_and_faces(vertices, faces)
 
@@ -125,7 +125,7 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
     You can override the `Downloads` directory by setting the global environment variable
     `PIECAD_SAVE_DIR`.
 
-    The model format placed in [p:filename] is determined by the file's extention.
+    The model format placed in [p:filename] is determined by the file's extension.
 
     The available formats for 3D are:
 
@@ -339,13 +339,13 @@ def _wait_for_view_handler_exit():
 
 def view_all_now() -> None:
     """
-    The `view()` function mearly records a list of objects to be displayed.
+    The `view()` function merely records a list of objects to be displayed.
     By default, a function to view the meshes is called from `atexit`.
     Unfortunately a number of graphical debuggers (e.g. Visual Studio Code
     and PyCharm) have a short timeout for `atexit` functions.
     To avoid this issue, use `view_all_now()` at the end of your script to
     display all objects recorded by `view()` with no timeout.
-    Alternatively run the script witout debugging.
+    Alternatively, run the script without debugging.
     """
     from ._viewer import show_meshes
 

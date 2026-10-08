@@ -35,7 +35,7 @@ class Path:
         if segments == -1:
             segments = Config.get_default_segments()
         _chkGE("segments", segments, 3)
-        self._inital_pt = initial_point
+        self._initial_pt = initial_point
         self._segments = segments
 
     def _add(self, o: object):
@@ -63,7 +63,7 @@ class Path:
         """
         Add a quadratic bezier curve from the current point to `end`, with `control_point`.
         """
-        _chkV2("control_panel", control_point)
+        _chkV2("control_point", control_point)
         _chkV2("end", end)
         self._add(QuadraticBezier(_cp(self._cur_pt), _cp(control_point), _cp(end)))
         self._cur_pt = end
@@ -99,14 +99,14 @@ class Path:
         ccw: bool = False,
     ) -> typing.Self:
         """
-        Add an eliptical arc from the current point to `end`, with `radii` which is the x, y tuple of the
-        eliptical radius. If x and y are the same, then a single float can be specified.
+        Add an elliptical arc from the current point to `end`, with `radii` as the
+        x- and y-axis radii. If both radii are the same, a single float can be specified.
 
-        The x_axis_rotation gives degrees) of the ellipse relative to the x-axis
+        `x_axis_rotation` specifies the rotation, in degrees, of the ellipse relative to the x-axis.
 
-        Four arcs can be made between using the above parameters, to choose the one needed:
+        Four arcs can be formed between the same endpoints; use the parameters above to choose one:
 
-        The `ccw` flag choses a counter-clockwise or a clockwise (default) arc.
+        The `ccw` flag chooses a counter-clockwise arc; the default is clockwise.
 
         The `large_arc` flag chooses the longest arc over the shortest (default) arc.
         """

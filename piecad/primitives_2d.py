@@ -90,16 +90,16 @@ def path(initial_point: tuple[float, float] = (0, 0), segments: int = -1) -> obj
     ) -> Path
     ```
 
-    Add an eliptical arc from the current point to `end`, with `radii` which
-    is the x, y tuple of the eliptical radius. If x and y are the same, then
-    a single float can be specified.
+    Add an elliptical arc from the current point to `end`, with `radii` as
+    the x- and y-axis radii. If both radii are the same, a single float can
+    be specified.
 
-    The x_axis_rotation gives degrees) of the ellipse relative to the x-axis
+    `x_axis_rotation` specifies the rotation, in degrees, of the ellipse relative to the x-axis.
 
-    Four arcs can be made between using the above parameters, to choose the
-    one needed:
+    Four arcs can be formed between the same endpoints; use the parameters
+    above to choose one:
 
-    The `ccw` flag choses a counter-clockwise or a clockwise (default) arc.
+    The `ccw` flag chooses a counter-clockwise arc; the default is clockwise.
 
     The `large_arc` flag chooses the longest arc over the shortest (default) arc.
     ```
@@ -144,7 +144,7 @@ def polygon(paths: list[list[tuple[float, float]]], check: bool = True) -> Obj2d
     By default we check if Clipper2 found a self-intersection.
     If it has, we issue a diagnostic message.
     The check takes about 40% more time, so in a heavily used
-    situation, where you are absolutely sure you're not self-intersectiong,
+    situation, where you are absolutely sure the paths do not self-intersect,
     you can set `check` to 'False`.
 
     Be aware that if you set `check` to `False` that the underlying Clipper2

@@ -1,10 +1,10 @@
 """
 "Easy as Pie" CAD (Piecad)
 
-It is my opinionted view of what a good, simple CAD API should look like.
+It is my opinionated view of what a good, simple CAD API should look like.
 
 For many years I used [OpenSCAD](https://www.openscad.org),
-but the functional language it uses was often a hinderance and its speed
+but the functional language it uses was often a hindrance, and its speed
 was poor.
 
 Piecad is based on [Manifold](https://github.com/elalish/manifold).
@@ -186,7 +186,7 @@ class Obj3d:
         Mirror over the x and y axes and you will get an image like the back of a left hand.
         For the Z axis it's the same, but each hand is upside down.
 
-        From a mathmatical standpoint, mirroring is negating all the points in each axis selected.
+        From a mathematical standpoint, mirroring negates all points on each selected axis.
 
         """
         uv = [0, 0, 0]
@@ -329,7 +329,7 @@ class Obj3d:
         If an axis size is specified as zero, it is automatically calculated by a specified size to
         maintain the same size ratio between the two sizes.
 
-        If an axis size is specifed as `None` then no change is made on the size of that axis.
+        If an axis size is specified as `None`, no change is made to that axis.
         """
         _chkV3("sizes", sizes)
         if (
@@ -402,9 +402,9 @@ class Obj3d:
 
     def split(self, cutter: Obj3d) -> Obj3d:
         """
-        This more efficently does a difference and an intersect operation between this and cutter.
+        This performs difference and intersection operations between this object and the cutter more efficiently.
 
-        Return is `(diff_obj, inter_obj)`.
+        The return value is `(diff_obj, inter_obj)`.
 
         """
         ret = self.mo.split(cutter.mo)
@@ -420,7 +420,7 @@ class Obj3d:
         self, np: bool = False
     ) -> tuple[list[tuple[float, float, float]], list[tuple[int, int, int]]]:
         """
-        Return a pair containg a list of vertices and a list of faces for this object.
+        Return a pair containing a list of vertices and a list of faces for this object.
 
         Manifold3d uses numpy arrays to avoid an array copy. For most uses, python lists of tuples are
         more efficient. However, if you are using numpy for further processing, you may want to set `np=True`,
@@ -450,7 +450,7 @@ class Obj3d:
         ],
     ) -> Obj3d:
         """
-        Transform this object with the given affine transformaton matrix.
+        Transform this object with the given affine transformation matrix.
 
         If you don't know what this is, you probably don't need it.
         """
@@ -596,7 +596,7 @@ class Obj2d:
         Mirror over the y axis and you will get an image of the right hand upside down.
         Mirror over the x and y axes and you will get an image a left hand upside down.
 
-        From a mathmatical standpoint, mirroring is negating all the points in each axis selected.
+        From a mathematical standpoint, mirroring negates all points on each selected axis.
 
         """
         uv = [0, 0]
@@ -689,7 +689,7 @@ class Obj2d:
         If an axis size is specified as zero, it is automatically calculated by the other specified size to
         maintain the same size ratio between the two sizes.
 
-        If an axis size is specifed as `None` then no change is made on the size of that axis.
+        If an axis size is specified as `None`, no change is made to that axis.
         """
         _chkV2("sizes", sizes)
         if (sizes[0] == None or sizes[0] == 0) and (sizes[1] == None and sizes[1] == 0):
@@ -711,7 +711,7 @@ class Obj2d:
 
     def revolve(self, revolve_degrees: float = 360.0, segments: int = -1) -> Obj3d:
         """
-        Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
+        Create an Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
 
         For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
         """
@@ -745,7 +745,7 @@ class Obj2d:
 
     def to_paths(self) -> list[list[float, float]]:
         """
-        Return a lists of paths, each of which is a list of vertices that make up this object.
+        Return a list of paths, each of which is a list of vertices that make up this object.
         """
         from copy import deepcopy
 
@@ -758,7 +758,7 @@ class Obj2d:
         self, matrix2x3: tuple[tuple[float, float, float], tuple[float, float, float]]
     ) -> Obj2d:
         """
-        Transform this object with the given affine transformaton matrix.
+        Transform this object with the given affine transformation matrix.
 
         If you don't know what this is, you probably don't need it.
         """
@@ -827,7 +827,7 @@ class Config:
         The default value of `segments` 36.
 
         If you need a circular objects primary axes to have exact values (at the
-        90 degree marks), chose a `segments` value that is a multiple of 4.
+        90 degree marks), choose a `segments` value that is a multiple of 4.
 
         In circular functions, if the value passed in for `segments` is `-1`, then
         the `default_segments` value is used. Thus circular functions have
@@ -849,7 +849,7 @@ class Config:
     def set_default_units(cls, units: str = "mm") -> None:
         """
         Set the default units used in this script.
-        Most 3d printing is in "mm" for milimeters.
+        Most 3D printing uses "mm" for millimeters.
         But it can also be "cm" for centimeters or "in" for inches.
         """
         _chkIn("units", units, ["mm", "cm", "in"])
@@ -860,7 +860,7 @@ class Config:
         """
         Get the layer resolution used in printing in this script.
         If you have more than one resolution, use the smallest.
-        For most 3d priting the default of 0.1 is sufficient.
+        For most 3D printing, the default of 0.1 is sufficient.
         """
         return cls._layer_resolution
 
@@ -869,7 +869,7 @@ class Config:
         """
         Set the layer resolution used in printing in this script.
         If you have more than one resolution, use the smallest.
-        For most 3d priting the default of 0.1 is sufficient.
+        For most 3D printing, the default of 0.1 is sufficient.
         """
         cls._layer_resolution = resolution
 

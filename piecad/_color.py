@@ -1,10 +1,10 @@
 """
-Color support in limited to coloring an object at time of save or view.
+Color support is limited to assigning a color to an object when it is saved or viewed.
 
-Colors can be specifed by any of the following:
+Colors can be specified in any of the following ways:
 CSS color name: `"aqua"`
-CSS style HEX rgb value: "#00FFFF"
-A tuple of RGB values in as a 3 tuple: (0, 255, 255)
+CSS-style hexadecimal RGB value: `"#00FFFF"`
+An RGB tuple: `(0, 255, 255)`
 
 (All three examples above specify the color "aqua".)
 
@@ -199,5 +199,5 @@ def _parse_color(c):
         raise ValidationError(f"Color '{c}' is not a known color.")
     else:
         raise ValidationError(
-            "A color is specifed by a string or a tuple of RGB values"
+            "A color must be specified by a string or a tuple of RGB values"
         )
