@@ -237,15 +237,14 @@ class Obj3d:
         first, second = self.mo.split_by_plane(normal, offset)
         fxmin, fymin, fzmin, fxmax, fymax, fzmax = first.bounding_box()
         sxmin, symin, szmin, sxmax, symax, szmax = second.bounding_box()
-        if fxmin < sxmin:
-            return Obj3d(first), Obj3d(second)
-        elif sxmin < fxmin:
-            return Obj3d(second), Obj3d(first)
-        elif fzmin < szmin:
-            return Obj3d(first), Obj3d(second)
-        elif szmin < fzmin:
-            return Obj3d(second), Obj3d(first)
-        elif near_le(first.volume(), second.volume()):
+        # Minimums closer than epsilon are ties, so numerical noise cannot decide the order.
+        if not near_eq(fxmin, sxmin):
+            first_is_first = fxmin < sxmin
+        elif not near_eq(fzmin, szmin):
+            first_is_first = fzmin < szmin
+        else:
+            first_is_first = first.volume() <= second.volume() + Const.epsilon
+        if first_is_first:
             return Obj3d(first), Obj3d(second)
         else:
             return Obj3d(second), Obj3d(first)

@@ -161,3 +161,30 @@ def test_rotation_gimbal_lock_round_trip(sign):
     got = sorted(tuple(round(c, 5) + 0.0 for c in v) for v in verts)
     for g, e in zip(got, expected):
         assert g == pytest.approx(e, abs=1e-4)
+
+
+def _frame(extra=None):
+    f = difference(cuboid((10, 2, 10)), cuboid((6, 2, 6)).translate((2, 0, 2)))
+    return f if extra is None else union(f, extra)
+
+
+def test_miter_cut_tie_on_x_and_z_orders_by_volume():
+    # A diagonal cut through a square frame leaves both halves with identical bounding boxes.
+    small = cuboid((1, 2, 1)).translate((2.2, 0, 3.5))
+    big = _frame(small)
+    first, second = big.miter_cut(45, (5, 1, 5))
+    assert first.bounding_box() == second.bounding_box()
+    assert first.volume() < second.volume()
+    # Same result when the heavier half is the other one.
+    first, second = big.mirror((True, False, False)).translate((10, 0, 0)).miter_cut(
+        -45, (5, 1, 5)
+    )
+    assert first.volume() < second.volume()
+
+
+def test_miter_cut_order_is_stable_under_noise():
+    base = _frame(cuboid((1, 2, 1)).translate((2.2, 0, 3.5)))
+    ref = [o.volume() for o in base.miter_cut(45, (5, 1, 5))]
+    for noise in (1e-14, -1e-14, 3e-13):
+        got = [o.volume() for o in base.miter_cut(45, (5 + noise, 1, 5 - noise))]
+        assert got == pytest.approx(ref, abs=1e-6)
