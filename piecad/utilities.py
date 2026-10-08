@@ -201,7 +201,7 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                     print("WARNING: output mesh is not watertight")
                 scene.add_geometry(mesh_output)
             if filename.endswith(".3mf"):
-                s_mesh = scene.to_mesh64()
+                s_mesh = scene.to_geometry()
                 s_vertices = np.array(s_mesh.vertices, np.float64)
                 s_faces = np.array(s_mesh.faces, np.uint64)
                 mo = _m.Manifold(_m.Mesh64(s_vertices, s_faces))

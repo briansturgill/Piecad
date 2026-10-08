@@ -163,7 +163,7 @@ def _rotation_to_xyz_degrees(R):
     else:
         # Gimbal lock (ry = +/-90 deg): rx and rz become coupled, so pick
         # rz = 0 and fold the remaining rotation into rx.
-        rx = atan2(-R[0][1], R[1][1])
+        rx = atan2(sy * R[0][1], R[1][1])
         ry = asin(sy)
         rz = 0.0
 

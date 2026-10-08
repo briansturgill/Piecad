@@ -4,7 +4,7 @@
 
 import manifold3d as _m
 
-from . import Obj2d, Obj3d, ValidationError, _chkGOTY
+from . import Obj2d, Obj3d, ValidationError, _chkGE, _chkGOTY
 
 
 def compose(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
@@ -19,10 +19,9 @@ def compose(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
     See the `decompose` method on `Obj2d` and `Obj3d` for the inverse operation.
 
     """
+    _chkGE("len(objs)", len(objs), 1)
     ty = type(objs[0])
     _chkGOTY("objs", ty)
-    if len(objs) == 0:
-        return Obj2d(_m.CrossSection()) if ty == Obj2d else Obj3d(_m.Manifold())
     for o in objs:
         if type(o) != ty:
             raise ValidationError("Mixed types in parameter: objs.")
@@ -46,10 +45,9 @@ def difference(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
 
     <iframe width="100%" height="250" src="examples/difference3d.html"></iframe>
     """
+    _chkGE("len(objs)", len(objs), 1)
     ty = type(objs[0])
     _chkGOTY("objs", ty)
-    if len(objs) == 0:
-        return Obj2d(_m.CrossSection()) if ty == Obj2d else Obj3d(_m.Manifold())
     for o in objs:
         if type(o) != ty:
             raise ValidationError("Mixed types in parameter: objs.")
@@ -80,10 +78,9 @@ def hull(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
 
     <iframe width="100%" height="290" src="examples/hull3d.html"></iframe>
     """
+    _chkGE("len(objs)", len(objs), 1)
     ty = type(objs[0])
     _chkGOTY("objs", ty)
-    if len(objs) == 0:
-        return Obj2d(_m.CrossSection()) if ty == Obj2d else Obj3d(_m.Manifold())
     for o in objs:
         if type(o) != ty:
             raise ValidationError("Mixed types in parameter: objs.")
@@ -92,13 +89,11 @@ def hull(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
         for o in objs:
             l.append(o.mo)
         return Obj2d(_m.CrossSection.batch_hull(l))
-    elif ty == Obj3d:
+    else:
         l = []
         for o in objs:
             l.append(o.mo)
         return Obj3d(_m.Manifold.batch_hull(l))
-    else:
-        raise ValidationError("All objects must be of one type, Obj2d or Obj3d")
 
 
 def hull_points(
@@ -133,10 +128,9 @@ def intersect(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
 
     <iframe width="100%" height="250" src="examples/intersect3d.html"></iframe>
     """
+    _chkGE("len(objs)", len(objs), 1)
     ty = type(objs[0])
     _chkGOTY("objs", ty)
-    if len(objs) == 0:
-        return Obj2d(_m.CrossSection()) if ty == Obj2d else Obj3d(_m.Manifold())
     for o in objs:
         if type(o) != ty:
             raise ValidationError("Mixed types in parameter: objs.")
@@ -162,10 +156,9 @@ def union(*objs: Obj2d | Obj3d) -> Obj2d | Obj3d:
 
     <iframe width="100%" height="250" src="examples/union3d.html"></iframe>
     """
+    _chkGE("len(objs)", len(objs), 1)
     ty = type(objs[0])
     _chkGOTY("objs", ty)
-    if len(objs) == 0:
-        return Obj2d(_m.CrossSection()) if ty == Obj2d else Obj3d(_m.Manifold())
     for o in objs:
         if type(o) != ty:
             raise ValidationError("Mixed types in parameter: objs.")

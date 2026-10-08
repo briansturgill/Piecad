@@ -308,7 +308,7 @@ class Obj3d:
             (0, 0, z1)
         )
         if both:
-            o1, o2 = self.split(cutter)
+            o2, o1 = self.split(cutter)
             return (o1, o2)
         o3 = difference(self, cutter)
         return o3
@@ -334,10 +334,10 @@ class Obj3d:
         _chkV3("sizes", sizes)
         if (
             (sizes[0] == None or sizes[0] == 0)
-            and (sizes[1] == None and sizes[1] == 0)
+            and (sizes[1] == None or sizes[1] == 0)
             and (sizes[2] == None or sizes[2] == 0)
         ):
-            return self.scale(1, 1, 1)
+            return self.scale((1, 1, 1))
 
         min_x, min_y, min_z, max_x, max_y, max_z = self.bounding_box()
         self_sizes = [max_x - min_x, max_y - min_y, max_z - min_z]
@@ -404,7 +404,7 @@ class Obj3d:
         """
         This performs difference and intersection operations between this object and the cutter more efficiently.
 
-        The return value is `(diff_obj, inter_obj)`.
+        The return value is `(inter_obj, diff_obj)`.
 
         """
         ret = self.mo.split(cutter.mo)
@@ -692,8 +692,8 @@ class Obj2d:
         If an axis size is specified as `None`, no change is made to that axis.
         """
         _chkV2("sizes", sizes)
-        if (sizes[0] == None or sizes[0] == 0) and (sizes[1] == None and sizes[1] == 0):
-            return self.scale(1, 1)
+        if (sizes[0] == None or sizes[0] == 0) and (sizes[1] == None or sizes[1] == 0):
+            return self.scale((1, 1))
 
         min_x, min_y, max_x, max_y = self.bounding_box()
         self_sizes = [max_x - min_x, max_y - min_y]
@@ -871,6 +871,7 @@ class Config:
         If you have more than one resolution, use the smallest.
         For most 3D printing, the default of 0.1 is sufficient.
         """
+        _chkGT("resolution", resolution, 0)
         cls._layer_resolution = resolution
 
     @classmethod
@@ -974,7 +975,7 @@ def near_eq(a, b, epsilon=Const.epsilon) -> bool:
     """
     If `a` is near `b` (within epsilon) then return True` else `return False`
     """
-    return a - epsilon >= b and a + epsilon <= b
+    return abs(a - b) <= epsilon
 
 
 def near_le(a, b, epsilon=Const.epsilon) -> bool:

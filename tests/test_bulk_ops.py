@@ -92,3 +92,38 @@ def test_compose_decompose3d():
     o = compose(*l)
     l2 = o.decompose()
     assert len(l) == len(l2)
+
+
+def test_hull_2d_and_3d():
+    h2 = hull(square(2), square(2).translate([10, 0]))
+    assert h2.area() == pytest.approx(24)
+    h3 = hull(cube(2), cube(2).translate([10, 0, 0]))
+    assert h3.volume() == pytest.approx(48)
+
+
+def test_hull_points():
+    assert hull_points([(0, 0), (4, 0), (0, 3), (1, 1)]).area() == pytest.approx(6)
+    assert hull_points(
+        [(0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1), (0.1, 0.1, 0.1)]
+    ).volume() == pytest.approx(1 / 6)
+
+
+def test_hull_points_errors():
+    with pytest.raises(ValidationError):
+        hull_points([(0, 0), (1, 1, 1)])
+    with pytest.raises(ValidationError):
+        hull_points([(0,), (1,)])
+
+
+@pytest.mark.parametrize("op", [compose, difference, hull, intersect, union])
+def test_mixed_types_rejected(op):
+    with pytest.raises(ValidationError):
+        op(square(1), cube(1))
+    with pytest.raises(ValidationError):
+        op(cube(1), square(1))
+
+
+@pytest.mark.parametrize("op", [compose, difference, hull, intersect, union])
+def test_no_objects_rejected(op):
+    with pytest.raises(ValidationError):
+        op()
