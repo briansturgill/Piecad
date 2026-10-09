@@ -42,7 +42,7 @@ class ValidationError(Exception):
 
 from ._color import _parse_color
 
-__version__ = "2.0.0"
+__version__ = "2.0.1"
 
 
 def version() -> str:
