@@ -28,6 +28,15 @@ el.replaceWith(d);
 });
 }, 100);
 })</script>
+<p>
+</p>
+<p style="margin-left: 20px;">
+<ul>
+<li><a href="https://github.com/briansturgill/Piecad">Github Project</a></li>
+<li><a href="qh.html">Quick Help</a></li>
+<li><a href="index.html">Documents Home</a></li>
+</ul
+</p>
 </head>
 <body>
 <main>
@@ -78,7 +87,7 @@ el.replaceWith(d);
     &#34;&#34;&#34;
     Load a 3d object from a file.
 
-    The format read from `filename` is determined by the file&#39;s extention.
+    The format read from `filename` is determined by the file&#39;s extension.
 
     The available formats for 3D are:
 
@@ -102,12 +111,12 @@ el.replaceWith(d);
         filename, ext, force=&#34;mesh&#34;, process=True, validate=False
     )
     if type(mesh) == trimesh.path.Path2D:
-        raise ValidationError(&#34;Currently 2d objects are no supported.&#34;)
+        raise ValidationError(&#34;2D objects are not currently supported.&#34;)
 
-    return obj3d_from_vertices_and_faces(vertices, faces)</code></pre>
+    return obj3d_from_vertices_and_faces(mesh.vertices, mesh.faces)</code></pre>
 </details>
 <div class="desc"><p>Load a 3d object from a file.</p>
-<p>The format read from <code>filename</code> is determined by the file's extention.</p>
+<p>The format read from <code>filename</code> is determined by the file's extension.</p>
 <p>The available formats for 3D are:</p>
 <table>
 <thead>
@@ -255,7 +264,7 @@ returned.</p></div>
     You can override the `Downloads` directory by setting the global environment variable
     `PIECAD_SAVE_DIR`.
 
-    The model format placed in [p:filename] is determined by the file&#39;s extention.
+    The model format placed in [p:filename] is determined by the file&#39;s extension.
 
     The available formats for 3D are:
 
@@ -331,7 +340,7 @@ returned.</p></div>
                     print(&#34;WARNING: output mesh is not watertight&#34;)
                 scene.add_geometry(mesh_output)
             if filename.endswith(&#34;.3mf&#34;):
-                s_mesh = scene.to_mesh64()
+                s_mesh = scene.to_geometry()
                 s_vertices = np.array(s_mesh.vertices, np.float64)
                 s_faces = np.array(s_mesh.faces, np.uint64)
                 mo = _m.Manifold(_m.Mesh64(s_vertices, s_faces))
@@ -363,7 +372,7 @@ returned.</p></div>
 If you want a file saved in the current directory, prepend <code>'./'</code> or <code>'.\'</code>.</p>
 <p>You can override the <code>Downloads</code> directory by setting the global environment variable
 <code>PIECAD_SAVE_DIR</code>.</p>
-<p>The model format placed in [p:filename] is determined by the file's extention.</p>
+<p>The model format placed in [p:filename] is determined by the file's extension.</p>
 <p>The available formats for 3D are:</p>
 <table>
 <thead>
@@ -438,9 +447,7 @@ If you want a file saved in the current directory, prepend <code>'./'</code> or 
         title = _info_str(&#34;view&#34;)
 
     if type(obj) == Obj2d:
-        color = obj._color
-        if color is not None:
-            color = Config.get_default_color()
+        color = obj._color if obj._color is not None else Config.get_default_color()
         obj = Obj3d(_m.Manifold.extrude(obj.mo, 0.1)).color(color)
 
     mesh = obj.mo.to_mesh64()
@@ -481,13 +488,13 @@ return view(union(view(o1), view(o2), view(o3)))
 </summary>
 <pre><code class="python">def view_all_now() -&gt; None:
     &#34;&#34;&#34;
-    The `view()` function mearly records a list of objects to be displayed.
+    The `view()` function merely records a list of objects to be displayed.
     By default, a function to view the meshes is called from `atexit`.
     Unfortunately a number of graphical debuggers (e.g. Visual Studio Code
     and PyCharm) have a short timeout for `atexit` functions.
     To avoid this issue, use `view_all_now()` at the end of your script to
     display all objects recorded by `view()` with no timeout.
-    Alternatively run the script witout debugging.
+    Alternatively, run the script without debugging.
     &#34;&#34;&#34;
     from ._viewer import show_meshes
 
@@ -498,13 +505,13 @@ return view(union(view(o1), view(o2), view(o3)))
     _view_meshes_titles.clear()
     _viewer_closed_event.clear()</code></pre>
 </details>
-<div class="desc"><p>The <code><a title="piecad.utilities.view" href="#piecad.utilities.view">view()</a></code> function mearly records a list of objects to be displayed.
+<div class="desc"><p>The <code><a title="piecad.utilities.view" href="#piecad.utilities.view">view()</a></code> function merely records a list of objects to be displayed.
 By default, a function to view the meshes is called from <code>atexit</code>.
 Unfortunately a number of graphical debuggers (e.g. Visual Studio Code
 and PyCharm) have a short timeout for <code>atexit</code> functions.
 To avoid this issue, use <code><a title="piecad.utilities.view_all_now" href="#piecad.utilities.view_all_now">view_all_now()</a></code> at the end of your script to
 display all objects recorded by <code><a title="piecad.utilities.view" href="#piecad.utilities.view">view()</a></code> with no timeout.
-Alternatively run the script witout debugging.</p></div>
+Alternatively, run the script without debugging.</p></div>
 </dd>
 <dt id="piecad.utilities.winding"><code class="name flex">
 <span>def <span class="ident">winding</span></span>(<span>lt: list[tuple[float, float]]) ‑> str</span>

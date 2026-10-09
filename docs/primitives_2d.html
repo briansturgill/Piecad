@@ -28,6 +28,15 @@ el.replaceWith(d);
 });
 }, 100);
 })</script>
+<p>
+</p>
+<p style="margin-left: 20px;">
+<ul>
+<li><a href="https://github.com/briansturgill/Piecad">Github Project</a></li>
+<li><a href="qh.html">Quick Help</a></li>
+<li><a href="index.html">Documents Home</a></li>
+</ul
+</p>
 </head>
 <body>
 <main>
@@ -147,16 +156,16 @@ el.replaceWith(d);
     ) -&gt; Path
     ```
 
-    Add an eliptical arc from the current point to `end`, with `radii` which
-    is the x, y tuple of the eliptical radius. If x and y are the same, then
-    a single float can be specified.
+    Add an elliptical arc from the current point to `end`, with `radii` as
+    the x- and y-axis radii. If both radii are the same, a single float can
+    be specified.
 
-    The x_axis_rotation gives degrees) of the ellipse relative to the x-axis
+    `x_axis_rotation` specifies the rotation, in degrees, of the ellipse relative to the x-axis.
 
-    Four arcs can be made between using the above parameters, to choose the
-    one needed:
+    Four arcs can be formed between the same endpoints; use the parameters
+    above to choose one:
 
-    The `ccw` flag choses a counter-clockwise or a clockwise (default) arc.
+    The `ccw` flag chooses a counter-clockwise arc; the default is clockwise.
 
     The `large_arc` flag chooses the longest arc over the shortest (default) arc.
     ```
@@ -200,13 +209,13 @@ control points <code>control_point_1</code> and <code>control_point_2</code>.</p
     end: tuple[float, float],
 ) -&gt; Path
 </code></pre>
-<p>Add an eliptical arc from the current point to <code>end</code>, with <code>radii</code> which
-is the x, y tuple of the eliptical radius. If x and y are the same, then
-a single float can be specified.</p>
-<p>The x_axis_rotation gives degrees) of the ellipse relative to the x-axis</p>
-<p>Four arcs can be made between using the above parameters, to choose the
-one needed:</p>
-<p>The <code>ccw</code> flag choses a counter-clockwise or a clockwise (default) arc.</p>
+<p>Add an elliptical arc from the current point to <code>end</code>, with <code>radii</code> as
+the x- and y-axis radii. If both radii are the same, a single float can
+be specified.</p>
+<p><code>x_axis_rotation</code> specifies the rotation, in degrees, of the ellipse relative to the x-axis.</p>
+<p>Four arcs can be formed between the same endpoints; use the parameters
+above to choose one:</p>
+<p>The <code>ccw</code> flag chooses a counter-clockwise arc; the default is clockwise.</p>
 <p>The <code>large_arc</code> flag chooses the longest arc over the shortest (default) arc.</p>
 <pre><code>arc_to(
     radii: tuple[float, float] | float,
@@ -249,7 +258,7 @@ one needed:</p>
     By default we check if Clipper2 found a self-intersection.
     If it has, we issue a diagnostic message.
     The check takes about 40% more time, so in a heavily used
-    situation, where you are absolutely sure you&#39;re not self-intersectiong,
+    situation, where you are absolutely sure the paths do not self-intersect,
     you can set `check` to &#39;False`.
 
     Be aware that if you set `check` to `False` that the underlying Clipper2
@@ -299,7 +308,7 @@ A shape is either an outer shape or is inside a hole.</p>
 <p>By default we check if Clipper2 found a self-intersection.
 If it has, we issue a diagnostic message.
 The check takes about 40% more time, so in a heavily used
-situation, where you are absolutely sure you're not self-intersectiong,
+situation, where you are absolutely sure the paths do not self-intersect,
 you can set <code>check</code> to 'False`.</p>
 <p>Be aware that if you set <code>check</code> to <code>False</code> that the underlying Clipper2
 library will attempt to "repair" any self-intersections.

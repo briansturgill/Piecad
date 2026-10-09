@@ -219,7 +219,7 @@ def print_qh():
     print("<div class=\"container\">")
     print("<a href=\"https://www.github.com/briansturgill/Piecad\">Piecad github</a>")
     print("<br>")
-    print("<a href=\"https://briansturgill.github.io/Piecad\">Piecad documentation</a>")
+    print("<a href=\"index.html\">Piecad documentation</a>")
     for k in sections.keys():
         print(f"<h2>{sections[k]}</h2>")
         section_lists[k].sort(key=lambda x: x.name)

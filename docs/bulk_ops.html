@@ -28,6 +28,15 @@ el.replaceWith(d);
 });
 }, 100);
 })</script>
+<p>
+</p>
+<p style="margin-left: 20px;">
+<ul>
+<li><a href="https://github.com/briansturgill/Piecad">Github Project</a></li>
+<li><a href="qh.html">Quick Help</a></li>
+<li><a href="index.html">Documents Home</a></li>
+</ul
+</p>
 </head>
 <body>
 <main>
@@ -65,10 +74,9 @@ el.replaceWith(d);
     See the `decompose` method on `Obj2d` and `Obj3d` for the inverse operation.
 
     &#34;&#34;&#34;
+    _chkGE(&#34;len(objs)&#34;, len(objs), 1)
     ty = type(objs[0])
     _chkGOTY(&#34;objs&#34;, ty)
-    if len(objs) == 0:
-        return Obj2d(_m.CrossSection()) if ty == Obj2d else Obj3d(_m.Manifold())
     for o in objs:
         if type(o) != ty:
             raise ValidationError(&#34;Mixed types in parameter: objs.&#34;)
@@ -105,10 +113,9 @@ This is for making a scene of a group of objects that can be saved as a single m
 
     &lt;iframe width=&#34;100%&#34; height=&#34;250&#34; src=&#34;examples/difference3d.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
+    _chkGE(&#34;len(objs)&#34;, len(objs), 1)
     ty = type(objs[0])
     _chkGOTY(&#34;objs&#34;, ty)
-    if len(objs) == 0:
-        return Obj2d(_m.CrossSection()) if ty == Obj2d else Obj3d(_m.Manifold())
     for o in objs:
         if type(o) != ty:
             raise ValidationError(&#34;Mixed types in parameter: objs.&#34;)
@@ -151,10 +158,9 @@ This is for making a scene of a group of objects that can be saved as a single m
 
     &lt;iframe width=&#34;100%&#34; height=&#34;290&#34; src=&#34;examples/hull3d.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
+    _chkGE(&#34;len(objs)&#34;, len(objs), 1)
     ty = type(objs[0])
     _chkGOTY(&#34;objs&#34;, ty)
-    if len(objs) == 0:
-        return Obj2d(_m.CrossSection()) if ty == Obj2d else Obj3d(_m.Manifold())
     for o in objs:
         if type(o) != ty:
             raise ValidationError(&#34;Mixed types in parameter: objs.&#34;)
@@ -163,13 +169,11 @@ This is for making a scene of a group of objects that can be saved as a single m
         for o in objs:
             l.append(o.mo)
         return Obj2d(_m.CrossSection.batch_hull(l))
-    elif ty == Obj3d:
+    else:
         l = []
         for o in objs:
             l.append(o.mo)
-        return Obj3d(_m.Manifold.batch_hull(l))
-    else:
-        raise ValidationError(&#34;All objects must be of one type, Obj2d or Obj3d&#34;)</code></pre>
+        return Obj3d(_m.Manifold.batch_hull(l))</code></pre>
 </details>
 <div class="desc"><p>Return a convex hull of the given objects.</p>
 <p>All objects must be of the same type (Obj2d or Obj3d).</p>
@@ -230,10 +234,9 @@ as the input objects.</p>
 
     &lt;iframe width=&#34;100%&#34; height=&#34;250&#34; src=&#34;examples/intersect3d.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
+    _chkGE(&#34;len(objs)&#34;, len(objs), 1)
     ty = type(objs[0])
     _chkGOTY(&#34;objs&#34;, ty)
-    if len(objs) == 0:
-        return Obj2d(_m.CrossSection()) if ty == Obj2d else Obj3d(_m.Manifold())
     for o in objs:
         if type(o) != ty:
             raise ValidationError(&#34;Mixed types in parameter: objs.&#34;)
@@ -270,10 +273,9 @@ as the input objects.</p>
 
     &lt;iframe width=&#34;100%&#34; height=&#34;250&#34; src=&#34;examples/union3d.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
+    _chkGE(&#34;len(objs)&#34;, len(objs), 1)
     ty = type(objs[0])
     _chkGOTY(&#34;objs&#34;, ty)
-    if len(objs) == 0:
-        return Obj2d(_m.CrossSection()) if ty == Obj2d else Obj3d(_m.Manifold())
     for o in objs:
         if type(o) != ty:
             raise ValidationError(&#34;Mixed types in parameter: objs.&#34;)

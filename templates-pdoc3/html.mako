@@ -439,6 +439,15 @@
   % endif
 
   <%include file="head.mako"/>
+	<p>
+	</p>
+	<p style="margin-left: 20px;">
+	<ul>
+	<li><a href="https://github.com/briansturgill/Piecad">Github Project</a></li>
+	<li><a href="${link_prefix}qh.html">Quick Help</a></li>
+	<li><a href="${link_prefix}index.html">Documents Home</a></li>
+	</ul
+	</p>
 </head>
 <body>
 <main>

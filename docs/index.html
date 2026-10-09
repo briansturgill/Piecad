@@ -28,6 +28,15 @@ el.replaceWith(d);
 });
 }, 100);
 })</script>
+<p>
+</p>
+<p style="margin-left: 20px;">
+<ul>
+<li><a href="https://github.com/briansturgill/Piecad">Github Project</a></li>
+<li><a href="qh.html">Quick Help</a></li>
+<li><a href="index.html">Documents Home</a></li>
+</ul
+</p>
 </head>
 <body>
 <main>
@@ -37,16 +46,15 @@ el.replaceWith(d);
 </header>
 <section id="section-intro">
 <p>"Easy as Pie" CAD (Piecad)</p>
-<p>It is my opinionted view of what a good, simple CAD API should look like.</p>
+<p>It is my opinionated view of what a good, simple CAD API should look like.</p>
 <p>For many years I used <a href="https://www.openscad.org">OpenSCAD</a>,
-but the functional language it uses was often a hinderance and its speed
+but the functional language it uses was often a hindrance, and its speed
 was poor.</p>
 <p>Piecad is based on <a href="https://github.com/elalish/manifold">Manifold</a>.
 Manifold incorporates <a href="https://github.com/AngusJohnson/Clipper2">Clipper2</a> for 2D objects.
 It also uses <a href="https://github.com/akuukka/quickhull"><code>quickhull</code></a> for 3d convex hulls.
 You can see Manifold's web site for other packages that are used.</p>
-<p>Piecad also uses <a href="https://github.com/ideasman42/isect_segments-bentley_ottmann">isect_segments-bentley_ottmann</a>
-to check for polygon self intersections.</p>
+<p>See the <a href="https://raw.githubusercontent.com/briansturgill/Piecad/refs/heads/main/pyproject.toml">file</a> for more packages that we use.</p>
 <h2 id="piecad-version">Piecad Version</h2>
 <iframe width="100%" height="250" src="examples/version.html"></iframe>
 </section>
@@ -91,6 +99,7 @@ It is used internally in Piecad because Numpy is actually rather slow for …</p
 <dd>
 <div class="desc"><p><code><a title="piecad.Const" href="#piecad.Const">Const</a></code> a namedtuple holding global constants for the Piecad library.</p>
 <p>Const.epsilon - The default epsilon value for precision comparisons.
+<br>
 Const.sqrt_2 - The square root of 2.</p></div>
 </dd>
 </dl>
@@ -110,7 +119,7 @@ Const.sqrt_2 - The square root of 2.</p></div>
     &#34;&#34;&#34;
     If `a` is near `b` (within epsilon) then return True` else `return False`
     &#34;&#34;&#34;
-    return a - epsilon &gt;= b and a + epsilon &lt;= b</code></pre>
+    return abs(a - b) &lt;= epsilon</code></pre>
 </details>
 <div class="desc"><p>If <code>a</code> is near <code>b</code> (within epsilon) then return True<code> else </code>return False`</p></div>
 </dd>
@@ -225,7 +234,7 @@ Const.sqrt_2 - The square root of 2.</p></div>
         The default value of `segments` 36.
 
         If you need a circular objects primary axes to have exact values (at the
-        90 degree marks), chose a `segments` value that is a multiple of 4.
+        90 degree marks), choose a `segments` value that is a multiple of 4.
 
         In circular functions, if the value passed in for `segments` is `-1`, then
         the `default_segments` value is used. Thus circular functions have
@@ -247,7 +256,7 @@ Const.sqrt_2 - The square root of 2.</p></div>
     def set_default_units(cls, units: str = &#34;mm&#34;) -&gt; None:
         &#34;&#34;&#34;
         Set the default units used in this script.
-        Most 3d printing is in &#34;mm&#34; for milimeters.
+        Most 3D printing uses &#34;mm&#34; for millimeters.
         But it can also be &#34;cm&#34; for centimeters or &#34;in&#34; for inches.
         &#34;&#34;&#34;
         _chkIn(&#34;units&#34;, units, [&#34;mm&#34;, &#34;cm&#34;, &#34;in&#34;])
@@ -258,7 +267,7 @@ Const.sqrt_2 - The square root of 2.</p></div>
         &#34;&#34;&#34;
         Get the layer resolution used in printing in this script.
         If you have more than one resolution, use the smallest.
-        For most 3d priting the default of 0.1 is sufficient.
+        For most 3D printing, the default of 0.1 is sufficient.
         &#34;&#34;&#34;
         return cls._layer_resolution
 
@@ -267,8 +276,9 @@ Const.sqrt_2 - The square root of 2.</p></div>
         &#34;&#34;&#34;
         Set the layer resolution used in printing in this script.
         If you have more than one resolution, use the smallest.
-        For most 3d priting the default of 0.1 is sufficient.
+        For most 3D printing, the default of 0.1 is sufficient.
         &#34;&#34;&#34;
+        _chkGT(&#34;resolution&#34;, resolution, 0)
         cls._layer_resolution = resolution
 
     @classmethod
@@ -330,7 +340,7 @@ It may also be "cm" for centimeters or "in" for inches.</p></div>
 <dd>
 <div class="desc"><p>Get the layer resolution used in printing in this script.
 If you have more than one resolution, use the smallest.
-For most 3d priting the default of 0.1 is sufficient.</p></div>
+For most 3D printing, the default of 0.1 is sufficient.</p></div>
 </dd>
 <dt id="piecad.Config.set_default_color"><code class="name flex">
 <span>def <span class="ident">set_default_color</span></span>(<span>cspec: tuple[int, int, int] | str) ‑> None</span>
@@ -362,7 +372,7 @@ In most cases a higher number is desired as it produces objects
 that look truly round.</p>
 <p>The default value of <code>segments</code> 36.</p>
 <p>If you need a circular objects primary axes to have exact values (at the
-90 degree marks), chose a <code>segments</code> value that is a multiple of 4.</p>
+90 degree marks), choose a <code>segments</code> value that is a multiple of 4.</p>
 <p>In circular functions, if the value passed in for <code>segments</code> is <code>-1</code>, then
 the <code>default_segments</code> value is used. Thus circular functions have
 a default value for <code>segments</code> of <code>-1</code>.</p></div>
@@ -372,7 +382,7 @@ a default value for <code>segments</code> of <code>-1</code>.</p></div>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the default units used in this script.
-Most 3d printing is in "mm" for milimeters.
+Most 3D printing uses "mm" for millimeters.
 But it can also be "cm" for centimeters or "in" for inches.</p></div>
 </dd>
 <dt id="piecad.Config.set_layer_resolution"><code class="name flex">
@@ -381,7 +391,7 @@ But it can also be "cm" for centimeters or "in" for inches.</p></div>
 <dd>
 <div class="desc"><p>Set the layer resolution used in printing in this script.
 If you have more than one resolution, use the smallest.
-For most 3d priting the default of 0.1 is sufficient.</p></div>
+For most 3D printing, the default of 0.1 is sufficient.</p></div>
 </dd>
 </dl>
 </dd>
@@ -512,7 +522,7 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
         Mirror over the y axis and you will get an image of the right hand upside down.
         Mirror over the x and y axes and you will get an image a left hand upside down.
 
-        From a mathmatical standpoint, mirroring is negating all the points in each axis selected.
+        From a mathematical standpoint, mirroring negates all points on each selected axis.
 
         &#34;&#34;&#34;
         uv = [0, 0]
@@ -605,11 +615,11 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
         If an axis size is specified as zero, it is automatically calculated by the other specified size to
         maintain the same size ratio between the two sizes.
 
-        If an axis size is specifed as `None` then no change is made on the size of that axis.
+        If an axis size is specified as `None`, no change is made to that axis.
         &#34;&#34;&#34;
         _chkV2(&#34;sizes&#34;, sizes)
-        if (sizes[0] == None or sizes[0] == 0) and (sizes[1] == None and sizes[1] == 0):
-            return self.scale(1, 1)
+        if (sizes[0] == None or sizes[0] == 0) and (sizes[1] == None or sizes[1] == 0):
+            return self.scale((1, 1))
 
         min_x, min_y, max_x, max_y = self.bounding_box()
         self_sizes = [max_x - min_x, max_y - min_y]
@@ -627,7 +637,7 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
 
     def revolve(self, revolve_degrees: float = 360.0, segments: int = -1) -&gt; Obj3d:
         &#34;&#34;&#34;
-        Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
+        Create an Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
 
         For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
         &#34;&#34;&#34;
@@ -661,7 +671,7 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
 
     def to_paths(self) -&gt; list[list[float, float]]:
         &#34;&#34;&#34;
-        Return a lists of paths, each of which is a list of vertices that make up this object.
+        Return a list of paths, each of which is a list of vertices that make up this object.
         &#34;&#34;&#34;
         from copy import deepcopy
 
@@ -674,7 +684,7 @@ For most 3d priting the default of 0.1 is sufficient.</p></div>
         self, matrix2x3: tuple[tuple[float, float, float], tuple[float, float, float]]
     ) -&gt; Obj2d:
         &#34;&#34;&#34;
-        Transform this object with the given affine transformaton matrix.
+        Transform this object with the given affine transformation matrix.
 
         If you don&#39;t know what this is, you probably don&#39;t need it.
         &#34;&#34;&#34;
@@ -908,7 +918,7 @@ For a list of color names see: <a href="https://www.w3.org/wiki/CSS/Properties/c
     Mirror over the y axis and you will get an image of the right hand upside down.
     Mirror over the x and y axes and you will get an image a left hand upside down.
 
-    From a mathmatical standpoint, mirroring is negating all the points in each axis selected.
+    From a mathematical standpoint, mirroring negates all points on each selected axis.
 
     &#34;&#34;&#34;
     uv = [0, 0]
@@ -924,7 +934,7 @@ Consider the hand in mirror the original image, but flattened to 2D.
 Mirror over the x axis and you will get an image to the left that looks like a left hand.
 Mirror over the y axis and you will get an image of the right hand upside down.
 Mirror over the x and y axes and you will get an image a left hand upside down.</p>
-<p>From a mathmatical standpoint, mirroring is negating all the points in each axis selected.</p></div>
+<p>From a mathematical standpoint, mirroring negates all points on each selected axis.</p></div>
 </dd>
 <dt id="piecad.Obj2d.num_verts"><code class="name flex">
 <span>def <span class="ident">num_verts</span></span>(<span>self) ‑> int</span>
@@ -1056,11 +1066,11 @@ To understand <code>miter_limit</code>, see: <a href="https://www.angusj.com/cli
     If an axis size is specified as zero, it is automatically calculated by the other specified size to
     maintain the same size ratio between the two sizes.
 
-    If an axis size is specifed as `None` then no change is made on the size of that axis.
+    If an axis size is specified as `None`, no change is made to that axis.
     &#34;&#34;&#34;
     _chkV2(&#34;sizes&#34;, sizes)
-    if (sizes[0] == None or sizes[0] == 0) and (sizes[1] == None and sizes[1] == 0):
-        return self.scale(1, 1)
+    if (sizes[0] == None or sizes[0] == 0) and (sizes[1] == None or sizes[1] == 0):
+        return self.scale((1, 1))
 
     min_x, min_y, max_x, max_y = self.bounding_box()
     self_sizes = [max_x - min_x, max_y - min_y]
@@ -1079,7 +1089,7 @@ To understand <code>miter_limit</code>, see: <a href="https://www.angusj.com/cli
 <div class="desc"><p>Resize this object to a specific size on each axis.</p>
 <p>If an axis size is specified as zero, it is automatically calculated by the other specified size to
 maintain the same size ratio between the two sizes.</p>
-<p>If an axis size is specifed as <code>None</code> then no change is made on the size of that axis.</p></div>
+<p>If an axis size is specified as <code>None</code>, no change is made to that axis.</p></div>
 </dd>
 <dt id="piecad.Obj2d.revolve"><code class="name flex">
 <span>def <span class="ident">revolve</span></span>(<span>self, revolve_degrees: float = 360.0, segments: int = -1) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
@@ -1091,14 +1101,14 @@ maintain the same size ratio between the two sizes.</p>
 </summary>
 <pre><code class="python">def revolve(self, revolve_degrees: float = 360.0, segments: int = -1) -&gt; Obj3d:
     &#34;&#34;&#34;
-    Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
+    Create an Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
 
     For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
     &#34;&#34;&#34;
     o3 = revolve(self, revolve_degrees, segments)
     return o3</code></pre>
 </details>
-<div class="desc"><p>Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.</p>
+<div class="desc"><p>Create an Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.</p>
 <p>For <code>segments</code> see the documentation of <a href="index.html#piecad.Config.set_default_segments"><code>Config.set_default_segments</code></a>.</p></div>
 </dd>
 <dt id="piecad.Obj2d.rotate"><code class="name flex">
@@ -1168,7 +1178,7 @@ maintain the same size ratio between the two sizes.</p>
 </summary>
 <pre><code class="python">def to_paths(self) -&gt; list[list[float, float]]:
     &#34;&#34;&#34;
-    Return a lists of paths, each of which is a list of vertices that make up this object.
+    Return a list of paths, each of which is a list of vertices that make up this object.
     &#34;&#34;&#34;
     from copy import deepcopy
 
@@ -1177,7 +1187,7 @@ maintain the same size ratio between the two sizes.</p>
     paths = [[tuple(float(coord) for coord in pt) for pt in path] for path in paths]
     return paths</code></pre>
 </details>
-<div class="desc"><p>Return a lists of paths, each of which is a list of vertices that make up this object.</p></div>
+<div class="desc"><p>Return a list of paths, each of which is a list of vertices that make up this object.</p></div>
 </dd>
 <dt id="piecad.Obj2d.transform"><code class="name flex">
 <span>def <span class="ident">transform</span></span>(<span>self,<br>matrix2x3: tuple[tuple[float, float, float], tuple[float, float, float]]) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
@@ -1191,7 +1201,7 @@ maintain the same size ratio between the two sizes.</p>
     self, matrix2x3: tuple[tuple[float, float, float], tuple[float, float, float]]
 ) -&gt; Obj2d:
     &#34;&#34;&#34;
-    Transform this object with the given affine transformaton matrix.
+    Transform this object with the given affine transformation matrix.
 
     If you don&#39;t know what this is, you probably don&#39;t need it.
     &#34;&#34;&#34;
@@ -1200,7 +1210,7 @@ maintain the same size ratio between the two sizes.</p>
 
     return Obj2d(self.mo.transform(matrix2x3), color=self._color)</code></pre>
 </details>
-<div class="desc"><p>Transform this object with the given affine transformaton matrix.</p>
+<div class="desc"><p>Transform this object with the given affine transformation matrix.</p>
 <p>If you don't know what this is, you probably don't need it.</p></div>
 </dd>
 <dt id="piecad.Obj2d.translate"><code class="name flex">
@@ -1367,7 +1377,7 @@ maintain the same size ratio between the two sizes.</p>
         Mirror over the x and y axes and you will get an image like the back of a left hand.
         For the Z axis it&#39;s the same, but each hand is upside down.
 
-        From a mathmatical standpoint, mirroring is negating all the points in each axis selected.
+        From a mathematical standpoint, mirroring negates all points on each selected axis.
 
         &#34;&#34;&#34;
         uv = [0, 0, 0]
@@ -1418,15 +1428,14 @@ maintain the same size ratio between the two sizes.</p>
         first, second = self.mo.split_by_plane(normal, offset)
         fxmin, fymin, fzmin, fxmax, fymax, fzmax = first.bounding_box()
         sxmin, symin, szmin, sxmax, symax, szmax = second.bounding_box()
-        if fxmin &lt; sxmin:
-            return Obj3d(first), Obj3d(second)
-        elif sxmin &lt; fxmin:
-            return Obj3d(second), Obj3d(first)
-        elif fzmin &lt; szmin:
-            return Obj3d(first), Obj3d(second)
-        elif szmin &lt; fzmin:
-            return Obj3d(second), Obj3d(first)
-        elif near_le(first.volume(), second.volume()):
+        # Minimums closer than epsilon are ties, so numerical noise cannot decide the order.
+        if not near_eq(fxmin, sxmin):
+            first_is_first = fxmin &lt; sxmin
+        elif not near_eq(fzmin, szmin):
+            first_is_first = fzmin &lt; szmin
+        else:
+            first_is_first = first.volume() &lt;= second.volume() + Const.epsilon
+        if first_is_first:
             return Obj3d(first), Obj3d(second)
         else:
             return Obj3d(second), Obj3d(first)
@@ -1489,7 +1498,7 @@ maintain the same size ratio between the two sizes.</p>
             (0, 0, z1)
         )
         if both:
-            o1, o2 = self.split(cutter)
+            o2, o1 = self.split(cutter)
             return (o1, o2)
         o3 = difference(self, cutter)
         return o3
@@ -1510,15 +1519,15 @@ maintain the same size ratio between the two sizes.</p>
         If an axis size is specified as zero, it is automatically calculated by a specified size to
         maintain the same size ratio between the two sizes.
 
-        If an axis size is specifed as `None` then no change is made on the size of that axis.
+        If an axis size is specified as `None`, no change is made to that axis.
         &#34;&#34;&#34;
         _chkV3(&#34;sizes&#34;, sizes)
         if (
             (sizes[0] == None or sizes[0] == 0)
-            and (sizes[1] == None and sizes[1] == 0)
+            and (sizes[1] == None or sizes[1] == 0)
             and (sizes[2] == None or sizes[2] == 0)
         ):
-            return self.scale(1, 1, 1)
+            return self.scale((1, 1, 1))
 
         min_x, min_y, min_z, max_x, max_y, max_z = self.bounding_box()
         self_sizes = [max_x - min_x, max_y - min_y, max_z - min_z]
@@ -1583,9 +1592,9 @@ maintain the same size ratio between the two sizes.</p>
 
     def split(self, cutter: Obj3d) -&gt; Obj3d:
         &#34;&#34;&#34;
-        This more efficently does a difference and an intersect operation between this and cutter.
+        This performs difference and intersection operations between this object and the cutter more efficiently.
 
-        Return is `(diff_obj, inter_obj)`.
+        The return value is `(inter_obj, diff_obj)`.
 
         &#34;&#34;&#34;
         ret = self.mo.split(cutter.mo)
@@ -1601,7 +1610,7 @@ maintain the same size ratio between the two sizes.</p>
         self, np: bool = False
     ) -&gt; tuple[list[tuple[float, float, float]], list[tuple[int, int, int]]]:
         &#34;&#34;&#34;
-        Return a pair containg a list of vertices and a list of faces for this object.
+        Return a pair containing a list of vertices and a list of faces for this object.
 
         Manifold3d uses numpy arrays to avoid an array copy. For most uses, python lists of tuples are
         more efficient. However, if you are using numpy for further processing, you may want to set `np=True`,
@@ -1631,7 +1640,7 @@ maintain the same size ratio between the two sizes.</p>
         ],
     ) -&gt; Obj3d:
         &#34;&#34;&#34;
-        Transform this object with the given affine transformaton matrix.
+        Transform this object with the given affine transformation matrix.
 
         If you don&#39;t know what this is, you probably don&#39;t need it.
         &#34;&#34;&#34;
@@ -1905,7 +1914,7 @@ adding it.</p>
     Mirror over the x and y axes and you will get an image like the back of a left hand.
     For the Z axis it&#39;s the same, but each hand is upside down.
 
-    From a mathmatical standpoint, mirroring is negating all the points in each axis selected.
+    From a mathematical standpoint, mirroring negates all points on each selected axis.
 
     &#34;&#34;&#34;
     uv = [0, 0, 0]
@@ -1924,7 +1933,7 @@ Mirror over the x axis and you will get an image to the left that looks like a l
 Mirror over the y axis and you will get an image like the back of the hand you are holding up.
 Mirror over the x and y axes and you will get an image like the back of a left hand.
 For the Z axis it's the same, but each hand is upside down.</p>
-<p>From a mathmatical standpoint, mirroring is negating all the points in each axis selected.</p></div>
+<p>From a mathematical standpoint, mirroring negates all points on each selected axis.</p></div>
 </dd>
 <dt id="piecad.Obj3d.miter_cut"><code class="name flex">
 <span>def <span class="ident">miter_cut</span></span>(<span>self, cut_angle: float, cut_point: tuple[float, float, float]) ‑> tuple[<a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a>, <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a>]</span>
@@ -1973,15 +1982,14 @@ For the Z axis it's the same, but each hand is upside down.</p>
     first, second = self.mo.split_by_plane(normal, offset)
     fxmin, fymin, fzmin, fxmax, fymax, fzmax = first.bounding_box()
     sxmin, symin, szmin, sxmax, symax, szmax = second.bounding_box()
-    if fxmin &lt; sxmin:
-        return Obj3d(first), Obj3d(second)
-    elif sxmin &lt; fxmin:
-        return Obj3d(second), Obj3d(first)
-    elif fzmin &lt; szmin:
-        return Obj3d(first), Obj3d(second)
-    elif szmin &lt; fzmin:
-        return Obj3d(second), Obj3d(first)
-    elif near_le(first.volume(), second.volume()):
+    # Minimums closer than epsilon are ties, so numerical noise cannot decide the order.
+    if not near_eq(fxmin, sxmin):
+        first_is_first = fxmin &lt; sxmin
+    elif not near_eq(fzmin, szmin):
+        first_is_first = fzmin &lt; szmin
+    else:
+        first_is_first = first.volume() &lt;= second.volume() + Const.epsilon
+    if first_is_first:
         return Obj3d(first), Obj3d(second)
     else:
         return Obj3d(second), Obj3d(first)</code></pre>
@@ -2085,7 +2093,7 @@ number of vertices is present goes a long way to making sure things are healthy.
         (0, 0, z1)
     )
     if both:
-        o1, o2 = self.split(cutter)
+        o2, o1 = self.split(cutter)
         return (o1, o2)
     o3 = difference(self, cutter)
     return o3</code></pre>
@@ -2128,15 +2136,15 @@ number of vertices is present goes a long way to making sure things are healthy.
     If an axis size is specified as zero, it is automatically calculated by a specified size to
     maintain the same size ratio between the two sizes.
 
-    If an axis size is specifed as `None` then no change is made on the size of that axis.
+    If an axis size is specified as `None`, no change is made to that axis.
     &#34;&#34;&#34;
     _chkV3(&#34;sizes&#34;, sizes)
     if (
         (sizes[0] == None or sizes[0] == 0)
-        and (sizes[1] == None and sizes[1] == 0)
+        and (sizes[1] == None or sizes[1] == 0)
         and (sizes[2] == None or sizes[2] == 0)
     ):
-        return self.scale(1, 1, 1)
+        return self.scale((1, 1, 1))
 
     min_x, min_y, min_z, max_x, max_y, max_z = self.bounding_box()
     self_sizes = [max_x - min_x, max_y - min_y, max_z - min_z]
@@ -2168,7 +2176,7 @@ number of vertices is present goes a long way to making sure things are healthy.
 <div class="desc"><p>Resize this object to a specific size on each axis.</p>
 <p>If an axis size is specified as zero, it is automatically calculated by a specified size to
 maintain the same size ratio between the two sizes.</p>
-<p>If an axis size is specifed as <code>None</code> then no change is made on the size of that axis.</p></div>
+<p>If an axis size is specified as <code>None</code>, no change is made to that axis.</p></div>
 </dd>
 <dt id="piecad.Obj3d.rotate"><code class="name flex">
 <span>def <span class="ident">rotate</span></span>(<span>self, degrees: list[float, float, float]) ‑> <a title="piecad.Obj3d" href="#piecad.Obj3d">Obj3d</a></span>
@@ -2256,16 +2264,16 @@ maintain the same size ratio between the two sizes.</p>
 </summary>
 <pre><code class="python">def split(self, cutter: Obj3d) -&gt; Obj3d:
     &#34;&#34;&#34;
-    This more efficently does a difference and an intersect operation between this and cutter.
+    This performs difference and intersection operations between this object and the cutter more efficiently.
 
-    Return is `(diff_obj, inter_obj)`.
+    The return value is `(inter_obj, diff_obj)`.
 
     &#34;&#34;&#34;
     ret = self.mo.split(cutter.mo)
     return (Obj3d(ret[0]), Obj3d(ret[1]))</code></pre>
 </details>
-<div class="desc"><p>This more efficently does a difference and an intersect operation between this and cutter.</p>
-<p>Return is <code>(diff_obj, inter_obj)</code>.</p></div>
+<div class="desc"><p>This performs difference and intersection operations between this object and the cutter more efficiently.</p>
+<p>The return value is <code>(inter_obj, diff_obj)</code>.</p></div>
 </dd>
 <dt id="piecad.Obj3d.surface_area"><code class="name flex">
 <span>def <span class="ident">surface_area</span></span>(<span>self) ‑> float</span>
@@ -2295,7 +2303,7 @@ maintain the same size ratio between the two sizes.</p>
     self, np: bool = False
 ) -&gt; tuple[list[tuple[float, float, float]], list[tuple[int, int, int]]]:
     &#34;&#34;&#34;
-    Return a pair containg a list of vertices and a list of faces for this object.
+    Return a pair containing a list of vertices and a list of faces for this object.
 
     Manifold3d uses numpy arrays to avoid an array copy. For most uses, python lists of tuples are
     more efficient. However, if you are using numpy for further processing, you may want to set `np=True`,
@@ -2315,7 +2323,7 @@ maintain the same size ratio between the two sizes.</p>
     f = list(map(tuple, mesh.tri_verts.tolist()))
     return (v, f)</code></pre>
 </details>
-<div class="desc"><p>Return a pair containg a list of vertices and a list of faces for this object.</p>
+<div class="desc"><p>Return a pair containing a list of vertices and a list of faces for this object.</p>
 <p>Manifold3d uses numpy arrays to avoid an array copy. For most uses, python lists of tuples are
 more efficient. However, if you are using numpy for further processing, you may want to set <code>np=True</code>,
 to preserve the arrays as numpy arrays.
@@ -2340,7 +2348,7 @@ so you may want to do timing tests.</p></div>
     ],
 ) -&gt; Obj3d:
     &#34;&#34;&#34;
-    Transform this object with the given affine transformaton matrix.
+    Transform this object with the given affine transformation matrix.
 
     If you don&#39;t know what this is, you probably don&#39;t need it.
     &#34;&#34;&#34;
@@ -2354,7 +2362,7 @@ so you may want to do timing tests.</p></div>
 
     return Obj3d(self.mo.transform(matrix3x4))</code></pre>
 </details>
-<div class="desc"><p>Transform this object with the given affine transformaton matrix.</p>
+<div class="desc"><p>Transform this object with the given affine transformation matrix.</p>
 <p>If you don't know what this is, you probably don't need it.</p></div>
 </dd>
 <dt id="piecad.Obj3d.translate"><code class="name flex">
@@ -2401,7 +2409,7 @@ so you may want to do timing tests.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class ValidationError(BaseException):
+<pre><code class="python">class ValidationError(Exception):
     &#34;&#34;&#34;
     Exception class for errors detected in arguments to **piecad**
     functions and methods.
@@ -2414,6 +2422,7 @@ so you may want to do timing tests.</p></div>
 functions and methods.</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>
 </dd>

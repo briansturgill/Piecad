@@ -20,69 +20,17 @@ pip install piecad
 
 [Printable CheatSheet](https://briansturgill.github.io/Piecad/cs.pdf)
 
-[Piecad-Viewer](https://github.com/briansturgill/Piecad-Viewer):
 Piecad has a `view` function which works like a 3d `print` (also does 2D).
-Piecad-Viewer provides the window that displays the model/image from each `view` call.
+[Matplotlib](https://matplotlib.org/) provides the window that displays the model/image from each `view` call.
 You can use arrow keys to swtich between the models/images.
 
-Type 'h' in the Piecad-Viewer window for a list of commands.
+The viewer is automatically started when you use a `view` call inside Piecad.
+If you are running your program inside PyCharm or Microsoft Visual Studio, add a call
+to `view_all_now()` as the last line of your program.
+Type 'h' in the view window for a list of commands.
 
-Piecad-Viewer is installed with Piecad. It is automatically started when you use
-a `view` call inside Piecad.
 
 # My Piecad development environment.
-
-I have one window where I run vi as my editor.
-
-I have another window that is Piecad-Viewer.
-
-I use the script below to watch for changes in all `*.py` files, the argument to
-the script is the name of the main python file. When any python file is written, python
-is ran on that main python file.
-
-So I use `view` calls for what I need to see. Edit, then when I write, the `pywatch` script
-below causes those views to be displayed.
-
-
-```python
-#!/usr/bin/env python3
-import sys
-import os
-import time
-from watchdog.events import FileSystemEventHandler
-from watchdog.observers import Observer
-
-class MyEventHandler(FileSystemEventHandler):
-    def on_created(self, event):
-        pass
-
-    def on_modified(self, event):
-        if event.src_path.endswith(".py"):
-            print(event)
-            os.system(f"python {sys.argv[1]}")
-
-    def on_deleted(self, event):
-        pass
-
-    def on_moved(self, event):
-        pass
-
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: pywatch _file_")
-        sys.exit(1)
-    path_to_watch = "."  # Current directory
-    event_handler = MyEventHandler()
-    observer = Observer()
-    observer.schedule(event_handler, path_to_watch, recursive=True)
-    observer.start()
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
-    observer.join()
-```
 
 
 ## CREDITS
@@ -95,8 +43,9 @@ You can see Manifold's web site for other packages that are used.
 Piecad uses the [trimesh](https://github.com/mikedh/trimesh) package for mesh loading/saving and
 for Piecad-Viewer.
 
-Piecad, Manifold and Trimesh uses the [numpy](https://numpy.org/) package for numeric and array processing.
-
-Also used are [fontTools](https://github.com/fonttools/fonttools) and [fontPens](https://github.com/robotools/fontPens) to support text.
+Piecad uses [Matplotlib](https://matplotlib.org/) for visualizations.
 
 We include two fonts: `Hack-Regular.tts` and `Roboto-Regular.tts`, see `piecad/fonts` for the licenses.
+
+See the [file](https://raw.githubusercontent.com/briansturgill/Piecad/refs/heads/main/pyproject.toml) for more packages
+that are used in Piecad.

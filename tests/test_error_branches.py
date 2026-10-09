@@ -152,12 +152,17 @@ def test_rotation_gimbal_lock_round_trip(sign):
     cx, sx = math.cos(rx), math.sin(rx)
     ry_m = [[0, 0, sign], [0, 1, 0], [-sign, 0, 0]]
     rx_m = [[1, 0, 0], [0, cx, -sx], [0, sx, cx]]
-    R = [[sum(ry_m[i][k] * rx_m[k][j] for k in range(3)) for j in range(3)] for i in range(3)]
+    R = [
+        [sum(ry_m[i][k] * rx_m[k][j] for k in range(3)) for j in range(3)]
+        for i in range(3)
+    ]
     ang = _rotation_to_xyz_degrees(R)
     assert ang[2] == 0.0
     pts = [(1.0, 2.0, 3.0), (2.0, 2.0, 3.0), (1.0, 4.0, 3.0), (1.0, 2.0, 6.0)]
     verts, _ = hull_points(pts).rotate(ang).to_verts_and_faces()
-    expected = sorted(tuple(round(c, 5) for c in _matrix_vector_multiply(R, p)) for p in pts)
+    expected = sorted(
+        tuple(round(c, 5) for c in _matrix_vector_multiply(R, p)) for p in pts
+    )
     got = sorted(tuple(round(c, 5) + 0.0 for c in v) for v in verts)
     for g, e in zip(got, expected):
         assert g == pytest.approx(e, abs=1e-4)
@@ -176,8 +181,8 @@ def test_miter_cut_tie_on_x_and_z_orders_by_volume():
     assert first.bounding_box() == second.bounding_box()
     assert first.volume() < second.volume()
     # Same result when the heavier half is the other one.
-    first, second = big.mirror((True, False, False)).translate((10, 0, 0)).miter_cut(
-        -45, (5, 1, 5)
+    first, second = (
+        big.mirror((True, False, False)).translate((10, 0, 0)).miter_cut(-45, (5, 1, 5))
     )
     assert first.volume() < second.volume()
 

@@ -14,15 +14,17 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = [
-    "piecad_viewer >= 1.1.0",
-    "pillow >= 12.3.0",
-    "lib3mf>=2.5.0",
-    "trimesh[easy] >= 1.26.4",
+    "matplotlib >= 3.11.2",
+    "networkx >= 3.7",
+    "py-lib3mf >= 2.3.1",
     "fontPens >= 0.2.4",
     "fontTools >= 4.57.0",
     "manifold3d >= 3.0.1",
-    "skia-pathops >= 0.8.0",
-		"svgpathtools==1.7.0",
+    "pillow >= 12.3.0",
+    "skia-pathops==0.9.2",
+    "svgpathtools==1.7.0",
+    "trimesh >= 1.26.4",
+    "weasyprint >= 70.0",
 ]
 
 [project.urls]

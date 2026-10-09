@@ -12,8 +12,8 @@ Manifold incorporates [Clipper2](https://github.com/AngusJohnson/Clipper2) for 2
 It also uses [`quickhull`](https://github.com/akuukka/quickhull) for 3d convex hulls.
 You can see Manifold's web site for other packages that are used.
 
-Piecad also uses [isect_segments-bentley_ottmann](https://github.com/ideasman42/isect_segments-bentley_ottmann)
-to check for polygon self intersections.
+See the [file](https://raw.githubusercontent.com/briansturgill/Piecad/refs/heads/main/pyproject.toml) for more packages that we use.
+
 
 ## Piecad Version
 
@@ -42,7 +42,7 @@ class ValidationError(Exception):
 
 from ._color import _parse_color
 
-__version__ = "1.4.2"
+__version__ = "2.0.0"
 
 
 def version() -> str:
@@ -966,6 +966,7 @@ Const = _const(epsilon=_m.Manifold.cube().get_tolerance(), sqrt_2=2**0.5)
 `Const` a namedtuple holding global constants for the Piecad library.
 
 Const.epsilon - The default epsilon value for precision comparisons.
+<br>
 Const.sqrt_2 - The square root of 2.
 """
 

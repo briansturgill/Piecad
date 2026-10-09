@@ -14,7 +14,9 @@ def save_dir(tmp_path, monkeypatch):
 
 
 def test_lithophane_from_image():
-    o = lithophane(IMAGE, width_mm=20, pixel_size=1.0, min_thickness=0.5, max_thickness=2.0)
+    o = lithophane(
+        IMAGE, width_mm=20, pixel_size=1.0, min_thickness=0.5, max_thickness=2.0
+    )
     bb = o.bounding_box()
     assert bb[3] - bb[0] == pytest.approx(20, abs=1.5)
     assert bb[5] - bb[2] <= 2.0 + 1e-6
@@ -83,7 +85,16 @@ def test_winding():
     assert winding([(0, 0), (1, 1)]) == "too small"
 
 
-CUBE_V = [(0, 0, 0), (1, 0, 0), (1, 1, 0), (0, 1, 0), (0, 0, 1), (1, 0, 1), (1, 1, 1), (0, 1, 1)]
+CUBE_V = [
+    (0, 0, 0),
+    (1, 0, 0),
+    (1, 1, 0),
+    (0, 1, 0),
+    (0, 0, 1),
+    (1, 0, 1),
+    (1, 1, 1),
+    (0, 1, 1),
+]
 CUBE_F = [
     (0, 2, 1), (0, 3, 2), (4, 5, 6), (4, 6, 7), (0, 1, 5), (0, 5, 4),
     (1, 2, 6), (1, 6, 5), (2, 3, 7), (2, 7, 6), (3, 0, 4), (3, 4, 7),

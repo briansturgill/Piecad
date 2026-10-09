@@ -54,7 +54,7 @@ pre {
 <div class="container">
 <a href="https://www.github.com/briansturgill/Piecad">Piecad github</a>
 <br>
-<a href="https://briansturgill.github.io/Piecad">Piecad documentation</a>
+<a href="index.html">Piecad documentation</a>
 <h2>Info Functions</h2>
 <p class="item">
 <a class="ahover" href="index.html#piecad.near_eq">
@@ -688,7 +688,7 @@ view_all_now
 <span class="popup">
 <code>view_all_now() -> None</code>
 <br>
-The `view()` function mearly records a list of objects to be displayed.
+The `view()` function merely records a list of objects to be displayed.
 </span>
 </a>
 </p>
@@ -839,7 +839,7 @@ revolve
 <span class="popup">
 <code>revolve(self, revolve_degrees: 'float' = 360.0, segments: 'int' = -1) -> 'Obj3d'</code>
 <br>
-Create a Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
+Create an Obj3d by revolving this object around the Y-axis, then rotating it so that Y becomes Z.
 </span>
 </a>
 </p>
@@ -879,7 +879,7 @@ to_paths
 <span class="popup">
 <code>to_paths(self) -> 'list[list[float, float]]'</code>
 <br>
-Return a lists of paths, each of which is a list of vertices that make up this object.
+Return a list of paths, each of which is a list of vertices that make up this object.
 </span>
 </a>
 </p>
@@ -889,7 +889,7 @@ transform
 <span class="popup">
 <code>transform(self, matrix2x3: 'tuple[tuple[float, float, float], tuple[float, float, float]]') -> 'Obj2d'</code>
 <br>
-Transform this object with the given affine transformaton matrix.
+Transform this object with the given affine transformation matrix.
 </span>
 </a>
 </p>
@@ -1100,7 +1100,7 @@ split
 <span class="popup">
 <code>split(self, cutter: 'Obj3d') -> 'Obj3d'</code>
 <br>
-This more efficently does a difference and an intersect operation between this and cutter.
+This performs difference and intersection operations between this object and the cutter more efficiently.
 </span>
 </a>
 </p>
@@ -1120,7 +1120,7 @@ to_verts_and_faces
 <span class="popup">
 <code>to_verts_and_faces(self, np: 'bool' = False) -> 'tuple[list[tuple[float, float, float]], list[tuple[int, int, int]]]'</code>
 <br>
-Return a pair containg a list of vertices and a list of faces for this object.
+Return a pair containing a list of vertices and a list of faces for this object.
 </span>
 </a>
 </p>
@@ -1130,7 +1130,7 @@ transform
 <span class="popup">
 <code>transform(self, matrix3x4: 'tuple[tuple[float, float, float, float], tuple[float, float, float, float], tuple[float, float, float, float], tuple[float, float, float, float]]') -> 'Obj3d'</code>
 <br>
-Transform this object with the given affine transformaton matrix.
+Transform this object with the given affine transformation matrix.
 </span>
 </a>
 </p>
