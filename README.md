@@ -30,9 +30,6 @@ to `view_all_now()` as the last line of your program.
 Type 'h' in the view window for a list of commands.
 
 
-# My Piecad development environment.
-
-
 ## CREDITS
 
 Piecad is based on [Manifold](https://github.com/elalish/manifold), a 3D CAD package written in C++.
