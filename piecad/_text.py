@@ -93,23 +93,57 @@ def _outline_to_segments(outline):
 
     def conic_to(control, to, user_obj):
         obj = user_obj.value if hasattr(user_obj, "value") else user_obj
-        obj.append(("qCurveTo", ((control.contents.x, control.contents.y), (to.contents.x, to.contents.y))))
+        obj.append(
+            (
+                "qCurveTo",
+                (
+                    (control.contents.x, control.contents.y),
+                    (to.contents.x, to.contents.y),
+                ),
+            )
+        )
         return 0
 
     def cubic_to(control1, control2, to, user_obj):
         obj = user_obj.value if hasattr(user_obj, "value") else user_obj
-        obj.append(("curveTo", ((control1.contents.x, control1.contents.y), (control2.contents.x, control2.contents.y), (to.contents.x, to.contents.y))))
+        obj.append(
+            (
+                "curveTo",
+                (
+                    (control1.contents.x, control1.contents.y),
+                    (control2.contents.x, control2.contents.y),
+                    (to.contents.x, to.contents.y),
+                ),
+            )
+        )
         return 0
 
     funcs = FT_Outline_Funcs(
-        move_to=ctypes.CFUNCTYPE(ctypes.c_int, ctypes.POINTER(FT_Vector), ctypes.py_object)(move_to),
-        line_to=ctypes.CFUNCTYPE(ctypes.c_int, ctypes.POINTER(FT_Vector), ctypes.py_object)(line_to),
-        conic_to=ctypes.CFUNCTYPE(ctypes.c_int, ctypes.POINTER(FT_Vector), ctypes.POINTER(FT_Vector), ctypes.py_object)(conic_to),
-        cubic_to=ctypes.CFUNCTYPE(ctypes.c_int, ctypes.POINTER(FT_Vector), ctypes.POINTER(FT_Vector), ctypes.POINTER(FT_Vector), ctypes.py_object)(cubic_to),
+        move_to=ctypes.CFUNCTYPE(
+            ctypes.c_int, ctypes.POINTER(FT_Vector), ctypes.py_object
+        )(move_to),
+        line_to=ctypes.CFUNCTYPE(
+            ctypes.c_int, ctypes.POINTER(FT_Vector), ctypes.py_object
+        )(line_to),
+        conic_to=ctypes.CFUNCTYPE(
+            ctypes.c_int,
+            ctypes.POINTER(FT_Vector),
+            ctypes.POINTER(FT_Vector),
+            ctypes.py_object,
+        )(conic_to),
+        cubic_to=ctypes.CFUNCTYPE(
+            ctypes.c_int,
+            ctypes.POINTER(FT_Vector),
+            ctypes.POINTER(FT_Vector),
+            ctypes.POINTER(FT_Vector),
+            ctypes.py_object,
+        )(cubic_to),
         shift=0,
         delta=0,
     )
-    raw.FT_Outline_Decompose(ctypes.byref(outline._FT_Outline), ctypes.byref(funcs), user)
+    raw.FT_Outline_Decompose(
+        ctypes.byref(outline._FT_Outline), ctypes.byref(funcs), user
+    )
     return segments
 
 
@@ -134,7 +168,10 @@ def _flatten_segments(segments):
             current = args
         elif kind == "qCurveTo":
             control, end = args
-            steps = max(1, int(round(_quadratic_length(current, control, end) / _SEGMENT_LENGTH)))
+            steps = max(
+                1,
+                int(round(_quadratic_length(current, control, end) / _SEGMENT_LENGTH)),
+            )
             for i in range(1, steps + 1):
                 t = i / steps
                 path.append(_quadratic_point(t, current, control, end))

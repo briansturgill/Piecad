@@ -1,8 +1,9 @@
 import manifold3d as m
+
 try:
-	import lib3mf.Lib3MF as lib3mf
+    import lib3mf.Lib3MF as lib3mf
 except:
-	import py_lib3mf.Lib3MF as lib3mf
+    import py_lib3mf.Lib3MF as lib3mf
 from datetime import datetime as dt
 
 
