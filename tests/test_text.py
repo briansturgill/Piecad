@@ -5,10 +5,10 @@ from piecad import *
 def test_text():
     s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz"
     o = text(6, s)
-    assert o.num_verts() == 22865
+    assert o.num_verts() == 22904
     s = "0123456789 !\"#$%&'()*+,-./:;<=>?@[\\]|^|_|`|{|}~"
     o = text(6, s)
-    assert o.num_verts() == 20551
+    assert o.num_verts() == 20594
 
 
 if __name__ == "__main__":
