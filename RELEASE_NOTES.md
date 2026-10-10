@@ -37,3 +37,10 @@ For color export, .3mf or .ply are the two best option.
 Piecad has long had checking of 2d polygons. This release adds similar
 support for 3d polyhedrons.  3d checking is far more difficult.
 We use matplotlib to give visualization to found 3d problems.
+
+# 2.0.0
+Large number of additons and cleanups.
+Experimental fillet and chamfer added.
+matplotlib-based viewer.
+Improved documentation.
+
