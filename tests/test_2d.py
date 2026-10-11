@@ -99,6 +99,22 @@ def test_rectangle_centered(benchmark):
     assert o.bounding_box() == (-5, -5, 5, 5)
 
 
+def test_center():
+    obj = rectangle((10, 20)).translate((3, 6))
+    assert obj.bounding_box() == (3.0, 6.0, 13.0, 26.0)
+
+    assert obj.center().bounding_box() == (-5.0, -10.0, 5.0, 10.0)
+    assert obj.center((False, True)).bounding_box() == (3.0, -10.0, 13.0, 10.0)
+    assert obj.center((True, False)).bounding_box() == (-5.0, 6.0, 5.0, 26.0)
+    assert obj.center(at=(1, 1)).bounding_box() == (-4.0, -9.0, 6.0, 11.0)
+    assert obj.center((False, True), at=(1, 1)).bounding_box() == (
+        3.0,
+        -9.0,
+        13.0,
+        11.0,
+    )
+
+
 def test_rounded_rectangle(benchmark):
     o = benchmark(_rounded_rectangle, (10, 10), 2.0, 36)
     assert o.num_verts() == 40

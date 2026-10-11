@@ -221,17 +221,13 @@ def _get_glyph_polygon(c):
     _font.load_char(c, freetype.FT_LOAD_NO_SCALE | freetype.FT_LOAD_NO_HINTING)
     paths = _flatten_segments(_outline_to_segments(_font.glyph.outline))
 
-    max_y = 0
-    for pth in paths:
-        for pt in pth:
-            y = pt[1]
-            if y > max_y:
-                max_y = y
+    ys = [pt[1] for pth in paths for pt in pth]
 
     # Non-zero fill merges the overlapping contours some fonts contain.
     obj = Obj2d(_m.CrossSection(paths, _m.FillRule.NonZero))
     obj.width = _font.glyph.advance.x
-    obj.max_y = max_y
+    obj.max_y = max(ys, default=0)
+    obj.min_y = min(ys, default=0)
     return obj
 
 
@@ -245,24 +241,30 @@ def text_func(size: float, text: str, inter_char_space=None):
     The default value for the spacing between characters (`inter_char_space`) is `size/3.0`.
 
     """
-    line_pos = 0
     if inter_char_space == None:
         inter_char_space = size / 3.0
-    l = []
-    max_y = 0
-    for c in text:
-        poly = _get_glyph_polygon(c)
-        width = poly.width
-        if poly.max_y > max_y:
-            max_y = poly.max_y
-        if line_pos > 0:
-            line_pos += inter_char_space
-        poly = poly.translate([line_pos, 0])
-        line_pos += width
-        l.append(poly)
+    glyphs = [_get_glyph_polygon(c) for c in text]
+
+    # The tallest glyph top sets the scale; if every glyph lies below the
+    # baseline (e.g. "_"), fall back to the full vertical extent.
+    max_y = max((g.max_y for g in glyphs), default=0)
+    if max_y <= 0:
+        min_y = min((g.min_y for g in glyphs if not g.is_empty()), default=0)
+        max_y -= min_y
+    if max_y <= 0:
+        return Obj2d(_m.CrossSection())
     f = size / max_y
-    obj = union(*l).scale([f, f])
-    return obj
+
+    # Glyphs are positioned in font units, so convert the spacing to them.
+    gap = inter_char_space / f
+    line_pos = 0
+    l = []
+    for poly in glyphs:
+        if line_pos > 0:
+            line_pos += gap
+        l.append(poly.translate([line_pos, 0]))
+        line_pos += poly.width
+    return union(*l).scale([f, f])
 
 
 if __name__ == "__main__":

@@ -308,4 +308,4 @@ def text(size: float, text: str, inter_char_space=None) -> Obj2d:
 
     The default value for the spacing between characters (`inter_char_space`) is `size/3.0`.
     """
-    return _text.text_func(size, text, inter_char_space=None)
+    return _text.text_func(size, text, inter_char_space=inter_char_space)
