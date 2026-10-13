@@ -82,10 +82,3 @@ def export_3mf(filename, mo, color_map, units="mm", def_color=(210, 180, 140)):
     except Exception as e:
         print(f"Error: {e}")
         raise
-
-
-if __name__ == "__main__":
-    mo = m.Manifold.cube((40, 40, 40))
-    mo2 = m.Manifold.cube((40, 40, 40)).translate((4, 4, 4))
-    mo = mo + mo2
-    export_3mf("/home/brian/Downloads/t.3mf", mo, {})

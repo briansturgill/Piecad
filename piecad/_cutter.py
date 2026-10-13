@@ -137,18 +137,3 @@ def chamfer_cutter(bevel_size, length):
     _, _, zmin, _, _, zmax = cut.bounding_box()
     cut = cut.translate((0, 0, bevel_size - zmax - zmin))
     return cut
-
-
-if __name__ == "__main__":
-    from . import save, view, view_all_now
-
-    sc = fillet_cutter(radius=1, height=10)
-    print(sc.bounding_box())
-    save("scraper.3mf", sc)
-    view(sc)
-    cut = chamfer_cutter(radius=1, length=10)
-    print(cut.bounding_box())
-    save("cutter.3mf", cut)
-    view(cut)
-
-    view_all_now()
