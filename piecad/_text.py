@@ -265,21 +265,3 @@ def text_func(size: float, text: str, inter_char_space=None):
         l.append(poly.translate([line_pos, 0]))
         line_pos += poly.width
     return union(*l).scale([f, f])
-
-
-if __name__ == "__main__":
-    size = 6
-    h = size * 3
-    s = "ASsTtUuVvWwXxYyZzA"
-    s = "afiklgmnijmj"
-    s = "0123456789"
-    s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    s = "abcdefghijklmnopqrstuvwxyz"
-    s = "!\"#$%&'()*+,-./:;<=>?@[\\]|^|_|`|{|}~"
-    s = "p0123456789 !\"#$%&'()*+,-./:;<=>?@[\\]|^|_|`|{|}~"
-    c = text_func(size, s)
-    x1, y1, x2, y2 = c.bounding_box()
-    w = (x2 - x1) + size * 2
-    c3d = union(cube([w, h, 2]), c.extrude(2).translate([size, size, 2]))
-    view(c3d)
-    save("/tmp/text.obj", c3d)
