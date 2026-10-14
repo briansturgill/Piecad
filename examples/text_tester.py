@@ -1,6 +1,7 @@
 """
 Make font plates testing Roboto and Hack fonts in sizes 4mm - 8mm.
 """
+
 from piecad import *
 
 if __name__ == "__main__":
@@ -16,20 +17,28 @@ if __name__ == "__main__":
         off = sizes[0] / 2
         for sz in sizes:
             s = f"{tag}{sz}: {test_text}"
-            c = text(sz, s, 0).translate([pad, off]).simplify(1e-2).color("red")
+            c = text(sz, s, 0).translate([pad, off]).simplify(1e-4)
             l.append(c)
             off += last_sz + sz
             last_sz = sz
-        txt3d = union(*l).extrude(thk)
+        txt3d = union(*l).extrude(thk).color("gold")
         x1, y1, z1, x2, y2, z2 = txt3d.bounding_box()
         h = y2 - y1
         w = x2 - x1
         obj = union(
             difference(
-                rounded_rectangle([w + pad * 4, h + pad * 4], 3).extrude(2 * thk),
-                rounded_rectangle([w + pad * 2, h + pad * 2], 3)
-                .extrude(thk)
-                .translate([pad, pad, thk]),
+                union(
+                    rounded_rectangle([w+4 + pad * 4, h+4 + pad * 4], 4)
+                    .extrude(thk)
+                    .color("blue"),
+                    rounded_rectangle([w+4 + pad * 4, h+4 + pad * 4], 4)
+                    .extrude(2 * thk)
+                    .translate((0,0,thk))
+                    .color("gold"),
+                ),
+                rounded_rectangle([w + pad * 4, h + pad * 4], 2)
+                .extrude(2 * thk)
+                .translate((2, 2, thk))
             ),
             txt3d.translate([pad, 2 * pad, thk]),
         )
@@ -37,4 +46,6 @@ if __name__ == "__main__":
 
     gen_test_output("hack", "Hack-Regular.ttf")
     gen_test_output("robo", "Roboto-Regular.ttf")
-    print("View tends to work poorly on models with large amounts of text (too many vertices).")
+    print(
+        "View tends to work poorly on models with large amounts of text (too many vertices)."
+    )
