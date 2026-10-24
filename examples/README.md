@@ -51,3 +51,9 @@
 * [star3d.py](star3d.py)
     -  Use 2D stars to make a 3D star.
 
+* [text_sign.py](text_sign.py)
+    -  Make a sign.
+
+* [text_tester.py](text_tester.py)
+    -  Make font plates testing Roboto and Hack fonts in sizes 4mm - 8mm.
+

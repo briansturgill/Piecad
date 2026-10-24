@@ -2,7 +2,6 @@ import pytest
 from piecad import *
 from piecad import _text as _text_module
 
-
 ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz"
 PUNCT = "0123456789 !\"#$%&'()*+,-./:;<=>?@[\\]|^|_|`|{|}~"
 
@@ -158,5 +157,3 @@ def test_text_set_font_path():
 def test_text_set_font_missing_file():
     with pytest.raises(Exception):
         text_set_font("no-such-font.ttf")
-
-

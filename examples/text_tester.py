@@ -28,17 +28,17 @@ if __name__ == "__main__":
         obj = union(
             difference(
                 union(
-                    rounded_rectangle([w+4 + pad * 4, h+4 + pad * 4], 4)
+                    rounded_rectangle([w + 4 + pad * 4, h + 4 + pad * 4], 4)
                     .extrude(thk)
                     .color("blue"),
-                    rounded_rectangle([w+4 + pad * 4, h+4 + pad * 4], 4)
+                    rounded_rectangle([w + 4 + pad * 4, h + 4 + pad * 4], 4)
                     .extrude(2 * thk)
-                    .translate((0,0,thk))
+                    .translate((0, 0, thk))
                     .color("gold"),
                 ),
                 rounded_rectangle([w + pad * 4, h + pad * 4], 2)
                 .extrude(2 * thk)
-                .translate((2, 2, thk))
+                .translate((2, 2, thk)),
             ),
             txt3d.translate([pad, 2 * pad, thk]),
         )
