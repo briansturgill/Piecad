@@ -396,7 +396,7 @@ class Obj3d:
         Like `project`, but rather than the bottom, project at the given height.
 
         """
-        _chkGT("height", height, 0)
+        _chkGE("height", height, 0)
         return Obj2d(self.mo.slice(height))
 
     def split(self, cutter: Obj3d) -> Obj3d:
@@ -794,6 +794,8 @@ class Config:
         pass
 
     _default_segments = 36
+    _default_min_angle = 12.0
+    _default_min_segment_length = 2.0
     _default_units = "mm"
     _layer_resolution = 0.1
     _default_color = _parse_color("tan")
@@ -834,6 +836,64 @@ class Config:
         """
         _chkGE("segments", segments, 3)
         cls._default_segments = segments
+
+    @classmethod
+    def get_default_min_angle(cls) -> float:
+        """
+        Get the default minimum angle used by circular objects.
+        """
+        return cls._default_min_angle
+
+    @classmethod
+    def set_default_min_angle(cls, angle: float = 12.0) -> None:
+        """
+        Set the default minimum angle used by circular objects.
+        """
+        _chkGT("angle", angle, 0.0)
+        cls._default_min_angle = angle
+
+    @classmethod
+    def get_default_min_segment_length(cls) -> float:
+        """
+        Get the default minimum segment length used by circular objects.
+        """
+        return cls._default_min_segment_length
+
+    @classmethod
+    def set_default_min_segment_length(cls, length: float = 2.0) -> None:
+        """
+        Set the default minimum segment length used by circular objects.
+        """
+        _chkGT("length", length, 0)
+        cls._default_min_segment_length = length
+
+    @classmethod
+    def calculate_default_segments(cls, radius: float, tmp_num_segs: int = None, tmp_min_angle: float = None,
+                                   tmp_min_segment_length: float = None) -> int:
+        """
+        Set calculated default segments based on the provided parameters.
+        If a parmeter is None, then the global default value is used.
+        """
+        if tmp_num_segs is None:
+            tmp_num_segs = cls._default_segments
+        if tmp_min_angle is None:
+            tmp_min_angle = cls._default_min_angle
+        if tmp_min_segment_length is None:
+            tmp_min_segment_length = cls._default_min_segment_length
+        _chkGE("tmp_num_segs", tmp_num_segs, 0)
+        _chkGT("tmp_min_angle", tmp_min_angle, 0.0)
+        _chkGT("tmp_min_segment_length", tmp_min_segment_length, 0.0)
+
+        if tmp_num_segs > 0:
+            return tmp_num_segs
+
+        num_seg_angle = 360.0 / tmp_min_angle
+        num_seg_segment_length = 2.0 * abs(radius) * math.pi / tmp_min_segment_length
+        n_seg = int(min(num_seg_angle, num_seg_segment_length))
+        r = n_seg % 4
+        if r != 0:
+            n_seg += 4 -r
+        return max(n_seg, 4)
 
     @classmethod
     def get_default_units(cls) -> str:
