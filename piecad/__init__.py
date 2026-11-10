@@ -833,6 +833,8 @@ class Config:
         In circular functions, if the value passed in for `segments` is `-1`, then
         the `default_segments` value is used. Thus circular functions have
         a default value for `segments` of `-1`.
+        A more advanced way to control the number of segments is to use:
+        [`Config.calculate_default_segments`](index.html#piecad.Config.calculate_default_segments).
         """
         _chkGE("segments", segments, 3)
         cls._default_segments = segments
@@ -871,8 +873,11 @@ class Config:
     def calculate_default_segments(cls, radius: float, tmp_num_segs: int = None, tmp_min_angle: float = None,
                                    tmp_min_segment_length: float = None) -> int:
         """
-        Set calculated default segments based on the provided parameters.
+        Calculate default segments based on the provided parameters.
         If a parmeter is None, then the global default value is used.
+
+        `Config.set_default_segments` or `tmp_num_segs` must be `<= 0` for `min_angle` and `minimum segment length`
+        to have an effect.
         """
         if tmp_num_segs is None:
             tmp_num_segs = cls._default_segments
