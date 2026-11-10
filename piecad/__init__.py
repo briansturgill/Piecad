@@ -833,8 +833,11 @@ class Config:
         In circular functions, if the value passed in for `segments` is `-1`, then
         the `default_segments` value is used. Thus circular functions have
         a default value for `segments` of `-1`.
+
         A more advanced way to control the number of segments is to use:
         [`Config.calculate_default_segments`](index.html#piecad.Config.calculate_default_segments).
+        You must call this function directly for each circular object you want to
+        calculate the default segments for.
         """
         _chkGE("segments", segments, 3)
         cls._default_segments = segments
@@ -843,6 +846,8 @@ class Config:
     def get_default_min_angle(cls) -> float:
         """
         Get the default minimum angle used by circular objects.
+
+        Used by [`Config.calculate_default_segments`](index.html#piecad.Config.calculate_default_segments).
         """
         return cls._default_min_angle
 
@@ -850,6 +855,8 @@ class Config:
     def set_default_min_angle(cls, angle: float = 12.0) -> None:
         """
         Set the default minimum angle used by circular objects.
+
+        Used by [`Config.calculate_default_segments`](index.html#piecad.Config.calculate_default_segments).
         """
         _chkGT("angle", angle, 0.0)
         cls._default_min_angle = angle
@@ -858,6 +865,8 @@ class Config:
     def get_default_min_segment_length(cls) -> float:
         """
         Get the default minimum segment length used by circular objects.
+
+        Used by [`Config.calculate_default_segments`](index.html#piecad.Config.calculate_default_segments).
         """
         return cls._default_min_segment_length
 
@@ -865,32 +874,28 @@ class Config:
     def set_default_min_segment_length(cls, length: float = 2.0) -> None:
         """
         Set the default minimum segment length used by circular objects.
+
+        Used by [`Config.calculate_default_segments`](index.html#piecad.Config.calculate_default_segments).
         """
         _chkGT("length", length, 0)
         cls._default_min_segment_length = length
 
     @classmethod
-    def calculate_default_segments(cls, radius: float, tmp_num_segs: int = None, tmp_min_angle: float = None,
+    def calculate_default_segments(cls, radius: float, tmp_min_angle: float = None,
                                    tmp_min_segment_length: float = None) -> int:
         """
         Calculate default segments based on the provided parameters.
-        If a parmeter is None, then the global default value is used.
+        If a parameter is None, then the global default value is used.
 
-        `Config.set_default_segments` or `tmp_num_segs` must be `<= 0` for `min_angle` and `minimum segment length`
-        to have an effect.
+        This is never automatically called; you must call it directly for each circular object
+        you want to calculate the default segments for.
         """
-        if tmp_num_segs is None:
-            tmp_num_segs = cls._default_segments
         if tmp_min_angle is None:
             tmp_min_angle = cls._default_min_angle
         if tmp_min_segment_length is None:
             tmp_min_segment_length = cls._default_min_segment_length
-        _chkGE("tmp_num_segs", tmp_num_segs, 0)
         _chkGT("tmp_min_angle", tmp_min_angle, 0.0)
         _chkGT("tmp_min_segment_length", tmp_min_segment_length, 0.0)
-
-        if tmp_num_segs > 0:
-            return tmp_num_segs
 
         num_seg_angle = 360.0 / tmp_min_angle
         num_seg_segment_length = 2.0 * abs(radius) * math.pi / tmp_min_segment_length

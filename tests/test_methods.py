@@ -26,14 +26,109 @@ def test_validation_error_is_caught_by_exception_handler():
 
 
 def test_set_default_segments():
-    cur = Config.get_default_segments()
-    assert cur == 36
-    Config.set_default_segments(40)
-    cur = Config.get_default_segments()
-    assert cur == 40
-    rr = rounded_rectangle((10, 15), 1.0)
-    assert rr.num_verts() == 44
-    Config.set_default_segments(36)
+    old = Config.get_default_segments()
+    try:
+        Config.set_default_segments(40)
+        assert Config.get_default_segments() == 40
+        rr = rounded_rectangle((10, 15), 1.0)
+        assert rr.num_verts() == 44
+    finally:
+        Config.set_default_segments(old)
+
+
+def test_set_default_min_angle():
+    old = Config.get_default_min_angle()
+    try:
+        Config.set_default_min_angle(18.0)
+        assert Config.get_default_min_angle() == 18.0
+    finally:
+        Config.set_default_min_angle(old)
+
+
+def test_set_default_min_segment_length():
+    old = Config.get_default_min_segment_length()
+    try:
+        Config.set_default_min_segment_length(1.5)
+        assert Config.get_default_min_segment_length() == 1.5
+    finally:
+        Config.set_default_min_segment_length(old)
+
+
+def test_set_default_units():
+    old = Config.get_default_units()
+    try:
+        Config.set_default_units("cm")
+        assert Config.get_default_units() == "cm"
+    finally:
+        Config.set_default_units(old)
+
+
+def test_set_default_color():
+    old = Config.get_default_color()
+    try:
+        Config.set_default_color((10, 20, 30))
+        assert Config.get_default_color() == (10, 20, 30)
+        Config.set_default_color("#FF0080")
+        assert Config.get_default_color() == (255, 0, 128)
+    finally:
+        Config.set_default_color(old)
+
+
+def test_calculate_default_segments_minimum_angle():
+    assert Config.calculate_default_segments(
+        100, tmp_min_angle=18, tmp_min_segment_length=1
+    ) == 20
+
+
+def test_calculate_default_segments_minimum_length_rounds_up_to_multiple_of_four():
+    assert Config.calculate_default_segments(
+        5, tmp_min_angle=1, tmp_min_segment_length=3
+    ) == 12
+
+
+def test_calculate_default_segments_uses_default_minimums():
+    old_angle = Config.get_default_min_angle()
+    old_length = Config.get_default_min_segment_length()
+    old_segments = Config.get_default_segments()
+    try:
+        Config.set_default_min_angle(18)
+        Config.set_default_min_segment_length(3)
+        Config.set_default_segments(40)
+        assert Config.calculate_default_segments(100) == 20
+        assert Config.calculate_default_segments(5) == 12
+        assert Config.calculate_default_segments(100, tmp_min_angle=90) == 4
+        assert Config.calculate_default_segments(5, tmp_min_segment_length=10) == 4
+    finally:
+        Config.set_default_min_angle(old_angle)
+        Config.set_default_min_segment_length(old_length)
+        Config.set_default_segments(old_segments)
+
+
+@pytest.mark.parametrize("radius", [0, 0.1, -0.1])
+def test_calculate_default_segments_has_minimum_of_four(radius):
+    assert Config.calculate_default_segments(
+        radius, tmp_min_angle=1, tmp_min_segment_length=3
+    ) == 4
+
+
+def test_calculate_default_segments_negative_radius():
+    assert Config.calculate_default_segments(
+        -5, tmp_min_angle=1, tmp_min_segment_length=3
+    ) == 12
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"tmp_min_angle": 0},
+        {"tmp_min_angle": -1},
+        {"tmp_min_segment_length": 0},
+        {"tmp_min_segment_length": -1},
+    ],
+)
+def test_calculate_default_segments_rejects_nonpositive_minimums(kwargs):
+    with pytest.raises(ValidationError):
+        Config.calculate_default_segments(5, **kwargs)
 
 
 def test_bounding_box_2d():
