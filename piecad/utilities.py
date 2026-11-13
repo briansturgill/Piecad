@@ -141,7 +141,7 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
 
     \\(See [https://github/mikedh/trimesh] for more formats.\\)
 
-    For 2D, only the SVG (.svg) format is available.
+    For 2D, the SVG (.svg) and DXF (.dxf) formats are available.
     """
 
     if filename.find("/") == -1 and filename.find("\\") == -1:
@@ -220,9 +220,12 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
             with open(filename, "a") as f:
                 f.write("\n")
     else:  # Obj2d
-        if ext != "svg":
-            raise (ValidationError("Only the SVG format is supported for Obj2d."))
-        _save_svg(filename, *objs)
+        if ext == "svg":
+            _save_svg(filename, *objs)
+        elif ext == "dxf":
+            _save_dxf(filename, *objs)
+        else:
+            raise ValidationError("Only the SVG and DXF formats are supported for Obj2d.")
 
 
 def _save_svg(filename, *objs):
@@ -443,3 +446,54 @@ def obj3d_from_vertices_and_faces(
     if mo.is_empty():
         raise ValidationError(f"Error creating Manifold: {mo.status()}.")
     return Obj3d(mo)
+
+
+def _save_dxf(filename, *objs):
+    # Minimal R12 (AC1009) DXF: one layer per object, each path a closed POLYLINE.
+    # R12 needs no entity handles, and virtually all CAD/CAM software reads it.
+    out = []
+
+    def add(code, value):
+        out.append(f"{code}\n{value}")
+
+    add(0, "SECTION")
+    add(2, "HEADER")
+    add(9, "$ACADVER")
+    add(1, "AC1009")
+    add(0, "ENDSEC")
+
+    add(0, "SECTION")
+    add(2, "TABLES")
+    add(0, "TABLE")
+    add(2, "LAYER")
+    add(70, len(objs))
+    for n in range(len(objs)):
+        add(0, "LAYER")
+        add(2, f"piecad_{n}")
+        add(70, 0)
+        add(62, 7)
+        add(6, "CONTINUOUS")
+    add(0, "ENDTAB")
+    add(0, "ENDSEC")
+
+    add(0, "SECTION")
+    add(2, "ENTITIES")
+    for n, obj in enumerate(objs):
+        for path in obj.to_paths():
+            add(0, "POLYLINE")
+            add(8, f"piecad_{n}")
+            add(66, 1)  # vertices follow
+            add(70, 1)  # closed
+            for vert in path:
+                add(0, "VERTEX")
+                add(8, f"piecad_{n}")
+                add(10, round(float(vert[0]), 5))
+                add(20, round(float(vert[1]), 5))
+                add(30, 0.0)
+            add(0, "SEQEND")
+            add(8, f"piecad_{n}")
+    add(0, "ENDSEC")
+    add(0, "EOF")
+
+    with open(filename, "w") as f:
+        f.write("\n".join(out) + "\n")
