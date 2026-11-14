@@ -37,7 +37,7 @@ def _info_str(tag):  # Must be called from inside another function.
 
 def load(filename: str) -> Obj3d | Obj2d:
     """
-    Load a 3d object from a file.
+    Load a 3D or 2D object from a file.
 
     The format read from `filename` is determined by the file's extension.
 
@@ -55,15 +55,25 @@ def load(filename: str) -> Obj3d | Obj2d:
 
     \\(See [https://github/mikedh/trimesh] for more formats.\\)
 
-    Currently 2d objects are not supported.
+    For 2D, SVG (.svg) and DXF (.dxf) files are loaded with even-odd fill.
+    SVG coordinates are used as-is and open SVG subpaths are implicitly closed.
+    Only explicitly closed DXF polylines are filled. SVG and DXF imports
+    support the same elements and limitations as `Path.from_svg` and
+    `Path.from_dxf`, respectively.
     """
     dot_idx = filename.rindex(".")
     ext = filename[dot_idx + 1 :]
+    if ext.lower() in ("svg", "dxf"):
+        from ._path import Path
+
+        if ext.lower() == "svg":
+            return Path.from_svg(filename).to_obj2d(include_open=True)
+        return Path.from_dxf(filename).to_obj2d()
     mesh = trimesh.exchange.load.load(
         filename, ext, force="mesh", process=True, validate=False
     )
     if type(mesh) == trimesh.path.Path2D:
-        raise ValidationError("2D objects are not currently supported.")
+        raise ValidationError("Only .svg, .dxf 2D objects are currently supported.")
 
     return obj3d_from_vertices_and_faces(mesh.vertices, mesh.faces)
 

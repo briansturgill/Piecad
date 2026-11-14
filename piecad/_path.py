@@ -4,9 +4,13 @@
 from __future__ import annotations
 
 import math
+import re
+import xml.etree.ElementTree as ET
+from os import PathLike
 from typing import Self
 
-from svgpathtools import Arc, CubicBezier, QuadraticBezier
+import ezdxf
+from svgpathtools import Arc, CubicBezier, Line, QuadraticBezier, parse_path
 
 from . import Config, Obj2d, ValidationError
 
@@ -154,6 +158,199 @@ class Path:
                 "commands": cmds,
                 "closed": part["closed"],
             })
+        return result
+
+    def to_svg(self, filename: str | PathLike) -> None:
+        """Write SVG path geometry with even-odd fill, in SVG coordinates."""
+        commands = []
+        bounds = []
+        for part in self._subpaths:
+            here = part["start"]
+            bounds.append((here[0], here[0], here[1], here[1]))
+            commands.append(f"M {here[0]} {here[1]}")
+            for cmd in part["commands"]:
+                kind = cmd[0]
+                if kind == "line":
+                    end = cmd[1]
+                    curve = Line(_cp(here), _cp(end))
+                    commands.append(f"L {end[0]} {end[1]}")
+                elif kind == "quadratic":
+                    control, end = cmd[1:]
+                    curve = QuadraticBezier(_cp(here), _cp(control), _cp(end))
+                    commands.append(f"Q {control[0]} {control[1]} {end[0]} {end[1]}")
+                elif kind == "cubic":
+                    p1, p2, end = cmd[1:]
+                    curve = CubicBezier(_cp(here), _cp(p1), _cp(p2), _cp(end))
+                    commands.append(
+                        f"C {p1[0]} {p1[1]} {p2[0]} {p2[1]} {end[0]} {end[1]}"
+                    )
+                else:
+                    radii, end, rotation, large, ccw = cmd[1:]
+                    if here != end and all(r > 0 for r in radii):
+                        commands.append(
+                            f"A {radii[0]} {radii[1]} {rotation} "
+                            f"{int(large)} {int(ccw)} {end[0]} {end[1]}"
+                        )
+                        curve = Arc(_cp(here), _cp(radii), rotation, large, ccw, _cp(end))
+                    else:
+                        commands.append(f"L {end[0]} {end[1]}")
+                        curve = Line(_cp(here), _cp(end))
+                bounds.append(curve.bbox())
+                here = end
+            if part["closed"]:
+                commands.append("Z")
+        xmin = min(b[0] for b in bounds)
+        xmax = max(b[1] for b in bounds)
+        ymin = min(b[2] for b in bounds)
+        ymax = max(b[3] for b in bounds)
+        width, height = xmax - xmin, ymax - ymin
+        # A zero-sized viewBox is invalid, even for an open or empty subpath.
+        viewbox = f"{xmin} {ymin} {width or 1} {height or 1}"
+        root = ET.Element("svg", {
+            "xmlns": "http://www.w3.org/2000/svg",
+            "viewBox": viewbox,
+        })
+        ET.SubElement(root, "path", {"fill-rule": "evenodd", "d": " ".join(commands)})
+        ET.ElementTree(root).write(filename, encoding="utf-8", xml_declaration=True)
+
+    @classmethod
+    def from_svg(cls, filename: str | PathLike, segments: int = -1) -> Self:
+        """Read SVG path elements; all contours use even-odd fill.
+
+        SVG coordinates are used as-is. Transforms, CSS, non-path shapes and
+        explicit nonzero fill rules are not supported. Coincident-endpoint
+        SVG arcs are not supported by the path parser.
+        """
+        root = ET.parse(filename).getroot()
+        if root.tag.split("}")[-1] != "svg":
+            raise ValidationError("Expected an SVG document")
+        result = cls(segments=segments)
+        result._subpaths.clear()
+        number = r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?"
+        token = re.compile(rf"[MmLlHhVvCcSsQqTtAaZz]|{number}")
+        move = re.compile(rf"^[Mm]\s*({number})[\s,]*({number})")
+        for element in root.iter():
+            tag = element.tag.split("}")[-1]
+            if tag not in ("svg", "g", "path", "title", "desc", "metadata"):
+                raise ValidationError(f"Unsupported SVG element: {tag}")
+            unsupported = {"transform", "style", "clip-path", "mask", "display",
+                           "visibility", "filter"}
+            if unsupported.intersection(element.attrib):
+                raise ValidationError("SVG transforms, CSS and visual effects are not supported")
+            if element.get("fill-rule", "evenodd") != "evenodd":
+                raise ValidationError("Only the evenodd SVG fill rule is supported")
+            if tag != "path":
+                continue
+            data = element.get("d", "").strip()
+            if not data:
+                continue
+            previous = 0
+            for match in token.finditer(data):
+                if data[previous:match.start()].strip(" \t\r\n,"):
+                    raise ValidationError("Invalid SVG path data")
+                previous = match.end()
+            if data[previous:].strip(" \t\r\n,"):
+                raise ValidationError("Invalid SVG path data")
+            here = 0j
+            # Each moveto starts a new independent subpath. Split off close
+            # commands so the parser does not turn the implicit edge into a line.
+            for chunk in re.split(r"(?=[MmZz])", data):
+                chunk = chunk.strip()
+                if not chunk:
+                    continue
+                if chunk[0] in "Zz":
+                    if not result._subpaths or result._subpaths[-1]["closed"]:
+                        raise ValidationError("SVG close command has no open subpath")
+                    result.close()
+                    here = _cp(result._cur_pt)
+                    chunk = chunk[1:].strip()
+                    if not chunk:
+                        continue
+                    if chunk[0] not in "LlHhVvCcSsQqTtAa":
+                        raise ValidationError("Invalid SVG command after close")
+                    chunk = f"M {here.real} {here.imag} {chunk}"
+                match = move.match(chunk)
+                if not match:
+                    raise ValidationError("SVG subpath must begin with a moveto")
+                start = complex(float(match[1]), float(match[2]))
+                if chunk[0] == "m":
+                    start += here
+                start_xy = _point(_xy(start), "SVG start")
+                result.sub_path(start_xy)
+                try:
+                    parsed = parse_path(chunk, current_pos=here)
+                except (ValueError, AssertionError, IndexError, ZeroDivisionError) as exc:
+                    raise ValidationError(f"Invalid SVG path data: {exc}") from exc
+                for curve in parsed:
+                    if isinstance(curve, Line):
+                        result.line_to(_xy(curve.end))
+                    elif isinstance(curve, QuadraticBezier):
+                        result.quadratic_bezier_to(_xy(curve.control), _xy(curve.end))
+                    elif isinstance(curve, CubicBezier):
+                        result.cubic_bezier_to(
+                            _xy(curve.control1), _xy(curve.control2), _xy(curve.end)
+                        )
+                    elif isinstance(curve, Arc):
+                        result.arc_to(_xy(curve.radius), _xy(curve.end),
+                                      curve.rotation, curve.large_arc, curve.sweep)
+                here = _cp(result._cur_pt)
+        if not result._subpaths:
+            raise ValidationError("SVG contains no path geometry")
+        return result
+
+    def to_dxf(self, filename: str | PathLike) -> None:
+        """Write each subpath as a DXF polyline, sampling curves into lines."""
+        doc = ezdxf.new()
+        model = doc.modelspace()
+        for part, points in zip(self._subpaths, self.to_points()):
+            model.add_lwpolyline(points, close=part["closed"])
+        doc.saveas(filename)
+
+    @classmethod
+    def from_dxf(cls, filename: str | PathLike, segments: int = -1) -> Self:
+        """Read planar DXF polylines and lines as independent subpaths.
+
+        Curved (bulged) polyline segments and other entity types are rejected.
+        """
+        doc = ezdxf.readfile(filename)
+        result = cls(segments=segments)
+        result._subpaths.clear()
+        for entity in doc.modelspace():
+            kind = entity.dxftype()
+            if kind == "LWPOLYLINE":
+                if entity.dxf.elevation != 0 or entity.dxf.extrusion != (0, 0, 1):
+                    raise ValidationError("Only XY-plane DXF polylines are supported")
+                vertices = list(entity.get_points("xyb"))
+                if any(vertex[2] != 0 for vertex in vertices):
+                    raise ValidationError("DXF polyline bulges are not supported")
+                points = [(v[0], v[1]) for v in vertices]
+                closed = entity.closed
+            elif kind == "POLYLINE":
+                if not entity.is_2d_polyline or entity.dxf.extrusion != (0, 0, 1):
+                    raise ValidationError("Only XY-plane DXF polylines are supported")
+                if entity.dxf.elevation.z != 0:
+                    raise ValidationError("Only XY-plane DXF polylines are supported")
+                if any(v.dxf.bulge != 0 or v.dxf.location.z != 0 for v in entity.vertices):
+                    raise ValidationError("DXF polyline bulges or 3D vertices are not supported")
+                points = [(v.dxf.location.x, v.dxf.location.y) for v in entity.vertices]
+                closed = entity.is_closed
+            elif kind == "LINE":
+                start, end = entity.dxf.start, entity.dxf.end
+                if start.z != 0 or end.z != 0:
+                    raise ValidationError("Only XY-plane DXF lines are supported")
+                points = [(start.x, start.y), (end.x, end.y)]
+                closed = False
+            else:
+                raise ValidationError(f"Unsupported DXF entity: {kind}")
+            if not points:
+                raise ValidationError("DXF polyline has no vertices")
+            result.sub_path(points[0])
+            for point in points[1:]:
+                result.line_to(point)
+            if closed:
+                result.close()
+        if not result._subpaths:
+            raise ValidationError("DXF contains no path geometry")
         return result
 
     def to_points(self) -> list[list[tuple[float, float]]]:

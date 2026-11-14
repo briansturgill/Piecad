@@ -127,6 +127,19 @@ def path(initial_point: tuple[float, float] = (0, 0), segments: int = -1) -> obj
     to_obj2d() -> Obj2d
     ```
 
+    `Path.to_svg(filename)` and `Path.from_svg(filename, segments=-1)` write
+    and read SVG path elements in SVG coordinates. All contours are interpreted
+    using even-odd fill. SVG transforms, CSS, non-path shapes, and explicit
+    nonzero fill rules are not supported. Imported path elements are combined
+    as contours, not as separately composited SVG shapes. Degenerate arcs
+    are exported as lines; coincident-endpoint SVG arcs cannot be imported.
+
+    `Path.to_dxf(filename)` writes subpaths as polylines, sampling curves using
+    the path's segment count. `Path.from_dxf(filename, segments=-1)` reads
+    XY-plane polylines and lines; bulges and other entities are not supported.
+    Import methods are class methods, for example
+    `type(path()).from_svg("drawing.svg")`.
+
     For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     <iframe width="100%" height="400" src="../examples/path.html"></iframe>
