@@ -122,7 +122,7 @@ def test_path_curves_and_arc():
         .quadratic_bezier_to((15, 5), (10, 10))
         .cubic_bezier_to((8, 12), (4, 12), (0, 10))
         .arc_to(5, (0, 0))
-        .close()
+        .close().to_obj2d()
     )
     assert p.area() > 0
 
@@ -130,7 +130,7 @@ def test_path_curves_and_arc():
 @pytest.mark.parametrize("large", [False, True])
 @pytest.mark.parametrize("ccw", [False, True])
 def test_path_arc_flags(large, ccw):
-    p = Path((0, 0)).arc_to((6, 4), (10, 0), 15, large, ccw).close()
+    p = Path((0, 0)).arc_to((6, 4), (10, 0), 15, large, ccw).close().to_obj2d()
     assert p.area() > 0
 
 

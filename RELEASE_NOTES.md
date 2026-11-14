@@ -44,3 +44,14 @@ Experimental fillet and chamfer added.
 matplotlib-based viewer.
 Improved documentation.
 
+# 2.0.5
+Changes from Piecad 2.0.4:
+  - Path.close() closes the active subpath and returns Path, not Obj2d.
+  - Path.new_path(point) starts an independent open subpath.
+  - Command records retain original line, quadratic/cubic Bezier and SVG arc
+    parameters; polygon sampling is deferred until to_points()/to_Obj2d().
+  - Path.to_Obj2d(include_open=False)
+    constructs a single compound Obj2d from the eligible subpaths.
+
+    Backward-incompatible: existing code using path(...).line_to(...).close()
+    as an Obj2d must change the trailing call to .close().to_Obj2d().

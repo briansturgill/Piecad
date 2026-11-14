@@ -1,141 +1,228 @@
+"""Create a 2D object from an SVG-like path.
 """
-## Create a 2D object from an SVG-like path.
-"""
 
-from svgpathtools import svg2paths, parse_path, Line, QuadraticBezier, CubicBezier, Arc
-from . import _chkGE, _chkV2, Obj2d, Config
-import typing
+from __future__ import annotations
+
+import math
+from typing import Self
+
+from svgpathtools import Arc, CubicBezier, QuadraticBezier
+
+from . import Config, Obj2d, ValidationError
 
 
-def _cp(pt: tuple[float, float]) -> complex:
-    return complex(pt[0], pt[1])
+def _point(value, name="point") -> tuple[float, float]:
+    """Validate and normalize a finite 2D point."""
+    if not isinstance(value, (tuple, list)) or len(value) != 2:
+        raise ValidationError(f"{name} must be a tuple/list of two numbers")
+    try:
+        p = (float(value[0]), float(value[1]))
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValidationError(f"{name} must contain two numbers") from exc
+    if not all(math.isfinite(v) for v in p):
+        raise ValidationError(f"{name} coordinates must be finite")
+    return p
 
 
-def _xy(cplex):
-    return (cplex.real, cplex.imag)
+def _number(value, name) -> float:
+    try:
+        result = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValidationError(f"{name} must be a number") from exc
+    if not math.isfinite(result):
+        raise ValidationError(f"{name} must be finite")
+    return result
+
+
+def _cp(pt):
+    return complex(*pt)
+
+
+def _xy(value):
+    return (float(value.real), float(value.imag))
 
 
 class Path:
-    def __init__(self, initial_point: tuple[float, float] = (0, 0), segments: int = -1):
-        """
-        Create an SVG-like path starting at `initial_point`. The path can contain lines, arcs, and
-        quadratic and cubic bezier curves.
+    """An ordered collection of independent, open or closed 2D subpaths.
 
-        The `close` method returns an `Obj2d`
+    Each subpath retains its source curve commands. Curves are sampled only
+    when converting to an Obj2d.
 
-        For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
+    Only Even/Odd fill rule is supported.
+    """
 
-        <iframe width="100%" height="400" src="../examples/path.html"></iframe>
-        """
+    def __init__(self, initial_point: tuple[float, float] = (0, 0),
+                 segments: int = -1):
         if segments == -1:
             segments = Config.get_default_segments()
-        _chkGE("segments", segments, 3)
-        self._initial_pt = initial_point
-        self._cur_pt = initial_point
-        self._list = []
+        if not isinstance(segments, int) or isinstance(segments, bool) or segments < 3:
+            raise ValidationError("segments must be an integer >= 3")
         self._segments = segments
+        start = _point(initial_point, "initial_point")
+        self._subpaths = [self._make_subpath(start)]
+        self._cur_pt = start
 
-    def _add(self, o: object):
-        if type(o) == Line:
-            self._list.append(_xy(o.start))
-            self._list.append(_xy(o.end))
+    @staticmethod
+    def _make_subpath(start):
+        return {"start": start, "commands": [], "closed": False}
+
+    def _current(self):
+        item = self._subpaths[-1]
+        if item["closed"]:
+            raise ValidationError(
+                "Current subpath is closed; call sub_path(point) before drawing"
+            )
+        return item
+
+    def sub_path(self, initial_point: tuple[float, float]) -> Self:
+        """Begin another independent, open subpath at initial_point."""
+        start = _point(initial_point, "initial_point")
+        self._subpaths.append(self._make_subpath(start))
+        self._cur_pt = start
+        return self
+
+    def line_to(self, end: tuple[float, float]) -> Self:
+        part = self._current()
+        end = _point(end, "end")
+        part["commands"].append(("line", end))
+        self._cur_pt = end
+        return self
+
+    def quadratic_bezier_to(self, control_point: tuple[float, float],
+                            end: tuple[float, float]) -> Self:
+        part = self._current()
+        control_point = _point(control_point, "control_point")
+        end = _point(end, "end")
+        part["commands"].append(("quadratic", control_point, end))
+        self._cur_pt = end
+        return self
+
+    def cubic_bezier_to(self, control_point_1: tuple[float, float],
+                        control_point_2: tuple[float, float],
+                        end: tuple[float, float]) -> Self:
+        part = self._current()
+        p1 = _point(control_point_1, "control_point_1")
+        p2 = _point(control_point_2, "control_point_2")
+        end = _point(end, "end")
+        part["commands"].append(("cubic", p1, p2, end))
+        self._cur_pt = end
+        return self
+
+    def arc_to(self, radii: tuple[float, float] | float,
+               end: tuple[float, float], x_axis_rotation: float = 0,
+               large_arc: bool = False, ccw: bool = False) -> Self:
+        """SVG endpoint arc; ccw is the sweep flag in the current API."""
+        part = self._current()
+        if isinstance(radii, (int, float)):
+            r = abs(_number(radii, "radii"))
+            radii = (r, r)
         else:
-            self._list.append(_xy(o.start))
-            for t in range(1, self._segments):
-                self._list.append(_xy(o.point(t / (float(self._segments) - 1))))
-            self._list.append(_xy(o.end))
-
-    def line_to(self, end: tuple[float, float]) -> typing.Self:
-        """
-        Add a line from the current point to `end`.
-        """
-        _chkV2("end", end)
-        self._add(Line(_cp(self._cur_pt), _cp(end)))
-        self._cur_pt = end
-        return self
-
-    def quadratic_bezier_to(
-        self, control_point: tuple[float, float], end: tuple[float, float]
-    ) -> typing.Self:
-        """
-        Add a quadratic bezier curve from the current point to `end`, with `control_point`.
-        """
-        _chkV2("control_point", control_point)
-        _chkV2("end", end)
-        self._add(QuadraticBezier(_cp(self._cur_pt), _cp(control_point), _cp(end)))
-        self._cur_pt = end
-        return self
-
-    def cubic_bezier_to(
-        self,
-        control_point_1: tuple[float, float],
-        control_point_2: tuple[float, float],
-        end: tuple[float, float],
-    ) -> typing.Self:
-        """
-        Add a cubic bezier curve from the current point to `end`, with control points
-        `control_point_1` and `control_point_2`.
-        """
-        _chkV2("control_point_1", control_point_1)
-        _chkV2("control_point_2", control_point_2)
-        _chkV2("end", end)
-        self._add(
-            CubicBezier(
-                _cp(self._cur_pt), _cp(control_point_1), _cp(control_point_2), _cp(end)
-            )
+            radii = _point(radii, "radii")
+            radii = (abs(radii[0]), abs(radii[1]))
+        end = _point(end, "end")
+        rotation = _number(x_axis_rotation, "x_axis_rotation")
+        part["commands"].append(
+            ("arc", radii, end, rotation, bool(large_arc), bool(ccw))
         )
         self._cur_pt = end
         return self
 
-    def arc_to(
-        self,
-        radii: tuple[float, float] | float,
-        end: tuple[float, float],
-        x_axis_rotation: float = 0,
-        large_arc: bool = False,
-        ccw: bool = False,
-    ) -> typing.Self:
+    def close(self) -> Self:
+        """Close *only* the current subpath; return self for chaining.
+
+        The closure edge is implicit, as it is for SVG's Z command.
+        Calling close() twice is harmless. Starting another subpath requires
+        sub_path(point).
         """
-        Add an elliptical arc from the current point to `end`, with `radii` as the
-        x- and y-axis radii. If both radii are the same, a single float can be specified.
-
-        `x_axis_rotation` specifies the rotation, in degrees, of the ellipse relative to the x-axis.
-
-        Four arcs can be formed between the same endpoints; use the parameters above to choose one:
-
-        The `ccw` flag chooses a counter-clockwise arc; the default is clockwise.
-
-        The `large_arc` flag chooses the longest arc over the shortest (default) arc.
-        """
-        if type(radii) == int:
-            radii = float(radii)
-        if type(radii) == float:
-            radii = (radii, radii)
-        _chkV2("radii", radii)
-        _chkV2("end", end)
-        self._add(
-            Arc(
-                _cp(self._cur_pt),
-                _cp(radii),
-                x_axis_rotation,
-                large_arc,
-                ccw,
-                _cp(end),
-            )
-        )
-        self._cur_pt = end
+        self._subpaths[-1]["closed"] = True
+        self._cur_pt = self._subpaths[-1]["start"]
         return self
 
-    def close(self) -> Obj2d:
-        """
-        Returns an `Obj2d` shape of the path.
-        """
-        try:
-            a = polygon
-        except NameError:
-            from . import polygon
+    def to_commands(self) -> list[dict]:
+        """Return independent copies of all original geometric commands.
 
-        if len(self._list) > 1 and self._list[0] == self._list[-1]:
-            self._list.pop()
-        obj = polygon([self._list], check=False)
-        return obj
+        Each entry is {'start': (x,y), 'commands': [(operation, ...), ...],
+        'closed': bool}. A terminal ('close',) is provided for exporters.
+        """
+        result = []
+        for part in self._subpaths:
+            cmds = list(part["commands"])
+            if part["closed"]:
+                cmds.append(("close",))
+            result.append({
+                "start": part["start"],
+                "commands": cmds,
+                "closed": part["closed"],
+            })
+        return result
+
+    def to_points(self) -> list[list[tuple[float, float]]]:
+        """Return sampled vertices for each subpath, open or closed.
+
+        Closed contours have no repeated final start point. For *open*
+        contours, an explicit final line back to start is preserved.
+        A subpath with no drawable segments returns its start point.
+        """
+        result = []
+        for part in self._subpaths:
+            start = part["start"]
+            points = [start]
+            here = start
+            for cmd in part["commands"]:
+                kind = cmd[0]
+                if kind == "line":
+                    end = cmd[1]
+                    if end != points[-1]:
+                        points.append(end)
+                elif kind == "quadratic":
+                    end = cmd[2]
+                    curve = QuadraticBezier(_cp(here), _cp(cmd[1]), _cp(end))
+                    self._sample(points, curve, end)
+                elif kind == "cubic":
+                    end = cmd[3]
+                    curve = CubicBezier(_cp(here), _cp(cmd[1]), _cp(cmd[2]), _cp(end))
+                    self._sample(points, curve, end)
+                elif kind == "arc":
+                    radii, end, rotation, large, ccw = cmd[1:]
+                    if here != end and all(r > 0 for r in radii):
+                        curve = Arc(_cp(here), _cp(radii), rotation, large,
+                                    ccw, _cp(end))
+                        self._sample(points, curve, end)
+                    elif here != end and points[-1] != end:
+                        # SVG spec: zero-radius arc is a straight line.
+                        points.append(end)
+                else:
+                    raise AssertionError(f"Unknown path command {kind!r}")
+                here = end
+            if part["closed"] and len(points) > 1 and points[-1] == start:
+                points.pop()
+            result.append(points)
+        return result
+
+    def _sample(self, points, curve, end):
+        # Use the exact requested endpoint to avoid a tiny floating-point gap
+        # between adjacent SVG curves.
+        for i in range(1, self._segments):
+            xy = (end if i == self._segments - 1 else
+                  _xy(curve.point(i / (self._segments - 1))))
+            if xy != points[-1]:
+                points.append(xy)
+
+    def to_obj2d(self, include_open: bool = False) -> Obj2d:
+        """Convert eligible subpaths to a single filled Piecad Obj2d.
+
+        Only closed subpaths are included by default. Set include_open=True
+        to treat open paths as implicitly closed (SVG filling semantics).
+        Open geometry remains unchanged in Path for SVG/DXF export.
+        """
+        contours = []
+        for part, points in zip(self._subpaths, self.to_points()):
+            if not part["closed"] and not include_open:
+                continue
+            # Polygon is implicitly closed by Manifold. Eliminate an explicit
+            # final start point without changing the stored path commands.
+            if len(points) > 1 and points[0] == points[-1]:
+                points = points[:-1]
+            if len(set(points)) >= 3:
+                contours.append(points)
+        return polygon(contours)

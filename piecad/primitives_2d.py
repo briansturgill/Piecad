@@ -112,16 +112,25 @@ def path(initial_point: tuple[float, float] = (0, 0), segments: int = -1) -> obj
     ) -> Path
     ```
 
-    The `close` method returns an `Obj2d` representing the shape of the Path.
+    The `sub_path` method starts a new sub_path.
     ```
-    close() -> Obj2d
+    new_path(initial_point: tuple[float, float] = (0, 0)) -> Path
+    ```
+
+    The `close` method closes the current sub_path.
+    ```
+    close() -> Path
+    ```
+
+    The `to_obj2d` method returns an `Obj2d` representing the shape of the closed sub_paths.
+    ```
+    to_obj2d() -> Obj2d
     ```
 
     For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     <iframe width="100%" height="400" src="../examples/path.html"></iframe>
     """
-    # _path.polygon = polygon
     return _path.Path(initial_point, segments)
 
 
@@ -309,3 +318,5 @@ def text(size: float, text: str, inter_char_space=None) -> Obj2d:
     The default value for the spacing between characters (`inter_char_space`) is `size/3.0`.
     """
     return _text.text_func(size, text, inter_char_space=inter_char_space)
+
+_path.polygon = polygon
