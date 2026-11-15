@@ -12,6 +12,108 @@ from piecad import Config, Obj3d, cube, load, rectangle
 utilities = importlib.import_module("piecad.utilities")
 
 
+@pytest.mark.parametrize("args", [(5,), (2, 8), (9, 0, -2), (0, 0)])
+def test_frange_with_integers_returns_range(args):
+    from piecad import frange
+
+    result = frange(*args)
+    assert isinstance(result, range)
+    assert result == range(*args)
+    assert list(result) == list(result)
+
+
+@pytest.mark.parametrize(
+    ("args", "expected"),
+    [
+        ((2.5,), [0.0, 1.0, 2.0]),
+        ((1, 3.5), [1.0, 2.0, 3.0]),
+        ((0, 1, 0.25), [0.0, 0.25, 0.5, 0.75]),
+        ((1.0, 0, -0.25), [1.0, 0.75, 0.5, 0.25]),
+        ((0.0, 1, -1), []),
+    ],
+)
+def test_frange_with_floats(args, expected):
+    from piecad import frange
+
+    assert list(frange(*args)) == expected
+
+
+@pytest.mark.parametrize(
+    ("args", "expected"),
+    [
+        ((4,), [0, 1, 2, 3, 4]),
+        ((1, 5, 2), [1, 3, 5]),
+        ((5, 1, -2), [5, 3, 1]),
+        ((0, 1, -1), []),
+    ],
+)
+def test_frange_with_inclusive_integers(args, expected):
+    from piecad import frange
+
+    result = frange(*args, inclusive=True)
+    assert isinstance(result, range)
+    assert list(result) == expected
+
+
+@pytest.mark.parametrize(
+    ("args", "expected"),
+    [
+        ((0.1, 0.3, 0.1), [0.1, 0.2, 0.3]),
+        ((1.0, 0.0, -0.25), [1.0, 0.75, 0.5, 0.25, 0.0]),
+        ((0.0, 1.0, 0.3), [0.0, 0.3, 0.6, 0.9]),
+        ((1.0, 2.0, -0.25), []),
+    ],
+)
+def test_frange_with_inclusive_floats(args, expected):
+    from piecad import frange
+
+    assert list(frange(*args, inclusive=True)) == pytest.approx(expected)
+
+
+def test_frange_argument_errors():
+    from piecad import frange
+
+    for args in [(), (1, 2, 3, 4), (1, "str")]:
+        with pytest.raises(TypeError):
+            frange(*args)
+    for args in [(0, 1, 0), (0, 1, 0.0)]:
+        with pytest.raises(ValueError):
+            frange(*args)
+    with pytest.raises(TypeError):
+        frange(start=1)
+
+    values = frange(1e20, 1e20 + 1e6, 1.0)
+    assert next(values) == 1e20
+    with pytest.raises(ValueError):
+        next(values)
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        (float("inf"),),
+        (float("-inf"),),
+        (float("nan"),),
+        (0.0, float("inf")),
+        (0.0, 1.0, float("-inf")),
+    ],
+)
+def test_frange_rejects_nonfinite_arguments(args):
+    from piecad import frange
+
+    with pytest.raises(ValueError, match="finite"):
+        frange(*args)
+
+
+def test_frange_inclusive_rejects_steps_that_cannot_advance():
+    from piecad import frange
+
+    values = frange(1e20, 1e20 + 1e6, 1.0, inclusive=True)
+    assert next(values) == 1e20
+    with pytest.raises(ValueError, match="too small to advance"):
+        next(values)
+
+
 def test_load_reads_mesh_vertices_and_faces(tmp_path):
     source = cube(2)
     vertices, faces = source.to_verts_and_faces()

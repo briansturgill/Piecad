@@ -3,12 +3,14 @@
 """
 
 import atexit
+import math as _math
 import threading
 import manifold3d as _m
 import inspect
 import os.path
 import time
 import numpy as np
+from collections.abc import Iterator as _Iterator
 from pathlib import Path as _Path
 from . import Obj2d, Obj3d, Config, _chkGE, _chkGO, ValidationError, trimesh
 
@@ -18,6 +20,7 @@ from ._check_mesh import quick_check_mesh as _quick_check_mesh
 
 __all__ = [
     "check_mesh",
+    "frange",
     "load",
     "quick_check_mesh",
     "obj3d_from_vertices_and_faces",
@@ -26,6 +29,60 @@ __all__ = [
     "view_all_now",
     "winding",
 ]
+
+
+import math
+
+
+def frange(start, stop=None, step=1, /, *, inclusive=False):
+    if stop is None:
+        start, stop = 0, start
+
+    if not all(isinstance(value, (int, float)) for value in (start, stop, step)):
+        raise TypeError("frange arguments must be integers or floats")
+    if step == 0:
+        raise ValueError("frange() step must not be zero")
+
+    if all(isinstance(value, int) for value in (start, stop, step)):
+        if inclusive:
+            stop += 1 if step > 0 else -1
+        return range(start, stop, step)
+
+    start, stop, step = float(start), float(stop), float(step)
+    if not all(math.isfinite(value) for value in (start, stop, step)):
+        raise ValueError("frange arguments must be finite")
+
+    if inclusive:
+        distance = (stop - start) / step
+        count = (
+            math.floor(math.nextafter(distance, math.inf)) + 1
+            if distance >= 0
+            else 0
+        )
+
+        def values():
+            previous = None
+            for i in range(count):
+                value = start + i * step
+                if i and value == previous:
+                    raise ValueError("frange() step is too small to advance")
+                yield value
+                previous = value
+
+        return values()
+
+    def values():
+        value = start
+        i = 0
+        while value < stop if step > 0 else value > stop:
+            yield value
+            i += 1
+            next_value = start + i * step
+            if next_value == value:
+                raise ValueError("frange() step is too small to advance")
+            value = next_value
+
+    return values()
 
 
 def _info_str(tag):  # Must be called from inside another function.

@@ -38,4 +38,5 @@ include = ["html"]
 exclude = [".benchmarks"]
 
 [tool.pytest.ini_options]
+testpaths = ["tests"]
 pythonpath = [ "../piecad" ]

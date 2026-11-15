@@ -412,6 +412,7 @@ class Path:
         to treat open paths as implicitly closed (SVG filling semantics).
         Open geometry remains unchanged in Path for SVG/DXF export.
         """
+        from .primitives_2d import polygon
         contours = []
         for part, points in zip(self._subpaths, self.to_points()):
             if not part["closed"] and not include_open:
