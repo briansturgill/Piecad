@@ -347,6 +347,8 @@ def _save_svg(filename, *objs):
                     txt.append(f"M{x} {y}")
                 else:
                     txt.append(f"L{x} {y}")
+            if len(path):
+                txt.append("Z")
 
         txt.append('"/></g>\n')
 
