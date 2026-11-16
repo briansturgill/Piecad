@@ -25,6 +25,7 @@ __all__ = [
     "quick_check_mesh",
     "obj3d_from_vertices_and_faces",
     "save",
+    "sign",
     "view",
     "view_all_now",
     "winding",
@@ -564,3 +565,11 @@ def _save_dxf(filename, *objs):
 
     with open(filename, "w") as f:
         f.write("\n".join(out) + "\n")
+
+
+def sign(x):
+    """
+    Common math utility function, missing from Python.
+    Evaluate `x`, if `x` < 0 return -1, or if `x` == 0 return 0 or if `x` > 0 return 1.
+    """
+    return (x > 0) - (x < 0)
