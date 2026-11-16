@@ -12,6 +12,21 @@ from piecad import Config, Obj3d, cube, load, rectangle
 utilities = importlib.import_module("piecad.utilities")
 
 
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        (-5, -1),
+        (-0.5, -1),
+        (0, 0),
+        (0.0, 0),
+        (0.5, 1),
+        (5, 1),
+    ],
+)
+def test_sign(value, expected):
+    assert utilities.sign(value) == expected
+
+
 @pytest.mark.parametrize("args", [(5,), (2, 8), (9, 0, -2), (0, 0)])
 def test_frange_with_integers_returns_range(args):
     from piecad import frange
