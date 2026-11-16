@@ -90,6 +90,15 @@ def test_save_load_2d_round_trip(tmp_path, ext):
     assert restored.area() == pytest.approx(84)
 
 
+def test_save_svg_round_trip_in_openscad_mode(tmp_path):
+    source = difference(square(10), square(4).translate((3, 3)))
+    filename = str(tmp_path / "shape.svg")
+    save(filename, source)
+    restored = load(filename, svg_openscad=True)
+    assert restored.area() == pytest.approx(source.area())
+    assert restored.bounding_box() == pytest.approx(source.bounding_box())
+
+
 def test_load_svg_fills_open_paths(tmp_path):
     filename = tmp_path / "open.SVG"
     filename.write_text(
