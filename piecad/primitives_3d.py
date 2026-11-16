@@ -108,8 +108,8 @@ def cone(
     """
     if segments == -1:
         segments = Config.get_default_segments()
-    _chkGT("height", height, 0)
-    _chkGT("radius_low", radius_low, 0)
+    _chkGE("height", height, 0)
+    _chkGE("radius_low", radius_low, 0)
     _chkGE("radius_high", radius_high, 0)
     _chkGE("segments", segments, 3)
     return Obj3d(
@@ -157,8 +157,8 @@ def cylinder(height: float, radius: float, segments: int = -1, center=False) -> 
     """
     if segments == -1:
         segments = Config.get_default_segments()
-    _chkGT("height", height, 0)
-    _chkGT("radius", radius, 0)
+    _chkGE("height", height, 0)
+    _chkGE("radius", radius, 0)
     _chkGE("segments", segments, 3)
     cyl = circle(radius, segments).extrude(height)
     if center:
@@ -202,7 +202,7 @@ def elliptical_cylinder(
     """
     if segments == -1:
         segments = Config.get_default_segments()
-    _chkGT("height", height, 0)
+    _chkGE("height", height, 0)
     _chkV2("radii", radii)
     _chkGE("segments", segments, 3)
 
@@ -222,7 +222,7 @@ def extrude(obj: Obj2d, height: float) -> Obj3d:
     <iframe width="100%" height="220" src="examples/extrude.html"></iframe>
     """
     _chkTY("obj", obj, Obj2d)
-    _chkGT("height", height, 0)
+    _chkGE("height", height, 0)
     return Obj3d(_m.Manifold.extrude(obj.mo, height))
 
 
@@ -373,7 +373,7 @@ def extrude_transforming(
     <iframe width="100%" height="300" src="examples/extrude_transforming.html"></iframe>
     """
     _chkTY("obj", obj, Obj2d)
-    _chkGT("height", height, 0)
+    _chkGE("height", height, 0)
     _chkGE("num_twist_divisions", num_twist_divisions, 0)
     _chkGE("twist", twist, 0)
     _chkV2("scale", scale)
@@ -398,7 +398,7 @@ def geodesic_sphere(radius, segments=-1) -> Obj3d:
     """
     if segments == -1:
         segments = Config.get_default_segments()
-    _chkGT("radius", radius, 0)
+    _chkGE("radius", radius, 0)
     _chkGE("segments", segments, 3)
 
     return Obj3d(_m.Manifold.sphere(radius, segments))
@@ -532,9 +532,9 @@ def pyramid(height: int, num_sides: int, radius: float) -> Obj3d:
 
     <iframe width="100%" height="220" src="examples/pyramid.html"></iframe>
     """
-    _chkGT("height", height, 0)
+    _chkGE("height", height, 0)
     _chkGE("num_sides", num_sides, 3)
-    _chkGT("radius", radius, 0)
+    _chkGE("radius", radius, 0)
     return extrude_transforming(
         circle(radius, segments=num_sides), height=height, scale=(0, 0)
     )
@@ -648,7 +648,7 @@ def rounded_cylinder(
     if segments == -1:
         segments = Config.get_default_segments()
     _chkGE("segments", segments, 3)
-    _chkGT("radius", radius, 0)
+    _chkGE("radius", radius, 0)
     rr = (
         rounded_rectangle((2 * radius, height), rounding_radius, segments)
         .translate((-radius, 0))
@@ -672,7 +672,7 @@ def revolve(obj: Obj2d, revolve_degrees: float = 360.0, segments: int = -1) -> O
         segments = Config.get_default_segments()
     _chkTY("obj", obj, Obj2d)
     _chkGE("segments", segments, 3)
-    _chkGT("revolve_degrees", revolve_degrees, 0)
+    _chkGE("revolve_degrees", revolve_degrees, 0)
     return Obj3d(_m.Manifold.revolve(obj.mo, segments, revolve_degrees))
 
 
@@ -750,8 +750,8 @@ def torus(outer_radius: float, inner_radius: float, segments=-1) -> Obj3d:
     """
     if segments == -1:
         segments = Config.get_default_segments()
-    _chkGT("outer_radius", outer_radius, 0)
-    _chkGT("inner_radius", inner_radius, 0)
+    _chkGE("outer_radius", outer_radius, 0)
+    _chkGE("inner_radius", inner_radius, 0)
     _chkGE("segments", segments, 3)
     if inner_radius >= outer_radius:
         raise ValidationError(

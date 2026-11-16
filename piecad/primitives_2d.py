@@ -28,7 +28,7 @@ def circle(radius: float, segments: int = -1) -> Obj2d:
     """
     if segments == -1:
         segments = Config.get_default_segments()
-    _chkGT("radius", radius, 0.0)
+    _chkGE("radius", radius, 0.0)
     _chkGE("segments", segments, 3)
 
     if segments in _unit_circles:
@@ -273,7 +273,7 @@ def square(size: float, center: bool = False) -> Obj2d:
     if type(size) == list or type(size) == tuple:
         return rectangle(size)
 
-    _chkGT("size", size, 0)
+    _chkGE("size", size, 0)
 
     return Obj2d(_m.CrossSection.square((size, size), center))
 
@@ -287,7 +287,7 @@ def star(num_points: int, outer_radius: float, inner_radius: float = 0.0) -> Obj
     Stars are created with the center at `(0,0)`.
     """
     _chkGE("num_points", num_points, 3)
-    _chkGT("outer_radius", outer_radius, 0.0)
+    _chkGE("outer_radius", outer_radius, 0.0)
     _chkGE("inner_radius", inner_radius, 0.0)
     pts = []
     deg_per_np = 360.0 / num_points
