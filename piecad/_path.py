@@ -10,9 +10,204 @@ from os import PathLike
 from typing import Self
 
 import ezdxf
+import pyclipper
 from svgpathtools import Arc, CubicBezier, Line, QuadraticBezier, parse_path
 
 from . import Config, Obj2d, ValidationError
+
+
+_SVG_NUMBER = r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?"
+
+
+def _svg_matrix_product(a, b):
+    return tuple(
+        sum(a[row * 3 + k] * b[k * 3 + col] for k in range(3))
+        for row in range(3) for col in range(3)
+    )
+
+
+def _svg_transform(value):
+    identity = (1, 0, 0, 0, 1, 0, 0, 0, 1)
+    if value is None or not value.strip():
+        return identity
+    result = identity
+    transform = re.compile(r"([A-Za-z]+)\s*\(([^()]*)\)")
+    number = re.compile(_SVG_NUMBER)
+    pos = 0
+    for match in transform.finditer(value):
+        if value[pos:match.start()].strip(" \t\r\n,"):
+            raise ValidationError("Invalid SVG transform")
+        name, args = match.groups()
+        values = []
+        arg_pos = 0
+        for arg in number.finditer(args):
+            if args[arg_pos:arg.start()].strip(" \t\r\n,"):
+                raise ValidationError("Invalid SVG transform arguments")
+            values.append(_number(arg.group(), "SVG transform argument"))
+            arg_pos = arg.end()
+        if args[arg_pos:].strip(" \t\r\n,"):
+            raise ValidationError("Invalid SVG transform arguments")
+        if name == "matrix" and len(values) == 6:
+            a, b, c, d, e, f = values
+            matrix = (a, c, e, b, d, f, 0, 0, 1)
+        elif name == "translate" and len(values) in (1, 2):
+            matrix = (1, 0, values[0], 0, 1,
+                      values[1] if len(values) == 2 else 0, 0, 0, 1)
+        elif name == "scale" and len(values) in (1, 2):
+            matrix = (values[0], 0, 0, 0,
+                      values[1] if len(values) == 2 else values[0], 0, 0, 0, 1)
+        elif name == "rotate" and len(values) in (1, 3):
+            angle = math.radians(values[0])
+            c, s = math.cos(angle), math.sin(angle)
+            x, y = values[1:] if len(values) == 3 else (0, 0)
+            matrix = (c, -s, x - c * x + s * y,
+                      s, c, y - s * x - c * y, 0, 0, 1)
+        elif name in ("skewX", "skewY") and len(values) == 1:
+            t = math.tan(math.radians(values[0]))
+            matrix = ((1, t, 0, 0, 1, 0, 0, 0, 1) if name == "skewX"
+                      else (1, 0, 0, t, 1, 0, 0, 0, 1))
+        else:
+            raise ValidationError(f"Unsupported or invalid SVG transform: {name}")
+        result = _svg_matrix_product(result, matrix)
+        pos = match.end()
+    if pos == 0 or value[pos:].strip(" \t\r\n,"):
+        raise ValidationError("Invalid SVG transform")
+    if not all(math.isfinite(v) for v in result):
+        raise ValidationError("SVG transform must be finite")
+    return result
+
+
+def _svg_point(matrix, point):
+    x, y = point
+    return _point((matrix[0] * x + matrix[1] * y + matrix[2],
+                   matrix[3] * x + matrix[4] * y + matrix[5]), "SVG point")
+
+
+def _svg_openscad_viewport(root):
+    viewbox_text = root.get("viewBox")
+    if viewbox_text:
+        values = re.split(r"[\s,]+", viewbox_text.strip())
+        if len(values) != 4:
+            raise ValidationError("Invalid SVG viewBox")
+        x, y, width, height = (_number(v, "SVG viewBox") for v in values)
+        if width <= 0 or height <= 0:
+            raise ValidationError("SVG viewBox dimensions must be positive")
+        viewbox = (x, y, width, height)
+    else:
+        viewbox = None
+
+    def length(value, extent):
+        if value is None:
+            return extent * 25.4 / 72 if viewbox else 0
+        match = re.fullmatch(rf"\s*({_SVG_NUMBER})\s*(px|pt|pc|in|cm|mm|%)?\s*", value)
+        if not match:
+            raise ValidationError(f"Unsupported SVG viewport length: {value}")
+        number = _number(match[1], "SVG viewport length")
+        factors = {None: 25.4 / 72, "px": 25.4 / 96, "pt": 25.4 / 72,
+                   "pc": 25.4 / 6, "in": 25.4, "cm": 10, "mm": 1}
+        if match[2] == "%":
+            if not viewbox:
+                raise ValidationError("Percentage SVG viewport requires a viewBox")
+            return extent
+        return number * factors[match[2]]
+
+    page_width = length(root.get("width"), viewbox[2] if viewbox else 0)
+    page_height = length(root.get("height"), viewbox[3] if viewbox else 0)
+    if page_width < 0 or page_height < 0:
+        raise ValidationError("SVG viewport dimensions must not be negative")
+    if not viewbox:
+        return (1, 0, 0, 0, -1, page_height, 0, 0, 1), (0, 0)
+
+    x, y, width, height = viewbox
+    sx, sy = page_width / width, page_height / height
+    align_x = align_y = 0
+    aspect = root.get("preserveAspectRatio", "xMidYMid meet").split()
+    if aspect and aspect[0] == "defer":
+        aspect = aspect[1:]
+    if not aspect or len(aspect) > 2:
+        raise ValidationError("Invalid SVG preserveAspectRatio")
+    alignment = aspect[0]
+    if alignment == "none":
+        if len(aspect) == 2 and aspect[1] not in ("meet", "slice"):
+            raise ValidationError("Invalid SVG preserveAspectRatio")
+    else:
+        match = re.fullmatch(r"x(Min|Mid|Max)Y(Min|Mid|Max)", alignment)
+        if not match or (len(aspect) == 2 and aspect[1] not in ("meet", "slice")):
+            raise ValidationError("Invalid SVG preserveAspectRatio")
+        scale = max(sx, sy) if len(aspect) == 2 and aspect[1] == "slice" else min(sx, sy)
+        sx = sy = scale
+        fraction = {"Min": 0, "Mid": 0.5, "Max": 1}
+        align_x = (page_width - sx * width) * fraction[match[1]]
+        align_y = (page_height - sy * height) * fraction[match[2]]
+    return ((sx, 0, align_x - sx * x, 0, -sy,
+             page_height - align_y - sy * y, 0, 0, 1), (x, y))
+
+
+def _load_svg_openscad(filename, center=False):
+    from .bulk_ops import union
+    from .primitives_2d import polygon
+
+    _, root, shapes = Path._read_svg(filename, -1, openscad=True)
+    viewport, origin = _svg_openscad_viewport(root)
+    objects = []
+    bounds = []
+    for path, transform, element in shapes:
+        style = {}
+        for item in element.get("style", "").split(";"):
+            if item.strip():
+                key, separator, value = item.partition(":")
+                if not separator:
+                    raise ValidationError("Invalid SVG style")
+                style[key.strip()] = value.strip()
+        width = _number(element.get("stroke-width", style.get("stroke-width", "1")),
+                        "SVG stroke width")
+        if width < 0.01:
+            width = 1
+        cap = element.get("stroke-linecap", style.get("stroke-linecap", "square"))
+        join = element.get("stroke-linejoin", style.get("stroke-linejoin", "miter"))
+        caps = {"butt": pyclipper.ET_OPENBUTT, "round": pyclipper.ET_OPENROUND,
+                "square": pyclipper.ET_OPENSQUARE}
+        joins = {"bevel": pyclipper.JT_SQUARE, "round": pyclipper.JT_ROUND,
+                 "square": pyclipper.JT_MITER, "miter": pyclipper.JT_MITER}
+        if cap not in caps or join not in joins:
+            raise ValidationError("Unsupported SVG stroke linecap or linejoin")
+        contours = []
+        subpaths = path.to_points()
+        has_close = any(part["closed"] for part in path._subpaths)
+        for index, (part, points) in enumerate(zip(path._subpaths, subpaths)):
+            if len(points) < 2:
+                continue
+            # OpenSCAD 2021 implicitly fills the final open subpath if the
+            # same path element contains a close command.
+            stroke = not part["closed"] and not (has_close and index == len(subpaths) - 1)
+            if stroke and math.dist(points[0], points[-1]) > 0.1:
+                scale = 10000
+                offset = pyclipper.PyclipperOffset()
+                try:
+                    offset.AddPath([(int(x * scale), int(y * scale)) for x, y in points],
+                                   joins[join], caps[cap])
+                    contours.extend(
+                        [[(x / scale, y / scale) for x, y in contour]
+                         for contour in offset.Execute(width * scale / 2)]
+                    )
+                except (pyclipper.ClipperException, OverflowError) as exc:
+                    raise ValidationError(f"Invalid SVG stroke geometry: {exc}") from exc
+            else:
+                contours.append(points)
+        contours = [[_svg_point(transform, p) for p in contour] for contour in contours
+                    if len(set(contour)) >= 3]
+        bounds.extend(p for contour in contours for p in contour)
+        contours = [[_svg_point(viewport, p) for p in contour] for contour in contours]
+        if contours:
+            objects.append(polygon(contours, check=False))
+    result = union(*objects) if objects else Obj2d()
+    if center and bounds:
+        mid_x = (min(p[0] for p in bounds) + max(p[0] for p in bounds)) / 2
+        mid_y = (min(p[1] for p in bounds) + max(p[1] for p in bounds)) / 2
+        sx, sy = viewport[0], -viewport[4]
+        result = result.translate((-viewport[2] - sx * (origin[0] + mid_x),
+                                   -viewport[5] - sy * origin[1] + sy * mid_y))
+    return result
 
 
 def _point(value, name="point") -> tuple[float, float]:
@@ -217,33 +412,65 @@ class Path:
     def from_svg(cls, filename: str | PathLike, segments: int = -1) -> Self:
         """Read SVG path elements; all contours use even-odd fill.
 
-        SVG coordinates are used as-is. Transforms, CSS, non-path shapes and
-        explicit nonzero fill rules are not supported. Coincident-endpoint
-        SVG arcs are not supported by the path parser.
+        SVG coordinates are used as-is after applying element transforms.
+        Transformed arcs are sampled into lines. CSS, use references, non-path
+        shapes and explicit nonzero fill rules are not supported.
         """
+        result, _, _ = cls._read_svg(filename, segments)
+        return result
+
+    @classmethod
+    def _read_svg(cls, filename, segments, *, openscad=False):
         root = ET.parse(filename).getroot()
         if root.tag.split("}")[-1] != "svg":
             raise ValidationError("Expected an SVG document")
         result = cls(segments=segments)
         result._subpaths.clear()
-        number = r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?"
+        shapes = []
+        number = _SVG_NUMBER
         token = re.compile(rf"[MmLlHhVvCcSsQqTtAaZz]|{number}")
         move = re.compile(rf"^[Mm]\s*({number})[\s,]*({number})")
-        for element in root.iter():
-            tag = element.tag.split("}")[-1]
-            if tag not in ("svg", "g", "path", "title", "desc", "metadata"):
-                raise ValidationError(f"Unsupported SVG element: {tag}")
-            unsupported = {"transform", "style", "clip-path", "mask", "display",
-                           "visibility", "filter"}
-            if unsupported.intersection(element.attrib):
-                raise ValidationError("SVG transforms, CSS and visual effects are not supported")
-            if element.get("fill-rule", "evenodd") != "evenodd":
-                raise ValidationError("Only the evenodd SVG fill rule is supported")
-            if tag != "path":
-                continue
-            data = element.get("d", "").strip()
-            if not data:
-                continue
+
+        def append_path(data, matrix, element):
+            source = cls(segments=segments)
+            source._subpaths.clear()
+            parse_path_data(data, source)
+            if openscad:
+                shapes.append((source, matrix, element))
+                return
+            identity = (1, 0, 0, 0, 1, 0, 0, 0, 1)
+            if matrix == identity:
+                result._subpaths.extend(source._subpaths)
+                result._cur_pt = source._cur_pt
+                return
+            for part in source._subpaths:
+                result.sub_path(_svg_point(matrix, part["start"]))
+                here = part["start"]
+                for cmd in part["commands"]:
+                    if cmd[0] == "line":
+                        result.line_to(_svg_point(matrix, cmd[1]))
+                        here = cmd[1]
+                    elif cmd[0] == "quadratic":
+                        result.quadratic_bezier_to(*(_svg_point(matrix, p) for p in cmd[1:]))
+                        here = cmd[2]
+                    elif cmd[0] == "cubic":
+                        result.cubic_bezier_to(*(_svg_point(matrix, p) for p in cmd[1:]))
+                        here = cmd[3]
+                    else:
+                        radii, end, rotation, large, ccw = cmd[1:]
+                        if here != end and all(r > 0 for r in radii):
+                            arc = Arc(_cp(here), _cp(radii), rotation, large, ccw, _cp(end))
+                            points = [here]
+                            source._sample(points, arc, end)
+                            for point in points[1:]:
+                                result.line_to(_svg_point(matrix, point))
+                        elif here != end:
+                            result.line_to(_svg_point(matrix, end))
+                        here = end
+                if part["closed"]:
+                    result.close()
+
+        def parse_path_data(data, path):
             previous = 0
             for match in token.finditer(data):
                 if data[previous:match.start()].strip(" \t\r\n,"):
@@ -259,10 +486,10 @@ class Path:
                 if not chunk:
                     continue
                 if chunk[0] in "Zz":
-                    if not result._subpaths or result._subpaths[-1]["closed"]:
+                    if not path._subpaths or path._subpaths[-1]["closed"]:
                         raise ValidationError("SVG close command has no open subpath")
-                    result.close()
-                    here = _cp(result._cur_pt)
+                    path.close()
+                    here = _cp(path._cur_pt)
                     chunk = chunk[1:].strip()
                     if not chunk:
                         continue
@@ -276,27 +503,56 @@ class Path:
                 if chunk[0] == "m":
                     start += here
                 start_xy = _point(_xy(start), "SVG start")
-                result.sub_path(start_xy)
+                path.sub_path(start_xy)
                 try:
                     parsed = parse_path(chunk, current_pos=here)
                 except (ValueError, AssertionError, IndexError, ZeroDivisionError) as exc:
                     raise ValidationError(f"Invalid SVG path data: {exc}") from exc
                 for curve in parsed:
                     if isinstance(curve, Line):
-                        result.line_to(_xy(curve.end))
+                        path.line_to(_xy(curve.end))
                     elif isinstance(curve, QuadraticBezier):
-                        result.quadratic_bezier_to(_xy(curve.control), _xy(curve.end))
+                        path.quadratic_bezier_to(_xy(curve.control), _xy(curve.end))
                     elif isinstance(curve, CubicBezier):
-                        result.cubic_bezier_to(
+                        path.cubic_bezier_to(
                             _xy(curve.control1), _xy(curve.control2), _xy(curve.end)
                         )
                     elif isinstance(curve, Arc):
-                        result.arc_to(_xy(curve.radius), _xy(curve.end),
-                                      curve.rotation, curve.large_arc, curve.sweep)
-                here = _cp(result._cur_pt)
-        if not result._subpaths:
+                        path.arc_to(_xy(curve.radius), _xy(curve.end),
+                                    curve.rotation, curve.large_arc, curve.sweep)
+                here = _cp(path._cur_pt)
+
+        def visit(element, parent_matrix):
+            tag = element.tag.split("}")[-1]
+            if element.tag == "{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}namedview":
+                return
+            namespace = element.tag.rpartition("}")[0]
+            if namespace and namespace != "{http://www.w3.org/2000/svg":
+                raise ValidationError(f"Unsupported SVG element: {element.tag}")
+            if tag in ("title", "desc", "metadata", "defs"):
+                return
+            if tag not in ("svg", "g", "path"):
+                raise ValidationError(f"Unsupported SVG element: {tag}")
+            if not openscad:
+                unsupported = {"style", "clip-path", "mask", "display",
+                               "visibility", "filter"}
+                if unsupported.intersection(element.attrib):
+                    raise ValidationError("SVG CSS and visual effects are not supported")
+                if element.get("fill-rule", "evenodd") != "evenodd":
+                    raise ValidationError("Only the evenodd SVG fill rule is supported")
+            if openscad and tag == "svg" and element is not root:
+                raise ValidationError("Nested SVG viewports are not supported")
+            transform = None if openscad and element is root else element.get("transform")
+            matrix = _svg_matrix_product(parent_matrix, _svg_transform(transform))
+            if tag == "path" and element.get("d", "").strip():
+                append_path(element.get("d").strip(), matrix, element)
+            for child in element:
+                visit(child, matrix)
+
+        visit(root, (1, 0, 0, 0, 1, 0, 0, 0, 1))
+        if not openscad and not result._subpaths:
             raise ValidationError("SVG contains no path geometry")
-        return result
+        return result, root, shapes
 
     def to_dxf(self, filename: str | PathLike) -> None:
         """Write each subpath as a DXF polyline, sampling curves into lines."""

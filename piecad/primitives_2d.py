@@ -128,9 +128,11 @@ def path(initial_point: tuple[float, float] = (0, 0), segments: int = -1) -> obj
     ```
 
     `Path.to_svg(filename)` and `Path.from_svg(filename, segments=-1)` write
-    and read SVG path elements in SVG coordinates. All contours are interpreted
-    using even-odd fill. SVG transforms, CSS, non-path shapes, and explicit
-    nonzero fill rules are not supported. Imported path elements are combined
+    and read SVG path elements in SVG coordinates, applying nested transforms.
+    Transformed arcs are sampled into lines. All contours are interpreted
+    using even-odd fill. CSS, use references, non-path shapes, and explicit
+    nonzero fill rules are not supported. Metadata and definitions are skipped.
+    Imported path elements are combined
     as contours, not as separately composited SVG shapes. Degenerate arcs
     are exported as lines; coincident-endpoint SVG arcs cannot be imported.
 

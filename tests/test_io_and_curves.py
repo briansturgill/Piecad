@@ -239,16 +239,147 @@ def test_path_svg_degenerate_arcs_and_close_followed_by_line(tmp_path):
 
 
 @pytest.mark.parametrize("body", [
-    '<g transform="translate(2)"><path d="M0 0 L1 1"/></g>',
     '<path fill-rule="nonzero" d="M0 0 L1 1"/>',
     '<rect width="10" height="10"/>',
     '<path d="M0 0 L1 1 garbage"/>',
+    '<g transform="translate(2) nonsense"><path d="M0 0 L1 1"/></g>',
+    '<path transform="scale(2 3 4)" d="M0 0 L1 1"/>',
+    '<use href="#p"/>',
 ])
 def test_path_svg_rejects_unsupported_input(tmp_path, body):
     filename = tmp_path / "input.svg"
     filename.write_text(f'<svg xmlns="http://www.w3.org/2000/svg">{body}</svg>')
     with pytest.raises(ValidationError):
         Path.from_svg(filename)
+
+
+def test_path_svg_ignores_metadata_and_definitions(tmp_path):
+    filename = tmp_path / "input.svg"
+    filename.write_text(
+        '<svg xmlns="http://www.w3.org/2000/svg" '
+        'xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd">'
+        '<sodipodi:namedview><unknown/></sodipodi:namedview>'
+        '<metadata><unknown><path d="M20 20 L30 30"/></unknown></metadata>'
+        '<defs><path id="p" d="M20 20 L30 30"/><use href="#p"/></defs>'
+        '<path d="M0 0 L2 0 L2 2 Z"/></svg>'
+    )
+    assert Path.from_svg(filename).to_commands() == [
+        {"start": (0, 0), "commands": [
+            ("line", (2, 0)), ("line", (2, 2)), ("close",)
+        ], "closed": True}
+    ]
+
+
+def test_path_svg_nested_transforms_and_curves(tmp_path):
+    filename = tmp_path / "input.svg"
+    filename.write_text(
+        '<svg><g transform="translate(10 20) scale(2 3)">'
+        '<path transform="translate(1 2)" '
+        'd="M0 0 L1 1 Q2 1 3 2 C4 2 5 3 6 4 Z"/></g></svg>'
+    )
+    assert Path.from_svg(filename).to_commands() == [
+        {"start": (12, 26), "commands": [
+            ("line", (14, 29)), ("quadratic", (16, 29), (18, 32)),
+            ("cubic", (20, 32), (22, 35), (24, 38)), ("close",)
+        ], "closed": True}
+    ]
+
+
+def test_path_svg_transformed_arc_samples_original_curve(tmp_path):
+    filename = tmp_path / "input.svg"
+    filename.write_text(
+        '<svg><path transform="matrix(-1 0.5 0.3 2 8 4)" '
+        'd="M0 0 A5 3 30 0 1 8 2"/></svg>'
+    )
+    original = Path((0, 0), segments=12).arc_to((5, 3), (8, 2), 30, False, True)
+    points = Path.from_svg(filename, segments=12).to_points()[0]
+    expected = [(8 - x + 0.3 * y, 4 + 0.5 * x + 2 * y)
+                for x, y in original.to_points()[0]]
+    assert len(points) == len(expected)
+    for actual, wanted in zip(points, expected):
+        assert actual == pytest.approx(wanted)
+
+
+def test_load_svg_openscad_reference_geometry(tmp_path):
+    # OpenSCAD 2021.01 exports these shapes as three contours with area 274.
+    filename = tmp_path / "input.svg"
+    filename.write_text(
+        '<svg width="100mm" height="50mm" viewBox="0 0 100 50">'
+        '<defs><path d="M70 10 L80 10 L80 20 L70 20 Z"/></defs>'
+        '<g transform="translate(10 5)">'
+        '<path d="M0 0 L10 0 L10 10 L0 10 Z"/></g>'
+        '<path d="M15 5 L25 5 L25 15 L15 15 Z"/>'
+        '<path style="fill:none" d="M35 5 L45 5 L45 15 L35 15 Z"/>'
+        '<path stroke-width="2" d="M50 5 L60 5"/>'
+        '</svg>'
+    )
+    shape = load(str(filename), svg_openscad=True)
+    assert shape.bounding_box() == pytest.approx((10, 35, 61, 46))
+    assert shape.area() == pytest.approx(274)
+    assert len(shape.to_paths()) == 3
+    expected = union(
+        square(10).translate((10, 35)), square(10).translate((15, 35)),
+        square(10).translate((35, 35)), rectangle((12, 2)).translate((49, 44)),
+    )
+    assert difference(shape, expected).area() == pytest.approx(0, abs=1e-8)
+    assert difference(expected, shape).area() == pytest.approx(0, abs=1e-8)
+
+
+def test_load_svg_openscad_compound_paths_and_separate_shapes(tmp_path):
+    filename = tmp_path / "input.svg"
+    filename.write_text(
+        '<svg width="100mm" height="100mm" viewBox="0 0 100 100">'
+        '<path d="M0 0 L20 0 L20 20 L0 20 Z M5 5 L15 5 L15 15 L5 15 Z"/>'
+        '<path d="M30 0 L50 0 L50 20 L30 20 Z M35 5 L35 15 L45 15 L45 5 Z"/>'
+        '<path d="M60 0 L80 0 L80 20 L60 20 Z"/>'
+        '<path d="M65 5 L75 5 L75 15 L65 15 Z"/>'
+        '</svg>'
+    )
+    shape = load(str(filename), svg_openscad=True)
+    assert shape.area() == pytest.approx(1000)
+    assert len(shape.to_paths()) == 5
+
+
+def test_load_svg_openscad_rejects_visible_use(tmp_path):
+    filename = tmp_path / "input.svg"
+    filename.write_text(
+        '<svg><defs><path id="p" d="M0 0 L1 0 L1 1 Z"/></defs>'
+        '<use href="#p"/></svg>'
+    )
+    with pytest.raises(ValidationError, match="Unsupported SVG element: use"):
+        load(str(filename), svg_openscad=True)
+
+
+def test_load_svg_openscad_center_matches_viewbox_origin(tmp_path):
+    filename = tmp_path / "input.svg"
+    filename.write_text(
+        '<svg width="100mm" height="100mm" viewBox="10 20 100 100">'
+        '<path d="M20 30 L30 30 L30 40 L20 40 Z"/></svg>'
+    )
+    shape = load(str(filename), svg_openscad=True, center=True)
+    assert shape.bounding_box() == pytest.approx((-15, -25, -5, -15))
+
+
+def test_load_svg_openscad_viewport_alignment(tmp_path):
+    filename = tmp_path / "input.svg"
+    filename.write_text(
+        '<svg width="200mm" height="100mm" viewBox="10 20 100 100">'
+        '<path d="M20 30 L30 30 L30 40 L20 40 Z"/></svg>'
+    )
+    shape = load(str(filename), svg_openscad=True)
+    assert shape.bounding_box() == pytest.approx((60, 40, 70, 50))
+
+
+def test_load_svg_openscad_final_open_subpath_after_close(tmp_path):
+    filename = tmp_path / "input.svg"
+    filename.write_text(
+        '<svg width="100mm" height="100mm" viewBox="0 0 100 100">'
+        '<path d="M0 0 L10 0 L10 10 Z M20 0 L30 0 L30 10" stroke-width="2"/>'
+        '</svg>'
+    )
+    shape = load(str(filename), svg_openscad=True)
+    assert shape.bounding_box() == pytest.approx((0, 90, 30, 100))
+    assert shape.area() == pytest.approx(100)
 
 
 def test_path_dxf_roundtrip_sampled_curves(tmp_path):

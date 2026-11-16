@@ -22,6 +22,7 @@ dependencies = [
     "lxml >= 6.1.3",
     "manifold3d >= 3.2.1",
     "pillow >= 12.3.0",
+    "pyclipper >= 1.3.0",
     "svgpathtools==1.7.0",
     "trimesh >= 1.26.4",
     "weasyprint >= 70.0",

@@ -93,7 +93,8 @@ def _info_str(tag):  # Must be called from inside another function.
     return str
 
 
-def load(filename: str) -> Obj3d | Obj2d:
+def load(filename: str, *, svg_openscad: bool = False,
+         center: bool = False) -> Obj3d | Obj2d:
     """
     Load a 3D or 2D object from a file.
 
@@ -118,22 +119,34 @@ def load(filename: str) -> Obj3d | Obj2d:
     Only explicitly closed DXF polylines are filled. SVG and DXF imports
     support the same elements and limitations as `Path.from_svg` and
     `Path.from_dxf`, respectively.
+
+    Set `svg_openscad=True` to use OpenSCAD 2021.01's SVG coordinate,
+    open-path stroke, and per-element union conventions instead. This mode
+    ignores visual styling except stroke width, line caps and joins; it does
+    not support non-path shapes or visible `<use>` references.
+    Set `center=True` to center the imported geometry. For OpenSCAD SVG mode,
+    centering follows OpenSCAD's viewBox handling.
     """
     dot_idx = filename.rindex(".")
     ext = filename[dot_idx + 1 :]
     if ext.lower() in ("svg", "dxf"):
-        from ._path import Path
+        from ._path import Path, _load_svg_openscad
 
         if ext.lower() == "svg":
-            return Path.from_svg(filename).to_obj2d(include_open=True)
-        return Path.from_dxf(filename).to_obj2d()
+            if svg_openscad:
+                return _load_svg_openscad(filename, center=center)
+            result = Path.from_svg(filename).to_obj2d(include_open=True)
+        else:
+            result = Path.from_dxf(filename).to_obj2d()
+        return result.center() if center else result
     mesh = trimesh.exchange.load.load(
         filename, ext, force="mesh", process=True, validate=False
     )
     if type(mesh) == trimesh.path.Path2D:
         raise ValidationError("Only .svg, .dxf 2D objects are currently supported.")
 
-    return obj3d_from_vertices_and_faces(mesh.vertices, mesh.faces)
+    result = obj3d_from_vertices_and_faces(mesh.vertices, mesh.faces)
+    return result.center() if center else result
 
 
 _save_dir = None
