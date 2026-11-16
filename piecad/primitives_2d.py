@@ -31,6 +31,9 @@ def circle(radius: float, segments: int = -1) -> Obj2d:
     _chkGE("radius", radius, 0.0)
     _chkGE("segments", segments, 3)
 
+    if radius == 0.0: # Workaround manifold bug with scaling to zero
+        return _m.CrossSection.circle(0, segments)
+
     if segments in _unit_circles:
         circ = _unit_circles[segments]
     else:
@@ -52,6 +55,9 @@ def ellipse(radii: list[float, float], segments: int = -1) -> Obj2d:
         segments = Config.get_default_segments()
     _chkV2("radii", radii)
     _chkGE("segments", segments, 3)
+
+    if radii[0] == 0.0 and radii[0] == 0.0: # Workaround manifold bug with scaling to zero
+        return _m.CrossSection.circle(0, segments)
 
     if segments in _unit_circles:
         circ = _unit_circles[segments]
