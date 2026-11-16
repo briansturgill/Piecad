@@ -45,13 +45,13 @@ def test_set_default_min_angle():
         Config.set_default_min_angle(old)
 
 
-def test_set_default_min_segment_length():
-    old = Config.get_default_min_segment_length()
+def test_set_default_min_edge_length():
+    old = Config.get_default_min_edge_length()
     try:
-        Config.set_default_min_segment_length(1.5)
-        assert Config.get_default_min_segment_length() == 1.5
+        Config.set_default_min_edge_length(1.5)
+        assert Config.get_default_min_edge_length() == 1.5
     finally:
-        Config.set_default_min_segment_length(old)
+        Config.set_default_min_edge_length(old)
 
 
 def test_set_default_units():
@@ -75,60 +75,60 @@ def test_set_default_color():
 
 
 def test_calculate_default_segments_minimum_angle():
-    assert Config.calculate_default_segments(
-        100, tmp_min_angle=18, tmp_min_segment_length=1
+    assert Config.calc_segs(
+        100, min_a=18, min_el=1
     ) == 20
 
 
 def test_calculate_default_segments_minimum_length_rounds_up_to_multiple_of_four():
-    assert Config.calculate_default_segments(
-        5, tmp_min_angle=1, tmp_min_segment_length=3
+    assert Config.calc_segs(
+        5, min_a=1, min_el=3
     ) == 12
 
 
 def test_calculate_default_segments_uses_default_minimums():
     old_angle = Config.get_default_min_angle()
-    old_length = Config.get_default_min_segment_length()
+    old_length = Config.get_default_min_edge_length()
     old_segments = Config.get_default_segments()
     try:
         Config.set_default_min_angle(18)
-        Config.set_default_min_segment_length(3)
+        Config.set_default_min_edge_length(3)
         Config.set_default_segments(40)
-        assert Config.calculate_default_segments(100) == 20
-        assert Config.calculate_default_segments(5) == 12
-        assert Config.calculate_default_segments(100, tmp_min_angle=90) == 4
-        assert Config.calculate_default_segments(5, tmp_min_segment_length=10) == 4
+        assert Config.calc_segs(100) == 20
+        assert Config.calc_segs(5) == 12
+        assert Config.calc_segs(100, min_a=90) == 4
+        assert Config.calc_segs(5, min_el=10) == 4
     finally:
         Config.set_default_min_angle(old_angle)
-        Config.set_default_min_segment_length(old_length)
+        Config.set_default_min_edge_length(old_length)
         Config.set_default_segments(old_segments)
 
 
 @pytest.mark.parametrize("radius", [0, 0.1, -0.1])
 def test_calculate_default_segments_has_minimum_of_four(radius):
-    assert Config.calculate_default_segments(
-        radius, tmp_min_angle=1, tmp_min_segment_length=3
+    assert Config.calc_segs(
+        radius, min_a=1, min_el=3
     ) == 4
 
 
 def test_calculate_default_segments_negative_radius():
-    assert Config.calculate_default_segments(
-        -5, tmp_min_angle=1, tmp_min_segment_length=3
+    assert Config.calc_segs(
+        -5, min_a=1, min_el=3
     ) == 12
 
 
 @pytest.mark.parametrize(
     "kwargs",
     [
-        {"tmp_min_angle": 0},
-        {"tmp_min_angle": -1},
-        {"tmp_min_segment_length": 0},
-        {"tmp_min_segment_length": -1},
+        {"min_a": 0},
+        {"min_a": -1},
+        {"min_el": 0},
+        {"min_el": -1},
     ],
 )
 def test_calculate_default_segments_rejects_nonpositive_minimums(kwargs):
     with pytest.raises(ValidationError):
-        Config.calculate_default_segments(5, **kwargs)
+        Config.calc_segs(5, **kwargs)
 
 
 def test_bounding_box_2d():

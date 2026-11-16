@@ -795,7 +795,7 @@ class Config:
 
     _default_segments = 36
     _default_min_angle = 12.0
-    _default_min_segment_length = 2.0
+    _default_min_edge_length = 2.0
     _default_units = "mm"
     _layer_resolution = 0.1
     _default_color = _parse_color("tan")
@@ -835,7 +835,7 @@ class Config:
         a default value for `segments` of `-1`.
 
         A more advanced way to control the number of segments is to use:
-        [`Config.calculate_default_segments`](index.html#piecad.Config.calculate_default_segments).
+        [`Config.calc_segs`](index.html#piecad.Config.calc_segs).
         You must call this function directly for each circular object you want to
         calculate the default segments for.
         """
@@ -847,7 +847,7 @@ class Config:
         """
         Get the default minimum angle used by circular objects.
 
-        Used by [`Config.calculate_default_segments`](index.html#piecad.Config.calculate_default_segments).
+        Used by [`Config.calc_segs`](index.html#piecad.Config.calc_segs).
         """
         return cls._default_min_angle
 
@@ -856,50 +856,51 @@ class Config:
         """
         Set the default minimum angle used by circular objects.
 
-        Used by [`Config.calculate_default_segments`](index.html#piecad.Config.calculate_default_segments).
+        Used by [`Config.calc_segs`](index.html#piecad.Config.calc_segs).
         """
         _chkGT("angle", angle, 0.0)
         cls._default_min_angle = angle
 
     @classmethod
-    def get_default_min_segment_length(cls) -> float:
+    def get_default_min_edge_length(cls) -> float:
         """
-        Get the default minimum segment length used by circular objects.
+        Get the default minimum edge length used by circular objects.
 
-        Used by [`Config.calculate_default_segments`](index.html#piecad.Config.calculate_default_segments).
+        Used by [`Config.calc_segs`](index.html#piecad.Config.calc_segs).
         """
-        return cls._default_min_segment_length
+        return cls._default_min_edge_length
 
     @classmethod
-    def set_default_min_segment_length(cls, length: float = 2.0) -> None:
+    def set_default_min_edge_length(cls, length: float = 2.0) -> None:
         """
-        Set the default minimum segment length used by circular objects.
+        Set the default minimum edge length used by circular objects.
 
-        Used by [`Config.calculate_default_segments`](index.html#piecad.Config.calculate_default_segments).
+        Used by [`Config.calc_segs`](index.html#piecad.Config.calc_segs).
         """
         _chkGT("length", length, 0)
-        cls._default_min_segment_length = length
+        cls._default_min_edge_length = length
 
     @classmethod
-    def calculate_default_segments(cls, radius: float, tmp_min_angle: float = None,
-                                   tmp_min_segment_length: float = None) -> int:
+    def calc_segs(cls, radius: float, min_a: float = None,
+                                   min_el: float = None) -> int:
         """
-        Calculate default segments based on the provided parameters.
+        Calculate default segments based on minimum angle (min_a)
+        and minimum edge length (min_el).
         If a parameter is None, then the global default value is used.
 
         This is never automatically called; you must call it directly for each circular object
         you want to calculate the default segments for.
         """
-        if tmp_min_angle is None:
-            tmp_min_angle = cls._default_min_angle
-        if tmp_min_segment_length is None:
-            tmp_min_segment_length = cls._default_min_segment_length
-        _chkGT("tmp_min_angle", tmp_min_angle, 0.0)
-        _chkGT("tmp_min_segment_length", tmp_min_segment_length, 0.0)
+        if min_a is None:
+            min_a = cls._default_min_angle
+        if min_el is None:
+            min_el = cls._default_min_edge_length
+        _chkGT("min_a", min_a, 0.0)
+        _chkGT("min_el", min_el, 0.0)
 
-        num_seg_angle = 360.0 / tmp_min_angle
-        num_seg_segment_length = 2.0 * abs(radius) * math.pi / tmp_min_segment_length
-        n_seg = int(min(num_seg_angle, num_seg_segment_length))
+        num_seg_angle = 360.0 / min_a
+        num_seg_edge_length = 2.0 * abs(radius) * math.pi / min_el
+        n_seg = int(min(num_seg_angle, num_seg_edge_length))
         r = n_seg % 4
         if r != 0:
             n_seg += 4 -r
