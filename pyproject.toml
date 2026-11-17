@@ -42,3 +42,5 @@ exclude = [".benchmarks"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = [ "../piecad" ]
+norecursedirs  = ["tests/inactive"]
+addopts = "--benchmark-disable"
