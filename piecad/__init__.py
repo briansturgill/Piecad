@@ -585,6 +585,73 @@ class Obj2d:
         o3 = Obj3d(_m.Manifold.extrude(self.mo, height))
         return o3
 
+    # Next two go with minkowski.
+    @staticmethod
+    def _convex_parts(
+        section: _m.CrossSection,
+    ) -> list[list[tuple[float, float]]]:
+        parts: list[list[tuple[float, float]]] = []
+        for component in section.decompose():
+            if (component.hull() - component).is_empty():
+                parts.append([(float(x), float(y)) for x, y in component.to_polygons()[0]])
+                continue
+            polygons = component.to_polygons()
+            vertices = [(float(x), float(y)) for polygon in polygons for x, y in polygon]
+            for triangle in _m.triangulate(polygons):
+                parts.append([vertices[index] for index in triangle])
+        return parts
+
+
+    @staticmethod
+    def _sum_sections(
+        first: _m.CrossSection, second: _m.CrossSection
+    ) -> _m.CrossSection:
+        if first.is_empty() or second.is_empty():
+            return _m.CrossSection()
+        sums = []
+        second_parts = Obj2d._convex_parts(second)
+        for a in Obj2d._convex_parts(first):
+            for b in second_parts:
+                points = [(p[0] + q[0], p[1] + q[1]) for p in a for q in b]
+                sums.append(_m.CrossSection.hull_points(points))
+        return _m.CrossSection.batch_boolean(sums, _m.OpType.Add)
+
+
+    def minkowski_sum(self: Obj2d, other: Obj2d) -> Obj2d:
+        """Return minkowski_sum of this object with other as an Obj2d."""
+        if not isinstance(self, Obj2d) or not isinstance(other, Obj2d):
+            raise TypeError("minkowski_sum requires two Obj2d operands")
+        return Obj2d(Obj2d._sum_sections(self.mo, other.mo), color=self._color)
+
+
+    def minkowski_difference(self: Obj2d, other: Obj2d) -> Obj2d:
+        """Return minkowski_difference of this object with other as an Obj2d.
+
+        An empty other operand would produce the whole plane, which Obj2d cannot
+        represent; it raises ValueError instead.
+        """
+        if  not isinstance(other, Obj2d):
+            raise TypeError("minkowski_difference requires two Obj2d operands")
+        if other.is_empty():
+            raise ValueError(
+                "minkowski_difference with an empty other operand is unbounded"
+            )
+        if self.is_empty():
+            return Obj2d(color=self._color)
+
+        ax0, ay0, ax1, ay1 = self.bounding_box()
+        bx0, by0, bx1, by1 = other.bounding_box()
+        x0, y0, x1, y1 = ax0 - bx0, ay0 - by0, ax1 - bx1, ay1 - by1
+        if x1 <= x0 or y1 <= y0:
+            return Obj2d(color=self._color)
+
+        bounds = _m.CrossSection.square((ax1 - ax0, ay1 - ay0)).translate(
+            (ax0, ay0)
+        )
+        candidates = _m.CrossSection.square((x1 - x0, y1 - y0)).translate((x0, y0))
+        forbidden = Obj2d._sum_sections(bounds - self.mo, other.mo.scale((-1, -1)))
+        return Obj2d(candidates - forbidden, color=self._color)
+
     def mirror(self, axes: tuple[bool, bool]) -> Obj2d:
         """
         Mirror this object around the given axes.
