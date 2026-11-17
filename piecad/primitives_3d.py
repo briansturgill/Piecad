@@ -112,6 +112,8 @@ def cone(
     _chkGE("radius_low", radius_low, 0)
     _chkGE("radius_high", radius_high, 0)
     _chkGE("segments", segments, 3)
+    if height == 0 or (radius_low == 0 and radius_high == 0):
+        return Obj3d()
     return Obj3d(
         _m.Manifold.cylinder(height, radius_low, radius_high, segments, center)
     )
@@ -128,6 +130,8 @@ def cube(size: float, center: bool = False) -> Obj3d:
     # Too many models on one page. <iframe width="100%" height="220" src="examples/cube.html"></iframe>
     if type(size) == list or type(size) == tuple:
         return cuboid(size, center)
+    if size == 0:
+        return Obj3d()
     return Obj3d(_m.Manifold.cube((size, size, size), center))
 
 
@@ -142,6 +146,8 @@ def cuboid(size: list[float, float, float], center: bool = False) -> Obj3d:
     # Too many models on one page. <iframe width="100%" height="220" src="examples/cuboid.html"></iframe>
     if type(size) == float or type(size) == int:
         return cube(size)
+    if any(dimension == 0 for dimension in size):
+        return Obj3d()
     return Obj3d(_m.Manifold.cube(size, center))
 
 
@@ -160,6 +166,8 @@ def cylinder(height: float, radius: float, segments: int = -1, center=False) -> 
     _chkGE("height", height, 0)
     _chkGE("radius", radius, 0)
     _chkGE("segments", segments, 3)
+    if height == 0 or radius == 0:
+        return Obj3d()
     cyl = circle(radius, segments).extrude(height)
     if center:
         cyl = cyl.translate((0, 0, -height / 2.0))
@@ -182,6 +190,8 @@ def ellipsoid(
         segments = Config.get_default_segments()
     _chkV3("radius", radii)
     _chkGE("segments", segments, 3)
+    if any(radius == 0 for radius in radii):
+        return Obj3d()
 
     return sphere(1, segments=segments).scale(radii)
 
@@ -205,6 +215,8 @@ def elliptical_cylinder(
     _chkGE("height", height, 0)
     _chkV2("radii", radii)
     _chkGE("segments", segments, 3)
+    if height == 0 or radii[0] == 0 or radii[1] == 0:
+        return Obj3d()
 
     ecyl = extrude(ellipse(radii, segments), height)
     if center:
@@ -400,6 +412,8 @@ def geodesic_sphere(radius, segments=-1) -> Obj3d:
         segments = Config.get_default_segments()
     _chkGE("radius", radius, 0)
     _chkGE("segments", segments, 3)
+    if radius == 0:
+        return Obj3d()
 
     return Obj3d(_m.Manifold.sphere(radius, segments))
 
@@ -535,6 +549,8 @@ def pyramid(height: int, num_sides: int, radius: float) -> Obj3d:
     _chkGE("height", height, 0)
     _chkGE("num_sides", num_sides, 3)
     _chkGE("radius", radius, 0)
+    if height == 0 or radius == 0:
+        return Obj3d()
     return extrude_transforming(
         circle(radius, segments=num_sides), height=height, scale=(0, 0)
     )
@@ -565,6 +581,8 @@ def rounded_cuboid(
     _chkV3("size", size)
     if type(size) == float or type(size) == int:
         size = (size, size, size)
+    if any(dimension == 0 for dimension in size):
+        return Obj3d()
     l = []
     res = Config.get_layer_resolution()
     arc_segs = rounding_radius / res
@@ -649,6 +667,8 @@ def rounded_cylinder(
         segments = Config.get_default_segments()
     _chkGE("segments", segments, 3)
     _chkGE("radius", radius, 0)
+    if height == 0 or radius == 0:
+        return Obj3d()
     rr = (
         rounded_rectangle((2 * radius, height), rounding_radius, segments)
         .translate((-radius, 0))
@@ -688,6 +708,8 @@ def sphere(radius: float, segments: int = -1) -> Obj3d:
         segments = Config.get_default_segments()
     _chkGE("radius", radius, 0)
     _chkGE("segments", segments, 3)
+    if radius == 0:
+        return Obj3d()
 
     circ = circle(radius, 2 * segments).piecut(90, 270)
 
@@ -710,6 +732,8 @@ def tetrahedron(
         size = vertices
         if size == None:
             size = 1
+        if size == 0:
+            return Obj3d()
         t = _m.Manifold.tetrahedron()
         if size != 1:
             t = t.scale((size, size, size))

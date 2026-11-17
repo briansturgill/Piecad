@@ -32,7 +32,7 @@ def circle(radius: float, segments: int = -1) -> Obj2d:
     _chkGE("segments", segments, 3)
 
     if radius == 0.0: # Workaround manifold bug with scaling to zero
-        return _m.CrossSection.circle(0, segments)
+        return Obj2d(_m.CrossSection.circle(0, segments))
 
     if segments in _unit_circles:
         circ = _unit_circles[segments]
@@ -56,8 +56,8 @@ def ellipse(radii: list[float, float], segments: int = -1) -> Obj2d:
     _chkV2("radii", radii)
     _chkGE("segments", segments, 3)
 
-    if radii[0] == 0.0 and radii[0] == 0.0: # Workaround manifold bug with scaling to zero
-        return _m.CrossSection.circle(0, segments)
+    if radii[0] == 0.0 or radii[1] == 0.0: # Workaround manifold bug with scaling to zero
+        return Obj2d(_m.CrossSection.circle(0, segments))
 
     if segments in _unit_circles:
         circ = _unit_circles[segments]
@@ -223,6 +223,9 @@ def rectangle(size: list[float, float], center: bool = False) -> Obj2d:
         return square(size)
     _chkV2("size", size)
 
+    if size[0] == 0 or size[1] == 0:
+        return Obj2d()
+
     return Obj2d(_m.CrossSection.square(size, center))
 
 
@@ -250,11 +253,13 @@ def rounded_rectangle(
     _chkV2("size", size)
     _chkGT("rounding_radius", rounding_radius, 0)
 
-    rr = rounding_radius
-    circ = circle(rr, segments)
-
     x = size[0]
     y = size[1]
+    if x == 0 or y == 0:
+        return Obj2d()
+
+    rr = rounding_radius
+    circ = circle(rr, segments)
 
     c_x_off = -x / 2.0 if center else 0.0
     c_y_off = -y / 2.0 if center else 0.0
