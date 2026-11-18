@@ -2,6 +2,7 @@
 ## Miscellaneous (but important) functions
 """
 
+from typing import Iterable
 import atexit
 import math as _math
 import threading
@@ -35,7 +36,12 @@ __all__ = [
 import math
 
 
-def frange(start, stop=None, step=1, /, *, inclusive=False):
+def frange(start, stop=None, step=1, /, *, inclusive=False) -> Iterable[float | int]:
+    """
+    Generate a range of numbers. Like the built-in `range` but supports `float` values.
+
+    If inclusive is `True`, the stop value is included in the range if it falls on a step.
+    """
     if stop is None:
         start, stop = 0, start
 
@@ -56,9 +62,7 @@ def frange(start, stop=None, step=1, /, *, inclusive=False):
     if inclusive:
         distance = (stop - start) / step
         count = (
-            math.floor(math.nextafter(distance, math.inf)) + 1
-            if distance >= 0
-            else 0
+            math.floor(math.nextafter(distance, math.inf)) + 1 if distance >= 0 else 0
         )
 
         def values():
@@ -93,8 +97,9 @@ def _info_str(tag):  # Must be called from inside another function.
     return str
 
 
-def load(filename: str, *, svg_openscad: bool = False,
-         center: bool = False) -> Obj3d | Obj2d:
+def load(
+    filename: str, *, svg_openscad: bool = False, center: bool = False
+) -> Obj3d | Obj2d:
     """
     Load a 3D or 2D object from a file.
 
@@ -306,7 +311,9 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
         elif ext == "dxf":
             _save_dxf(filename, *objs)
         else:
-            raise ValidationError("Only the SVG and DXF formats are supported for Obj2d.")
+            raise ValidationError(
+                "Only the SVG and DXF formats are supported for Obj2d."
+            )
 
 
 def _save_svg(filename, *objs):
@@ -582,7 +589,7 @@ def _save_dxf(filename, *objs):
         f.write("\n".join(out) + "\n")
 
 
-def sign(x):
+def sign(x: float | int) -> float | int:
     """
     Common math utility function, missing from Python.
     Evaluate `x`, if `x` < 0 return -1, or if `x` == 0 return 0 or if `x` > 0 return 1.

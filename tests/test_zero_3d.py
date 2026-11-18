@@ -46,21 +46,13 @@ from piecad import (
         pytest.param(lambda: geodesic_sphere(0), id="geodesic-sphere"),
         pytest.param(lambda: pyramid(0, 4, 1), id="pyramid-zero-height"),
         pytest.param(lambda: pyramid(1, 4, 0), id="pyramid-zero-radius"),
-        pytest.param(
-            lambda: rounded_cuboid((0, 1, 1)), id="rounded-cuboid-zero-width"
-        ),
-        pytest.param(
-            lambda: rounded_cuboid((1, 0, 1)), id="rounded-cuboid-zero-depth"
-        ),
+        pytest.param(lambda: rounded_cuboid((0, 1, 1)), id="rounded-cuboid-zero-width"),
+        pytest.param(lambda: rounded_cuboid((1, 0, 1)), id="rounded-cuboid-zero-depth"),
         pytest.param(
             lambda: rounded_cuboid((1, 1, 0)), id="rounded-cuboid-zero-height"
         ),
-        pytest.param(
-            lambda: rounded_cylinder(0, 1), id="rounded-cylinder-zero-height"
-        ),
-        pytest.param(
-            lambda: rounded_cylinder(1, 0), id="rounded-cylinder-zero-radius"
-        ),
+        pytest.param(lambda: rounded_cylinder(0, 1), id="rounded-cylinder-zero-height"),
+        pytest.param(lambda: rounded_cylinder(1, 0), id="rounded-cylinder-zero-radius"),
         pytest.param(lambda: sphere(0), id="sphere"),
         pytest.param(lambda: tetrahedron(0), id="tetrahedron"),
     ],

@@ -42,7 +42,7 @@ class ValidationError(Exception):
 
 from ._color import _parse_color
 
-__version__ = "2.0.4"
+__version__ = "2.1.0"
 
 
 def version() -> str:
@@ -428,6 +428,8 @@ class Obj3d:
         so you may want to do timing tests.
 
         """
+        import struct
+
         mesh = self.mo.to_mesh64()
         if mesh.vert_properties.shape[1] > 3:
             vertices = mesh.vert_properties[:, :3]
@@ -435,8 +437,9 @@ class Obj3d:
             vertices = mesh.vert_properties
         if np:
             return (vertices, mesh.tri_verts)
-        v = list(map(tuple, vertices.tolist()))
-        f = list(map(tuple, mesh.tri_verts.tolist()))
+
+        v = list(struct.iter_unpack("=ddd", vertices))
+        f = list(struct.iter_unpack("=qqq", mesh.tri_verts))
         return (v, f)
 
     def transform(
@@ -593,14 +596,17 @@ class Obj2d:
         parts: list[list[tuple[float, float]]] = []
         for component in section.decompose():
             if (component.hull() - component).is_empty():
-                parts.append([(float(x), float(y)) for x, y in component.to_polygons()[0]])
+                parts.append(
+                    [(float(x), float(y)) for x, y in component.to_polygons()[0]]
+                )
                 continue
             polygons = component.to_polygons()
-            vertices = [(float(x), float(y)) for polygon in polygons for x, y in polygon]
+            vertices = [
+                (float(x), float(y)) for polygon in polygons for x, y in polygon
+            ]
             for triangle in _m.triangulate(polygons):
                 parts.append([vertices[index] for index in triangle])
         return parts
-
 
     @staticmethod
     def _sum_sections(
@@ -616,13 +622,11 @@ class Obj2d:
                 sums.append(_m.CrossSection.hull_points(points))
         return _m.CrossSection.batch_boolean(sums, _m.OpType.Add)
 
-
     def minkowski_sum(self: Obj2d, other: Obj2d) -> Obj2d:
         """Return minkowski_sum of this object with other as an Obj2d."""
         if not isinstance(self, Obj2d) or not isinstance(other, Obj2d):
             raise TypeError("minkowski_sum requires two Obj2d operands")
         return Obj2d(Obj2d._sum_sections(self.mo, other.mo), color=self._color)
-
 
     def minkowski_difference(self: Obj2d, other: Obj2d) -> Obj2d:
         """Return minkowski_difference of this object with other as an Obj2d.
@@ -630,7 +634,7 @@ class Obj2d:
         An empty other operand would produce the whole plane, which Obj2d cannot
         represent; it raises ValueError instead.
         """
-        if  not isinstance(other, Obj2d):
+        if not isinstance(other, Obj2d):
             raise TypeError("minkowski_difference requires two Obj2d operands")
         if other.is_empty():
             raise ValueError(
@@ -645,9 +649,7 @@ class Obj2d:
         if x1 <= x0 or y1 <= y0:
             return Obj2d(color=self._color)
 
-        bounds = _m.CrossSection.square((ax1 - ax0, ay1 - ay0)).translate(
-            (ax0, ay0)
-        )
+        bounds = _m.CrossSection.square((ax1 - ax0, ay1 - ay0)).translate((ax0, ay0))
         candidates = _m.CrossSection.square((x1 - x0, y1 - y0)).translate((x0, y0))
         forbidden = Obj2d._sum_sections(bounds - self.mo, other.mo.scale((-1, -1)))
         return Obj2d(candidates - forbidden, color=self._color)
@@ -813,12 +815,14 @@ class Obj2d:
         """
         Return a list of paths, each of which is a list of vertices that make up this object.
         """
-        from copy import deepcopy
+        import struct
 
         paths = self.mo.to_polygons()
-        paths = deepcopy(paths)
-        paths = [[tuple(float(coord) for coord in pt) for pt in path] for path in paths]
-        return paths
+        pls = []
+        for p in paths:
+            pl = list(struct.iter_unpack("=dd", p))
+            pls.append(pl)
+        return pls
 
     def transform(
         self, matrix2x3: tuple[tuple[float, float, float], tuple[float, float, float]]
@@ -948,8 +952,7 @@ class Config:
         cls._default_min_edge_length = length
 
     @classmethod
-    def calc_segs(cls, radius: float, min_a: float = None,
-                                   min_el: float = None) -> int:
+    def calc_segs(cls, radius: float, min_a: float = None, min_el: float = None) -> int:
         """
         Calculate default segments based on minimum angle (min_a)
         and minimum edge length (min_el).
@@ -970,7 +973,7 @@ class Config:
         n_seg = int(min(num_seg_angle, num_seg_edge_length))
         r = n_seg % 4
         if r != 0:
-            n_seg += 4 -r
+            n_seg += 4 - r
         return max(n_seg, 4)
 
     @classmethod

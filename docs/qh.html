@@ -633,12 +633,22 @@ Check manifold and winding of the mesh defined in vertices and faces.
 </a>
 </p>
 <p class="item">
+<a class="ahover" href="utilities.html#piecad.utilities.frange">
+frange
+<span class="popup">
+<code>frange(start, stop=None, step=1, /, *, inclusive=False) -> Iterable[float | int]</code>
+<br>
+Generate a range of numbers. Like the built-in `range` but supports `float` values.
+</span>
+</a>
+</p>
+<p class="item">
 <a class="ahover" href="utilities.html#piecad.utilities.load">
 load
 <span class="popup">
-<code>load(filename: str) -> Obj3d | Obj2d</code>
+<code>load(filename: str, *, svg_openscad: bool = False, center: bool = False) -> Obj3d | Obj2d</code>
 <br>
-Load a 3d object from a file.
+Load a 3D or 2D object from a file.
 </span>
 </a>
 </p>
@@ -669,6 +679,16 @@ save
 <code>save(filename: str, *objs: Obj3d | Obj2d) -> None</code>
 <br>
 Save a 3d or 2d object in a file suitable for printing, etc.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="utilities.html#piecad.utilities.sign">
+sign
+<span class="popup">
+<code>sign(x: float | int) -> float | int</code>
+<br>
+Common math utility function, missing from Python.
 </span>
 </a>
 </p>
@@ -780,6 +800,26 @@ is_empty
 <code>is_empty(self) -> 'bool'</code>
 <br>
 Is this object empty?
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.minkowski_difference">
+minkowski_difference
+<span class="popup">
+<code>minkowski_difference(self: 'Obj2d', other: 'Obj2d') -> 'Obj2d'</code>
+<br>
+Return minkowski_difference of this object with other as an Obj2d.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.minkowski_sum">
+minkowski_sum
+<span class="popup">
+<code>minkowski_sum(self: 'Obj2d', other: 'Obj2d') -> 'Obj2d'</code>
+<br>
+Return minkowski_sum of this object with other as an Obj2d.
 </span>
 </a>
 </p>
@@ -1156,12 +1196,42 @@ The volume of this Obj3d.
 </p>
 <h2>class Config</h2>
 <p class="item">
+<a class="ahover" href="index.html#piecad.calc_segs">
+Config.calc_segs
+<span class="popup">
+<code>Config.calc_segs(radius: 'float', min_a: 'float' = None, min_el: 'float' = None) -> 'int'</code>
+<br>
+Calculate default segments based on minimum angle (min_a)
+</span>
+</a>
+</p>
+<p class="item">
 <a class="ahover" href="index.html#piecad.get_default_color">
 Config.get_default_color
 <span class="popup">
 <code>Config.get_default_color() -> 'tuple[int, int, int]'</code>
 <br>
 Returns the RGB values for the current default color.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.get_default_min_angle">
+Config.get_default_min_angle
+<span class="popup">
+<code>Config.get_default_min_angle() -> 'float'</code>
+<br>
+Get the default minimum angle used by circular objects.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.get_default_min_edge_length">
+Config.get_default_min_edge_length
+<span class="popup">
+<code>Config.get_default_min_edge_length() -> 'float'</code>
+<br>
+Get the default minimum edge length used by circular objects.
 </span>
 </a>
 </p>
@@ -1202,6 +1272,26 @@ Config.set_default_color
 <code>Config.set_default_color(cspec: 'tuple[int, int, int] | str') -> 'None'</code>
 <br>
 Assign the given color for use as a default color for objects.</summary>
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.set_default_min_angle">
+Config.set_default_min_angle
+<span class="popup">
+<code>Config.set_default_min_angle(angle: 'float' = 12.0) -> 'None'</code>
+<br>
+Set the default minimum angle used by circular objects.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.set_default_min_edge_length">
+Config.set_default_min_edge_length
+<span class="popup">
+<code>Config.set_default_min_edge_length(length: 'float' = 2.0) -> 'None'</code>
+<br>
+Set the default minimum edge length used by circular objects.
 </span>
 </a>
 </p>

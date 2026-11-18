@@ -75,15 +75,11 @@ def test_set_default_color():
 
 
 def test_calculate_default_segments_minimum_angle():
-    assert Config.calc_segs(
-        100, min_a=18, min_el=1
-    ) == 20
+    assert Config.calc_segs(100, min_a=18, min_el=1) == 20
 
 
 def test_calculate_default_segments_minimum_length_rounds_up_to_multiple_of_four():
-    assert Config.calc_segs(
-        5, min_a=1, min_el=3
-    ) == 12
+    assert Config.calc_segs(5, min_a=1, min_el=3) == 12
 
 
 def test_calculate_default_segments_uses_default_minimums():
@@ -106,15 +102,11 @@ def test_calculate_default_segments_uses_default_minimums():
 
 @pytest.mark.parametrize("radius", [0, 0.1, -0.1])
 def test_calculate_default_segments_has_minimum_of_four(radius):
-    assert Config.calc_segs(
-        radius, min_a=1, min_el=3
-    ) == 4
+    assert Config.calc_segs(radius, min_a=1, min_el=3) == 4
 
 
 def test_calculate_default_segments_negative_radius():
-    assert Config.calc_segs(
-        -5, min_a=1, min_el=3
-    ) == 12
+    assert Config.calc_segs(-5, min_a=1, min_el=3) == 12
 
 
 @pytest.mark.parametrize(

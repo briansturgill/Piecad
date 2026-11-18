@@ -101,9 +101,7 @@ def test_save_svg_round_trip_in_openscad_mode(tmp_path):
 
 def test_load_svg_fills_open_paths(tmp_path):
     filename = tmp_path / "open.SVG"
-    filename.write_text(
-        '<svg><path d="M10 20 L14 20 L14 23 L10 23"/></svg>'
-    )
+    filename.write_text('<svg><path d="M10 20 L14 20 L14 23 L10 23"/></svg>')
     shape = load(str(filename))
     assert shape.area() == pytest.approx(12)
     assert shape.bounding_box() == (10, 20, 14, 23)
@@ -111,9 +109,18 @@ def test_load_svg_fills_open_paths(tmp_path):
 
 def test_load_dxf_ignores_open_paths(tmp_path):
     filename = tmp_path / "open.DXF"
-    (Path((0, 0)).line_to((4, 0)).line_to((4, 4)).line_to((0, 4))
-     .sub_path((10, 0)).line_to((12, 0)).line_to((12, 2))
-     .line_to((10, 2)).close().to_dxf(filename))
+    (
+        Path((0, 0))
+        .line_to((4, 0))
+        .line_to((4, 4))
+        .line_to((0, 4))
+        .sub_path((10, 0))
+        .line_to((12, 0))
+        .line_to((12, 2))
+        .line_to((10, 2))
+        .close()
+        .to_dxf(filename)
+    )
     shape = load(str(filename))
     assert shape.area() == pytest.approx(4)
     assert shape.bounding_box() == (10, 0, 12, 2)
@@ -170,7 +177,8 @@ def test_path_curves_and_arc():
         .quadratic_bezier_to((15, 5), (10, 10))
         .cubic_bezier_to((8, 12), (4, 12), (0, 10))
         .arc_to(5, (0, 0))
-        .close().to_obj2d()
+        .close()
+        .to_obj2d()
     )
     assert p.area() > 0
 
@@ -188,13 +196,27 @@ def test_path_bad_segments():
 
 
 def test_path_to_obj2d_evenodd_and_open():
-    p = (Path((0, 0)).line_to((10, 0)).line_to((10, 10))
-         .line_to((0, 10)).close()
-         .sub_path((2, 2)).line_to((8, 2)).line_to((8, 8))
-         .line_to((2, 8)).close()
-         .sub_path((4, 4)).line_to((6, 4)).line_to((6, 6))
-         .line_to((4, 6)).close()
-         .sub_path((20, 0)).line_to((24, 0)).line_to((24, 4)).line_to((20, 4)))
+    p = (
+        Path((0, 0))
+        .line_to((10, 0))
+        .line_to((10, 10))
+        .line_to((0, 10))
+        .close()
+        .sub_path((2, 2))
+        .line_to((8, 2))
+        .line_to((8, 8))
+        .line_to((2, 8))
+        .close()
+        .sub_path((4, 4))
+        .line_to((6, 4))
+        .line_to((6, 6))
+        .line_to((4, 6))
+        .close()
+        .sub_path((20, 0))
+        .line_to((24, 0))
+        .line_to((24, 4))
+        .line_to((20, 4))
+    )
     assert p.to_obj2d().area() == pytest.approx(68)
     assert p.to_obj2d(include_open=True).area() == pytest.approx(84)
     assert not p.to_commands()[-1]["closed"]
@@ -202,12 +224,17 @@ def test_path_to_obj2d_evenodd_and_open():
 
 
 def test_path_svg_roundtrip(tmp_path):
-    p = (Path((1, 2), segments=12).line_to((4, 2))
-         .quadratic_bezier_to((5, 3), (4, 4))
-         .cubic_bezier_to((3, 5), (2, 5), (1, 4))
-         .arc_to((2, 3), (1, 2), 20, True, True).close()
-         .sub_path((10, 10)).line_to((11, 12))
-         .sub_path((-1, -2)))
+    p = (
+        Path((1, 2), segments=12)
+        .line_to((4, 2))
+        .quadratic_bezier_to((5, 3), (4, 4))
+        .cubic_bezier_to((3, 5), (2, 5), (1, 4))
+        .arc_to((2, 3), (1, 2), 20, True, True)
+        .close()
+        .sub_path((10, 10))
+        .line_to((11, 12))
+        .sub_path((-1, -2))
+    )
     filename = tmp_path / "path.svg"
     p.to_svg(filename)
     root = ET.parse(filename).getroot()
@@ -222,15 +249,25 @@ def test_path_svg_import_relative_and_close(tmp_path):
     filename.write_text(
         '<svg xmlns="http://www.w3.org/2000/svg"><g fill-rule="evenodd">'
         '<path d="M10-20 h10 v10 h-10 z m2 2 l3 0 0 3 z M40 0 L40 0"/>'
-        '</g></svg>'
+        "</g></svg>"
     )
     p = Path.from_svg(filename)
     assert p.to_commands() == [
-        {"start": (10, -20), "commands": [
-            ("line", (20, -20)), ("line", (20, -10)),
-            ("line", (10, -10)), ("close",)], "closed": True},
-        {"start": (12, -18), "commands": [
-            ("line", (15, -18)), ("line", (15, -15)), ("close",)], "closed": True},
+        {
+            "start": (10, -20),
+            "commands": [
+                ("line", (20, -20)),
+                ("line", (20, -10)),
+                ("line", (10, -10)),
+                ("close",),
+            ],
+            "closed": True,
+        },
+        {
+            "start": (12, -18),
+            "commands": [("line", (15, -18)), ("line", (15, -15)), ("close",)],
+            "closed": True,
+        },
         {"start": (40, 0), "commands": [("line", (40, 0))], "closed": False},
     ]
 
@@ -243,18 +280,24 @@ def test_path_svg_degenerate_arcs_and_close_followed_by_line(tmp_path):
     filename.write_text('<svg><path d="M0 0 L2 0 Z l0 2"/></svg>')
     parts = Path.from_svg(filename).to_commands()
     assert parts[0]["closed"]
-    assert parts[1] == {"start": (0, 0), "commands": [("line", (0, 2))],
-                        "closed": False}
+    assert parts[1] == {
+        "start": (0, 0),
+        "commands": [("line", (0, 2))],
+        "closed": False,
+    }
 
 
-@pytest.mark.parametrize("body", [
-    '<path fill-rule="nonzero" d="M0 0 L1 1"/>',
-    '<rect width="10" height="10"/>',
-    '<path d="M0 0 L1 1 garbage"/>',
-    '<g transform="translate(2) nonsense"><path d="M0 0 L1 1"/></g>',
-    '<path transform="scale(2 3 4)" d="M0 0 L1 1"/>',
-    '<use href="#p"/>',
-])
+@pytest.mark.parametrize(
+    "body",
+    [
+        '<path fill-rule="nonzero" d="M0 0 L1 1"/>',
+        '<rect width="10" height="10"/>',
+        '<path d="M0 0 L1 1 garbage"/>',
+        '<g transform="translate(2) nonsense"><path d="M0 0 L1 1"/></g>',
+        '<path transform="scale(2 3 4)" d="M0 0 L1 1"/>',
+        '<use href="#p"/>',
+    ],
+)
 def test_path_svg_rejects_unsupported_input(tmp_path, body):
     filename = tmp_path / "input.svg"
     filename.write_text(f'<svg xmlns="http://www.w3.org/2000/svg">{body}</svg>')
@@ -267,15 +310,17 @@ def test_path_svg_ignores_metadata_and_definitions(tmp_path):
     filename.write_text(
         '<svg xmlns="http://www.w3.org/2000/svg" '
         'xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd">'
-        '<sodipodi:namedview><unknown/></sodipodi:namedview>'
+        "<sodipodi:namedview><unknown/></sodipodi:namedview>"
         '<metadata><unknown><path d="M20 20 L30 30"/></unknown></metadata>'
         '<defs><path id="p" d="M20 20 L30 30"/><use href="#p"/></defs>'
         '<path d="M0 0 L2 0 L2 2 Z"/></svg>'
     )
     assert Path.from_svg(filename).to_commands() == [
-        {"start": (0, 0), "commands": [
-            ("line", (2, 0)), ("line", (2, 2)), ("close",)
-        ], "closed": True}
+        {
+            "start": (0, 0),
+            "commands": [("line", (2, 0)), ("line", (2, 2)), ("close",)],
+            "closed": True,
+        }
     ]
 
 
@@ -287,10 +332,16 @@ def test_path_svg_nested_transforms_and_curves(tmp_path):
         'd="M0 0 L1 1 Q2 1 3 2 C4 2 5 3 6 4 Z"/></g></svg>'
     )
     assert Path.from_svg(filename).to_commands() == [
-        {"start": (12, 26), "commands": [
-            ("line", (14, 29)), ("quadratic", (16, 29), (18, 32)),
-            ("cubic", (20, 32), (22, 35), (24, 38)), ("close",)
-        ], "closed": True}
+        {
+            "start": (12, 26),
+            "commands": [
+                ("line", (14, 29)),
+                ("quadratic", (16, 29), (18, 32)),
+                ("cubic", (20, 32), (22, 35), (24, 38)),
+                ("close",),
+            ],
+            "closed": True,
+        }
     ]
 
 
@@ -302,8 +353,9 @@ def test_path_svg_transformed_arc_samples_original_curve(tmp_path):
     )
     original = Path((0, 0), segments=12).arc_to((5, 3), (8, 2), 30, False, True)
     points = Path.from_svg(filename, segments=12).to_points()[0]
-    expected = [(8 - x + 0.3 * y, 4 + 0.5 * x + 2 * y)
-                for x, y in original.to_points()[0]]
+    expected = [
+        (8 - x + 0.3 * y, 4 + 0.5 * x + 2 * y) for x, y in original.to_points()[0]
+    ]
     assert len(points) == len(expected)
     for actual, wanted in zip(points, expected):
         assert actual == pytest.approx(wanted)
@@ -320,15 +372,17 @@ def test_load_svg_openscad_reference_geometry(tmp_path):
         '<path d="M15 5 L25 5 L25 15 L15 15 Z"/>'
         '<path style="fill:none" d="M35 5 L45 5 L45 15 L35 15 Z"/>'
         '<path stroke-width="2" d="M50 5 L60 5"/>'
-        '</svg>'
+        "</svg>"
     )
     shape = load(str(filename), svg_openscad=True)
     assert shape.bounding_box() == pytest.approx((10, 35, 61, 46))
     assert shape.area() == pytest.approx(274)
     assert len(shape.to_paths()) == 3
     expected = union(
-        square(10).translate((10, 35)), square(10).translate((15, 35)),
-        square(10).translate((35, 35)), rectangle((12, 2)).translate((49, 44)),
+        square(10).translate((10, 35)),
+        square(10).translate((15, 35)),
+        square(10).translate((35, 35)),
+        rectangle((12, 2)).translate((49, 44)),
     )
     assert difference(shape, expected).area() == pytest.approx(0, abs=1e-8)
     assert difference(expected, shape).area() == pytest.approx(0, abs=1e-8)
@@ -342,7 +396,7 @@ def test_load_svg_openscad_compound_paths_and_separate_shapes(tmp_path):
         '<path d="M30 0 L50 0 L50 20 L30 20 Z M35 5 L35 15 L45 15 L45 5 Z"/>'
         '<path d="M60 0 L80 0 L80 20 L60 20 Z"/>'
         '<path d="M65 5 L75 5 L75 15 L65 15 Z"/>'
-        '</svg>'
+        "</svg>"
     )
     shape = load(str(filename), svg_openscad=True)
     assert shape.area() == pytest.approx(1000)
@@ -352,8 +406,7 @@ def test_load_svg_openscad_compound_paths_and_separate_shapes(tmp_path):
 def test_load_svg_openscad_rejects_visible_use(tmp_path):
     filename = tmp_path / "input.svg"
     filename.write_text(
-        '<svg><defs><path id="p" d="M0 0 L1 0 L1 1 Z"/></defs>'
-        '<use href="#p"/></svg>'
+        '<svg><defs><path id="p" d="M0 0 L1 0 L1 1 Z"/></defs>' '<use href="#p"/></svg>'
     )
     with pytest.raises(ValidationError, match="Unsupported SVG element: use"):
         load(str(filename), svg_openscad=True)
@@ -384,7 +437,7 @@ def test_load_svg_openscad_final_open_subpath_after_close(tmp_path):
     filename.write_text(
         '<svg width="100mm" height="100mm" viewBox="0 0 100 100">'
         '<path d="M0 0 L10 0 L10 10 Z M20 0 L30 0 L30 10" stroke-width="2"/>'
-        '</svg>'
+        "</svg>"
     )
     shape = load(str(filename), svg_openscad=True)
     assert shape.bounding_box() == pytest.approx((0, 90, 30, 100))
@@ -392,12 +445,20 @@ def test_load_svg_openscad_final_open_subpath_after_close(tmp_path):
 
 
 def test_path_dxf_roundtrip_sampled_curves(tmp_path):
-    p = (Path((0, 0), segments=8).line_to((10, 0))
-         .quadratic_bezier_to((12, 5), (10, 10))
-         .line_to((0, 10)).close()
-         .sub_path((2, 2)).line_to((3, 2)).line_to((3, 3))
-         .line_to((2, 3)).close()
-         .sub_path((20, 0)).arc_to(5, (25, 5)))
+    p = (
+        Path((0, 0), segments=8)
+        .line_to((10, 0))
+        .quadratic_bezier_to((12, 5), (10, 10))
+        .line_to((0, 10))
+        .close()
+        .sub_path((2, 2))
+        .line_to((3, 2))
+        .line_to((3, 3))
+        .line_to((2, 3))
+        .close()
+        .sub_path((20, 0))
+        .arc_to(5, (25, 5))
+    )
     filename = tmp_path / "path.dxf"
     p.to_dxf(filename)
     restored = Path.from_dxf(filename, segments=8)

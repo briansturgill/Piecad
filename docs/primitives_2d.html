@@ -72,8 +72,11 @@ el.replaceWith(d);
     &#34;&#34;&#34;
     if segments == -1:
         segments = Config.get_default_segments()
-    _chkGT(&#34;radius&#34;, radius, 0.0)
+    _chkGE(&#34;radius&#34;, radius, 0.0)
     _chkGE(&#34;segments&#34;, segments, 3)
+
+    if radius == 0.0:
+        return Obj2d()
 
     if segments in _unit_circles:
         circ = _unit_circles[segments]
@@ -107,6 +110,9 @@ el.replaceWith(d);
         segments = Config.get_default_segments()
     _chkV2(&#34;radii&#34;, radii)
     _chkGE(&#34;segments&#34;, segments, 3)
+
+    if radii[0] == 0.0 or radii[1] == 0.0:
+        return Obj2d()
 
     if segments in _unit_circles:
         circ = _unit_circles[segments]
@@ -178,16 +184,40 @@ el.replaceWith(d);
     ) -&gt; Path
     ```
 
-    The `close` method returns an `Obj2d` representing the shape of the Path.
+    The `sub_path` method starts a new sub_path.
     ```
-    close() -&gt; Obj2d
+    new_path(initial_point: tuple[float, float] = (0, 0)) -&gt; Path
     ```
+
+    The `close` method closes the current sub_path.
+    ```
+    close() -&gt; Path
+    ```
+
+    The `to_obj2d` method returns an `Obj2d` representing the shape of the closed sub_paths.
+    ```
+    to_obj2d() -&gt; Obj2d
+    ```
+
+    `Path.to_svg(filename)` and `Path.from_svg(filename, segments=-1)` write
+    and read SVG path elements in SVG coordinates, applying nested transforms.
+    Transformed arcs are sampled into lines. All contours are interpreted
+    using even-odd fill. CSS, use references, non-path shapes, and explicit
+    nonzero fill rules are not supported. Metadata and definitions are skipped.
+    Imported path elements are combined
+    as contours, not as separately composited SVG shapes. Degenerate arcs
+    are exported as lines; coincident-endpoint SVG arcs cannot be imported.
+
+    `Path.to_dxf(filename)` writes subpaths as polylines, sampling curves using
+    the path&#39;s segment count. `Path.from_dxf(filename, segments=-1)` reads
+    XY-plane polylines and lines; bulges and other entities are not supported.
+    Import methods are class methods, for example
+    `type(path()).from_svg(&#34;drawing.svg&#34;)`.
 
     For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     &lt;iframe width=&#34;100%&#34; height=&#34;400&#34; src=&#34;../examples/path.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
-    # _path.polygon = polygon
     return _path.Path(initial_point, segments)</code></pre>
 </details>
 <div class="desc"><p>Create a Path object containing an SVG-like path starting at <code>initial_point</code>.
@@ -225,9 +255,28 @@ above to choose one:</p>
     ccw: bool = False,
 ) -&gt; Path
 </code></pre>
-<p>The <code>close</code> method returns an <code>Obj2d</code> representing the shape of the Path.</p>
-<pre><code>close() -&gt; Obj2d
+<p>The <code>sub_path</code> method starts a new sub_path.</p>
+<pre><code>new_path(initial_point: tuple[float, float] = (0, 0)) -&gt; Path
 </code></pre>
+<p>The <code>close</code> method closes the current sub_path.</p>
+<pre><code>close() -&gt; Path
+</code></pre>
+<p>The <code>to_obj2d</code> method returns an <code>Obj2d</code> representing the shape of the closed sub_paths.</p>
+<pre><code>to_obj2d() -&gt; Obj2d
+</code></pre>
+<p><code>Path.to_svg(filename)</code> and <code>Path.from_svg(filename, segments=-1)</code> write
+and read SVG path elements in SVG coordinates, applying nested transforms.
+Transformed arcs are sampled into lines. All contours are interpreted
+using even-odd fill. CSS, use references, non-path shapes, and explicit
+nonzero fill rules are not supported. Metadata and definitions are skipped.
+Imported path elements are combined
+as contours, not as separately composited SVG shapes. Degenerate arcs
+are exported as lines; coincident-endpoint SVG arcs cannot be imported.</p>
+<p><code>Path.to_dxf(filename)</code> writes subpaths as polylines, sampling curves using
+the path's segment count. <code>Path.from_dxf(filename, segments=-1)</code> reads
+XY-plane polylines and lines; bulges and other entities are not supported.
+Import methods are class methods, for example
+<code>type(path()).from_svg("drawing.svg")</code>.</p>
 <p>For <code>segments</code> see the documentation of <a href="index.html#piecad.Config.set_default_segments"><code>Config.set_default_segments</code></a>.</p>
 <iframe width="100%" height="400" src="../examples/path.html"></iframe></div>
 </dd>
@@ -339,6 +388,9 @@ But Clipper2 automatically straightens it out for you.</p>
         return square(size)
     _chkV2(&#34;size&#34;, size)
 
+    if size[0] == 0 or size[1] == 0:
+        return Obj2d()
+
     return Obj2d(_m.CrossSection.square(size, center))</code></pre>
 </details>
 <div class="desc"><p>Make a rectangle of a given size.</p>
@@ -377,11 +429,13 @@ When <code>center</code> is <code>True</code> it will cause the rectangle to be 
     _chkV2(&#34;size&#34;, size)
     _chkGT(&#34;rounding_radius&#34;, rounding_radius, 0)
 
-    rr = rounding_radius
-    circ = circle(rr, segments)
-
     x = size[0]
     y = size[1]
+    if x == 0 or y == 0:
+        return Obj2d()
+
+    rr = rounding_radius
+    circ = circle(rr, segments)
 
     c_x_off = -x / 2.0 if center else 0.0
     c_y_off = -y / 2.0 if center else 0.0
@@ -423,7 +477,7 @@ When <code>center</code> is <code>True</code> it will cause the square to be cen
     if type(size) == list or type(size) == tuple:
         return rectangle(size)
 
-    _chkGT(&#34;size&#34;, size, 0)
+    _chkGE(&#34;size&#34;, size, 0)
 
     return Obj2d(_m.CrossSection.square((size, size), center))</code></pre>
 </details>
@@ -448,7 +502,7 @@ When <code>center</code> is <code>True</code> it will cause the square to be cen
     Stars are created with the center at `(0,0)`.
     &#34;&#34;&#34;
     _chkGE(&#34;num_points&#34;, num_points, 3)
-    _chkGT(&#34;outer_radius&#34;, outer_radius, 0.0)
+    _chkGE(&#34;outer_radius&#34;, outer_radius, 0.0)
     _chkGE(&#34;inner_radius&#34;, inner_radius, 0.0)
     pts = []
     deg_per_np = 360.0 / num_points

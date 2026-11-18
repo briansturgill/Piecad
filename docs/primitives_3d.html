@@ -162,10 +162,12 @@ for the chamfer that is approximately half the size of the radius you would use 
     &#34;&#34;&#34;
     if segments == -1:
         segments = Config.get_default_segments()
-    _chkGT(&#34;height&#34;, height, 0)
-    _chkGT(&#34;radius_low&#34;, radius_low, 0)
+    _chkGE(&#34;height&#34;, height, 0)
+    _chkGE(&#34;radius_low&#34;, radius_low, 0)
     _chkGE(&#34;radius_high&#34;, radius_high, 0)
     _chkGE(&#34;segments&#34;, segments, 3)
+    if height == 0 or (radius_low == 0 and radius_high == 0):
+        return Obj3d()
     return Obj3d(
         _m.Manifold.cylinder(height, radius_low, radius_high, segments, center)
     )</code></pre>
@@ -199,6 +201,8 @@ When <code>center</code> is <code>True</code>, the cone will be centered on <cod
     # Too many models on one page. &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/cube.html&#34;&gt;&lt;/iframe&gt;
     if type(size) == list or type(size) == tuple:
         return cuboid(size, center)
+    if size == 0:
+        return Obj3d()
     return Obj3d(_m.Manifold.cube((size, size, size), center))</code></pre>
 </details>
 <div class="desc"><p>Make a cube of with sides of the given size.</p>
@@ -224,6 +228,8 @@ When <code>center</code> is <code>True</code> it will cause the cube to be cente
     # Too many models on one page. &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/cuboid.html&#34;&gt;&lt;/iframe&gt;
     if type(size) == float or type(size) == int:
         return cube(size)
+    if any(dimension == 0 for dimension in size):
+        return Obj3d()
     return Obj3d(_m.Manifold.cube(size, center))</code></pre>
 </details>
 <div class="desc"><p>Make a cuboid with the x, y, and z values given in size.</p>
@@ -250,9 +256,11 @@ When <code>center</code> is <code>True</code> it will cause the cube to be cente
     &#34;&#34;&#34;
     if segments == -1:
         segments = Config.get_default_segments()
-    _chkGT(&#34;height&#34;, height, 0)
-    _chkGT(&#34;radius&#34;, radius, 0)
+    _chkGE(&#34;height&#34;, height, 0)
+    _chkGE(&#34;radius&#34;, radius, 0)
     _chkGE(&#34;segments&#34;, segments, 3)
+    if height == 0 or radius == 0:
+        return Obj3d()
     cyl = circle(radius, segments).extrude(height)
     if center:
         cyl = cyl.translate((0, 0, -height / 2.0))
@@ -288,6 +296,8 @@ When <code>center</code> is <code>True</code>, the cylinder will centered on <co
         segments = Config.get_default_segments()
     _chkV3(&#34;radius&#34;, radii)
     _chkGE(&#34;segments&#34;, segments, 3)
+    if any(radius == 0 for radius in radii):
+        return Obj3d()
 
     return sphere(1, segments=segments).scale(radii)</code></pre>
 </details>
@@ -320,9 +330,11 @@ When <code>center</code> is <code>True</code>, the cylinder will centered on <co
     &#34;&#34;&#34;
     if segments == -1:
         segments = Config.get_default_segments()
-    _chkGT(&#34;height&#34;, height, 0)
+    _chkGE(&#34;height&#34;, height, 0)
     _chkV2(&#34;radii&#34;, radii)
     _chkGE(&#34;segments&#34;, segments, 3)
+    if height == 0 or radii[0] == 0 or radii[1] == 0:
+        return Obj3d()
 
     ecyl = extrude(ellipse(radii, segments), height)
     if center:
@@ -354,7 +366,7 @@ When <code>center</code> is <code>True</code>, the cylinder will centered on <co
     &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/extrude.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
     _chkTY(&#34;obj&#34;, obj, Obj2d)
-    _chkGT(&#34;height&#34;, height, 0)
+    _chkGE(&#34;height&#34;, height, 0)
     return Obj3d(_m.Manifold.extrude(obj.mo, height))</code></pre>
 </details>
 <div class="desc"><p>Create a Obj3d solid from Obj2d of given height.</p>
@@ -543,7 +555,7 @@ Use of the <code>.obj</code> extension is recommended.</p>
     &lt;iframe width=&#34;100%&#34; height=&#34;300&#34; src=&#34;examples/extrude_transforming.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
     _chkTY(&#34;obj&#34;, obj, Obj2d)
-    _chkGT(&#34;height&#34;, height, 0)
+    _chkGE(&#34;height&#34;, height, 0)
     _chkGE(&#34;num_twist_divisions&#34;, num_twist_divisions, 0)
     _chkGE(&#34;twist&#34;, twist, 0)
     _chkV2(&#34;scale&#34;, scale)
@@ -661,8 +673,10 @@ for the chamfer that is approximately half the size of the radius you would use 
     &#34;&#34;&#34;
     if segments == -1:
         segments = Config.get_default_segments()
-    _chkGT(&#34;radius&#34;, radius, 0)
+    _chkGE(&#34;radius&#34;, radius, 0)
     _chkGE(&#34;segments&#34;, segments, 3)
+    if radius == 0:
+        return Obj3d()
 
     return Obj3d(_m.Manifold.sphere(radius, segments))</code></pre>
 </details>
@@ -810,9 +824,11 @@ trimesh.exchange.export.export_mesh(mesh_output, &quot;mesh.obj&quot;, &quot;obj
 
     &lt;iframe width=&#34;100%&#34; height=&#34;220&#34; src=&#34;examples/pyramid.html&#34;&gt;&lt;/iframe&gt;
     &#34;&#34;&#34;
-    _chkGT(&#34;height&#34;, height, 0)
+    _chkGE(&#34;height&#34;, height, 0)
     _chkGE(&#34;num_sides&#34;, num_sides, 3)
-    _chkGT(&#34;radius&#34;, radius, 0)
+    _chkGE(&#34;radius&#34;, radius, 0)
+    if height == 0 or radius == 0:
+        return Obj3d()
     return extrude_transforming(
         circle(radius, segments=num_sides), height=height, scale=(0, 0)
     )</code></pre>
@@ -841,7 +857,7 @@ trimesh.exchange.export.export_mesh(mesh_output, &quot;mesh.obj&quot;, &quot;obj
         segments = Config.get_default_segments()
     _chkTY(&#34;obj&#34;, obj, Obj2d)
     _chkGE(&#34;segments&#34;, segments, 3)
-    _chkGT(&#34;revolve_degrees&#34;, revolve_degrees, 0)
+    _chkGE(&#34;revolve_degrees&#34;, revolve_degrees, 0)
     return Obj3d(_m.Manifold.revolve(obj.mo, segments, revolve_degrees))</code></pre>
 </details>
 <div class="desc"><p>Create a Obj3d by revolving an Obj2d around the Y-axis, then rotating it so that Y becomes Z.</p>
@@ -881,6 +897,8 @@ trimesh.exchange.export.export_mesh(mesh_output, &quot;mesh.obj&quot;, &quot;obj
     _chkV3(&#34;size&#34;, size)
     if type(size) == float or type(size) == int:
         size = (size, size, size)
+    if any(dimension == 0 for dimension in size):
+        return Obj3d()
     l = []
     res = Config.get_layer_resolution()
     arc_segs = rounding_radius / res
@@ -978,7 +996,9 @@ When <code>center</code> is <code>True</code> it will cause the rounded cuboid t
     if segments == -1:
         segments = Config.get_default_segments()
     _chkGE(&#34;segments&#34;, segments, 3)
-    _chkGT(&#34;radius&#34;, radius, 0)
+    _chkGE(&#34;radius&#34;, radius, 0)
+    if height == 0 or radius == 0:
+        return Obj3d()
     rr = (
         rounded_rectangle((2 * radius, height), rounding_radius, segments)
         .translate((-radius, 0))
@@ -1017,6 +1037,8 @@ When <code>center</code> is <code>True</code>, the rounded cylinder will centere
         segments = Config.get_default_segments()
     _chkGE(&#34;radius&#34;, radius, 0)
     _chkGE(&#34;segments&#34;, segments, 3)
+    if radius == 0:
+        return Obj3d()
 
     circ = circle(radius, 2 * segments).piecut(90, 270)
 
@@ -1050,6 +1072,8 @@ When <code>center</code> is <code>True</code>, the rounded cylinder will centere
         size = vertices
         if size == None:
             size = 1
+        if size == 0:
+            return Obj3d()
         t = _m.Manifold.tetrahedron()
         if size != 1:
             t = t.scale((size, size, size))
@@ -1103,8 +1127,8 @@ If no vertex is given as an argument, a regular unit tetrahedron (size: 1) is re
     &#34;&#34;&#34;
     if segments == -1:
         segments = Config.get_default_segments()
-    _chkGT(&#34;outer_radius&#34;, outer_radius, 0)
-    _chkGT(&#34;inner_radius&#34;, inner_radius, 0)
+    _chkGE(&#34;outer_radius&#34;, outer_radius, 0)
+    _chkGE(&#34;inner_radius&#34;, inner_radius, 0)
     _chkGE(&#34;segments&#34;, segments, 3)
     if inner_radius &gt;= outer_radius:
         raise ValidationError(

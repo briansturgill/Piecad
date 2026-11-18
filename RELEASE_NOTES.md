@@ -44,7 +44,7 @@ Experimental fillet and chamfer added.
 matplotlib-based viewer.
 Improved documentation.
 
-# 2.0.5
+# 2.1.0
 Changes from Piecad 2.0.4:
   - Path.close() closes the active subpath and returns Path, not Obj2d.
   - Path.new_path(point) starts an independent open subpath.

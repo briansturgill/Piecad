@@ -202,6 +202,8 @@ Const.sqrt_2 - The square root of 2.</p></div>
         pass
 
     _default_segments = 36
+    _default_min_angle = 12.0
+    _default_min_edge_length = 2.0
     _default_units = &#34;mm&#34;
     _layer_resolution = 0.1
     _default_color = _parse_color(&#34;tan&#34;)
@@ -239,9 +241,77 @@ Const.sqrt_2 - The square root of 2.</p></div>
         In circular functions, if the value passed in for `segments` is `-1`, then
         the `default_segments` value is used. Thus circular functions have
         a default value for `segments` of `-1`.
+
+        A more advanced way to control the number of segments is to use:
+        [`Config.calc_segs`](index.html#piecad.Config.calc_segs).
+        You must call this function directly for each circular object you want to
+        calculate the default segments for.
         &#34;&#34;&#34;
         _chkGE(&#34;segments&#34;, segments, 3)
         cls._default_segments = segments
+
+    @classmethod
+    def get_default_min_angle(cls) -&gt; float:
+        &#34;&#34;&#34;
+        Get the default minimum angle used by circular objects.
+
+        Used by [`Config.calc_segs`](index.html#piecad.Config.calc_segs).
+        &#34;&#34;&#34;
+        return cls._default_min_angle
+
+    @classmethod
+    def set_default_min_angle(cls, angle: float = 12.0) -&gt; None:
+        &#34;&#34;&#34;
+        Set the default minimum angle used by circular objects.
+
+        Used by [`Config.calc_segs`](index.html#piecad.Config.calc_segs).
+        &#34;&#34;&#34;
+        _chkGT(&#34;angle&#34;, angle, 0.0)
+        cls._default_min_angle = angle
+
+    @classmethod
+    def get_default_min_edge_length(cls) -&gt; float:
+        &#34;&#34;&#34;
+        Get the default minimum edge length used by circular objects.
+
+        Used by [`Config.calc_segs`](index.html#piecad.Config.calc_segs).
+        &#34;&#34;&#34;
+        return cls._default_min_edge_length
+
+    @classmethod
+    def set_default_min_edge_length(cls, length: float = 2.0) -&gt; None:
+        &#34;&#34;&#34;
+        Set the default minimum edge length used by circular objects.
+
+        Used by [`Config.calc_segs`](index.html#piecad.Config.calc_segs).
+        &#34;&#34;&#34;
+        _chkGT(&#34;length&#34;, length, 0)
+        cls._default_min_edge_length = length
+
+    @classmethod
+    def calc_segs(cls, radius: float, min_a: float = None, min_el: float = None) -&gt; int:
+        &#34;&#34;&#34;
+        Calculate default segments based on minimum angle (min_a)
+        and minimum edge length (min_el).
+        If a parameter is None, then the global default value is used.
+
+        This is never automatically called; you must call it directly for each circular object
+        you want to calculate the default segments for.
+        &#34;&#34;&#34;
+        if min_a is None:
+            min_a = cls._default_min_angle
+        if min_el is None:
+            min_el = cls._default_min_edge_length
+        _chkGT(&#34;min_a&#34;, min_a, 0.0)
+        _chkGT(&#34;min_el&#34;, min_el, 0.0)
+
+        num_seg_angle = 360.0 / min_a
+        num_seg_edge_length = 2.0 * abs(radius) * math.pi / min_el
+        n_seg = int(min(num_seg_angle, num_seg_edge_length))
+        r = n_seg % 4
+        if r != 0:
+            n_seg += 4 - r
+        return max(n_seg, 4)
 
     @classmethod
     def get_default_units(cls) -&gt; str:
@@ -314,11 +384,35 @@ print(&quot;Changed default color:&quot;, Config.get_default_color())
 </code></pre></div>
 <h3>Static methods</h3>
 <dl>
+<dt id="piecad.Config.calc_segs"><code class="name flex">
+<span>def <span class="ident">calc_segs</span></span>(<span>radius: float, min_a: float = None, min_el: float = None) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Calculate default segments based on minimum angle (min_a)
+and minimum edge length (min_el).
+If a parameter is None, then the global default value is used.</p>
+<p>This is never automatically called; you must call it directly for each circular object
+you want to calculate the default segments for.</p></div>
+</dd>
 <dt id="piecad.Config.get_default_color"><code class="name flex">
 <span>def <span class="ident">get_default_color</span></span>(<span>) ‑> tuple[int, int, int]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Returns the RGB values for the current default color.</p></div>
+</dd>
+<dt id="piecad.Config.get_default_min_angle"><code class="name flex">
+<span>def <span class="ident">get_default_min_angle</span></span>(<span>) ‑> float</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the default minimum angle used by circular objects.</p>
+<p>Used by <a href="index.html#piecad.Config.calc_segs"><code>Config.calc_segs</code></a>.</p></div>
+</dd>
+<dt id="piecad.Config.get_default_min_edge_length"><code class="name flex">
+<span>def <span class="ident">get_default_min_edge_length</span></span>(<span>) ‑> float</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the default minimum edge length used by circular objects.</p>
+<p>Used by <a href="index.html#piecad.Config.calc_segs"><code>Config.calc_segs</code></a>.</p></div>
 </dd>
 <dt id="piecad.Config.get_default_segments"><code class="name flex">
 <span>def <span class="ident">get_default_segments</span></span>(<span>) ‑> int</span>
@@ -357,6 +451,20 @@ The <code>cspec</code> parameter has 3 formats:</p>
   For a list of color names see: [Color keywords](https://www.w3.org/wiki/CSS/Properties/color    /keywords)
 </code></pre></div>
 </dd>
+<dt id="piecad.Config.set_default_min_angle"><code class="name flex">
+<span>def <span class="ident">set_default_min_angle</span></span>(<span>angle: float = 12.0) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the default minimum angle used by circular objects.</p>
+<p>Used by <a href="index.html#piecad.Config.calc_segs"><code>Config.calc_segs</code></a>.</p></div>
+</dd>
+<dt id="piecad.Config.set_default_min_edge_length"><code class="name flex">
+<span>def <span class="ident">set_default_min_edge_length</span></span>(<span>length: float = 2.0) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the default minimum edge length used by circular objects.</p>
+<p>Used by <a href="index.html#piecad.Config.calc_segs"><code>Config.calc_segs</code></a>.</p></div>
+</dd>
 <dt id="piecad.Config.set_default_segments"><code class="name flex">
 <span>def <span class="ident">set_default_segments</span></span>(<span>segments: int = 36) ‑> None</span>
 </code></dt>
@@ -375,7 +483,11 @@ that look truly round.</p>
 90 degree marks), choose a <code>segments</code> value that is a multiple of 4.</p>
 <p>In circular functions, if the value passed in for <code>segments</code> is <code>-1</code>, then
 the <code>default_segments</code> value is used. Thus circular functions have
-a default value for <code>segments</code> of <code>-1</code>.</p></div>
+a default value for <code>segments</code> of <code>-1</code>.</p>
+<p>A more advanced way to control the number of segments is to use:
+<a href="index.html#piecad.Config.calc_segs"><code>Config.calc_segs</code></a>.
+You must call this function directly for each circular object you want to
+calculate the default segments for.</p></div>
 </dd>
 <dt id="piecad.Config.set_default_units"><code class="name flex">
 <span>def <span class="ident">set_default_units</span></span>(<span>units: str = 'mm') ‑> None</span>
@@ -511,6 +623,72 @@ For most 3D printing, the default of 0.1 is sufficient.</p></div>
         &#34;&#34;&#34;
         o3 = Obj3d(_m.Manifold.extrude(self.mo, height))
         return o3
+
+    # Next two go with minkowski.
+    @staticmethod
+    def _convex_parts(
+        section: _m.CrossSection,
+    ) -&gt; list[list[tuple[float, float]]]:
+        parts: list[list[tuple[float, float]]] = []
+        for component in section.decompose():
+            if (component.hull() - component).is_empty():
+                parts.append(
+                    [(float(x), float(y)) for x, y in component.to_polygons()[0]]
+                )
+                continue
+            polygons = component.to_polygons()
+            vertices = [
+                (float(x), float(y)) for polygon in polygons for x, y in polygon
+            ]
+            for triangle in _m.triangulate(polygons):
+                parts.append([vertices[index] for index in triangle])
+        return parts
+
+    @staticmethod
+    def _sum_sections(
+        first: _m.CrossSection, second: _m.CrossSection
+    ) -&gt; _m.CrossSection:
+        if first.is_empty() or second.is_empty():
+            return _m.CrossSection()
+        sums = []
+        second_parts = Obj2d._convex_parts(second)
+        for a in Obj2d._convex_parts(first):
+            for b in second_parts:
+                points = [(p[0] + q[0], p[1] + q[1]) for p in a for q in b]
+                sums.append(_m.CrossSection.hull_points(points))
+        return _m.CrossSection.batch_boolean(sums, _m.OpType.Add)
+
+    def minkowski_sum(self: Obj2d, other: Obj2d) -&gt; Obj2d:
+        &#34;&#34;&#34;Return minkowski_sum of this object with other as an Obj2d.&#34;&#34;&#34;
+        if not isinstance(self, Obj2d) or not isinstance(other, Obj2d):
+            raise TypeError(&#34;minkowski_sum requires two Obj2d operands&#34;)
+        return Obj2d(Obj2d._sum_sections(self.mo, other.mo), color=self._color)
+
+    def minkowski_difference(self: Obj2d, other: Obj2d) -&gt; Obj2d:
+        &#34;&#34;&#34;Return minkowski_difference of this object with other as an Obj2d.
+
+        An empty other operand would produce the whole plane, which Obj2d cannot
+        represent; it raises ValueError instead.
+        &#34;&#34;&#34;
+        if not isinstance(other, Obj2d):
+            raise TypeError(&#34;minkowski_difference requires two Obj2d operands&#34;)
+        if other.is_empty():
+            raise ValueError(
+                &#34;minkowski_difference with an empty other operand is unbounded&#34;
+            )
+        if self.is_empty():
+            return Obj2d(color=self._color)
+
+        ax0, ay0, ax1, ay1 = self.bounding_box()
+        bx0, by0, bx1, by1 = other.bounding_box()
+        x0, y0, x1, y1 = ax0 - bx0, ay0 - by0, ax1 - bx1, ay1 - by1
+        if x1 &lt;= x0 or y1 &lt;= y0:
+            return Obj2d(color=self._color)
+
+        bounds = _m.CrossSection.square((ax1 - ax0, ay1 - ay0)).translate((ax0, ay0))
+        candidates = _m.CrossSection.square((x1 - x0, y1 - y0)).translate((x0, y0))
+        forbidden = Obj2d._sum_sections(bounds - self.mo, other.mo.scale((-1, -1)))
+        return Obj2d(candidates - forbidden, color=self._color)
 
     def mirror(self, axes: tuple[bool, bool]) -&gt; Obj2d:
         &#34;&#34;&#34;
@@ -673,12 +851,14 @@ For most 3D printing, the default of 0.1 is sufficient.</p></div>
         &#34;&#34;&#34;
         Return a list of paths, each of which is a list of vertices that make up this object.
         &#34;&#34;&#34;
-        from copy import deepcopy
+        import struct
 
         paths = self.mo.to_polygons()
-        paths = deepcopy(paths)
-        paths = [[tuple(float(coord) for coord in pt) for pt in path] for path in paths]
-        return paths
+        pls = []
+        for p in paths:
+            pl = list(struct.iter_unpack(&#34;=dd&#34;, p))
+            pls.append(pl)
+        return pls
 
     def transform(
         self, matrix2x3: tuple[tuple[float, float, float], tuple[float, float, float]]
@@ -899,6 +1079,60 @@ For a list of color names see: <a href="https://www.w3.org/wiki/CSS/Properties/c
     return self.mo.is_empty()</code></pre>
 </details>
 <div class="desc"><p>Is this object empty?</p></div>
+</dd>
+<dt id="piecad.Obj2d.minkowski_difference"><code class="name flex">
+<span>def <span class="ident">minkowski_difference</span></span>(<span>self: <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a>,<br>other: <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a>) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def minkowski_difference(self: Obj2d, other: Obj2d) -&gt; Obj2d:
+    &#34;&#34;&#34;Return minkowski_difference of this object with other as an Obj2d.
+
+    An empty other operand would produce the whole plane, which Obj2d cannot
+    represent; it raises ValueError instead.
+    &#34;&#34;&#34;
+    if not isinstance(other, Obj2d):
+        raise TypeError(&#34;minkowski_difference requires two Obj2d operands&#34;)
+    if other.is_empty():
+        raise ValueError(
+            &#34;minkowski_difference with an empty other operand is unbounded&#34;
+        )
+    if self.is_empty():
+        return Obj2d(color=self._color)
+
+    ax0, ay0, ax1, ay1 = self.bounding_box()
+    bx0, by0, bx1, by1 = other.bounding_box()
+    x0, y0, x1, y1 = ax0 - bx0, ay0 - by0, ax1 - bx1, ay1 - by1
+    if x1 &lt;= x0 or y1 &lt;= y0:
+        return Obj2d(color=self._color)
+
+    bounds = _m.CrossSection.square((ax1 - ax0, ay1 - ay0)).translate((ax0, ay0))
+    candidates = _m.CrossSection.square((x1 - x0, y1 - y0)).translate((x0, y0))
+    forbidden = Obj2d._sum_sections(bounds - self.mo, other.mo.scale((-1, -1)))
+    return Obj2d(candidates - forbidden, color=self._color)</code></pre>
+</details>
+<div class="desc"><p>Return minkowski_difference of this object with other as an Obj2d.</p>
+<p>An empty other operand would produce the whole plane, which Obj2d cannot
+represent; it raises ValueError instead.</p></div>
+</dd>
+<dt id="piecad.Obj2d.minkowski_sum"><code class="name flex">
+<span>def <span class="ident">minkowski_sum</span></span>(<span>self: <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a>,<br>other: <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a>) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def minkowski_sum(self: Obj2d, other: Obj2d) -&gt; Obj2d:
+    &#34;&#34;&#34;Return minkowski_sum of this object with other as an Obj2d.&#34;&#34;&#34;
+    if not isinstance(self, Obj2d) or not isinstance(other, Obj2d):
+        raise TypeError(&#34;minkowski_sum requires two Obj2d operands&#34;)
+    return Obj2d(Obj2d._sum_sections(self.mo, other.mo), color=self._color)</code></pre>
+</details>
+<div class="desc"><p>Return minkowski_sum of this object with other as an Obj2d.</p></div>
 </dd>
 <dt id="piecad.Obj2d.mirror"><code class="name flex">
 <span>def <span class="ident">mirror</span></span>(<span>self, axes: tuple[bool, bool]) ‑> <a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></span>
@@ -1180,12 +1414,14 @@ maintain the same size ratio between the two sizes.</p>
     &#34;&#34;&#34;
     Return a list of paths, each of which is a list of vertices that make up this object.
     &#34;&#34;&#34;
-    from copy import deepcopy
+    import struct
 
     paths = self.mo.to_polygons()
-    paths = deepcopy(paths)
-    paths = [[tuple(float(coord) for coord in pt) for pt in path] for path in paths]
-    return paths</code></pre>
+    pls = []
+    for p in paths:
+        pl = list(struct.iter_unpack(&#34;=dd&#34;, p))
+        pls.append(pl)
+    return pls</code></pre>
 </details>
 <div class="desc"><p>Return a list of paths, each of which is a list of vertices that make up this object.</p></div>
 </dd>
@@ -1587,7 +1823,7 @@ maintain the same size ratio between the two sizes.</p>
         Like `project`, but rather than the bottom, project at the given height.
 
         &#34;&#34;&#34;
-        _chkGT(&#34;height&#34;, height, 0)
+        _chkGE(&#34;height&#34;, height, 0)
         return Obj2d(self.mo.slice(height))
 
     def split(self, cutter: Obj3d) -&gt; Obj3d:
@@ -1619,6 +1855,8 @@ maintain the same size ratio between the two sizes.</p>
         so you may want to do timing tests.
 
         &#34;&#34;&#34;
+        import struct
+
         mesh = self.mo.to_mesh64()
         if mesh.vert_properties.shape[1] &gt; 3:
             vertices = mesh.vert_properties[:, :3]
@@ -1626,8 +1864,9 @@ maintain the same size ratio between the two sizes.</p>
             vertices = mesh.vert_properties
         if np:
             return (vertices, mesh.tri_verts)
-        v = list(map(tuple, vertices.tolist()))
-        f = list(map(tuple, mesh.tri_verts.tolist()))
+
+        v = list(struct.iter_unpack(&#34;=ddd&#34;, vertices))
+        f = list(struct.iter_unpack(&#34;=qqq&#34;, mesh.tri_verts))
         return (v, f)
 
     def transform(
@@ -2249,7 +2488,7 @@ maintain the same size ratio between the two sizes.</p>
     Like `project`, but rather than the bottom, project at the given height.
 
     &#34;&#34;&#34;
-    _chkGT(&#34;height&#34;, height, 0)
+    _chkGE(&#34;height&#34;, height, 0)
     return Obj2d(self.mo.slice(height))</code></pre>
 </details>
 <div class="desc"><p>Like <code>project</code>, but rather than the bottom, project at the given height.</p></div>
@@ -2312,6 +2551,8 @@ maintain the same size ratio between the two sizes.</p>
     so you may want to do timing tests.
 
     &#34;&#34;&#34;
+    import struct
+
     mesh = self.mo.to_mesh64()
     if mesh.vert_properties.shape[1] &gt; 3:
         vertices = mesh.vert_properties[:, :3]
@@ -2319,8 +2560,9 @@ maintain the same size ratio between the two sizes.</p>
         vertices = mesh.vert_properties
     if np:
         return (vertices, mesh.tri_verts)
-    v = list(map(tuple, vertices.tolist()))
-    f = list(map(tuple, mesh.tri_verts.tolist()))
+
+    v = list(struct.iter_unpack(&#34;=ddd&#34;, vertices))
+    f = list(struct.iter_unpack(&#34;=qqq&#34;, mesh.tri_verts))
     return (v, f)</code></pre>
 </details>
 <div class="desc"><p>Return a pair containing a list of vertices and a list of faces for this object.</p>
@@ -2465,11 +2707,16 @@ functions and methods.</p></div>
 <li>
 <h4><code><a title="piecad.Config" href="#piecad.Config">Config</a></code></h4>
 <ul class="">
+<li><code><a title="piecad.Config.calc_segs" href="#piecad.Config.calc_segs">calc_segs</a></code></li>
 <li><code><a title="piecad.Config.get_default_color" href="#piecad.Config.get_default_color">get_default_color</a></code></li>
+<li><code><a title="piecad.Config.get_default_min_angle" href="#piecad.Config.get_default_min_angle">get_default_min_angle</a></code></li>
+<li><code><a title="piecad.Config.get_default_min_edge_length" href="#piecad.Config.get_default_min_edge_length">get_default_min_edge_length</a></code></li>
 <li><code><a title="piecad.Config.get_default_segments" href="#piecad.Config.get_default_segments">get_default_segments</a></code></li>
 <li><code><a title="piecad.Config.get_default_units" href="#piecad.Config.get_default_units">get_default_units</a></code></li>
 <li><code><a title="piecad.Config.get_layer_resolution" href="#piecad.Config.get_layer_resolution">get_layer_resolution</a></code></li>
 <li><code><a title="piecad.Config.set_default_color" href="#piecad.Config.set_default_color">set_default_color</a></code></li>
+<li><code><a title="piecad.Config.set_default_min_angle" href="#piecad.Config.set_default_min_angle">set_default_min_angle</a></code></li>
+<li><code><a title="piecad.Config.set_default_min_edge_length" href="#piecad.Config.set_default_min_edge_length">set_default_min_edge_length</a></code></li>
 <li><code><a title="piecad.Config.set_default_segments" href="#piecad.Config.set_default_segments">set_default_segments</a></code></li>
 <li><code><a title="piecad.Config.set_default_units" href="#piecad.Config.set_default_units">set_default_units</a></code></li>
 <li><code><a title="piecad.Config.set_layer_resolution" href="#piecad.Config.set_layer_resolution">set_layer_resolution</a></code></li>
@@ -2477,7 +2724,7 @@ functions and methods.</p></div>
 </li>
 <li>
 <h4><code><a title="piecad.Obj2d" href="#piecad.Obj2d">Obj2d</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="piecad.Obj2d.area" href="#piecad.Obj2d.area">area</a></code></li>
 <li><code><a title="piecad.Obj2d.bounding_box" href="#piecad.Obj2d.bounding_box">bounding_box</a></code></li>
 <li><code><a title="piecad.Obj2d.center" href="#piecad.Obj2d.center">center</a></code></li>
@@ -2486,6 +2733,8 @@ functions and methods.</p></div>
 <li><code><a title="piecad.Obj2d.decompose" href="#piecad.Obj2d.decompose">decompose</a></code></li>
 <li><code><a title="piecad.Obj2d.extrude" href="#piecad.Obj2d.extrude">extrude</a></code></li>
 <li><code><a title="piecad.Obj2d.is_empty" href="#piecad.Obj2d.is_empty">is_empty</a></code></li>
+<li><code><a title="piecad.Obj2d.minkowski_difference" href="#piecad.Obj2d.minkowski_difference">minkowski_difference</a></code></li>
+<li><code><a title="piecad.Obj2d.minkowski_sum" href="#piecad.Obj2d.minkowski_sum">minkowski_sum</a></code></li>
 <li><code><a title="piecad.Obj2d.mirror" href="#piecad.Obj2d.mirror">mirror</a></code></li>
 <li><code><a title="piecad.Obj2d.num_verts" href="#piecad.Obj2d.num_verts">num_verts</a></code></li>
 <li><code><a title="piecad.Obj2d.offset" href="#piecad.Obj2d.offset">offset</a></code></li>

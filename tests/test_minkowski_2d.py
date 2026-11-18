@@ -19,9 +19,7 @@ def test_sum_of_concave_disconnected_shapes():
     first = union(rectangle(4, 1), rectangle(1, 4))
     second = union(square(1), square(1).translate((10, 0)))
     one = union(rectangle(5, 2), rectangle(2, 5))
-    assert_shape_equal(
-        first.minkowski_sum(second), union(one, one.translate((10, 0)))
-    )
+    assert_shape_equal(first.minkowski_sum(second), union(one, one.translate((10, 0))))
 
 
 def test_sum_reduces_hole_and_accepts_polygonal_circle():
