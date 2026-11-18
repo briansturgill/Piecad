@@ -36,6 +36,10 @@ def mk_fi(name, obj):
     if fi.sig.find("->") == -1 and fi.name != "__init__":
         print("Missing return value", fi.name, fi.sig, file=sys.stderr)
     fi.long_ds = inspect.getdoc(fi.obj)
+    if fi.long_ds == None:
+        if fi.name[0] != '_':
+            print("Missing docstring for", fi.name, file=sys.stderr)
+        fi.short_ds = None
     if fi.long_ds != None:
         l = fi.long_ds.split('\n')
         if len(l) >= 1:
