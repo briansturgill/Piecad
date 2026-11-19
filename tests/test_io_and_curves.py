@@ -162,12 +162,12 @@ def test_mesh_check_wrappers():
     assert check_mesh(CUBE_V, CUBE_F) is True
 
 
-def test_obj3d_from_vertices_and_faces_modes():
+def test_obj3d_from_v_and_f_modes():
     for mode in ("none", "batch", "repair"):
-        o = utilities.obj3d_from_vertices_and_faces(CUBE_V, CUBE_F, mode)
+        o = utilities.obj3d_from_v_and_f(CUBE_V, CUBE_F, mode)
         assert o.volume() == pytest.approx(1)
     with pytest.raises(ValidationError):
-        utilities.obj3d_from_vertices_and_faces(CUBE_V, CUBE_F[:-1], "batch")
+        utilities.obj3d_from_v_and_f(CUBE_V, CUBE_F[:-1], "batch")
 
 
 def test_path_curves_and_arc():

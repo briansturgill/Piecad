@@ -13,7 +13,7 @@ import time
 import numpy as np
 from collections.abc import Iterator as _Iterator
 from pathlib import Path as _Path
-from . import Obj2d, Obj3d, Config, _chkGE, _chkGO, ValidationError, trimesh
+from . import Obj2d, Obj3d, Config, _chkGE, _chkGO, ValidationError, trimesh, Const
 
 from ._export_3mf import export_3mf as _export_3mf
 from ._check_mesh import check_mesh as _check_mesh
@@ -23,8 +23,10 @@ __all__ = [
     "check_mesh",
     "frange",
     "load",
+    "near_eq",
+    "near_le",
+    "near_ge",
     "quick_check_mesh",
-    "obj3d_from_vertices_and_faces",
     "save",
     "sign",
     "view",
@@ -150,7 +152,7 @@ def load(
     if type(mesh) == trimesh.path.Path2D:
         raise ValidationError("Only .svg, .dxf 2D objects are currently supported.")
 
-    result = obj3d_from_vertices_and_faces(mesh.vertices, mesh.faces)
+    result = obj3d_from_v_and_f(mesh.vertices, mesh.faces)
     return result.center() if center else result
 
 
@@ -496,7 +498,7 @@ def quick_check_mesh(
     return _quick_check_mesh(vertices, faces)
 
 
-def obj3d_from_vertices_and_faces(
+def obj3d_from_v_and_f(
     vertices: list[tuple[float, float, float]],
     faces: list[tuple[int, int, int]],
     check: str = "none",
@@ -595,3 +597,24 @@ def sign(x: float | int) -> float | int:
     Evaluate `x`, if `x` < 0 return -1, or if `x` == 0 return 0 or if `x` > 0 return 1.
     """
     return (x > 0) - (x < 0)
+
+
+def near_eq(a, b, epsilon=Const.epsilon) -> bool:
+    """
+    If `a` is near `b` (within epsilon) then return True` else `return False`
+    """
+    return abs(a - b) <= epsilon
+
+
+def near_le(a, b, epsilon=Const.epsilon) -> bool:
+    """
+    If `a + epsilon` is less than or equal to `b` then `return True` else `return False`
+    """
+    return a + epsilon <= b
+
+
+def near_ge(a, b, epsilon=Const.epsilon) -> bool:
+    """
+    If `a - epsilon` is greater than or equal to `b` then `return True` else `return False`
+    """
+    return a - epsilon >= b

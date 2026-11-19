@@ -26,7 +26,7 @@ import manifold3d as _m
 import math
 import trimesh
 from .trigonometry import tan, cos, sin
-from .lin_math import Vec3
+from .lin_math import Vec3, Vec2, Mat3, Geom
 from collections import namedtuple as _namedtuple
 
 
@@ -1102,7 +1102,7 @@ def _handle_piecadrc():
 
 
 _const = _namedtuple("_const", ["epsilon", "sqrt_2"])
-Const = _const(epsilon=_m.Manifold.cube().get_tolerance(), sqrt_2=2**0.5)
+Const = _const(epsilon=1e-12, sqrt_2=2**0.5)
 """
 `Const` a namedtuple holding global constants for the Piecad library.
 
@@ -1110,28 +1110,6 @@ Const.epsilon - The default epsilon value for precision comparisons.
 <br>
 Const.sqrt_2 - The square root of 2.
 """
-
-
-def near_eq(a, b, epsilon=Const.epsilon) -> bool:
-    """
-    If `a` is near `b` (within epsilon) then return True` else `return False`
-    """
-    return abs(a - b) <= epsilon
-
-
-def near_le(a, b, epsilon=Const.epsilon) -> bool:
-    """
-    If `a + epsilon` is less than or equal to `b` then `return True` else `return False`
-    """
-    return a + epsilon <= b
-
-
-def near_ge(a, b, epsilon=Const.epsilon) -> bool:
-    """
-    If `a - epsilon` is greater than or equal to `b` then `return True` else `return False`
-    """
-    return a - epsilon >= b
-
 
 from .utilities import *
 from .bulk_ops import *

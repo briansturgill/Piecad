@@ -25,7 +25,6 @@ from . import (
     _chkV3,
     _chkV2,
     trimesh,
-    obj3d_from_vertices_and_faces,
     Const,
 )
 
@@ -359,7 +358,9 @@ def extrude_chaining(
         ext = diagnose[dot_idx + 1 :]
         mesh_output = trimesh.Trimesh(vertices=vertex_list, faces=triangles)
         trimesh.exchange.export.export_mesh(mesh_output, diagnose, ext)
-    return obj3d_from_vertices_and_faces(vertex_list, triangles)
+    from .utilities import obj3d_from_v_and_f
+
+    return obj3d_from_v_and_f(vertex_list, triangles)
 
 
 def extrude_transforming(
@@ -534,7 +535,9 @@ def polyhedron(
 
     """
     _chkIn("check", check, ["interactive", "batch", "repair", "none"])
-    o = obj3d_from_vertices_and_faces(vertices, faces, check)
+    from .utilities import obj3d_from_v_and_f
+
+    o = obj3d_from_v_and_f(vertices, faces, check)
     return o
 
 
