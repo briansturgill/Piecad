@@ -323,7 +323,7 @@ def text_set_font(font_name: str) -> None:
     """
     Set the current font used by `text`.
     Fonts are stored in the `_package_name_/fonts` directory.
-    Or you can use a full pathname to the `.ttf` file.
+    Or you can use a full pathname to a `.ttf` or `.otf` file.
     Most OpenType/TrueType fonts can be used.
 
     Only one font can be in use at a time. (The previous font is automatically closed.)

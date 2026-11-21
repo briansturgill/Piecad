@@ -8,8 +8,17 @@ Its primary focus is the creation of models for 3D printing.
 
 To install using [pip](https://pypi.org/project/piecad) (virtual environment recommended):
 
+Python 3.12 or later is required; Python 3.14.1 is not supported.
+
 ```sh
 pip install piecad
+```
+
+To run tests from a checkout, install the test dependencies and run pytest:
+
+```sh
+pip install -e '.[test]'
+pytest
 ```
 
 [QuickHelp](https://briansturgill.github.io/Piecad/qh.html)

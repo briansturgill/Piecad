@@ -6,6 +6,7 @@ from typing import Iterable
 import atexit
 import math as _math
 import threading
+import warnings
 import manifold3d as _m
 import inspect
 import os.path
@@ -121,6 +122,9 @@ def load(
 
     \\(See [https://github/mikedh/trimesh] for more formats.\\)
 
+    3MF build items and components are imported as geometry. Coordinates are
+    kept in the file's units; colors and materials are not imported.
+
     For 2D, SVG (.svg) and DXF (.dxf) files are loaded with even-odd fill.
     SVG coordinates are used as-is and open SVG subpaths are implicitly closed.
     Only explicitly closed DXF polylines are filled. SVG and DXF imports
@@ -146,14 +150,71 @@ def load(
         else:
             result = Path.from_dxf(filename).to_obj2d()
         return result.center() if center else result
-    mesh = trimesh.exchange.load.load(
-        filename, ext, force="mesh", process=True, validate=False
-    )
+    if ext.lower() == "3mf":
+        mesh = _load_3mf_mesh(filename)
+    else:
+        mesh = trimesh.exchange.load.load(
+            filename, ext, force="mesh", process=True, validate=False
+        )
     if type(mesh) == trimesh.path.Path2D:
         raise ValidationError("Only .svg, .dxf 2D objects are currently supported.")
 
     result = obj3d_from_v_and_f(mesh.vertices, mesh.faces)
     return result.center() if center else result
+
+
+def _load_3mf_mesh(filename):
+    from . import _lib3mf
+
+    model = _lib3mf.Wrapper().CreateModel()
+    reader = model.QueryReader("3mf")
+    reader.ReadFromFile(filename)
+    for i in range(reader.GetWarningCount()):
+        message, _ = reader.GetWarning(i)
+        warnings.warn(f"3MF import: {message}", stacklevel=2)
+
+    vertices = []
+    faces = []
+
+    def add_object(obj, transform, ancestors):
+        if obj in ancestors:
+            raise ValidationError("Circular 3MF component references.")
+        if obj.IsMeshObject():
+            points = np.asarray(
+                [v.Coordinates for v in obj.GetVertices()], dtype=np.float64
+            )
+            triangles = np.asarray(
+                [t.Indices for t in obj.GetTriangleIndices()], dtype=np.int64
+            )
+            if not len(triangles):
+                return
+            points = points @ transform[:3, :3].T + transform[:3, 3]
+            if np.linalg.det(transform[:3, :3]) < 0:
+                triangles = triangles[:, [0, 2, 1]]
+            faces.extend((triangles + len(vertices)).tolist())
+            vertices.extend(points.tolist())
+        elif obj.IsComponentsObject():
+            ancestors = ancestors | {obj}
+            for i in range(obj.GetComponentCount()):
+                component = obj.GetComponent(i)
+                child_transform = np.eye(4)
+                child_transform[:3, :4] = np.asarray(component.GetTransform().Fields).T
+                add_object(
+                    component.GetObjectResource(),
+                    transform @ child_transform,
+                    ancestors,
+                )
+        else:
+            raise ValidationError("Unsupported 3MF object type.")
+
+    for item in model.GetBuildItems():
+        transform = np.eye(4)
+        transform[:3, :4] = np.asarray(item.GetObjectTransform().Fields).T
+        add_object(item.GetObjectResource(), transform, set())
+
+    if not faces:
+        raise ValidationError("3MF file contains no buildable mesh triangles.")
+    return trimesh.Trimesh(vertices=vertices, faces=faces, process=True, validate=False)
 
 
 _save_dir = None

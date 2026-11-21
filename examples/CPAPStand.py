@@ -105,7 +105,7 @@ def top():
             l.append(rcube([hole_w, hole_d, bed_h + 2], bed_rad).translate([x, y, -1]))
     return difference(
         union(bottom(), rcube([big_w, big_d, bed_h], bed_rad).translate([cs, cs, 0])),
-        *l
+        *l,
     )
 
 

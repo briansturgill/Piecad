@@ -169,6 +169,9 @@ el.replaceWith(d);
 
     \\(See [https://github/mikedh/trimesh] for more formats.\\)
 
+    3MF build items and components are imported as geometry. Coordinates are
+    kept in the file&#39;s units; colors and materials are not imported.
+
     For 2D, SVG (.svg) and DXF (.dxf) files are loaded with even-odd fill.
     SVG coordinates are used as-is and open SVG subpaths are implicitly closed.
     Only explicitly closed DXF polylines are filled. SVG and DXF imports
@@ -194,9 +197,12 @@ el.replaceWith(d);
         else:
             result = Path.from_dxf(filename).to_obj2d()
         return result.center() if center else result
-    mesh = trimesh.exchange.load.load(
-        filename, ext, force=&#34;mesh&#34;, process=True, validate=False
-    )
+    if ext.lower() == &#34;3mf&#34;:
+        mesh = _load_3mf_mesh(filename)
+    else:
+        mesh = trimesh.exchange.load.load(
+            filename, ext, force=&#34;mesh&#34;, process=True, validate=False
+        )
     if type(mesh) == trimesh.path.Path2D:
         raise ValidationError(&#34;Only .svg, .dxf 2D objects are currently supported.&#34;)
 
@@ -245,6 +251,8 @@ el.replaceWith(d);
 </tbody>
 </table>
 <p>(See [<a href="https://github/mikedh/trimesh]">https://github/mikedh/trimesh]</a> for more formats.)</p>
+<p>3MF build items and components are imported as geometry. Coordinates are
+kept in the file's units; colors and materials are not imported.</p>
 <p>For 2D, SVG (.svg) and DXF (.dxf) files are loaded with even-odd fill.
 SVG coordinates are used as-is and open SVG subpaths are implicitly closed.
 Only explicitly closed DXF polylines are filled. SVG and DXF imports

@@ -4,6 +4,7 @@ import ezdxf
 import pytest
 from piecad import *
 from piecad import utilities
+from piecad import _lib3mf
 from piecad._path import Path
 
 IMAGE = os.path.join(os.path.dirname(__file__), "..", "examples", "moon_lithophane.jpg")
@@ -51,6 +52,62 @@ def test_save_3mf_with_color(tmp_path):
     f = str(tmp_path / "c.3mf")
     save(f, union(cube(5).color("red"), sphere(3).translate([10, 0, 0]).color("blue")))
     assert os.path.getsize(f) > 0
+
+
+def test_load_3mf_round_trip_uses_lib3mf(tmp_path, monkeypatch):
+    filename = str(tmp_path / "cube.3mf")
+    source = cube(5).translate([10, 0, 0])
+    save(filename, source)
+
+    def reject_trimesh_loader(*args, **kwargs):
+        pytest.fail("3MF loading should use _lib3mf")
+
+    monkeypatch.setattr(utilities.trimesh.exchange.load, "load", reject_trimesh_loader)
+    restored = load(filename)
+    assert restored.volume() == pytest.approx(source.volume())
+    assert restored.bounding_box() == pytest.approx(source.bounding_box())
+    assert load(filename, center=True).bounding_box() == pytest.approx(
+        (-2.5, -2.5, -2.5, 2.5, 2.5, 2.5)
+    )
+
+
+def test_load_3mf_nested_transforms_and_build_items(tmp_path):
+    wrapper = _lib3mf.Wrapper()
+    model = wrapper.CreateModel()
+    model.SetUnit(_lib3mf.ModelUnit.Inch)
+    geometry = cube(5).mo.to_mesh64()
+    mesh = model.AddMeshObject()
+    mesh.SetGeometry(
+        [_lib3mf.Position(v[:3]) for v in geometry.vert_properties],
+        [_lib3mf.Triangle(t) for t in geometry.tri_verts],
+    )
+    component = model.AddComponentsObject()
+    component.AddComponent(
+        mesh,
+        _lib3mf.Transform([[-1, 0, 0], [0, 1, 0], [0, 0, 1], [8, 0, 0]]),
+    )
+    parent = model.AddComponentsObject()
+    parent.AddComponent(component, wrapper.GetTranslationTransform(2, 0, 0))
+    model.AddBuildItem(parent, wrapper.GetTranslationTransform(10, 0, 0))
+    model.AddBuildItem(mesh, wrapper.GetTranslationTransform(30, 0, 0))
+    filename = str(tmp_path / "components.3MF")
+    model.QueryWriter("3mf").WriteToFile(filename)
+
+    restored = load(filename)
+    assert restored.bounding_box() == pytest.approx((15, 0, 0, 35, 5, 5))
+    assert restored.volume() == pytest.approx(250)
+
+
+def test_load_3mf_invalid_and_empty_models(tmp_path):
+    filename = tmp_path / "invalid.3mf"
+    filename.write_bytes(b"not a 3mf archive")
+    with pytest.raises(_lib3mf.ELib3MFException, match="Invalid 3MF ZIP container"):
+        load(str(filename))
+
+    model = _lib3mf.Wrapper().CreateModel()
+    model.QueryWriter("3mf").WriteToFile(str(filename))
+    with pytest.raises(ValidationError, match="no buildable mesh triangles"):
+        load(str(filename))
 
 
 def test_save_bare_filename_uses_save_dir(save_dir):

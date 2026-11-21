@@ -1,31 +1,32 @@
-import ctypes
 import math
+from contextlib import ExitStack
 from importlib import resources as impresources
+from typing import Literal
 
-import freetype
 import manifold3d as _m
-from freetype import raw
-from freetype.ft_structs import FT_Outline_Funcs, FT_Vector
+from fontTools.pens.basePen import BasePen
+from fontTools.ttLib import TTFont
 
-from piecad import *
-from . import Obj2d, _fonts
+from . import Obj2d, Obj3d, _fonts, union
 
-_font = None
+_font: TTFont | None = None
+_glyphs = None
+_cmap: dict[int, str] | None = None
 
 # Approximate length of the line segments curves are flattened into (font units).
-_SEGMENT_LENGTH = 5.0
+_SEGMENT_LENGTH: float = 5.0
 
 
-def _close_font():
-    global _font
-    _font = None
-
-
-def _distance(pt1, pt2):
+def _distance(pt1: tuple[float, float], pt2: tuple[float, float]) -> float:
     return math.hypot(pt1[0] - pt2[0], pt1[1] - pt2[1])
 
 
-def _quadratic_point(t, pt0, pt1, pt2):
+def _quadratic_point(
+    t: float,
+    pt0: tuple[float, float],
+    pt1: tuple[float, float],
+    pt2: tuple[float, float],
+) -> tuple[float, float]:
     a = (1 - t) ** 2
     b = 2 * (1 - t) * t
     c = t**2
@@ -35,7 +36,13 @@ def _quadratic_point(t, pt0, pt1, pt2):
     )
 
 
-def _cubic_point(t, pt0, pt1, pt2, pt3):
+def _cubic_point(
+    t: float,
+    pt0: tuple[float, float],
+    pt1: tuple[float, float],
+    pt2: tuple[float, float],
+    pt3: tuple[float, float],
+) -> tuple[float, float]:
     cx = (pt1[0] - pt0[0]) * 3
     cy = (pt1[1] - pt0[1]) * 3
     bx = (pt2[0] - pt1[0]) * 3 - cx
@@ -50,7 +57,12 @@ def _cubic_point(t, pt0, pt1, pt2, pt3):
     )
 
 
-def _quadratic_length(pt0, pt1, pt2, precision=64):
+def _quadratic_length(
+    pt0: tuple[float, float],
+    pt1: tuple[float, float],
+    pt2: tuple[float, float],
+    precision: int = 64,
+) -> float:
     length = 0.0
     prev = pt0
     for i in range(1, precision + 1):
@@ -60,7 +72,13 @@ def _quadratic_length(pt0, pt1, pt2, precision=64):
     return length
 
 
-def _cubic_length(pt0, pt1, pt2, pt3, precision=10):
+def _cubic_length(
+    pt0: tuple[float, float],
+    pt1: tuple[float, float],
+    pt2: tuple[float, float],
+    pt3: tuple[float, float],
+    precision: int = 10,
+) -> float:
     length = 0.0
     step = 1.0 / precision
     points = []
@@ -77,77 +95,7 @@ def _cubic_length(pt0, pt1, pt2, pt3, precision=10):
     return length
 
 
-def _outline_to_segments(outline):
-    segments = []
-    user = ctypes.py_object(segments)
-
-    def move_to(to, user_obj):
-        obj = user_obj.value if hasattr(user_obj, "value") else user_obj
-        obj.append(("moveTo", (to.contents.x, to.contents.y)))
-        return 0
-
-    def line_to(to, user_obj):
-        obj = user_obj.value if hasattr(user_obj, "value") else user_obj
-        obj.append(("lineTo", (to.contents.x, to.contents.y)))
-        return 0
-
-    def conic_to(control, to, user_obj):
-        obj = user_obj.value if hasattr(user_obj, "value") else user_obj
-        obj.append(
-            (
-                "qCurveTo",
-                (
-                    (control.contents.x, control.contents.y),
-                    (to.contents.x, to.contents.y),
-                ),
-            )
-        )
-        return 0
-
-    def cubic_to(control1, control2, to, user_obj):
-        obj = user_obj.value if hasattr(user_obj, "value") else user_obj
-        obj.append(
-            (
-                "curveTo",
-                (
-                    (control1.contents.x, control1.contents.y),
-                    (control2.contents.x, control2.contents.y),
-                    (to.contents.x, to.contents.y),
-                ),
-            )
-        )
-        return 0
-
-    funcs = FT_Outline_Funcs(
-        move_to=ctypes.CFUNCTYPE(
-            ctypes.c_int, ctypes.POINTER(FT_Vector), ctypes.py_object
-        )(move_to),
-        line_to=ctypes.CFUNCTYPE(
-            ctypes.c_int, ctypes.POINTER(FT_Vector), ctypes.py_object
-        )(line_to),
-        conic_to=ctypes.CFUNCTYPE(
-            ctypes.c_int,
-            ctypes.POINTER(FT_Vector),
-            ctypes.POINTER(FT_Vector),
-            ctypes.py_object,
-        )(conic_to),
-        cubic_to=ctypes.CFUNCTYPE(
-            ctypes.c_int,
-            ctypes.POINTER(FT_Vector),
-            ctypes.POINTER(FT_Vector),
-            ctypes.POINTER(FT_Vector),
-            ctypes.py_object,
-        )(cubic_to),
-        shift=0,
-        delta=0,
-    )
-    raw.FT_Outline_Decompose(
-        ctypes.byref(outline._FT_Outline), ctypes.byref(funcs), user
-    )
-    return segments
-
-
-def _flatten_segments(segments):
+def _flatten_segments(segments) -> list[list[tuple[float, float]]]:
     paths = []
     current = None
     first = None
@@ -173,16 +121,14 @@ def _flatten_segments(segments):
                 int(round(_quadratic_length(current, control, end) / _SEGMENT_LENGTH)),
             )
             for i in range(1, steps + 1):
-                t = i / steps
-                path.append(_quadratic_point(t, current, control, end))
+                path.append(_quadratic_point(i / steps, current, control, end))
             current = end
         elif kind == "curveTo":
             control1, control2, end = args
             length = _cubic_length(current, control1, control2, end)
             steps = max(1, int(round(length / _SEGMENT_LENGTH)))
             for i in range(1, steps + 1):
-                t = i / steps
-                path.append(_cubic_point(t, current, control1, control2, end))
+                path.append(_cubic_point(i / steps, current, control1, control2, end))
             current = end
         elif kind == "closePath":
             if path and first is not None and path[0] != path[-1]:
@@ -201,52 +147,101 @@ def _flatten_segments(segments):
     return paths
 
 
-def set_font(fname):
-    global _font
+class _OutlinePen(BasePen):
+    def __init__(self, glyphs) -> None:
+        super().__init__(glyphs)
+        self.skipMissingComponents = False
+        self.segments: list[
+            tuple[Literal["moveTo", "lineTo"], tuple[float, float]]
+            | tuple[
+                Literal["qCurveTo"], tuple[tuple[float, float], tuple[float, float]]
+            ]
+            | tuple[
+                Literal["curveTo"],
+                tuple[tuple[float, float], tuple[float, float], tuple[float, float]],
+            ]
+            | tuple[Literal["closePath"], tuple[()]]
+        ] = []
+
+    def _moveTo(self, point: tuple[float, float]) -> None:
+        self.segments.append(("moveTo", point))
+
+    def _lineTo(self, point: tuple[float, float]) -> None:
+        self.segments.append(("lineTo", point))
+
+    def _qCurveToOne(
+        self, control: tuple[float, float], end: tuple[float, float]
+    ) -> None:
+        self.segments.append(("qCurveTo", (control, end)))
+
+    def _curveToOne(
+        self,
+        control1: tuple[float, float],
+        control2: tuple[float, float],
+        end: tuple[float, float],
+    ) -> None:
+        self.segments.append(("curveTo", (control1, control2, end)))
+
+    def _closePath(self) -> None:
+        self.segments.append(("closePath", ()))
+
+    def _endPath(self) -> None:
+        self.segments.append(("closePath", ()))
+
+
+def set_font(fname: str) -> None:
+    global _font, _glyphs, _cmap
 
     if fname[0] != "/" and fname[0] != "\\" and fname[0] != ".":
         font_file = impresources.files(_fonts) / fname
     else:
         font_file = fname
 
-    _close_font()
-    _font = freetype.Face(str(font_file))
+    with ExitStack() as cleanup:
+        font = TTFont(str(font_file))
+        cleanup.callback(font.close)
+        glyphs = font.getGlyphSet()
+        cmap = font.getBestCmap()
+        if cmap is None:
+            raise ValueError(f"Font has no Unicode character map: {font_file}")
+        if _font is not None:
+            _font.close()
+        _font, _glyphs, _cmap = font, glyphs, cmap
+        cleanup.pop_all()
 
 
 set_font("Roboto-Regular.ttf")
 
 
-def _get_glyph_polygon(c):
-    # NO_SCALE keeps coordinates in font units.
-    _font.load_char(c, freetype.FT_LOAD_NO_SCALE | freetype.FT_LOAD_NO_HINTING)
-    paths = _flatten_segments(_outline_to_segments(_font.glyph.outline))
-
+def _get_glyph_polygon(c: str) -> Obj2d:
+    glyph = _glyphs[_cmap.get(ord(c), ".notdef")]
+    pen = _OutlinePen(_glyphs)
+    glyph.draw(pen)
+    paths = _flatten_segments(pen.segments)
     ys = [pt[1] for pth in paths for pt in pth]
 
-    # Non-zero fill merges the overlapping contours some fonts contain.
     obj = Obj2d(_m.CrossSection(paths, _m.FillRule.NonZero))
-    obj.width = _font.glyph.advance.x
+    obj.width = glyph.width
     obj.max_y = max(ys, default=0)
     obj.min_y = min(ys, default=0)
     return obj
 
 
-def text_func(size: float, text: str, inter_char_space=None):
+def text_func(
+    size: float, text: str, inter_char_space: float | None = None
+) -> Obj2d | Obj3d:
     """
-     Draw the unicode printable characters in `text` in shapes of size `size`.
+    Draw the unicode printable characters in `text` in shapes of size `size`.
 
     The default font is `Roboto-Regular.ttf`.
     Also available is `Hack-Regular.ttf` (Monospaced).
 
     The default value for the spacing between characters (`inter_char_space`) is `size/3.0`.
-
     """
-    if inter_char_space == None:
+    if inter_char_space is None:
         inter_char_space = size / 3.0
     glyphs = [_get_glyph_polygon(c) for c in text]
 
-    # The tallest glyph top sets the scale; if every glyph lies below the
-    # baseline (e.g. "_"), fall back to the full vertical extent.
     max_y = max((g.max_y for g in glyphs), default=0)
     if max_y <= 0:
         min_y = min((g.min_y for g in glyphs if not g.is_empty()), default=0)
@@ -255,13 +250,12 @@ def text_func(size: float, text: str, inter_char_space=None):
         return Obj2d(_m.CrossSection())
     f = size / max_y
 
-    # Glyphs are positioned in font units, so convert the spacing to them.
     gap = inter_char_space / f
     line_pos = 0
-    l = []
+    objects = []
     for poly in glyphs:
         if line_pos > 0:
             line_pos += gap
-        l.append(poly.translate([line_pos, 0]))
+        objects.append(poly.translate([line_pos, 0]))
         line_pos += poly.width
-    return union(*l).scale([f, f])
+    return union(*objects).scale([f, f])
