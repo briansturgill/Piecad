@@ -29,6 +29,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+dev = ["black", "flit", "pdoc3", "pytest-cov"]
 docs = ["weasyprint >= 70.0"]
 test = ["pytest", "pytest-benchmark"]
 

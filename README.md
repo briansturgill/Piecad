@@ -27,6 +27,8 @@ To generate the printable cheat sheet from a checkout, install the documentation
 pip install -e '.[docs]'
 ```
 
+For the full development tools used by `setup`, install `.[test,docs,dev]`.
+
 [QuickHelp](https://briansturgill.github.io/Piecad/qh.html)
 
 [Documentation](https://briansturgill.github.io/Piecad)

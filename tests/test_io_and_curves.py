@@ -332,8 +332,7 @@ def test_path_svg_exact_curve_viewbox(tmp_path, path, bounds):
 def test_path_svg_relative_scaled_and_degenerate_arcs(tmp_path):
     filename = tmp_path / "arcs.svg"
     filename.write_text(
-        '<svg><path d="M10 10 L20 10 z m2 3 '
-        'a1 1 0 0 1 10 0 a0 3 0 0 1 2 0"/></svg>'
+        '<svg><path d="M10 10 L20 10 z m2 3 ' 'a1 1 0 0 1 10 0 a0 3 0 0 1 2 0"/></svg>'
     )
     parts = Path.from_svg(filename).to_commands()
     assert parts[1] == {
