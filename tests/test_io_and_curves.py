@@ -301,6 +301,51 @@ def test_path_svg_roundtrip(tmp_path):
     assert restored.to_obj2d().area() == pytest.approx(p.to_obj2d().area())
 
 
+@pytest.mark.parametrize(
+    ("path", "bounds"),
+    [
+        (Path((0, 0)).quadratic_bezier_to((5, 10), (10, 0)), (0, 0, 10, 5)),
+        (Path((0, 0)).cubic_bezier_to((0, 10), (10, 10), (10, 0)), (0, 0, 10, 7.5)),
+        (
+            Path((0, 0)).arc_to((6, 4), (10, 0), 15, True, True),
+            (
+                -1.4845437160905615,
+                -6.2353268395144985,
+                11.774591973880776,
+                6.2353268395144985,
+            ),
+        ),
+        (
+            Path((0, 0)).arc_to((6, 4), (10, 0), 15, False, False),
+            (0, 0, 10, 2.0928772795391684),
+        ),
+    ],
+)
+def test_path_svg_exact_curve_viewbox(tmp_path, path, bounds):
+    filename = tmp_path / "curves.svg"
+    path.to_svg(filename)
+    viewbox = ET.parse(filename).getroot().get("viewBox")
+    assert viewbox is not None
+    assert tuple(map(float, viewbox.split())) == pytest.approx(bounds)
+
+
+def test_path_svg_relative_scaled_and_degenerate_arcs(tmp_path):
+    filename = tmp_path / "arcs.svg"
+    filename.write_text(
+        '<svg><path d="M10 10 L20 10 z m2 3 '
+        'a1 1 0 0 1 10 0 a0 3 0 0 1 2 0"/></svg>'
+    )
+    parts = Path.from_svg(filename).to_commands()
+    assert parts[1] == {
+        "start": (12, 13),
+        "commands": [
+            ("arc", (5, 5), (22, 13), 0, False, True),
+            ("line", (24, 13)),
+        ],
+        "closed": False,
+    }
+
+
 def test_path_svg_import_relative_and_close(tmp_path):
     filename = tmp_path / "input.svg"
     filename.write_text(

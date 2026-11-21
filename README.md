@@ -21,6 +21,12 @@ pip install -e '.[test]'
 pytest
 ```
 
+To generate the printable cheat sheet from a checkout, install the documentation extra:
+
+```sh
+pip install -e '.[docs]'
+```
+
 [QuickHelp](https://briansturgill.github.io/Piecad/qh.html)
 
 [Documentation](https://briansturgill.github.io/Piecad)

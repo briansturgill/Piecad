@@ -10,7 +10,8 @@ from typing import Self
 
 import ezdxf
 import pyclipper
-from svgpathtools import Arc, CubicBezier, Line, QuadraticBezier, parse_path
+from fontTools.misc.bezierTools import calcCubicBounds, calcQuadraticBounds
+from svg.path import Arc, CubicBezier, Line, Move, QuadraticBezier, parse_path
 
 from . import Config, Obj2d, ValidationError
 
@@ -301,6 +302,47 @@ def _xy(value):
     return (float(value.real), float(value.imag))
 
 
+def _curve_bounds(curve):
+    if isinstance(curve, QuadraticBezier):
+        x0, y0, x1, y1 = calcQuadraticBounds(
+            _xy(curve.start), _xy(curve.control), _xy(curve.end)
+        )
+        return x0, x1, y0, y1
+    if isinstance(curve, CubicBezier):
+        x0, y0, x1, y1 = calcCubicBounds(
+            _xy(curve.start),
+            _xy(curve.control1),
+            _xy(curve.control2),
+            _xy(curve.end),
+        )
+        return x0, x1, y0, y1
+
+    points = [curve.start, curve.end]
+    if isinstance(curve, Arc) and curve.start != curve.end:
+        rotation = math.radians(curve.rotation)
+        rx = curve.radius.real * curve.radius_scale
+        ry = curve.radius.imag * curve.radius_scale
+        x_angle = math.degrees(
+            math.atan2(-ry * math.sin(rotation), rx * math.cos(rotation))
+        )
+        y_angle = math.degrees(
+            math.atan2(ry * math.cos(rotation), rx * math.sin(rotation))
+        )
+        for angle in (x_angle, x_angle + 180, y_angle, y_angle + 180):
+            if curve.delta > 0:
+                distance = (angle - curve.theta) % 360
+            else:
+                distance = (curve.theta - angle) % 360
+            if distance < abs(curve.delta):
+                points.append(curve.point(distance / abs(curve.delta)))
+    return (
+        min(p.real for p in points),
+        max(p.real for p in points),
+        min(p.imag for p in points),
+        max(p.imag for p in points),
+    )
+
+
 class Path:
     """An ordered collection of independent, open or closed 2D subpaths.
 
@@ -462,7 +504,7 @@ class Path:
                     else:
                         commands.append(f"L {end[0]} {end[1]}")
                         curve = Line(_cp(here), _cp(end))
-                bounds.append(curve.bbox())
+                bounds.append(_curve_bounds(curve))
                 here = end
             if part["closed"]:
                 commands.append("Z")
@@ -585,8 +627,9 @@ class Path:
                     start += here
                 start_xy = _point(_xy(start), "SVG start")
                 path.sub_path(start_xy)
+                chunk = f"M {start.real} {start.imag} {chunk[match.end():]}"
                 try:
-                    parsed = parse_path(chunk, current_pos=here)
+                    parsed = parse_path(chunk)
                 except (
                     ValueError,
                     AssertionError,
@@ -595,6 +638,8 @@ class Path:
                 ) as exc:
                     raise ValidationError(f"Invalid SVG path data: {exc}") from exc
                 for curve in parsed:
+                    if isinstance(curve, Move):
+                        continue
                     if isinstance(curve, Line):
                         path.line_to(_xy(curve.end))
                     elif isinstance(curve, QuadraticBezier):
@@ -604,13 +649,20 @@ class Path:
                             _xy(curve.control1), _xy(curve.control2), _xy(curve.end)
                         )
                     elif isinstance(curve, Arc):
-                        path.arc_to(
-                            _xy(curve.radius),
-                            _xy(curve.end),
-                            curve.rotation,
-                            curve.large_arc,
-                            curve.sweep,
-                        )
+                        if curve.start == curve.end:
+                            raise ValidationError(
+                                "Invalid SVG path data: arc endpoints coincide"
+                            )
+                        if curve.radius.real == 0 or curve.radius.imag == 0:
+                            path.line_to(_xy(curve.end))
+                        else:
+                            path.arc_to(
+                                _xy(curve.radius * curve.radius_scale),
+                                _xy(curve.end),
+                                curve.rotation,
+                                curve.arc,
+                                curve.sweep,
+                            )
                 here = _cp(path._cur_pt)
 
         def visit(element, parent_matrix):
