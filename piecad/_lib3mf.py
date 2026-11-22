@@ -6,7 +6,10 @@ Materials and Properties groups (textures, UV, composites, multiproperties),
 conservative preservation of unknown ZIP/XML information, and mesh validation.
 
 This is an independent partial implementation, not native lib3mf or a fully
-certified 3MF specification implementation. See README.md for detailed scope.
+certified 3MF specification implementation.
+
+This file is AI translated to Python from: https://github.com/3MFConsortium/lib3mf/tree/master
+The original code is [licensed](https://github.com/3MFConsortium/lib3mf/blob/master/LICENSE).
 """
 
 from __future__ import annotations
