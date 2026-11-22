@@ -1,11 +1,11 @@
 """
-Create two different sized "nails" that goes into holes on a kid's workbench.
+Create two different sized "nails" that go into holes on a kid's workbench.
 """
 
 # Derived from threads.scad: https://github.com/rcolyer/threads-scad.git
 # Created 2016-2017 by Ryan A. Colyer.
 # This work is released with CC0 into the public domain.
-# hthtps://creativecommons.org/publicdomain/zero/1.0/
+# https://creativecommons.org/publicdomain/zero/1.0/
 #
 # https://www.thingiverse.com/thing:1686322
 #

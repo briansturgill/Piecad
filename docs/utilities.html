@@ -66,13 +66,13 @@ el.replaceWith(d);
     vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]
 ) -&gt; bool:
     &#34;&#34;&#34;
-    Check manifold and winding of the mesh defined in vertices and faces.
+    Check manifold rules and winding of the mesh defined in vertices and faces.
 
     Returns true if all is well. Otherwise diagnostics will be offered and false is returned.
     &#34;&#34;&#34;
     return _check_mesh(vertices, faces)</code></pre>
 </details>
-<div class="desc"><p>Check manifold and winding of the mesh defined in vertices and faces.</p>
+<div class="desc"><p>Check manifold rules and winding of the mesh defined in vertices and faces.</p>
 <p>Returns true if all is well. Otherwise diagnostics will be offered and false is returned.</p></div>
 </dd>
 <dt id="piecad.utilities.frange"><code class="name flex">
@@ -349,7 +349,7 @@ returned.</p></div>
     Save a 3d or 2d object in a file suitable for printing, etc.
 
     If [p filename] does not contain a path separator character (`&#39;/&#39;` or `&#39;\\&#39;`) the
-    `Downloads` directory for you platform is prepended. Thus if you set
+    `Downloads` directory for your platform is prepended. Thus if you set
     [p filename] to `output.obj`, the place where the file is saved is
     `c:\\Users\\username\\Downloads\\output.obj` on Windows or
     `/home/username/Downloads/output.obj` on Linux and MacOS.
@@ -385,14 +385,6 @@ returned.</p></div>
     _chkGE(&#34;len(objs)&#34;, len(objs), 1)
     dot_idx = filename.rindex(&#34;.&#34;)
     ext = filename[dot_idx + 1 :]
-    include_face_colors = ext.lower() not in (
-        &#34;obj&#34;,
-        &#34;glb&#34;,
-        &#34;gltf&#34;,
-        &#34;stl&#34;,
-        &#34;stl_ascii&#34;,
-        &#34;3mf&#34;,
-    )
     if type(objs[0]) == Obj3d:
         if ext.lower() == &#34;3mf&#34;:
             _export_3mf(
@@ -403,6 +395,13 @@ returned.</p></div>
                 Config.get_default_color(),
             )
             return
+        include_face_colors = ext.lower() not in (
+            &#34;obj&#34;,
+            &#34;glb&#34;,
+            &#34;gltf&#34;,
+            &#34;stl&#34;,
+            &#34;stl_ascii&#34;,
+        )
         if len(objs) == 1:
             obj = objs[0]
             mesh = obj.mo.to_mesh64()
@@ -465,7 +464,7 @@ returned.</p></div>
 </details>
 <div class="desc"><p>Save a 3d or 2d object in a file suitable for printing, etc.</p>
 <p>If [p filename] does not contain a path separator character (<code>'/'</code> or <code>'\'</code>) the
-<code>Downloads</code> directory for you platform is prepended. Thus if you set
+<code>Downloads</code> directory for your platform is prepended. Thus if you set
 [p filename] to <code>output.obj</code>, the place where the file is saved is
 <code>c:\Users\username\Downloads\output.obj</code> on Windows or
 <code>/home/username/Downloads/output.obj</code> on Linux and MacOS.

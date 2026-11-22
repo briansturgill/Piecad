@@ -2,14 +2,14 @@ Piecad is intended to be quick to type with good default arguments.
 
 Take a quick look at [QuickHelp](https://briansturgill.github.io/Piecad/qh.html)
 to get a feel for what sort of calls are available.
-When viewing QuickHelp, positioning you mouse over a name will give you
+When viewing QuickHelp, positioning your mouse over a name will give you
 a signature of the function and a brief description.
-Click the link attached to the name to see more details..
+Click the link attached to the name to see more details.
 
 In addition to the various functions and classes that make up Piecad, there are
-2 names of importance: `trimesh` and `math`.
+two names of importance: `trimesh` and `math`.
 
-Trimesh handles meshes, the guts for 3d objects.
+Trimesh handles meshes, the internal data structure of 3d objects.
 Math is the Python math library.  You won't need to import either of these,
 they are used within Piecad and so are already imported, but as they are
 used a lot, we passed the names into Piecad's namespace.
@@ -36,11 +36,11 @@ from piecad import *    # Much more efficient to type when using a `*` import.
 cb1 = cuboid((25, 20, 10)).center().color("blue")
 cb2 = cube(4).translate((0, 0, 5)).color("red")
 cb = union(cb1, cb2)
-# corner, is like center, but it puts the minimum boundig box corner at *(0, 0, 0)"
+# corner, is like center, but it puts the minimum bounding box corner at "(0, 0, 0)"
 cb = cb.corner()
 
 # Technically `cube` is like a 3d square and `cuboid` is like a 3d rectangle.
-# For convenience, `cube` and `cuboid` accept each others argument style.
+# For convenience, `cube` and `cuboid` accept each other's argument style.
 # Also, `square` and `rectangle` behave similarly
 
 view(cb1)  # Uses matplotlib to let you view a 3d model.  Works with 2D also (uses a very thin extrude).
@@ -51,7 +51,7 @@ view(cb)
 # Use "./cb.3mf" if you want it in the current directory.
 save("cb.3mf", cb)
 
-# Visual Studio Code and Pycharm have timeouts during "atexit" execution... 
+# Visual Studio Code and PyCharm have timeouts during "atexit" execution... 
 # Use `view_all_now()` to view without the timeout.
 view_all_now()
 ```

@@ -28,13 +28,13 @@
     -  Axes ProjectBox Example
 
 * [head_rest_purse_hanger.py](head_rest_purse_hanger.py)
-    -  A purse hanger that uses you car's head rest posts.
+    -  A purse hanger that uses your car's head rest posts.
 
 * [kid_n_b.py](kid_n_b.py)
     -  Wrench, Nuts, Bolts, Pieces with Holes, for Kids.
 
 * [kid_nail.py](kid_nail.py)
-    -  Create two different sized "nails" that goes into holes on a kid's workbench.
+    -  Create two different sized "nails" that go into holes on a kid's workbench.
 
 * [moon_lithophane.py](moon_lithophane.py)
     -  Make a lithophane from a NASA photo of both sides of the moon.

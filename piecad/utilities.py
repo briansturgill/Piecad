@@ -266,7 +266,7 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
     Save a 3d or 2d object in a file suitable for printing, etc.
 
     If [p filename] does not contain a path separator character (`'/'` or `'\\'`) the
-    `Downloads` directory for you platform is prepended. Thus if you set
+    `Downloads` directory for your platform is prepended. Thus if you set
     [p filename] to `output.obj`, the place where the file is saved is
     `c:\\Users\\username\\Downloads\\output.obj` on Windows or
     `/home/username/Downloads/output.obj` on Linux and MacOS.
@@ -541,7 +541,7 @@ def check_mesh(
     vertices: list[tuple[float, float, float]], faces: list[tuple[int, int, int]]
 ) -> bool:
     """
-    Check manifold and winding of the mesh defined in vertices and faces.
+    Check manifold rules and winding of the mesh defined in vertices and faces.
 
     Returns true if all is well. Otherwise diagnostics will be offered and false is returned.
     """

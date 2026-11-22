@@ -120,7 +120,7 @@ def cone(
 
 def cube(size: float, center: bool = False) -> Obj3d:
     """
-    Make a cube of with sides of the given size.
+    Make a cube with sides of the given size.
 
     By default, the bottom front left corner of the cube will be at `(0,0,0)`.
     When `center` is `True` it will cause the cube to be centered at `(0,0,0)`.
@@ -157,7 +157,7 @@ def cylinder(height: float, radius: float, segments: int = -1, center=False) -> 
     For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     By default, the cylinder bottom is centered at `(0,0,0)`.
-    When `center` is `True`, the cylinder will centered on `(0,0,0)`.
+    When `center` is `True`, the cylinder will be centered on `(0,0,0)`.
     (In other words, the bottom of the cylinder will be at `(0,0,-height/2.0`.)
     """
     if segments == -1:
@@ -199,12 +199,12 @@ def elliptical_cylinder(
     height: float, radii: tuple[float, float], segments: int = -1, center=False
 ) -> Obj3d:
     """
-    Make a elliptically shaped cylinder of given radii and height.
+    Make an elliptically shaped cylinder of given radii and height.
 
     For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     By default, the elliptical cylinder bottom is centered at `(0,0,0)`.
-    When `center` is `True`, the cylinder will centered on `(0,0,0)`.
+    When `center` is `True`, the cylinder will be centered on `(0,0,0)`.
     (In other words, the bottom of the elliptical cylinder will be at `(0,0,-height/2.0`.)
 
     <iframe width="100%" height="220" src="examples/elliptical_cylinder.html"></iframe>
@@ -249,10 +249,10 @@ def extrude_chaining(
     This list controls an extrusion of 2d shapes chained together
     into one 3d object.
 
-    The `height` is cumulative. You are always specifing the exact current height
+    The `height` is cumulative. You should always specify the exact current height
     to be output for the current object. This is done so that you can have numerically
     robust dimensions in your object. If relative heights were used, extuding something
-    like a sphere is would end up with a sphere that's height was not precisely
+    like a sphere is would end up with a sphere with a height is not precisely
     the desired height.
 
     If parameter `is_convex` is set to `True` a much faster triangulation
@@ -381,7 +381,7 @@ def extrude_transforming(
 
     Parameter `twist` will cause a circular rotation for each `num_twist_divisions`.
 
-    Parammeter `scale` specifes scaling factors applied at each division.
+    Parameter `scale` specifies scaling factors applied at each division.
 
     <iframe width="100%" height="300" src="examples/extrude_transforming.html"></iframe>
     """
@@ -661,7 +661,7 @@ def rounded_cylinder(
     For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
 
     By default, the rounded cylinder bottom is centered at `(0,0,0)`.
-    When `center` is `True`, the rounded cylinder will centered on `(0,0,0)`.
+    When `center` is `True`, the rounded cylinder will be centered on `(0,0,0)`.
     (In other words, the bottom of the rounded cylinder will be at `(0,0,-height/2.0`.)
 
     <iframe width="100%" height="250" src="examples/rounded_cylinder.html"></iframe>

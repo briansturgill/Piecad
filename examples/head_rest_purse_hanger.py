@@ -1,5 +1,5 @@
 """
-A purse hanger that uses you car's head rest posts.
+A purse hanger that uses your car's head rest posts.
 """
 
 from piecad import *

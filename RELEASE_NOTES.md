@@ -1,22 +1,21 @@
 # 1.1.0
 
-Changed the `save` function to have filenames that don't have path separators to be prepended
-the the user's Downloads directory.
+Changed `save` so filenames without a path separator are saved in the user's Downloads directory.
 
 In other words, `save("file.obj", o)` will be the same as `save("/home/brian/Downloads/file.obj", o)`
 
 Before, `save("file.obj", o)` would be the same as `save("./file.obj", o)`
 
-This is a minor breaking changed, thus I incremented the middle version number.
+This is a minor breaking change, so I incremented the middle version number.
 
 If you were using `save` to save files to the current directory, prepend a `./` or `.\\`
 to the filename to get the earlier behavior.
 
 # 1.2.0
 
-Added several new things:  hull_points, resize, minkowskis_sum, minkowski_difference, lithophane
+Added several new things:  hull_points, resize, minkowski_sum, minkowski_difference, lithophane
 
-Changed internal Path class to be retured by a primitives_2d `path` function.
+Changed `primitives_2d.path` to return the internal `Path` class.
 
 Changed `set_default_segments()` to `Config.set_default_segments`.
 
@@ -29,19 +28,19 @@ This necessitated a breaking change in the Piecad-Viewer protocol.
 
 Switched to using 64-bit Meshes in Manifold to match Manifold internals.
 
-Added support for .piecadrc which can containing Config settings.
+Added support for .piecadrc which can be used to set default `Config` settings.
 
-Trimesh color export in 3mf is broken, added direct export capability.
-For color export, .3mf or .ply are the two best option.
+Trimesh color export in `.3mf` is broken; added direct export capability.
+For color export, `.3mf` or `.ply` are the two best options.
 
 Piecad has long had checking of 2d polygons. This release adds similar
 support for 3d polyhedrons.  3d checking is far more difficult.
-We use matplotlib to give visualization to found 3d problems.
+We use Matplotlib to give a visualization of found 3d problems.
 
 # 2.0.0
-Large number of additons and cleanups.
+Large number of additions and cleanups.
 Experimental fillet and chamfer added.
-matplotlib-based viewer.
+Matplotlib-based viewer.
 Improved documentation.
 
 # 2.1.0

@@ -42,7 +42,7 @@ class ValidationError(Exception):
 
 from ._color import _parse_color
 
-__version__ = "2.1.2"
+__version__ = "2.1.3"
 
 
 def version() -> str:
@@ -896,7 +896,7 @@ class Config:
         In most cases a higher number is desired as it produces objects
         that look truly round.
 
-        The default value of `segments` 36.
+        The default value of `segments` is 36.
 
         If you need a circular objects primary axes to have exact values (at the
         90 degree marks), choose a `segments` value that is a multiple of 4.

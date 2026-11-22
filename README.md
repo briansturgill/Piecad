@@ -1,14 +1,14 @@
 # "Easy as Pie" CAD (Piecad)
 
 For many years I used [OpenSCAD](https://www.openscad.org),
-but the functional language it uses was often a hinderance and its speed
-was poor. **Piecad** is my opinionted view of what a good, simple CAD API should look like.
+but the functional language it uses was often a hindrance and its speed
+was poor. **Piecad** is my opinionated view of what a good, simple CAD API should look like.
 It is written in [Python](https://www.python.org).
 Its primary focus is the creation of models for 3D printing.
 
 To install using [pip](https://pypi.org/project/piecad) (virtual environment recommended):
 
-Python 3.12 or later is required; Python 3.14.1 is not supported.
+Python 3.12 or later is required; Python 3.14.1 is not supported due to a conflict in NetworkX.
 
 ```sh
 pip install piecad
@@ -27,8 +27,6 @@ To generate the printable cheat sheet from a checkout, install the documentation
 pip install -e '.[docs]'
 ```
 
-For the full development tools used by `setup`, install `.[test,docs,dev]`.
-
 [QuickHelp](https://briansturgill.github.io/Piecad/qh.html)
 
 [Documentation](https://briansturgill.github.io/Piecad)
@@ -39,10 +37,10 @@ For the full development tools used by `setup`, install `.[test,docs,dev]`.
 
 Piecad has a `view` function which works like a 3d `print` (also does 2D).
 [Matplotlib](https://matplotlib.org/) provides the window that displays the model/image from each `view` call.
-You can use arrow keys to swtich between the models/images.
+You can use arrow keys to switch between the models/images.
 
 The viewer is automatically started when you use a `view` call inside Piecad.
-If you are running your program inside PyCharm or Microsoft Visual Studio, add a call
+If you are running your program inside PyCharm or Visual Studio Code, add a call
 to `view_all_now()` as the last line of your program.
 Type 'h' in the view window for a list of commands.
 
@@ -59,7 +57,7 @@ for Piecad-Viewer.
 
 Piecad uses [Matplotlib](https://matplotlib.org/) for visualizations.
 
-We include two fonts: `Hack-Regular.tts` and `Roboto-Regular.tts`, see `piecad/fonts` for the licenses.
+We include two fonts: `Hack-Regular.tts` and `Roboto-Regular.tts`, see `piecad/_fonts` for the licenses.
 
 See the [file](https://raw.githubusercontent.com/briansturgill/Piecad/refs/heads/main/pyproject.toml) for more packages
 that are used in Piecad.

@@ -1,5 +1,5 @@
 """
-## Create 2D objects such as circles and retangles.
+## Create 2D objects such as circles and rectangles.
 """
 
 import manifold3d as _m
@@ -238,7 +238,7 @@ def rounded_rectangle(
     """
     Create a rectangle with rounded corners.
 
-    The `rounded_rectangele` will have dimensions of `size` dimensions and with
+    The `rounded_rectangle` has `size` dimensions and
     corners of `rounding_radius`.
 
     For `segments` see the documentation of [`Config.set_default_segments`](index.html#piecad.Config.set_default_segments).
