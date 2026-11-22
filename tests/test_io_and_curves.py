@@ -1,9 +1,10 @@
 import os
 import xml.etree.ElementTree as ET
 import ezdxf
+import manifold3d
 import pytest
 from piecad import *
-from piecad import utilities
+from piecad import _pystroker, utilities
 from piecad import _lib3mf
 from piecad._path import Path
 
@@ -487,6 +488,90 @@ def test_load_svg_openscad_reference_geometry(tmp_path):
     )
     assert difference(shape, expected).area() == pytest.approx(0, abs=1e-8)
     assert difference(expected, shape).area() == pytest.approx(0, abs=1e-8)
+
+
+@pytest.mark.parametrize(
+    ("join", "cap", "area"),
+    [
+        ("miter", "butt", 4000000000),
+        ("miter", "square", 4400000000),
+        ("miter", "round", 4314149055),
+        ("square", "butt", 3982841918),
+        ("square", "square", 4382841918),
+        ("square", "round", 4296990973),
+        ("round", "butt", 3978537250),
+        ("round", "square", 4378537250),
+        ("round", "round", 4292686305),
+    ],
+)
+def test_stroker_caps_and_joins(join, cap, area):
+    contours = _pystroker.stroke(
+        [(0, 0), (100000, 0), (100000, 100000)], 10000, join, cap
+    )
+    shape = manifold3d.CrossSection(contours, manifold3d.FillRule.NonZero)
+    assert shape.area() == pytest.approx(area, rel=0.00005)
+
+
+def test_stroker_handles_self_crossings_and_holes():
+    contours = _pystroker.stroke(
+        [(0, 0), (100000, 100000), (0, 100000), (100000, 0)],
+        10000,
+        "miter",
+        "butt",
+    )
+    shape = manifold3d.CrossSection(contours, manifold3d.FillRule.NonZero)
+    assert shape.area() == pytest.approx(7041246512, rel=0.00005)
+    assert len(contours) == 2
+
+
+def test_stroker_short_segments_and_reversals():
+    contours = _pystroker.stroke(
+        [(0, 0), (100000, 0), (100000, 0), (50000, 0)],
+        10000,
+        "round",
+        "butt",
+    )
+    shape = manifold3d.CrossSection(contours, manifold3d.FillRule.NonZero)
+    assert shape.area() == pytest.approx(2157074528, rel=0.00005)
+
+
+def test_stroker_round_join_with_short_segment():
+    contours = _pystroker.stroke(
+        [
+            (-94919, 96352),
+            (41405, -86347),
+            (-8260, -41222),
+            (70431, -82013),
+            (70853, -89447),
+        ],
+        10000,
+        "round",
+        "butt",
+    )
+    shape = manifold3d.CrossSection(contours, manifold3d.FillRule.NonZero)
+    assert shape.area() == pytest.approx(6129753761, rel=0.00005)
+
+
+def test_load_svg_openscad_round_stroke_and_transform(tmp_path):
+    filename = tmp_path / "rounded.svg"
+    filename.write_text(
+        '<svg width="100mm" height="100mm" viewBox="0 0 100 100">'
+        '<path transform="translate(5 10)" stroke-width="2" '
+        'stroke-linecap="round" stroke-linejoin="round" '
+        'd="M0 0 L10 0 L10 10"/></svg>'
+    )
+    shape = load(str(filename), svg_openscad=True)
+    assert shape.area() == pytest.approx(42.92686305, rel=0.00005)
+    assert shape.bounding_box() == pytest.approx((4, 79, 16, 91), abs=0.0001)
+
+
+def test_stroker_rejects_invalid_input():
+    with pytest.raises(ValueError, match="radius"):
+        _pystroker.stroke([(0, 0), (1, 0)], 0, "round", "round")
+    with pytest.raises(ValueError, match="distinct"):
+        _pystroker.stroke([(0, 0), (0, 0)], 1, "round", "round")
+    with pytest.raises(OverflowError, match="coordinate limit"):
+        _pystroker.stroke([(0, 0), (1 << 62, 0)], 1, "round", "round")
 
 
 def test_load_svg_openscad_compound_paths_and_separate_shapes(tmp_path):

@@ -9,11 +9,10 @@ from os import PathLike
 from typing import Self
 
 import ezdxf
-import pyclipper
 from fontTools.misc.bezierTools import calcCubicBounds, calcQuadraticBounds
 from svg.path import Arc, CubicBezier, Line, Move, QuadraticBezier, parse_path
 
-from . import Config, Obj2d, ValidationError
+from . import Config, Obj2d, ValidationError, _pystroker
 
 _SVG_NUMBER = r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?"
 
@@ -204,15 +203,15 @@ def _load_svg_openscad(filename, center=False):
         cap = element.get("stroke-linecap", style.get("stroke-linecap", "square"))
         join = element.get("stroke-linejoin", style.get("stroke-linejoin", "miter"))
         caps = {
-            "butt": pyclipper.ET_OPENBUTT,
-            "round": pyclipper.ET_OPENROUND,
-            "square": pyclipper.ET_OPENSQUARE,
+            "butt": "butt",
+            "round": "round",
+            "square": "square",
         }
         joins = {
-            "bevel": pyclipper.JT_SQUARE,
-            "round": pyclipper.JT_ROUND,
-            "square": pyclipper.JT_MITER,
-            "miter": pyclipper.JT_MITER,
+            "bevel": "square",
+            "round": "round",
+            "square": "miter",
+            "miter": "miter",
         }
         if cap not in caps or join not in joins:
             raise ValidationError("Unsupported SVG stroke linecap or linejoin")
@@ -229,20 +228,20 @@ def _load_svg_openscad(filename, center=False):
             )
             if stroke and math.dist(points[0], points[-1]) > 0.1:
                 scale = 10000
-                offset = pyclipper.PyclipperOffset()
                 try:
-                    offset.AddPath(
+                    stroked = _pystroker.stroke(
                         [(int(x * scale), int(y * scale)) for x, y in points],
+                        width * scale / 2,
                         joins[join],
                         caps[cap],
                     )
                     contours.extend(
                         [
                             [(x / scale, y / scale) for x, y in contour]
-                            for contour in offset.Execute(width * scale / 2)
+                            for contour in stroked
                         ]
                     )
-                except (pyclipper.ClipperException, OverflowError) as exc:
+                except (ValueError, OverflowError) as exc:
                     raise ValidationError(
                         f"Invalid SVG stroke geometry: {exc}"
                     ) from exc
