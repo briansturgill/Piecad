@@ -9,7 +9,8 @@ This is an independent partial implementation, not native lib3mf or a fully
 certified 3MF specification implementation.
 
 This file is AI translated to Python from: https://github.com/3MFConsortium/lib3mf/tree/master
-The original code is [licensed](https://github.com/3MFConsortium/lib3mf/blob/master/LICENSE).
+The original code is: Copyright (C) 2019 3MF Consortium
+The original code is licensed as [BSD 2-Clause "Simplified" License](https://github.com/3MFConsortium/lib3mf/blob/master/LICENSE).
 """
 
 from __future__ import annotations
