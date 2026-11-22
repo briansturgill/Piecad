@@ -302,14 +302,6 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
     _chkGE("len(objs)", len(objs), 1)
     dot_idx = filename.rindex(".")
     ext = filename[dot_idx + 1 :]
-    include_face_colors = ext.lower() not in (
-        "obj",
-        "glb",
-        "gltf",
-        "stl",
-        "stl_ascii",
-        "3mf",
-    )
     if type(objs[0]) == Obj3d:
         if ext.lower() == "3mf":
             _export_3mf(
@@ -320,6 +312,13 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                 Config.get_default_color(),
             )
             return
+        include_face_colors = ext.lower() not in (
+            "obj",
+            "glb",
+            "gltf",
+            "stl",
+            "stl_ascii",
+        )
         if len(objs) == 1:
             obj = objs[0]
             mesh = obj.mo.to_mesh64()
