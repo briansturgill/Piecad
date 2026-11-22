@@ -375,6 +375,8 @@ returned.</p></div>
     \\(See [https://github/mikedh/trimesh] for more formats.\\)
 
     For 2D, the SVG (.svg) and DXF (.dxf) formats are available.
+    OBJ, GLB, and GLTF exports do not include colors. Use 3MF or PLY for colors.
+    When saving multiple 3D objects to 3MF, each is a separate build item.
     &#34;&#34;&#34;
 
     if filename.find(&#34;/&#34;) == -1 and filename.find(&#34;\\&#34;) == -1:
@@ -383,25 +385,33 @@ returned.</p></div>
     _chkGE(&#34;len(objs)&#34;, len(objs), 1)
     dot_idx = filename.rindex(&#34;.&#34;)
     ext = filename[dot_idx + 1 :]
+    include_face_colors = ext.lower() not in (
+        &#34;obj&#34;,
+        &#34;glb&#34;,
+        &#34;gltf&#34;,
+        &#34;stl&#34;,
+        &#34;stl_ascii&#34;,
+        &#34;3mf&#34;,
+    )
     if type(objs[0]) == Obj3d:
+        if ext.lower() == &#34;3mf&#34;:
+            _export_3mf(
+                filename,
+                [obj.mo for obj in objs],
+                Obj3d.color_map,
+                Config.get_default_units(),
+                Config.get_default_color(),
+            )
+            return
         if len(objs) == 1:
             obj = objs[0]
-            if filename.endswith(&#34;.3mf&#34;):
-                _export_3mf(
-                    filename,
-                    obj.mo,
-                    Obj3d.color_map,
-                    Config.get_default_units(),
-                    Config.get_default_color(),
-                )
-                return
             mesh = obj.mo.to_mesh64()
             if mesh.vert_properties.shape[1] &gt; 3:
                 vertices = mesh.vert_properties[:, :3]
             else:
                 vertices = mesh.vert_properties
 
-            face_colors = _face_colors(mesh)
+            face_colors = _face_colors(mesh) if include_face_colors else None
             mesh_output = trimesh.Trimesh(
                 vertices=vertices,
                 faces=mesh.tri_verts,
@@ -421,7 +431,7 @@ returned.</p></div>
                     vertices = mesh.vert_properties[:, :3]
                 else:
                     vertices = mesh.vert_properties
-                face_colors = _face_colors(mesh)
+                face_colors = _face_colors(mesh) if include_face_colors else None
                 mesh_output = trimesh.Trimesh(
                     vertices=vertices,
                     faces=mesh.tri_verts,
@@ -433,20 +443,11 @@ returned.</p></div>
                 if not mesh_output.is_watertight:
                     print(&#34;WARNING: output mesh is not watertight&#34;)
                 scene.add_geometry(mesh_output)
-            if filename.endswith(&#34;.3mf&#34;):
-                s_mesh = scene.to_geometry()
-                s_vertices = np.array(s_mesh.vertices, np.float64)
-                s_faces = np.array(s_mesh.faces, np.uint64)
-                mo = _m.Manifold(_m.Mesh64(s_vertices, s_faces))
-                _export_3mf(
-                    filename,
-                    mo,
-                    Obj3d.color_map,
-                    Config.get_default_units(),
-                    Config.get_default_color(),
-                )
-                return
-            trimesh.exchange.export.export_scene(scene, filename, ext)
+            if ext.lower() == &#34;ply&#34;:
+                mesh_output = trimesh.util.concatenate(list(scene.geometry.values()))
+                trimesh.exchange.export.export_mesh(mesh_output, filename, ext)
+            else:
+                trimesh.exchange.export.export_scene(scene, filename, ext)
         # trimesh obj file export does not end with newline
         # currently this upsets prusa_slicer
         if ext == &#34;obj&#34;:
@@ -512,7 +513,9 @@ If you want a file saved in the current directory, prepend <code>'./'</code> or 
 </tbody>
 </table>
 <p>(See [<a href="https://github/mikedh/trimesh]">https://github/mikedh/trimesh]</a> for more formats.)</p>
-<p>For 2D, the SVG (.svg) and DXF (.dxf) formats are available.</p></div>
+<p>For 2D, the SVG (.svg) and DXF (.dxf) formats are available.
+OBJ, GLB, and GLTF exports do not include colors. Use 3MF or PLY for colors.
+When saving multiple 3D objects to 3MF, each is a separate build item.</p></div>
 </dd>
 <dt id="piecad.utilities.sign"><code class="name flex">
 <span>def <span class="ident">sign</span></span>(<span>x: float | int) ‑> float | int</span>

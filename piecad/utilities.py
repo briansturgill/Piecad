@@ -293,6 +293,7 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
 
     For 2D, the SVG (.svg) and DXF (.dxf) formats are available.
     OBJ, GLB, and GLTF exports do not include colors. Use 3MF or PLY for colors.
+    When saving multiple 3D objects to 3MF, each is a separate build item.
     """
 
     if filename.find("/") == -1 and filename.find("\\") == -1:
@@ -310,17 +311,17 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
         "3mf",
     )
     if type(objs[0]) == Obj3d:
+        if ext.lower() == "3mf":
+            _export_3mf(
+                filename,
+                [obj.mo for obj in objs],
+                Obj3d.color_map,
+                Config.get_default_units(),
+                Config.get_default_color(),
+            )
+            return
         if len(objs) == 1:
             obj = objs[0]
-            if filename.endswith(".3mf"):
-                _export_3mf(
-                    filename,
-                    obj.mo,
-                    Obj3d.color_map,
-                    Config.get_default_units(),
-                    Config.get_default_color(),
-                )
-                return
             mesh = obj.mo.to_mesh64()
             if mesh.vert_properties.shape[1] > 3:
                 vertices = mesh.vert_properties[:, :3]
@@ -359,19 +360,6 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                 if not mesh_output.is_watertight:
                     print("WARNING: output mesh is not watertight")
                 scene.add_geometry(mesh_output)
-            if filename.endswith(".3mf"):
-                s_mesh = scene.to_geometry()
-                s_vertices = np.array(s_mesh.vertices, np.float64)
-                s_faces = np.array(s_mesh.faces, np.uint64)
-                mo = _m.Manifold(_m.Mesh64(s_vertices, s_faces))
-                _export_3mf(
-                    filename,
-                    mo,
-                    Obj3d.color_map,
-                    Config.get_default_units(),
-                    Config.get_default_color(),
-                )
-                return
             if ext.lower() == "ply":
                 mesh_output = trimesh.util.concatenate(list(scene.geometry.values()))
                 trimesh.exchange.export.export_mesh(mesh_output, filename, ext)

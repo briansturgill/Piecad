@@ -123,23 +123,87 @@ raise SystemExit(pytest.main(["-q"] + [sys.argv[1] + "::" + test for test in tes
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-def test_save_multiple_3mf(tmp_path):
-    f = str(tmp_path / "m.3mf")
-    save(f, cube(5), sphere(3).translate([10, 0, 0]))
-    assert os.path.getsize(f) > 0
+@pytest.mark.parametrize("ext", ["3mf", "3MF"])
+def test_save_multiple_3mf(tmp_path, monkeypatch, ext):
+    filename = str(tmp_path / f"m.{ext}")
+    first = union(cube(5).color("red"), cube(5).translate([10, 0, 0]).color("blue"))
+    second = cube(5).translate([1, 0, 0]).color((0, 255, 0))
+
+    def reject_trimesh(*args, **kwargs):
+        pytest.fail("3MF saving should not use Trimesh")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(utilities.trimesh, "Trimesh", reject_trimesh)
+        patch.setattr(utilities.trimesh, "Scene", reject_trimesh)
+        save(filename, first, second)
+
+    model = _lib3mf.Wrapper().CreateModel()
+    model.QueryReader("3mf").ReadFromFile(filename)
+    items = list(model.GetBuildItems())
+    assert len(items) == 2
+    expected_colors = [
+        {(255, 0, 0, 255), (0, 0, 255, 255)},
+        {(0, 255, 0, 255)},
+    ]
+    for item_index, (item, expected) in enumerate(zip(items, expected_colors)):
+        mesh = item.GetObjectResource()
+        vertices = mesh.GetVertices()
+        colors = set()
+        for triangle, props in zip(
+            mesh.GetTriangleIndices(), mesh.GetAllTriangleProperties()
+        ):
+            assert props.PropertyIDs[0] == props.PropertyIDs[1] == props.PropertyIDs[2]
+            color = model.GetColorGroupByID(props.ResourceID).GetColor(
+                props.PropertyIDs[0]
+            )
+            rgba = (color.Red, color.Green, color.Blue, color.Alpha)
+            colors.add(rgba)
+            if item_index == 0:
+                x = sum(vertices[i].Coordinates[0] for i in triangle.Indices) / 3
+                assert rgba == ((255, 0, 0, 255) if x < 7.5 else (0, 0, 255, 255))
+        assert colors == expected
+
+    first_vertices = items[0].GetObjectResource().GetVertices()
+    second_vertices = items[1].GetObjectResource().GetVertices()
+    assert (
+        min(v.Coordinates[0] for v in first_vertices),
+        max(v.Coordinates[0] for v in first_vertices),
+    ) == (0, 15)
+    assert (
+        min(v.Coordinates[0] for v in second_vertices),
+        max(v.Coordinates[0] for v in second_vertices),
+    ) == (1, 6)
 
 
-def test_save_3mf_with_color(tmp_path):
+def test_save_3mf_with_color(tmp_path, monkeypatch):
     f = str(tmp_path / "c.3mf")
-    save(f, union(cube(5).color("red"), sphere(3).translate([10, 0, 0]).color("blue")))
+    obj = union(cube(5).color("red"), sphere(3).translate([10, 0, 0]).color("blue"))
+
+    def reject_trimesh(*args, **kwargs):
+        pytest.fail("3MF saving should not use Trimesh")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(utilities.trimesh, "Trimesh", reject_trimesh)
+        patch.setattr(utilities.trimesh, "Scene", reject_trimesh)
+        save(f, obj)
     assert os.path.getsize(f) > 0
     with zipfile.ZipFile(f) as archive:
-        model_name = next(name for name in archive.namelist() if name.endswith(".model"))
+        model_name = next(
+            name for name in archive.namelist() if name.endswith(".model")
+        )
         root = ET.fromstring(archive.read(model_name))
     colors = {elem.get("color") for elem in root.iter() if elem.tag.endswith("}color")}
     assert {"#FF0000FF", "#0000FFFF"} <= colors
     triangles = [elem for elem in root.iter() if elem.tag.endswith("}triangle")]
     assert triangles and all(triangle.get("p1") is not None for triangle in triangles)
+
+
+def test_save_load_multiple_3mf(tmp_path):
+    filename = str(tmp_path / "multiple.3mf")
+    save(filename, cube(5), cube(5).translate([10, 0, 0]))
+    restored = load(filename)
+    assert restored.volume() == pytest.approx(250)
+    assert restored.bounding_box() == pytest.approx((0, 0, 0, 15, 5, 5))
 
 
 def test_load_3mf_round_trip_uses_lib3mf(tmp_path, monkeypatch):

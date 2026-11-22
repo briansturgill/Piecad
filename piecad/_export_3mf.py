@@ -8,7 +8,7 @@ from . import _lib3mf as lib3mf
 from datetime import datetime as dt
 
 
-def export_3mf(filename, mo, color_map, units="mm", def_color=(210, 180, 140)):
+def export_3mf(filename, objects, color_map, units="mm", def_color=(210, 180, 140)):
     try:
         # Create a new 3MF model
         wrapper = lib3mf.Wrapper()
@@ -20,58 +20,43 @@ def export_3mf(filename, mo, color_map, units="mm", def_color=(210, 180, 140)):
         elif units == "in":
             model.SetUnit(lib3mf.ModelUnit.Inch)
 
-        # Create a mesh object
-        mesh = model.AddMeshObject()
-        mesh.SetName("Mesh")
-        m_mesh = mo.to_mesh64()
+        for index, mo in enumerate(objects):
+            mesh = model.AddMeshObject()
+            mesh.SetName("Mesh" if len(objects) == 1 else f"Mesh {index + 1}")
+            m_mesh = mo.to_mesh64()
 
-        # Define cube vertices
-        if m_mesh.vert_properties.shape[1] > 3:
-            vertices = m_mesh.vert_properties[:, :3]
-        else:
-            vertices = m_mesh.vert_properties
-        verts = []
-        for v in vertices:
-            pos = lib3mf.Position((v[0], v[1], v[2]))
-            verts.append(pos)
-            mesh.AddVertex(pos)
+            if m_mesh.vert_properties.shape[1] > 3:
+                vertices = m_mesh.vert_properties[:, :3]
+            else:
+                vertices = m_mesh.vert_properties
+            verts = [lib3mf.Position((v[0], v[1], v[2])) for v in vertices]
+            tris = [lib3mf.Triangle((t[0], t[1], t[2])) for t in m_mesh.tri_verts]
+            mesh.SetGeometry(verts, tris)
 
-        # Define cube faces (triangles)
-        triangles = m_mesh.tri_verts
-        tris = []
-        for t in triangles:
-            tri = lib3mf.Triangle((t[0], t[1], t[2]))
-            tris.append(tri)
-            mesh.AddTriangle(tri)
+            color_group = model.AddColorGroup()
+            dc = color_group.AddColor(
+                lib3mf.Color(def_color[0], def_color[1], def_color[2], 255)
+            )
+            mesh.SetObjectLevelProperty(color_group.GetResourceID(), dc)
 
-        mesh.SetGeometry(verts, tris)  # Why is this necessary?
+            for i in range(0, len(m_mesh.run_index) - 1):
+                for j in range(m_mesh.run_index[i] // 3, m_mesh.run_index[i + 1] // 3):
+                    id = m_mesh.run_original_id[i]
+                    if id == -1 or id not in color_map:
+                        color = def_color
+                    else:
+                        color = color_map[id]
+                    cid = color_group.AddColor(
+                        lib3mf.Color(color[0], color[1], color[2], 255)
+                    )
+                    mesh.SetTriangleProperties(
+                        j,
+                        lib3mf.TriangleProperties(
+                            color_group.GetResourceID(), (cid, cid, cid)
+                        ),
+                    )
 
-        # Create a ColorGroup resource
-        color_group = model.AddColorGroup()
-        dc = color_group.AddColor(
-            lib3mf.Color(def_color[0], def_color[1], def_color[2], 255)
-        )
-        mesh.SetObjectLevelProperty(color_group.GetResourceID(), dc)
-
-        for i in range(0, len(m_mesh.run_index) - 1):
-            for j in range(m_mesh.run_index[i] // 3, m_mesh.run_index[i + 1] // 3):
-                id = m_mesh.run_original_id[i]
-                if id == -1 or id not in color_map:
-                    color = def_color
-                else:
-                    color = color_map[id]
-                cid = color_group.AddColor(
-                    lib3mf.Color(color[0], color[1], color[2], 255)
-                )
-                mesh.SetTriangleProperties(
-                    j,
-                    lib3mf.TriangleProperties(
-                        color_group.GetResourceID(), (cid, cid, cid)
-                    ),
-                )
-
-        # Add mesh to build
-        model.AddBuildItem(mesh, wrapper.GetIdentityTransform())
+            model.AddBuildItem(mesh, wrapper.GetIdentityTransform())
 
         # Write to file
         writer = model.QueryWriter("3mf")
