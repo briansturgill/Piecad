@@ -11,6 +11,7 @@ import manifold3d as _m
 import inspect
 import os.path
 import time
+import networkx as nx
 import numpy as np
 from collections.abc import Iterator as _Iterator
 from pathlib import Path as _Path
@@ -291,6 +292,7 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
     \\(See [https://github/mikedh/trimesh] for more formats.\\)
 
     For 2D, the SVG (.svg) and DXF (.dxf) formats are available.
+    OBJ, GLB, and GLTF exports do not include colors. Use 3MF or PLY for colors.
     """
 
     if filename.find("/") == -1 and filename.find("\\") == -1:
@@ -299,6 +301,14 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
     _chkGE("len(objs)", len(objs), 1)
     dot_idx = filename.rindex(".")
     ext = filename[dot_idx + 1 :]
+    include_face_colors = ext.lower() not in (
+        "obj",
+        "glb",
+        "gltf",
+        "stl",
+        "stl_ascii",
+        "3mf",
+    )
     if type(objs[0]) == Obj3d:
         if len(objs) == 1:
             obj = objs[0]
@@ -317,7 +327,7 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
             else:
                 vertices = mesh.vert_properties
 
-            face_colors = _face_colors(mesh)
+            face_colors = _face_colors(mesh) if include_face_colors else None
             mesh_output = trimesh.Trimesh(
                 vertices=vertices,
                 faces=mesh.tri_verts,
@@ -337,7 +347,7 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                     vertices = mesh.vert_properties[:, :3]
                 else:
                     vertices = mesh.vert_properties
-                face_colors = _face_colors(mesh)
+                face_colors = _face_colors(mesh) if include_face_colors else None
                 mesh_output = trimesh.Trimesh(
                     vertices=vertices,
                     faces=mesh.tri_verts,
@@ -362,7 +372,11 @@ def save(filename: str, *objs: Obj3d | Obj2d) -> None:
                     Config.get_default_color(),
                 )
                 return
-            trimesh.exchange.export.export_scene(scene, filename, ext)
+            if ext.lower() == "ply":
+                mesh_output = trimesh.util.concatenate(list(scene.geometry.values()))
+                trimesh.exchange.export.export_mesh(mesh_output, filename, ext)
+            else:
+                trimesh.exchange.export.export_scene(scene, filename, ext)
         # trimesh obj file export does not end with newline
         # currently this upsets prusa_slicer
         if ext == "obj":
@@ -559,6 +573,26 @@ def quick_check_mesh(
     return _quick_check_mesh(vertices, faces)
 
 
+def _repair_mesh(vertices, faces):
+    mesh = trimesh.Trimesh(vertices=vertices, faces=faces, process=False)
+    if not mesh.is_empty:
+        has_face_masks = hasattr(mesh, "unique_faces") and hasattr(
+            mesh, "nondegenerate_faces"
+        )
+        if has_face_masks:
+            mesh.update_faces(mesh.unique_faces() & mesh.nondegenerate_faces())
+        else:
+            mesh.process()
+            mesh.remove_duplicate_faces()
+            mesh.remove_degenerate_faces()
+        graph = nx.from_edgelist(mesh.edges)
+        graph.add_nodes_from(range(len(mesh.vertices)))
+        mesh.fix_normals(multibody=not nx.is_connected(graph))
+        if has_face_masks:
+            mesh.process()
+    return mesh
+
+
 def obj3d_from_v_and_f(
     vertices: list[tuple[float, float, float]],
     faces: list[tuple[int, int, int]],
@@ -587,9 +621,7 @@ def obj3d_from_v_and_f(
         if msg != "":
             raise ValidationError(f"Polyhedron is flawed: {msg}")
     elif check == "repair":
-        mesh_output = trimesh.Trimesh(
-            vertices=vertices, faces=faces, process=True, validate=True
-        )
+        mesh_output = _repair_mesh(vertices, faces)
         vertices = mesh_output.vertices
         faces = mesh_output.faces
     vertices = np.array(vertices, np.float64)

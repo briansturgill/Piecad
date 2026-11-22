@@ -1,5 +1,10 @@
+import json
 import os
+import struct
+import subprocess
+import sys
 import xml.etree.ElementTree as ET
+import zipfile
 import ezdxf
 import manifold3d
 import pytest
@@ -43,6 +48,81 @@ def test_save_multiple_3d(tmp_path, ext):
     assert os.path.getsize(f) > 0
 
 
+@pytest.mark.parametrize("ext", ["obj", "glb", "gltf"])
+@pytest.mark.parametrize("multiple", [False, True])
+def test_export_without_vertex_colors(tmp_path, ext, multiple):
+    filename = tmp_path / f"colorless.{ext}"
+    objs = [cube(5).color("red")]
+    if multiple:
+        objs.append(cube(5).translate([10, 0, 0]).color("blue"))
+    save(str(filename), *objs)
+    if ext == "obj":
+        vertices = [
+            line.split()
+            for line in filename.read_text().splitlines()
+            if line.startswith("v ")
+        ]
+        assert vertices and all(len(vertex) == 4 for vertex in vertices)
+    elif ext == "glb":
+        data = filename.read_bytes()
+        json_length = struct.unpack_from("<I", data, 12)[0]
+        document = json.loads(data[20 : 20 + json_length])
+        assert all(
+            "COLOR_0" not in primitive["attributes"]
+            for mesh in document["meshes"]
+            for primitive in mesh["primitives"]
+        )
+    else:
+        document = json.loads(filename.read_text())
+        assert all(
+            "COLOR_0" not in primitive["attributes"]
+            for mesh in document["meshes"]
+            for primitive in mesh["primitives"]
+        )
+
+
+@pytest.mark.parametrize("multiple", [False, True])
+def test_ply_preserves_face_colors(tmp_path, multiple):
+    filename = tmp_path / "colored.ply"
+    objs = [cube(5).color("red")]
+    expected = {(255, 0, 0, 255)}
+    if multiple:
+        objs.append(cube(5).translate([10, 0, 0]).color("blue"))
+        expected.add((0, 0, 255, 255))
+    save(str(filename), *objs)
+    mesh = utilities.trimesh.load(str(filename), process=False)
+    assert mesh.visual.kind == "face"
+    assert {tuple(color) for color in mesh.visual.face_colors} == expected
+
+
+def test_scipy_free_io_and_repair():
+    script = """
+import sys
+class BlockScipy:
+    def find_spec(self, name, path=None, target=None):
+        if name == "scipy" or name.startswith("scipy."):
+            raise ModuleNotFoundError("SciPy deliberately blocked", name=name)
+sys.meta_path.insert(0, BlockScipy())
+import pytest
+tests = [
+    "test_lithophane_from_image",
+    "test_export_without_vertex_colors",
+    "test_ply_preserves_face_colors",
+    "test_save_multiple_3d",
+    "test_save_multiple_3mf",
+    "test_save_3mf_with_color",
+    "test_obj3d_from_v_and_f_repair_winding",
+]
+raise SystemExit(pytest.main(["-q"] + [sys.argv[1] + "::" + test for test in tests]))
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", script, os.path.abspath(__file__)],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 def test_save_multiple_3mf(tmp_path):
     f = str(tmp_path / "m.3mf")
     save(f, cube(5), sphere(3).translate([10, 0, 0]))
@@ -53,6 +133,13 @@ def test_save_3mf_with_color(tmp_path):
     f = str(tmp_path / "c.3mf")
     save(f, union(cube(5).color("red"), sphere(3).translate([10, 0, 0]).color("blue")))
     assert os.path.getsize(f) > 0
+    with zipfile.ZipFile(f) as archive:
+        model_name = next(name for name in archive.namelist() if name.endswith(".model"))
+        root = ET.fromstring(archive.read(model_name))
+    colors = {elem.get("color") for elem in root.iter() if elem.tag.endswith("}color")}
+    assert {"#FF0000FF", "#0000FFFF"} <= colors
+    triangles = [elem for elem in root.iter() if elem.tag.endswith("}triangle")]
+    assert triangles and all(triangle.get("p1") is not None for triangle in triangles)
 
 
 def test_load_3mf_round_trip_uses_lib3mf(tmp_path, monkeypatch):
@@ -226,6 +313,15 @@ def test_obj3d_from_v_and_f_modes():
         assert o.volume() == pytest.approx(1)
     with pytest.raises(ValidationError):
         utilities.obj3d_from_v_and_f(CUBE_V, CUBE_F[:-1], "batch")
+
+
+def test_obj3d_from_v_and_f_repair_winding():
+    vertices = CUBE_V + [(x + 3, y, z) for x, y, z in CUBE_V]
+    faces = [CUBE_F[0][::-1], *CUBE_F[1:]]
+    faces += [tuple(index + len(CUBE_V) for index in face[::-1]) for face in CUBE_F]
+    faces += [CUBE_F[1], (0, 0, 1)]
+    repaired = utilities.obj3d_from_v_and_f(vertices, faces, "repair")
+    assert repaired.volume() == pytest.approx(2)
 
 
 def test_path_curves_and_arc():

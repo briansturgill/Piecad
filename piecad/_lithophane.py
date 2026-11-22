@@ -1,7 +1,6 @@
 from PIL import Image
-from .utilities import obj3d_from_v_and_f
+from .utilities import _repair_mesh, obj3d_from_v_and_f
 import manifold3d as m
-import trimesh
 
 
 def load_heightmap(filename, max_dimension):
@@ -120,7 +119,7 @@ def create_lithophane(heightmap, pixel_size, min_thickness, max_thickness, base=
             bottom[rows - 1][x + 1],
         )
 
-    mesh = trimesh.Trimesh(vertices=vertices, faces=faces, process=False, validate=True)
+    mesh = _repair_mesh(vertices, faces)
 
     vertices = [
         tuple(float(coordinate) for coordinate in vertex) for vertex in mesh.vertices
