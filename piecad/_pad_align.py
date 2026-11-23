@@ -170,48 +170,6 @@ def _rotation_to_xyz_degrees(R):
     return [float(degrees(rx)), float(degrees(ry)), float(degrees(rz))]
 
 
-# def pad_alignment(
-#     target_corner,
-#     target_x_dir,
-#     target_normal,
-#     source_corner=(0.0, 0.0, 0.0),
-#     source_x_dir=(1.0, 0.0, 0.0),
-#     source_normal=(0.0, 0.0, 1.0),
-#     flip_normal=True,
-# ):
-#     """Calculate placement from one edge direction and a pad normal."""
-#     src_basis = _orthonormal_basis(source_x_dir, source_normal)
-#     tgt_normal = Vec3.neg(target_normal) if flip_normal else target_normal
-#     tgt_basis = _orthonormal_basis(target_x_dir, tgt_normal)
-#     rotation = _matrix_multiply(tgt_basis, _matrix_transpose(src_basis))
-#     rotated_source_corner = _matrix_vector_multiply(rotation, source_corner)
-#     offsets = Vec3.sub(target_corner, rotated_source_corner)
-#     return _rotation_to_xyz_degrees(rotation), list(offsets)
-#
-#
-# def move_pad_to_pad(
-#     new_obj,
-#     target_corner,
-#     target_x_dir,
-#     target_normal,
-#     source_corner=(0.0, 0.0, 0.0),
-#     source_x_dir=(1.0, 0.0, 0.0),
-#     source_normal=(0.0, 0.0, 1.0),
-#     flip_normal=True,
-# ):
-#     """Place an object using its pad corner, one edge direction, and normal."""
-#     rotation, offsets = pad_alignment(
-#         target_corner,
-#         target_x_dir,
-#         target_normal,
-#         source_corner=source_corner,
-#         source_x_dir=source_x_dir,
-#         source_normal=source_normal,
-#         flip_normal=flip_normal,
-#     )
-#     return new_obj.rotate(rotation).translate(offsets)
-
-
 def pad_alignment_xy(
     target_corner,
     target_x_dir,
