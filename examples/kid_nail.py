@@ -49,7 +49,7 @@ if __name__ == "__main__":
     l = make_nail(large_r).rotate([90, 0, 0])
     view(s)
     # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
-    save("kid_nail_small.obj", s)
+    save("kid_nail_small.3mf", s)
     view(l)
-    save("kid_nail_large.obj", l)
+    save("kid_nail_large.3mf", l)
     view_all_now()

@@ -75,5 +75,5 @@ if __name__ == "__main__":
     out = union(DrainStand().translate([0, 0, wall]), DrainTops())
     view(out)
     # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
-    save("drain_stand.obj", out)
+    save("drain_stand.3mf", out)
     view_all_now()

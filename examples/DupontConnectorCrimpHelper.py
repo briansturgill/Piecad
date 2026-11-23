@@ -147,6 +147,6 @@ if __name__ == "__main__":
     view(sn28b)
     view(sn58b)
     # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
-    save("sn28b.obj", sn28b)
-    save("sn58b.obj", sn58b)
+    save("sn28b.3mf", sn28b)
+    save("sn58b.3mf", sn58b)
     view_all_now()

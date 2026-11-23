@@ -23,5 +23,5 @@ if __name__ == "__main__":
     )
     view(cap)
     # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
-    save("cap.obj", cap)
+    save("cap.3mf", cap)
     view_all_now()

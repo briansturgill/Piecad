@@ -83,10 +83,10 @@ if __name__ == "__main__":
         view(w)
     left, right, front, back, top, bottom = pb_walls
     # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
-    save("box_l.obj", left)
-    save("box_r.obj", right)
-    save("box_f.obj", front)
-    save("box_k.obj", back)
-    save("box_t.obj", top)
-    save("box_m.obj", bottom)
+    save("box_l.3mf", left)
+    save("box_r.3mf", right)
+    save("box_f.3mf", front)
+    save("box_k.3mf", back)
+    save("box_t.3mf", top)
+    save("box_m.3mf", bottom)
     view_all_now()

@@ -121,8 +121,8 @@ if __name__ == "__main__":
     view(t)
 
     # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
-    save("cpap_p.obj", p)
-    save("cpap_s.obj", s)
-    save("cpap_b.obj", b)
-    save("cpap_t.obj", t)
+    save("cpap_p.3mf", p)
+    save("cpap_s.3mf", s)
+    save("cpap_b.3mf", b)
+    save("cpap_t.3mf", t)
     view_all_now()

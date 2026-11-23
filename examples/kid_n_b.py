@@ -113,18 +113,18 @@ w = KidSizedWrench()
 
 if __name__ == "__main__":
     # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
-    save("kid_b.obj", b)
+    save("kid_b.3mf", b)
     view(b)
-    save("kid_n.obj", n)
+    save("kid_n.3mf", n)
     view(n)
-    save("kid_r.obj", r)
+    save("kid_r.3mf", r)
     view(r)
-    save("kid_w.obj", w)
+    save("kid_w.3mf", w)
     view(w)
 
     for h in range(2, 7):
         p = KidSizedXPiece(h)
-        save(f"kid_{h}p.obj", p)
+        save(f"kid_{h}p.3mf", p)
         view(p)
 
     view_all_now()

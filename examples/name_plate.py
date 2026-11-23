@@ -32,7 +32,7 @@ txt = union(txt1, txt2)
 
 txt = txt.rotate(-90)
 
-txt = revolve(txt, segments=100, revolve_degrees=65).rotate([90, 180 + 65, -90])
+txt = revolve(txt, segments=20, revolve_degrees=65).rotate([90, 180 + 65, -90])
 
 x1, y1, z1, x2, y2, z2 = txt.bounding_box()
 
@@ -43,5 +43,5 @@ obj = union(txt.translate([0, 0, 2]), bottom)
 if __name__ == "__main__":
     view(obj)
     # If filename has no path separators ('/' or '\\'), save puts the file in your Downloads directory.
-    save("name_plate.obj", obj)
+    save("name_plate.3mf", obj)
     view_all_now()
