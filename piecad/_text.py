@@ -13,12 +13,8 @@ _font: TTFont | None = None
 _glyphs = None
 _cmap: dict[int, str] | None = None
 
-# Approximate length of the line segments curves are flattened into (font units).
-_SEGMENT_LENGTH: float = 5.0
-
-
-def _distance(pt1: tuple[float, float], pt2: tuple[float, float]) -> float:
-    return math.hypot(pt1[0] - pt2[0], pt1[1] - pt2[1])
+# Maximum distance (as a fraction of the em) between a curve and its flattened chords.
+_FLATNESS: float = 1.0 / 2048.0
 
 
 def _quadratic_point(
@@ -57,45 +53,18 @@ def _cubic_point(
     )
 
 
-def _quadratic_length(
-    pt0: tuple[float, float],
-    pt1: tuple[float, float],
-    pt2: tuple[float, float],
-    precision: int = 64,
-) -> float:
-    length = 0.0
-    prev = pt0
-    for i in range(1, precision + 1):
-        pt = _quadratic_point(i / precision, pt0, pt1, pt2)
-        length += _distance(prev, pt)
-        prev = pt
-    return length
+def _second_diff(a, b, c) -> float:
+    return math.hypot(a[0] - 2 * b[0] + c[0], a[1] - 2 * b[1] + c[1])
 
 
-def _cubic_length(
-    pt0: tuple[float, float],
-    pt1: tuple[float, float],
-    pt2: tuple[float, float],
-    pt3: tuple[float, float],
-    precision: int = 10,
-) -> float:
-    length = 0.0
-    step = 1.0 / precision
-    points = []
-    for i in range(precision + 1):
-        t = i * step
-        if t == 0:
-            points.append(pt0)
-        elif t == 1:
-            points.append(pt3)
-        else:
-            points.append(_cubic_point(t, pt0, pt1, pt2, pt3))
-    for i in range(len(points) - 1):
-        length += _distance(points[i], points[i + 1])
-    return length
+def _steps(curvature: float, tolerance: float) -> int:
+    # With n uniform steps, chord error is at most max|B''| / (8 n^2).
+    return max(1, math.ceil(math.sqrt(curvature / (8 * tolerance))))
 
 
-def _flatten_segments(segments) -> list[list[tuple[float, float]]]:
+def _flatten_segments(
+    segments, tolerance: float = 1.0
+) -> list[list[tuple[float, float]]]:
     paths = []
     current = None
     first = None
@@ -116,17 +85,17 @@ def _flatten_segments(segments) -> list[list[tuple[float, float]]]:
             current = args
         elif kind == "qCurveTo":
             control, end = args
-            steps = max(
-                1,
-                int(round(_quadratic_length(current, control, end) / _SEGMENT_LENGTH)),
-            )
+            steps = _steps(2 * _second_diff(current, control, end), tolerance)
             for i in range(1, steps + 1):
                 path.append(_quadratic_point(i / steps, current, control, end))
             current = end
         elif kind == "curveTo":
             control1, control2, end = args
-            length = _cubic_length(current, control1, control2, end)
-            steps = max(1, int(round(length / _SEGMENT_LENGTH)))
+            curvature = 6 * max(
+                _second_diff(current, control1, control2),
+                _second_diff(control1, control2, end),
+            )
+            steps = _steps(curvature, tolerance)
             for i in range(1, steps + 1):
                 path.append(_cubic_point(i / steps, current, control1, control2, end))
             current = end
@@ -217,7 +186,7 @@ def _get_glyph_polygon(c: str) -> Obj2d:
     glyph = _glyphs[_cmap.get(ord(c), ".notdef")]
     pen = _OutlinePen(_glyphs)
     glyph.draw(pen)
-    paths = _flatten_segments(pen.segments)
+    paths = _flatten_segments(pen.segments, _font["head"].unitsPerEm * _FLATNESS)
     ys = [pt[1] for pth in paths for pt in pth]
 
     obj = Obj2d(_m.CrossSection(paths, _m.FillRule.NonZero))

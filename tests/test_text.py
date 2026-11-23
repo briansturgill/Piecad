@@ -15,8 +15,8 @@ def default_font():
 
 def test_text():
     # Vertex counts depend on curve flattening; allow a small tolerance.
-    assert text(6, ALPHA).num_verts() == pytest.approx(22904, rel=0.02)
-    assert text(6, PUNCT).num_verts() == pytest.approx(20594, rel=0.02)
+    assert text(6, ALPHA).num_verts() == pytest.approx(2914, rel=0.02)
+    assert text(6, PUNCT).num_verts() == pytest.approx(2514, rel=0.02)
 
 
 @pytest.mark.parametrize("s", ["A", "H", "x", "8", "Hello, World!"])
