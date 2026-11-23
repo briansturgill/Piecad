@@ -3145,11 +3145,7 @@ def _merge_relationships(previous, requirements, source_part):
             {"Id": rid, "Type": typ, "Target": "/" + path},
         )
         added = True
-    return (
-        _package_xml(root, PKGREL)
-        if added or not previous
-        else previous
-    )
+    return _package_xml(root, PKGREL) if added or not previous else previous
 
 
 def _update_content_types(original, parts, textures):
@@ -3185,11 +3181,7 @@ def _update_content_types(original, parts, textures):
                 {"PartName": key, "ContentType": contenttype},
             )
             dirty = True
-    return (
-        _package_xml(root, CONTENT)
-        if dirty or not original
-        else original
-    )
+    return _package_xml(root, CONTENT) if dirty or not original else original
 
 
 def _material_paths(model):
