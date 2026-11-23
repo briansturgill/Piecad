@@ -1866,6 +1866,15 @@ def _resource_emit_order(model):
             deps = [r._base]
         elif isinstance(r, MultiPropertyGroup):
             deps = [g for g, _ in r._layers]
+        elif isinstance(r, MeshObject):
+            # Property groups must be declared before the meshes that use them.
+            rids = {p.ResourceID for p in r._tri_props if p is not None}
+            if r._object_property is not None:
+                rids.add(r._object_property[0])
+            for rid in sorted(rids):
+                dep = model._resources.get(rid)
+                if dep is not None and dep._package_path == r._package_path:
+                    visit(dep)
         for dep in deps:
             if dep is None:
                 raise ELib3MFException("Unresolved resource dependency")
@@ -2209,6 +2218,17 @@ def _parse_model(data, *, part=MODEL_PATH, defer_external=False, ignore_build=Fa
     return model
 
 
+def _package_xml(root, namespace):
+    # OPC readers (including lib3mf) reject prefixed package parts such as <ns0:Types>.
+    prefix = "{" + namespace + "}"
+    root = copy.deepcopy(root)
+    for el in root.iter():
+        if isinstance(el.tag, str) and el.tag.startswith(prefix):
+            el.tag = el.tag[len(prefix) :]
+    root.set("xmlns", namespace)
+    return ET.tostring(root, encoding="utf-8", xml_declaration=True)
+
+
 def _content_types():
     root = ET.Element("{" + CONTENT + "}Types")
     ET.SubElement(
@@ -2224,7 +2244,7 @@ def _content_types():
         "{" + CONTENT + "}Override",
         {"PartName": "/" + MODEL_PATH, "ContentType": MODEL_CONTENT},
     )
-    return ET.tostring(root, encoding="utf-8", xml_declaration=True)
+    return _package_xml(root, CONTENT)
 
 
 def _root_rels_for(part):
@@ -2234,7 +2254,7 @@ def _root_rels_for(part):
         _tag("Relationship", PKGREL),
         {"Target": "/" + part, "Id": "rel0", "Type": START_REL},
     )
-    return ET.tostring(root, encoding="utf-8", xml_declaration=True)
+    return _package_xml(root, PKGREL)
 
 
 def _root_rels():
@@ -2244,7 +2264,7 @@ def _root_rels():
         "{" + PKGREL + "}Relationship",
         {"Target": "/" + MODEL_PATH, "Id": "rel0", "Type": START_REL},
     )
-    return ET.tostring(root, encoding="utf-8", xml_declaration=True)
+    return _package_xml(root, PKGREL)
 
 
 def _clean_zip_name(name):
@@ -3126,7 +3146,7 @@ def _merge_relationships(previous, requirements, source_part):
         )
         added = True
     return (
-        ET.tostring(root, encoding="utf-8", xml_declaration=True)
+        _package_xml(root, PKGREL)
         if added or not previous
         else previous
     )
@@ -3166,7 +3186,7 @@ def _update_content_types(original, parts, textures):
             )
             dirty = True
     return (
-        ET.tostring(root, encoding="utf-8", xml_declaration=True)
+        _package_xml(root, CONTENT)
         if dirty or not original
         else original
     )
