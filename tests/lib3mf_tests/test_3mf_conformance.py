@@ -78,6 +78,7 @@ CASE_DIRS = {
     'negative-test-cases': 'negative',
 }
 METADATA_MARKER = 'PurePythonLib3MFConformanceRoundtripMarker'
+METADATA_NAMESPACE = 'urn:piecad:3mf-conformance'
 
 
 @dataclass(frozen=True)
@@ -241,14 +242,15 @@ def _geometry_signature(model) -> tuple[str, int, int]:
     return _sha(signature), len(mesh_rows), sum(len(m['triangles']) for m in mesh_rows)
 
 
-def _unrelated_zip_bytes_preserved(original: bytes, rewritten: bytes) -> list[str]:
+def _unrelated_zip_bytes_preserved(original: bytes, rewritten: bytes,
+                                   model_parts: set[str]) -> list[str]:
     """Compare opaque parts, not the .model files or rebuilt OPC wiring."""
     with ZipFile(io.BytesIO(original)) as a, ZipFile(io.BytesIO(rewritten)) as b:
         original_parts = set(a.namelist())
         new_parts = set(b.namelist())
         changes = []
         for part in original_parts | new_parts:
-            if part.lower().endswith(('.model', '.rels')) or part == '[Content_Types].xml':
+            if part in model_parts or part.lower().endswith('.rels') or part == '[Content_Types].xml':
                 continue
             if part not in original_parts or part not in new_parts:
                 changes.append(f'added/removed part: {part}')
@@ -267,7 +269,7 @@ def _force_serialization(model) -> None:
     while name in names:
         counter += 1
         name = f'{METADATA_MARKER}{counter}'
-    group.AddMetaData('', name, 'roundtrip')
+    group.AddMetaData(METADATA_NAMESPACE, name, 'roundtrip')
 
 
 def _run_one(case: Case, args) -> Result:
@@ -286,7 +288,7 @@ def _run_one(case: Case, args) -> Result:
             res.status, res.note = 'SKIP', 'Git LFS pointer instead of .3mf; run git lfs pull'
             return res
         unknown = _required_unknown_namespaces(data)
-        if unknown and not args.include_unsupported:
+        if unknown and case.expected != 'negative' and not args.include_unsupported:
             res.status, res.note = 'SKIP', 'required extension not implemented: ' + ', '.join(sorted(unknown))
             return res
         wrapper = lib3mf.get_wrapper()
@@ -310,10 +312,18 @@ def _run_one(case: Case, args) -> Result:
             package_error = f'checker error: {type(ex).__name__}: {ex}'
 
         # A negative test passes if *either* the reader OR the package checker
-        # detects the intentionally invalid input. Geometric printability is
-        # excluded because it is not the same as specification conformance.
+        # detects the intentionally invalid input. Geometry checks are used
+        # only for negative cases, not as a full printer conformance check.
         if case.expected == 'negative':
             rejected = (res.read_ok is False or res.package_ok is False)
+            if not rejected:
+                geometry = model.Validate()
+                errors = [f'{issue.code}: {issue.message}'
+                          for mesh in geometry.values() for issue in mesh.issues
+                          if issue.severity == 'error']
+                if errors:
+                    res.status, res.note = 'PASS', '; '.join(errors[:3])
+                    return res
             res.status = 'PASS' if rejected else 'FAIL'
             res.note = (read_error if not res.read_ok else package_error) if rejected else \
                        'negative test was accepted by both reader and checker'
@@ -343,12 +353,13 @@ def _run_one(case: Case, args) -> Result:
                 loaded_digest, _, _ = _geometry_signature(model2)
                 if loaded_digest != original_digest:
                     raise AssertionError('round-trip changed exposed geometry/build/material assignments')
-                lost = _unrelated_zip_bytes_preserved(data, saved)
+                lost = _unrelated_zip_bytes_preserved(data, saved, set(model._original_parts))
                 if lost:
                     raise AssertionError('; '.join(lost[:3]))
                 if args.roundtrip == 'rewrite':
                     metadata = model2.GetMetaDataGroup()
                     if not any(metadata.GetMetaData(i).GetName().startswith(METADATA_MARKER)
+                               and metadata.GetMetaData(i).GetNameSpace() == METADATA_NAMESPACE
                                for i in range(metadata.GetMetaDataCount())):
                         raise AssertionError('metadata edit did not survive rewriting')
                 res.roundtrip_ok = True

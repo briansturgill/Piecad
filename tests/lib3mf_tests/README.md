@@ -136,6 +136,23 @@ python test_3mf_conformance.py /path/to/test_suites --list
 python test_3mf_conformance.py /path/to/test_suites --include-unsupported
 ```
 
-The suite harness uses folder names `positive_test_cases` / `negative_test_cases` as the expectation. **Positive** means the reader and our package checker accept the file and the optional round-trip preserves supported geometry and opaque attachments. **Negative** means at least one of the reader or package checker rejects it. This is useful for detecting regressions, but NOT a formal 3MF/XSD conformance score: neither the reader nor `Check3MFPackage()` implements the full specification, including all semantic constraints. The default `--roundtrip rewrite` injects temporary model metadata in memory before writing (never modifies the corpus) to ensure it really exercises the serializer; `--roundtrip copy` only exercises unchanged-package preservation, and `--roundtrip none` tests read/check alone. All three are safe for input files. All failures are printed; all cases and diagnostics are available in JSON/CSV reports.
+The suite harness uses folder names `positive_test_cases` / `negative_test_cases` as the expectation. **Positive** means the reader and our package checker accept the file and the optional round-trip preserves supported geometry and opaque attachments. **Negative** means the reader or package checker rejects it, or a mesh fails the geometry checker. This is useful for detecting regressions, but NOT a formal 3MF/XSD conformance score: neither the reader nor `Check3MFPackage()` implements the full specification, including all semantic constraints, and printer-specific conditions cannot be inferred without a printer. The default `--roundtrip rewrite` injects temporary model metadata in memory before writing (never modifies the corpus) to ensure it really exercises the serializer; `--roundtrip copy` only exercises unchanged-package preservation, and `--roundtrip none` tests read/check alone. All three are safe for input files. All failures are printed; all cases and diagnostics are available in JSON/CSV reports.
 
-Suites 1, 4, 7, 8, 10 and 11, and required unknown extensions, are SKIP by default. Use `--include-unsupported` to attempt them; passing a few of those tests does not imply extension implementation. Internal synthetic tests verify the runner's controls, but **the official conformance corpus has not been run** in this environment and no Consortium conformity is claimed.
+Suites 1, 4, 7, 8, 10 and 11, and positive cases requiring unknown extensions, are SKIP by default. Negative cases with unknown required extensions are checked for rejection. Use `--include-unsupported` to attempt unsupported suites and positive cases; passing a few of those tests does not imply extension implementation. No Consortium conformity is claimed.
+
+The v2.4.1 core corpus includes four negative cases that this file-only runner
+does not reject:
+
+- `N_XXX_0405_05` uses an unknown relationship type for an image. The runner
+  cannot infer that an otherwise optional image was intended as a thumbnail.
+- `N_XXX_0416_02` uses a mirrored transform. The
+  [Core specification](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#33-3d-matrices)
+  requires negative-determinant transforms to preserve the sign of the volume.
+- `N_XXX_0420_01` is described as containing a DTD, but the distributed file
+  contains none. Actual DTD declarations are rejected.
+- `N_XXX_0421_01` depends on a printer's build area, which a 3MF file does not
+  specify.
+
+These are reported as failures rather than silently treated as passes. Large
+models may also require substantially more memory in the Python reader than
+their compressed file size suggests.

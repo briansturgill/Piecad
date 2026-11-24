@@ -114,7 +114,7 @@ def _int(v):
 
 
 def _num(v):
-    return format(_finite(v), ".9g")
+    return repr(_finite(v))
 
 
 @dataclass
@@ -269,6 +269,15 @@ def _compose(inner, outer):
     )
 
 
+def _determinant(transform):
+    a, b, c = transform.Fields[:3]
+    return (
+        a[0] * (b[1] * c[2] - b[2] * c[1])
+        - a[1] * (b[0] * c[2] - b[2] * c[0])
+        + a[2] * (b[0] * c[1] - b[1] * c[0])
+    )
+
+
 def _local(tag):
     return tag.split("}", 1)[-1]
 
@@ -277,15 +286,19 @@ def _tag(local, ns=CORE):
     return "{" + ns + "}" + local
 
 
+class _NoDTDTreeBuilder(ET.TreeBuilder):
+    def doctype(self, name, pubid, system):
+        raise ELib3MFException("DTD and entity declarations are not supported")
+
+
 def _xml_from_bytes(data):
-    # ElementTree doesn't expand external entities; rejecting DTDs is safer.
     if re.search(rb"<!\s*(?:DOCTYPE|ENTITY)\b", data, re.I):
         raise ELib3MFException("DTD and entity declarations are not supported")
     try:
         return ET.fromstring(
             data,
             parser=ET.XMLParser(
-                target=ET.TreeBuilder(insert_comments=True, insert_pis=True)
+                target=_NoDTDTreeBuilder(insert_comments=True, insert_pis=True)
             ),
         )
     except ET.ParseError as e:
@@ -1707,8 +1720,12 @@ class Model:
                 offset = mesh.GetVertexCount()
                 for p in obj._vertices:
                     mesh.AddVertex(_apply(p, transform))
+                mirrored = _determinant(transform) < 0
                 for t in obj._triangles:
-                    mesh.AddTriangle([i + offset for i in t.Indices])
+                    indices = t.Indices
+                    if mirrored:
+                        indices = [indices[0], indices[2], indices[1]]
+                    mesh.AddTriangle([i + offset for i in indices])
             else:
                 for c in obj._components:
                     add(c._object, _compose(c._transform, transform), seen | {obj})
@@ -1908,11 +1925,34 @@ def _parse_model(data, *, part=MODEL_PATH, defer_external=False, ignore_build=Fa
     }
     if root.tag != _tag("model"):
         raise ELib3MFException("Not a 3MF core model XML document")
+    if "{http://www.w3.org/XML/1998/namespace}space" in root.attrib:
+        raise ELib3MFException("xml:space is not supported on a 3MF model")
+    for prefix in root.get("requiredextensions", "").split():
+        uri = namespaces.get(prefix)
+        if uri not in (CORE, MAT, PROD):
+            raise Unsupported3MFError(f"Unsupported required extension: {prefix}")
     model = Model()
     model._root_part = part
     model.SetUnit(root.get("unit", "millimeter"))
     model.SetLanguage(root.get(XML_LANG, "und"))
     _load_metadata(root, model._metadata, namespaces=namespaces)
+    standard_metadata = {
+        "Title",
+        "Designer",
+        "Description",
+        "Copyright",
+        "LicenseTerms",
+        "Rating",
+        "CreationDate",
+        "ModificationDate",
+    }
+    names = [
+        m.name
+        for m in model._metadata._items
+        if not m.namespace and m.name in standard_metadata
+    ]
+    if len(names) != len(set(names)):
+        raise ELib3MFException("Duplicate standard model metadata")
     resources = root.find(_tag("resources"))
     build = root.find(_tag("build"))
     if resources is None or build is None:
@@ -1995,6 +2035,10 @@ def _parse_model(data, *, part=MODEL_PATH, defer_external=False, ignore_build=Fa
                 obj.SetGeometry(vs, ts)
                 deferred_properties.append((obj, node, triangles))
             else:
+                if "pid" in node.attrib or "pindex" in node.attrib:
+                    raise ELib3MFException(
+                        "Component objects cannot have mesh properties"
+                    )
                 deferred_components.append((obj, comp_el))
         else:
             model._warnings.append("Unsupported resource ignored: " + node.tag)
@@ -2269,7 +2313,13 @@ def _root_rels():
 
 def _clean_zip_name(name):
     # Resolve only package-absolute paths; forbid traversal and URL schemes.
-    if "\\" in name or "://" in name or ":" in name:
+    if (
+        "\\" in name
+        or "://" in name
+        or ":" in name
+        or not name.isascii()
+        or "." in name.split("/")
+    ):
         raise ELib3MFException("Unsafe 3MF package part reference")
     path = PurePosixPath(name.lstrip("/"))
     if ".." in path.parts or not str(path) or str(path) == ".":
@@ -2282,12 +2332,19 @@ def _find_start_part(zf):
         rel = _xml_from_bytes(zf.read("_rels/.rels"))
     except KeyError as e:
         raise ELib3MFException("Missing package relationships (_rels/.rels)") from e
-    for node in rel:
-        if node.tag == "{" + PKGREL + "}Relationship" and node.get("Type") == START_REL:
-            if node.get("TargetMode", "Internal") != "Internal":
-                raise ELib3MFException("External 3MF start parts are forbidden")
-            return _clean_zip_name(node.attrib["Target"])
-    raise ELib3MFException("Package has no 3MF StartPart relationship")
+    starts = [
+        node
+        for node in rel
+        if node.tag == _tag("Relationship", PKGREL) and node.get("Type") == START_REL
+    ]
+    if len(starts) != 1:
+        raise ELib3MFException(
+            "Package must have exactly one 3MF StartPart relationship"
+        )
+    node = starts[0]
+    if node.get("TargetMode", "Internal") != "Internal":
+        raise ELib3MFException("External 3MF start parts are forbidden")
+    return _clean_zip_name(node.attrib["Target"])
 
 
 # --- Multi-part Production Extension and conservative opaque-content preservation ---
@@ -3001,17 +3058,13 @@ def _patch_part_xml(model, part, original, allow_lossy):
         for _, (prefix, uri) in ET.iterparse(BytesIO(original), events=("start-ns",))
     )
     for prefix, uri in namespace_map.items():
-        if prefix and prefix not in ("xml", "xmlns") and not prefix.startswith("ns"):
+        if (
+            prefix
+            and prefix not in ("xml", "xmlns", "m", "p")
+            and not prefix.startswith("ns")
+            and uri not in (CORE, MAT, PROD)
+        ):
             ET.register_namespace(prefix, uri)
-    used_uris = {
-        tag.split("}", 1)[0][1:]
-        for node in xml.iter()
-        for tag in (node.tag, *node.attrib)
-        if isinstance(tag, str) and tag.startswith("{")
-    }
-    for prefix, uri in namespace_map.items():
-        if prefix and uri not in used_uris and prefix not in ("xml", "xmlns"):
-            xml.set("xmlns:" + prefix, uri)
     production = PROD in namespace_map.values()
     if part == model._root_part:
         xml.set("unit", _UNIT_NAMES[int(model._unit)])
@@ -3093,6 +3146,19 @@ def _patch_part_xml(model, part, original, allow_lossy):
         for i, el in enumerate(old):
             if i not in used:
                 build.remove(el)
+    serialized = ET.tostring(xml, encoding="utf-8", xml_declaration=True)
+    declared = {}
+    for event, value in ET.iterparse(BytesIO(serialized), events=("start-ns", "start")):
+        if event == "start":
+            break
+        prefix, uri = value
+        declared[prefix] = uri
+    for prefix, uri in namespace_map.items():
+        if prefix and prefix not in ("xml", "xmlns"):
+            if prefix not in declared:
+                xml.set("xmlns:" + prefix, uri)
+            elif declared[prefix] != uri:
+                raise Unsupported3MFError("Conflicting namespace prefix: " + prefix)
     return ET.tostring(xml, encoding="utf-8", xml_declaration=True)
 
 
@@ -3165,14 +3231,17 @@ def _update_content_types(original, parts, textures):
             {"Extension": reltype[0], "ContentType": reltype[1]},
         )
         dirty = True
-    overrides = {n.get("PartName"): n for n in root.findall(_tag("Override", CONTENT))}
+    overrides = {
+        n.get("PartName", "").lower(): n
+        for n in root.findall(_tag("Override", CONTENT))
+    }
     for path, contenttype in [(k, MODEL_CONTENT) for k in sorted(parts)] + sorted(
         textures.items()
     ):
         key = "/" + path
-        if key in overrides:
-            if overrides[key].get("ContentType") != contenttype:
-                overrides[key].set("ContentType", contenttype)
+        if key.lower() in overrides:
+            if overrides[key.lower()].get("ContentType") != contenttype:
+                overrides[key.lower()].set("ContentType", contenttype)
                 dirty = True
         else:
             ET.SubElement(
@@ -3199,7 +3268,7 @@ def _material_paths(model):
 
 def _model_parts(model):
     parts = {model._root_part} | {r._package_path for r in model._resources.values()}
-    if any(not p.endswith(".model") for p in parts):
+    if any(_clean_zip_name(p) != p for p in parts):
         raise ELib3MFException("Invalid model part path")
     ids = {}
     for r in model._resources.values():
@@ -3242,6 +3311,48 @@ class PackageValidationReport:
         }
 
 
+def _jpeg_component_count(data):
+    if not data.startswith(b"\xff\xd8"):
+        raise ELib3MFException("Thumbnail is not a JPEG")
+    offset = 2
+    while offset < len(data):
+        if data[offset] != 0xFF:
+            raise ELib3MFException("Invalid JPEG marker")
+        while offset < len(data) and data[offset] == 0xFF:
+            offset += 1
+        if offset >= len(data):
+            break
+        marker = data[offset]
+        offset += 1
+        if marker in (0x01, 0xD8) or 0xD0 <= marker <= 0xD7:
+            continue
+        if marker in (0xD9, 0xDA) or offset + 2 > len(data):
+            break
+        length = int.from_bytes(data[offset : offset + 2], "big")
+        if length < 2 or offset + length > len(data):
+            raise ELib3MFException("Invalid JPEG segment")
+        if marker in (
+            0xC0,
+            0xC1,
+            0xC2,
+            0xC3,
+            0xC5,
+            0xC6,
+            0xC7,
+            0xC9,
+            0xCA,
+            0xCB,
+            0xCD,
+            0xCE,
+            0xCF,
+        ):
+            if length < 8:
+                raise ELib3MFException("Invalid JPEG frame")
+            return data[offset + 7]
+        offset += length
+    raise ELib3MFException("JPEG has no frame header")
+
+
 def Check3MFPackage(
     data, *, geometry=True, check_self_intersections=False, max_pairs=200000
 ):
@@ -3261,27 +3372,55 @@ def Check3MFPackage(
     try:
         with ZipFile(BytesIO(data)) as z:
             parts = set(z.namelist())
+            defaults, overrides = {}, {}
             if not z.testzip() is None:
                 error("zip_crc", "Invalid ZIP CRC")
             for required in ("[Content_Types].xml", "_rels/.rels"):
                 if required not in parts:
                     error("missing_package_part", "Missing " + required)
+            root = _find_start_part(z)
             if "[Content_Types].xml" in parts:
                 try:
                     content = _xml_from_bytes(z.read("[Content_Types].xml"))
+                    if content.tag != _tag("Types", CONTENT):
+                        raise ELib3MFException("Invalid content types part")
+                    for kind, attr in (
+                        ("Default", "Extension"),
+                        ("Override", "PartName"),
+                    ):
+                        keys = [
+                            n.get(attr, "").lower()
+                            for n in content.findall(_tag(kind, CONTENT))
+                        ]
+                        if "" in keys or len(keys) != len(set(keys)):
+                            error(
+                                "invalid_content_types",
+                                f"Empty or duplicate {kind} {attr}",
+                            )
                     overrides = {
-                        n.get("PartName"): n.get("ContentType")
+                        n.get("PartName", "").lower(): n.get("ContentType")
                         for n in content.findall(_tag("Override", CONTENT))
                     }
                     defaults = {
-                        n.get("Extension"): n.get("ContentType")
+                        n.get("Extension", "").lower(): n.get("ContentType")
                         for n in content.findall(_tag("Default", CONTENT))
                     }
+                    if (
+                        defaults.get("rels")
+                        != "application/vnd.openxmlformats-package.relationships+xml"
+                    ):
+                        error(
+                            "relationship_content_type",
+                            "Invalid relationships content type",
+                        )
                     for name in parts:
-                        if not name.endswith(".model"):
+                        if name != root and not name.lower().endswith(".model"):
                             continue
+                        extension = (
+                            name.rpartition(".")[2].lower() if "." in name else ""
+                        )
                         if (
-                            overrides.get("/" + name, defaults.get("model"))
+                            overrides.get(("/" + name).lower(), defaults.get(extension))
                             != MODEL_CONTENT
                         ):
                             error(
@@ -3290,7 +3429,6 @@ def Check3MFPackage(
                             )
                 except ELib3MFException as ex:
                     error("content_types", str(ex))
-            root = _find_start_part(z)
             for part in parts:
                 if not part.endswith(".rels"):
                     continue
@@ -3306,8 +3444,28 @@ def Check3MFPackage(
                         error("relationship_location", "Invalid location " + part)
                         continue
                     src = posixpath.join(posixpath.dirname(dirname), name[:-5])
+                    if src not in parts:
+                        error("orphan_relationship_part", part + " has no source part")
+                rel_ids = set()
                 for item in rels.findall(_tag("Relationship", PKGREL)):
+                    rid = item.get("Id", "")
+                    if (
+                        not rid
+                        or not (rid[0].isalpha() or rid[0] == "_")
+                        or ":" in rid
+                        or rid in rel_ids
+                    ):
+                        error("invalid_relationship_id", part + ": " + rid)
+                    rel_ids.add(rid)
                     if item.get("TargetMode", "Internal") != "Internal":
+                        if (
+                            item.get("Type")
+                            == "http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail"
+                        ):
+                            error(
+                                "external_thumbnail",
+                                part + " has an external thumbnail",
+                            )
                         continue
                     try:
                         path = (
@@ -3317,6 +3475,27 @@ def Check3MFPackage(
                         )
                         if path not in parts:
                             error("dangling_relationship", part + " -> " + path)
+                        elif (
+                            item.get("Type")
+                            == "http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail"
+                        ):
+                            typ = overrides.get(
+                                ("/" + path).lower(),
+                                defaults.get(path.rpartition(".")[2].lower()),
+                            )
+                            if typ not in ("image/png", "image/jpeg"):
+                                error(
+                                    "thumbnail_content_type",
+                                    path + " has an invalid thumbnail content type",
+                                )
+                            elif typ == "image/jpeg":
+                                try:
+                                    if _jpeg_component_count(z.read(path)) == 4:
+                                        error(
+                                            "thumbnail_cmyk", path + " is a CMYK JPEG"
+                                        )
+                                except ELib3MFException as ex:
+                                    error("thumbnail_jpeg", path + ": " + str(ex))
                     except ELib3MFException as ex:
                         error("invalid_relationship", str(ex))
             try:
@@ -3333,7 +3512,7 @@ def Check3MFPackage(
                         warning("unsupported_extension", msg)
             except (ELib3MFException, KeyError, ValueError) as ex:
                 error("model_parse", str(ex))
-    except (BadZipFile, KeyError, ET.ParseError, ValueError) as ex:
+    except (BadZipFile, ELib3MFException, KeyError, ET.ParseError, ValueError) as ex:
         error("archive", str(ex))
     return report
 
