@@ -249,6 +249,147 @@ class Obj3d:
         else:
             return Obj3d(second), Obj3d(first)
 
+
+    def modify_circular_edges(
+        self,
+        mod_type: str,
+        origin: tuple[float, float, float],
+        radius: float | tuple[float, float],
+        outward: bool = True,
+        size: float = 4.0,
+    ) -> Obj3d:
+        """
+        Modify a circular or elliptical rim in the XY plane.
+
+        `origin` is the rim's center, including its Z height. `radius` is
+        either a circle radius or the pair of X and Y radii of an ellipse.
+        Set `outward` to `False` for the rim of a hole. The material side
+        above or below the rim is determined from the mesh. The rim must be
+        complete, regularly segmented, and join horizontal and vertical faces;
+        its segments and rotation are matched by the cutter.
+
+        `mod_type` and `size` have the same meaning as in `modify_edges`.
+        An elliptical cutter is made by scaling a circular one, so its
+        profile width scales along Y. For an outside rim, the X radius must
+        exceed `size` plus the cutter's overhang (1e-5). The circular sawtooth
+        uses a fixed representative section of the varying straight-edge sawtooth.
+        A rim that cannot be uniquely identified raises `ValueError`.
+        """
+        _chkIn("mod_type", mod_type, ["fillet", "chamfer", "bevel", "sawtooth", "comma", "steeper_facets"])
+
+        from ._edge_modification import modify_circular_edges as _modify_circular_edges
+
+        return _modify_circular_edges(self, mod_type, origin, radius, outward, size=size)
+
+
+    def modify_edge(
+        self,
+        edge: tuple[tuple[float, float, float], tuple[float, float, float]],
+        mod_type: str,
+        size: float = 4.0,
+        min_edge_length: float = 2.0,
+        angle_range: tuple[float, float] = (80, 100),
+    ) -> Obj3d:
+        """
+        Modify the specified edge using the specified modification type.
+
+        Somewhat EXPERIMENTAL - interface could change in future releases.
+
+        The `edge` parameter is a tuple of two points, specifying the `(start, end)` of the edge to be modified.
+
+        The modification type (`mod_type`) must be one of `"fillet"`, `"chamfer"`, `"bevel"`,
+        `"sawtooth"`, `"comma"`, `"steeper_facets"`. Type `bevel` is an alias for `chamfer`.
+
+        The `size` parameter specifies the size or radius of the shape that will be applied to the edges.
+
+        The `min_edge_length` parameter specifies the minimum length of edges to consider for modification.
+        This is useful in avoiding the modification of circular objects. Circular edges often modify poorly.
+        See modify_circular_edges() for handling circular edges specifically.
+
+        The `angle_range` parameter specifies the range of angles (in degrees) for edges to be
+        considered for filleting. (The angle is between the two faces adjacent to the edge.)
+        The further one gets from 90 degrees, the more likely that difficulties may arise during
+        the modification process.
+
+        """
+        _chkIn("mod_type", mod_type, ["fillet", "chamfer", "bevel", "sawtooth", "comma", "steeper_facets"])
+
+        from ._edge_modification import modify_edges as _modify_edges
+        start, end = edge
+        delta = Const.epsilon
+        bounds = (
+            min(start[0], end[0]) - delta,
+            min(start[1], end[1]) - delta,
+            min(start[2], end[2]) - delta,
+            max(start[0], end[0]) + delta,
+            max(start[1], end[1]) + delta,
+            max(start[2], end[2]) + delta,
+        )
+
+        return _modify_edges (
+            self,
+            mod_type,
+            size=size,
+            min_edge_length=min_edge_length,
+            angle_range=angle_range,
+            include=[bounds],
+            exclude=None,
+        )
+
+
+    def modify_edges(
+        self,
+        mod_type: str,
+        size: float = 4.0,
+        min_edge_length: float = 2.0,
+        angle_range: tuple[float, float] = (80, 100),
+        include: list[tuple[float, float, float, float, float, float]] = None,
+        exclude: list[tuple[float, float, float, float, float, float]] = None,
+    ) -> Obj3d:
+        """
+        Modify the edges of an `Obj3d` by applying the specified modification type.
+
+        Somewhat EXPERIMENTAL - interface could change in future releases.
+
+        The modification type (`mod_type`) must be one of `"fillet"`, `"chamfer"`, `"bevel"`,
+        `"sawtooth"`, `"comma"`, `"steeper_facets"`. Type `bevel` is an alias for `chamfer`.
+
+        The `size` parameter specifies the size or radius of the shape that will be applied to the edges.
+
+        The `min_edge_length` parameter specifies the minimum length of edges to consider for modification.
+        This is useful in avoiding the modification of circular objects. Circular edges often modify poorly.
+        See modify_circular_edges() for handling circular edges specifically.
+
+        The `angle_range` parameter specifies the range of angles (in degrees) for edges to be
+        considered for filleting. (The angle is between the two faces adjacent to the edge.)
+        The further one gets from 90 degrees, the more likely that difficulties may arise during
+        the modification process.
+
+        The `include` and `exclude` parameters allow you to specify which edges should be filleted or ignored.
+        By default, all outward-facing edges of the object will be filleted.
+        Both the `include` and `exclude` lists are "bounding boxes" that define the regions of
+        space in which edges will be considered for filleting or ignored.
+        Each bounding box is a sextuple of the form `(xmin, ymin, zmin, xmax, ymax, zmax)`.
+        Only edges that have both endpoints within the bounding boxes are selected.
+        If the include list is provided, only the edges selected in the list will be filleted.
+        If the exclude list is provided, the edges selected in the list will be ignored.
+        The exclude list always takes precedence over the include list.
+        """
+        _chkIn("mod_type", mod_type, ["fillet", "chamfer", "bevel", "sawtooth", "comma", "steeper_facets"])
+
+        from ._edge_modification import modify_edges as _modify_edges
+
+        return _modify_edges (
+            self,
+            mod_type,
+            size=size,
+            min_edge_length=min_edge_length,
+            angle_range=angle_range,
+            include=include,
+            exclude=exclude,
+        )
+
+
     def num_faces(self) -> int:
         """
         The number of faces in this object.

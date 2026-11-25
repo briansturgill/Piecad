@@ -2,7 +2,6 @@ import math
 import pytest
 from piecad import *
 from piecad import Config, near_eq, near_ge, near_le
-from piecad._cutter import cutter, fillet_cutter
 from piecad._pad_align import (
     _normalize,
     _basis_from_xy,
@@ -113,29 +112,31 @@ def test_transform_bad_matrix():
         square(1).transform(((1, 0, 0),))
 
 
-def test_cutter_errors():
-    ok = ((0, 0, 0), (10, 0, 0))
-    with pytest.raises(ValidationError):
-        cutter(True, (0, 0, 0), (0, 0, 0), (0, 1, 0), (0, 0, 1), 1)
-    with pytest.raises(ValidationError):
-        cutter(True, *ok, (1, 0, 0), (0, 0, 1), 1)
-    with pytest.raises(ValidationError):
-        cutter(True, *ok, (0, 1, 0), (1, 0, 0), 1)
-    with pytest.raises(ValidationError):
-        cutter(True, *ok, (0, 1, 0), (0, -1, 0), 1)
-    with pytest.raises(ValidationError):
-        cutter(True, *ok, (0, 0, 0), (0, 0, 1), 1)
+def test_modify_edges_rejects_invalid_type():
+    with pytest.raises(ValidationError, match="mod_type"):
+        cube(10).modify_edges("invalid", size=1)
 
 
-def test_fillet_cutter_segment_clamps():
-    old = Config.get_layer_resolution()
+@pytest.mark.parametrize("mod_type", ["fillet", "chamfer"])
+@pytest.mark.parametrize("size", [0, -1, float("inf"), float("nan")])
+def test_modify_edges_rejects_invalid_size(mod_type, size):
+    with pytest.raises(ValueError, match="size must be finite and positive"):
+        cube(10).modify_edges(mod_type, size=size)
+
+
+def test_fillet_uses_default_segments():
+    old = Config.get_default_segments()
     try:
-        Config.set_layer_resolution(10)
-        assert fillet_cutter(1, 5).volume() > 0
-        Config.set_layer_resolution(0.001)
-        assert fillet_cutter(5, 5).volume() > 0
+        block = cube(10)
+        Config.set_default_segments(8)
+        low_resolution = block.modify_edges("fillet", size=1)
+        Config.set_default_segments(100)
+        high_resolution = block.modify_edges("fillet", size=1)
+        assert 0 < low_resolution.volume() < block.volume()
+        assert 0 < high_resolution.volume() < block.volume()
+        assert high_resolution.num_faces() > low_resolution.num_faces()
     finally:
-        Config.set_layer_resolution(old)
+        Config.set_default_segments(old)
 
 
 def test_pad_align_degenerate_inputs():
