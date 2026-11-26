@@ -13,8 +13,8 @@ from piecad._edge_modification import (
     fillet_3d,
     sawtooth_2d,
     sawtooth_3d,
-    steeper_facets_2d,
-    steeper_facets_3d,
+    faceted_2d,
+    faceted_3d,
 )
 
 
@@ -170,7 +170,7 @@ def test_modify_edge_selects_one_edge_in_either_endpoint_order(reverse):
         (bevel_2d, bevel_3d),
         (comma_2d, comma_3d),
         (fillet_2d, fillet_3d),
-        (steeper_facets_2d, steeper_facets_3d),
+        (faceted_2d, faceted_3d),
     ],
 )
 def test_2d_profile_matches_straight_cutter_cross_section(profile_2d, cutter_3d):
@@ -197,16 +197,20 @@ def test_sawtooth_profile_is_a_section_of_the_varying_cutter():
 
 
 @pytest.mark.parametrize(
-    "mod_type", ["bevel", "chamfer", "comma", "fillet", "sawtooth", "steeper_facets"]
+    "mod_type", ["bevel", "chamfer", "comma", "fillet", "sawtooth", "faceted"]
 )
-@pytest.mark.parametrize(("height", "outward"), [(0, True), (10, True), (0, False), (10, False)])
+@pytest.mark.parametrize(
+    ("height", "outward"), [(0, True), (10, True), (0, False), (10, False)]
+)
 def test_modify_circular_edges_cuts_selected_rim(mod_type, height, outward):
     block = cylinder(10, 10)
     if not outward:
         block = difference(block, cylinder(10, 5))
     radius = 10 if outward else 5
 
-    result = block.modify_circular_edges(mod_type, (0, 0, height), radius, outward, size=1)
+    result = block.modify_circular_edges(
+        mod_type, (0, 0, height), radius, outward, size=1
+    )
     removed = difference(block, result)
 
     assert 0 < result.volume() < block.volume()
@@ -223,9 +227,11 @@ def test_modify_elliptical_edges_matches_scaled_circular_cutter(outward):
         circle = difference(circle, cylinder(10, 4))
     radius = 8 if outward else 4
     ellipse = circle.scale((1, 1.5, 1)).translate((4, -3, 2))
-    expected = circle.modify_circular_edges(
-        "chamfer", (0, 0, 10), radius, outward, size=1
-    ).scale((1, 1.5, 1)).translate((4, -3, 2))
+    expected = (
+        circle.modify_circular_edges("chamfer", (0, 0, 10), radius, outward, size=1)
+        .scale((1, 1.5, 1))
+        .translate((4, -3, 2))
+    )
 
     result = ellipse.modify_circular_edges(
         "chamfer", (4, -3, 12), (radius, radius * 1.5), outward, size=1
@@ -243,9 +249,7 @@ def test_circular_cutter_matches_rotated_rim_segments(outward):
     block = block.rotate((0, 0, 13))
     radius = 10 if outward else 5
 
-    result = block.modify_circular_edges(
-        "chamfer", (0, 0, 10), radius, outward, size=1
-    )
+    result = block.modify_circular_edges("chamfer", (0, 0, 10), radius, outward, size=1)
     expected = cylinder(10, 9.5 if outward else 10, segments=7)
     if not outward:
         expected = difference(expected, cylinder(10, 5.5, segments=7))
@@ -262,7 +266,9 @@ def test_circular_cutter_matches_rotated_rim_segments(outward):
 )
 def test_modify_circular_edges_rejects_unmatched_rim(origin, radius, outward):
     with pytest.raises(ValueError, match="could not uniquely identify"):
-        cylinder(10, 10).modify_circular_edges("fillet", origin, radius, outward, size=1)
+        cylinder(10, 10).modify_circular_edges(
+            "fillet", origin, radius, outward, size=1
+        )
 
 
 @pytest.mark.parametrize("radius", [0, -1, float("inf"), (1, 0), (1, 2, 3)])
@@ -296,7 +302,7 @@ def test_modify_circular_edges_rejects_irregular_segments():
         block.modify_circular_edges("fillet", (0, 0, 10), 10, size=1)
 
 
-@pytest.mark.parametrize("mod_type", ["comma", "sawtooth", "steeper_facets"])
+@pytest.mark.parametrize("mod_type", ["comma", "sawtooth", "faceted"])
 def test_modify_edges_supports_printable_profiles(mod_type):
     block = cuboid((10, 10, 10))
     result = block.modify_edges(

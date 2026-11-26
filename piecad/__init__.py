@@ -249,7 +249,6 @@ class Obj3d:
         else:
             return Obj3d(second), Obj3d(first)
 
-
     def modify_circular_edges(
         self,
         mod_type: str,
@@ -275,12 +274,17 @@ class Obj3d:
         uses a fixed representative section of the varying straight-edge sawtooth.
         A rim that cannot be uniquely identified raises `ValueError`.
         """
-        _chkIn("mod_type", mod_type, ["fillet", "chamfer", "bevel", "sawtooth", "comma", "steeper_facets"])
+        _chkIn(
+            "mod_type",
+            mod_type,
+            ["fillet", "chamfer", "bevel", "sawtooth", "comma", "faceted"],
+        )
 
         from ._edge_modification import modify_circular_edges as _modify_circular_edges
 
-        return _modify_circular_edges(self, mod_type, origin, radius, outward, size=size)
-
+        return _modify_circular_edges(
+            self, mod_type, origin, radius, outward, size=size
+        )
 
     def modify_edge(
         self,
@@ -297,8 +301,8 @@ class Obj3d:
 
         The `edge` parameter is a tuple of two points, specifying the `(start, end)` of the edge to be modified.
 
-        The modification type (`mod_type`) must be one of `"fillet"`, `"chamfer"`, `"bevel"`,
-        `"sawtooth"`, `"comma"`, `"steeper_facets"`. Type `bevel` is an alias for `chamfer`.
+        The modification type (`mod_type`) and `size` have the same meaning
+        as in `modify_edges`, which describes each profile.
 
         The `size` parameter specifies the size or radius of the shape that will be applied to the edges.
 
@@ -312,9 +316,14 @@ class Obj3d:
         the modification process.
 
         """
-        _chkIn("mod_type", mod_type, ["fillet", "chamfer", "bevel", "sawtooth", "comma", "steeper_facets"])
+        _chkIn(
+            "mod_type",
+            mod_type,
+            ["fillet", "chamfer", "bevel", "sawtooth", "comma", "faceted"],
+        )
 
         from ._edge_modification import modify_edges as _modify_edges
+
         start, end = edge
         delta = Const.epsilon
         bounds = (
@@ -326,7 +335,7 @@ class Obj3d:
             max(start[2], end[2]) + delta,
         )
 
-        return _modify_edges (
+        return _modify_edges(
             self,
             mod_type,
             size=size,
@@ -335,7 +344,6 @@ class Obj3d:
             include=[bounds],
             exclude=None,
         )
-
 
     def modify_edges(
         self,
@@ -351,8 +359,19 @@ class Obj3d:
 
         Somewhat EXPERIMENTAL - interface could change in future releases.
 
-        The modification type (`mod_type`) must be one of `"fillet"`, `"chamfer"`, `"bevel"`,
-        `"sawtooth"`, `"comma"`, `"steeper_facets"`. Type `bevel` is an alias for `chamfer`.
+        The modification type (`mod_type`) selects the edge profile:
+
+        - `fillet`: a rounded, circular profile.
+        - `chamfer` or `bevel`: a straight 45-degree cut; these are aliases.
+        - `comma`: a circular arc joined to a 45-degree tangent.
+        - `faceted`: two flat facets approximating a circular arc, joined to
+          a 45-degree tangent.
+        - `sawtooth`: an arc joined to a tangent whose transition angle varies
+          periodically from 22.5 to 45 degrees along the edge.
+
+        `comma`, `faceted`, and `sawtooth` use a regular fillet on vertical
+        straight edges. Circular and elliptical edges use a revolved profile;
+        see `modify_circular_edges` for details.
 
         The `size` parameter specifies the size or radius of the shape that will be applied to the edges.
 
@@ -375,11 +394,15 @@ class Obj3d:
         If the exclude list is provided, the edges selected in the list will be ignored.
         The exclude list always takes precedence over the include list.
         """
-        _chkIn("mod_type", mod_type, ["fillet", "chamfer", "bevel", "sawtooth", "comma", "steeper_facets"])
+        _chkIn(
+            "mod_type",
+            mod_type,
+            ["fillet", "chamfer", "bevel", "sawtooth", "comma", "faceted"],
+        )
 
         from ._edge_modification import modify_edges as _modify_edges
 
-        return _modify_edges (
+        return _modify_edges(
             self,
             mod_type,
             size=size,
@@ -388,7 +411,6 @@ class Obj3d:
             include=include,
             exclude=exclude,
         )
-
 
     def num_faces(self) -> int:
         """

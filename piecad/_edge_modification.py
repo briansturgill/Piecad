@@ -8,7 +8,6 @@ from . import *
 from .lin_math import Vec3
 from .trigonometry import atan2
 
-
 __all__ = [
     "modify_circular_edges",
     "modify_edges",
@@ -135,7 +134,9 @@ def _circular_edge_geometry(
     outward: bool,
 ) -> tuple[int, int, float]:
     if obj.is_empty():
-        raise ValueError("could not uniquely identify the circular edge and material side")
+        raise ValueError(
+            "could not uniquely identify the circular edge and material side"
+        )
     vertices, faces = obj.to_verts_and_faces()
     _, outer_edges = classify_edges(vertices, faces)
     cx, cy, cz = origin
@@ -162,15 +163,16 @@ def _circular_edge_geometry(
             midpoint_x = (points[0][0] + points[1][0]) / 2 - cx
             midpoint_y = (points[0][1] + points[1][1]) / 2 - cy
             radial_dot = (
-                radial[0] * (midpoint_x / rx) / rx
-                + radial[1] * (midpoint_y / ry) / ry
+                radial[0] * (midpoint_x / rx) / rx + radial[1] * (midpoint_y / ry) / ry
             )
             if (outward and radial_dot > 0) or (not outward and radial_dot < 0):
                 sides.add(-1 if horizontal[2] > 0 else 1)
                 rim_edges.add(edge)
 
     if len(sides) != 1:
-        raise ValueError("could not uniquely identify the circular edge and material side")
+        raise ValueError(
+            "could not uniquely identify the circular edge and material side"
+        )
 
     degrees = defaultdict(int)
     for start, end in rim_edges:
@@ -213,7 +215,7 @@ def modify_circular_edges(
         "comma": comma_2d,
         "fillet": fillet_2d,
         "sawtooth": sawtooth_2d,
-        "steeper_facets": steeper_facets_2d,
+        "faceted": faceted_2d,
     }
     if mod_type not in profiles:
         raise ValueError(f"Unknown cutter type: {mod_type}")
@@ -259,7 +261,7 @@ def modify_edges(
     include: list[tuple[float, float, float, float, float, float]] | None,
     exclude: list[tuple[float, float, float, float, float, float]] | None,
     overhang=1e-5,
-    flip_on_top=True
+    flip_on_top=True,
 ) -> Obj3d:
     """
     Modify the edges of an `Obj3d` object.
@@ -320,13 +322,10 @@ def modify_edges(
 
         cut_obj = modify_edge(
             mod_type,
-            (v1,
-            v2,
-            first_normal,
-            second_normal),
+            (v1, v2, first_normal, second_normal),
             size=size,
             overhang=overhang,
-            flip_on_top=flip_on_top
+            flip_on_top=flip_on_top,
         )
         to_cut.append(cut_obj)
 
@@ -339,21 +338,25 @@ def modify_edges(
 
 def modify_edge(
     mod_type: str,
-    edge: tuple[tuple[float, float, float], tuple[float, float, float], tuple[float, float, float], tuple[float, float, float]],
+    edge: tuple[
+        tuple[float, float, float],
+        tuple[float, float, float],
+        tuple[float, float, float],
+        tuple[float, float, float],
+    ],
     size: float,
     overhang=1e-5,
-    flip_on_top=True
+    flip_on_top=True,
 ) -> Obj3d:
     """
     Modify a single edge of an object.
     This is a low-level function used internally by `modify_edges`.
     """
     o = position_cutter(
-            make_cutter(mod_type, edge, size, overhang, flip_on_top),
-            edge=edge,
-            size=size
-        )
+        make_cutter(mod_type, edge, size, overhang, flip_on_top), edge=edge, size=size
+    )
     return o
+
 
 def _orient_cutter(cutter, edge):
     start, end, first_normal, second_normal = edge
@@ -391,9 +394,10 @@ def _swap_profile(edge, flip_on_top):
         swap = tuple(first_normal) < tuple(second_normal)
     else:
         swap = first_normal[2] < second_normal[2]
-    on_top = max(first_normal[2], second_normal[2]) > 1e-10 and min(
-        first_normal[2], second_normal[2]
-    ) >= -1e-10
+    on_top = (
+        max(first_normal[2], second_normal[2]) > 1e-10
+        and min(first_normal[2], second_normal[2]) >= -1e-10
+    )
     return swap != (flip_on_top and on_top)
 
 
@@ -560,19 +564,18 @@ def sawtooth_3d(edge, size=2.0, overhang=1e-5, flip_on_top=True):
     samples_per_tooth = 8
     steps = samples_per_tooth * max(1, math.ceil(length / size))
     angles = [
-        3 * math.pi / 16
-        + math.pi / 16 * math.cos(2 * math.pi * i / samples_per_tooth)
+        3 * math.pi / 16 + math.pi / 16 * math.cos(2 * math.pi * i / samples_per_tooth)
         for i in range(steps + 1)
     ]
     arc_steps = max(1, math.ceil(Config.get_default_segments() / 8))
     return _profile_cutter(edge, size, overhang, flip_on_top, angles, arc_steps)
 
 
-def steeper_facets_2d(size=2.0, overhang=1e-5):
-    return _cutter_profile(steeper_facets_3d, size, overhang)
+def faceted_2d(size=2.0, overhang=1e-5):
+    return _cutter_profile(faceted_3d, size, overhang)
 
 
-def steeper_facets_3d(edge, size=2.0, overhang=1e-5, flip_on_top=True):
+def faceted_3d(edge, size=2.0, overhang=1e-5, flip_on_top=True):
     """Approximate the upper fillet with two facets and a 45-degree tangent."""
     _validate_profile_dimensions(size, overhang)
     if _vertical_edge(edge):
@@ -587,8 +590,8 @@ def make_cutter(mod_type, edge, size=2.0, overhang=1e-5, flip_on_top=True):
         return fillet_3d(edge, size, overhang)
     elif mod_type == "comma":
         return comma_3d(edge, size, overhang, flip_on_top)
-    elif mod_type == "steeper_facets":
-        return steeper_facets_3d(edge, size, overhang, flip_on_top)
+    elif mod_type == "faceted":
+        return faceted_3d(edge, size, overhang, flip_on_top)
     elif mod_type == "sawtooth":
         return sawtooth_3d(edge, size, overhang, flip_on_top)
     raise ValueError(f"Unknown cutter type: {mod_type}")

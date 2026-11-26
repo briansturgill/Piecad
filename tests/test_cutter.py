@@ -94,7 +94,9 @@ def test_exclude_takes_precedence_over_include():
     block = cuboid([10.0, 10.0, 10.0])
     same_bbox = [(-0.1, -0.1, -0.1, 0.1, 0.1, 10.1)]
 
-    result = block.modify_edges("fillet", size=0.5, include=same_bbox, exclude=same_bbox)
+    result = block.modify_edges(
+        "fillet", size=0.5, include=same_bbox, exclude=same_bbox
+    )
 
     assert result.volume() == pytest.approx(block.volume())
 

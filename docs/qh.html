@@ -230,16 +230,6 @@ Set the current font used by `text`.
 </p>
 <h2>3d Primitives</h2>
 <p class="item">
-<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.chamfer">
-chamfer
-<span class="popup">
-<code>chamfer(obj: Obj3d, bevel_size: float = 2.0, min_edge_length: float = 2.0, angle_range: tuple[float, float] = (80, 100), include: list[tuple[float, float, float, float, float, float]] = None, exclude: list[tuple[float, float, float, float, float, float]] = None) -> Obj3d</code>
-<br>
-EXPERIMENTAL - interface may change in future releases.
-</span>
-</a>
-</p>
-<p class="item">
 <a class="ahover" href="primitives_3d.html#piecad.primitives_3d.cone">
 cone
 <span class="popup">
@@ -326,16 +316,6 @@ extrude_transforming
 <code>extrude_transforming(obj: Obj2d, height: float, num_twist_divisions: int = 0, twist: float = 0, scale: tuple[float, float] = (1.0, 1.0)) -> Obj3d</code>
 <br>
 Create a Obj3d solid from Obj2d of given height.
-</span>
-</a>
-</p>
-<p class="item">
-<a class="ahover" href="primitives_3d.html#piecad.primitives_3d.fillet">
-fillet
-<span class="popup">
-<code>fillet(obj: Obj3d, radius: float = 4.0, min_edge_length: float = 2.0, angle_range: tuple[float, float] = (80, 100), include: list[tuple[float, float, float, float, float, float]] = None, exclude: list[tuple[float, float, float, float, float, float]] = None) -> Obj3d</code>
-<br>
-EXPERIMENTAL - interface may change in future releases.
 </span>
 </a>
 </p>
@@ -1030,6 +1010,36 @@ miter_cut
 <code>miter_cut(self, cut_angle: 'float', cut_point: 'tuple[float, float, float]') -> 'tuple[Obj3d, Obj3d]'</code>
 <br>
 This works similarly to a miter saw.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.modify_circular_edges">
+modify_circular_edges
+<span class="popup">
+<code>modify_circular_edges(self, mod_type: 'str', origin: 'tuple[float, float, float]', radius: 'float | tuple[float, float]', outward: 'bool' = True, size: 'float' = 4.0) -> 'Obj3d'</code>
+<br>
+Modify a circular or elliptical rim in the XY plane.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.modify_edge">
+modify_edge
+<span class="popup">
+<code>modify_edge(self, edge: 'tuple[tuple[float, float, float], tuple[float, float, float]]', mod_type: 'str', size: 'float' = 4.0, min_edge_length: 'float' = 2.0, angle_range: 'tuple[float, float]' = (80, 100)) -> 'Obj3d'</code>
+<br>
+Modify the specified edge using the specified modification type.
+</span>
+</a>
+</p>
+<p class="item">
+<a class="ahover" href="index.html#piecad.modify_edges">
+modify_edges
+<span class="popup">
+<code>modify_edges(self, mod_type: 'str', size: 'float' = 4.0, min_edge_length: 'float' = 2.0, angle_range: 'tuple[float, float]' = (80, 100), include: 'list[tuple[float, float, float, float, float, float]]' = None, exclude: 'list[tuple[float, float, float, float, float, float]]' = None) -> 'Obj3d'</code>
+<br>
+Modify the edges of an `Obj3d` by applying the specified modification type.
 </span>
 </a>
 </p>
