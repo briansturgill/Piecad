@@ -54,3 +54,7 @@ Changes from Piecad 2.0.4:
 
     Backward-incompatible: existing code using path(...).line_to(...).close()
     as an Obj2d must change the trailing call to .close().to_Obj2d().
+
+# 2.1.5
+  - Massive rework of fillet/chamfer.... now done through Obj3d methods.
+  - modify_edges, modify_edge, modify_circular_edges (also does ellipticals).

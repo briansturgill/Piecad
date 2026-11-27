@@ -27,6 +27,12 @@
 * [axes.py](axes.py)
     -  Axes ProjectBox Example
 
+* [edge_modifiers.py](edge_modifiers.py)
+    -  Quick example of modify_edges usage.
+
+* [edge_modifiers_demo.py](edge_modifiers_demo.py)
+    -  Make a series of demos of the edge modifiers on a cube and a cylinder.
+
 * [head_rest_purse_hanger.py](head_rest_purse_hanger.py)
     -  A purse hanger that uses your car's head rest posts.
 

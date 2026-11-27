@@ -373,7 +373,7 @@ Create a Obj3d by revolving an Obj2d around the Y-axis, then rotating it so that
 <a class="ahover" href="primitives_3d.html#piecad.primitives_3d.rounded_cuboid">
 rounded_cuboid
 <span class="popup">
-<code>rounded_cuboid(size: list[float, float, float], rounding_radius=2.0, segments: int = -1, center: bool = False) -> Obj3d</code>
+<code>rounded_cuboid(size: list[float, float, float], mod_type: str = 'fillet', rounding_radius=2.0, segments: int = -1, center: bool = False) -> Obj3d</code>
 <br>
 Make a rounded_cuboid with the x, y, and z values given in size.
 </span>
@@ -1017,7 +1017,7 @@ This works similarly to a miter saw.
 <a class="ahover" href="index.html#piecad.modify_circular_edges">
 modify_circular_edges
 <span class="popup">
-<code>modify_circular_edges(self, mod_type: 'str', origin: 'tuple[float, float, float]', radius: 'float | tuple[float, float]', outward: 'bool' = True, size: 'float' = 4.0) -> 'Obj3d'</code>
+<code>modify_circular_edges(self, mod_type: 'str', origin: 'tuple[float, float, float]', radius: 'float | tuple[float, float]', outward: 'bool' = True, size: 'float' = 4.0, overhang: 'float' = 1e-05, segments: 'int' = -1) -> 'Obj3d'</code>
 <br>
 Modify a circular or elliptical rim in the XY plane.
 </span>
@@ -1027,7 +1027,7 @@ Modify a circular or elliptical rim in the XY plane.
 <a class="ahover" href="index.html#piecad.modify_edge">
 modify_edge
 <span class="popup">
-<code>modify_edge(self, edge: 'tuple[tuple[float, float, float], tuple[float, float, float]]', mod_type: 'str', size: 'float' = 4.0, min_edge_length: 'float' = 2.0, angle_range: 'tuple[float, float]' = (80, 100)) -> 'Obj3d'</code>
+<code>modify_edge(self, edge: 'tuple[tuple[float, float, float], tuple[float, float, float]]', mod_type: 'str', size: 'float' = 4.0, min_edge_length: 'float' = 2.0, angle_range: 'tuple[float, float]' = (80, 100), overhang: 'float' = 1e-05, flip_on_top: 'bool' = True, segments: 'int' = -1) -> 'Obj3d'</code>
 <br>
 Modify the specified edge using the specified modification type.
 </span>
@@ -1037,7 +1037,7 @@ Modify the specified edge using the specified modification type.
 <a class="ahover" href="index.html#piecad.modify_edges">
 modify_edges
 <span class="popup">
-<code>modify_edges(self, mod_type: 'str', size: 'float' = 4.0, min_edge_length: 'float' = 2.0, angle_range: 'tuple[float, float]' = (80, 100), include: 'list[tuple[float, float, float, float, float, float]]' = None, exclude: 'list[tuple[float, float, float, float, float, float]]' = None) -> 'Obj3d'</code>
+<code>modify_edges(self, mod_type: 'str | tuple[str, str, str]', size: 'float' = 4.0, min_edge_length: 'float' = 2.0, angle_range: 'tuple[float, float]' = (80, 100), include: 'list[tuple[float, float, float, float, float, float]]' = None, exclude: 'list[tuple[float, float, float, float, float, float]]' = None, overhang: 'float' = 1e-05, flip_on_top: 'bool' = True, segments: 'int' = -1) -> 'Obj3d'</code>
 <br>
 Modify the edges of an `Obj3d` by applying the specified modification type.
 </span>

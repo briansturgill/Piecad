@@ -4,7 +4,6 @@ Make a series of demos of the edge modifiers on a cube and a cylinder.
 
 from piecad import *
 
-
 if __name__ == "__main__":
     num = 0
     for mod_type in ("bevel", "fillet", "comma", "faceted", "sawtooth"):
@@ -21,11 +20,19 @@ if __name__ == "__main__":
                 if mod_type == "comma":
                     label += f" flip_on_top={flip_on_top}"
                     filename += f"_flip_{str(flip_on_top).lower()}"
-                o = shape.modify_edges(mod_type, size=6)
+                o = shape.modify_edges(mod_type, size=6, flip_on_top=flip_on_top)
                 if rotation == (0, 0, 0):
-                    o = union(o, text(5,
-                                f"{mod_type}{' '+str(flip_on_top)[0] if mod_type== 'comma' else ''}",0)
-                                .extrude(2).translate((10, -20, 30)).rotate((0,0,90)))
+                    o = union(
+                        o,
+                        text(
+                            5,
+                            f"{mod_type}{' '+str(flip_on_top)[0] if mod_type== 'comma' else ''}",
+                            0,
+                        )
+                        .extrude(2)
+                        .translate((10, -20, 30))
+                        .rotate((0, 0, 90)),
+                    )
                 view(o, f"{label} difference")
                 num += 1
                 o = o.color("blue")
@@ -47,16 +54,23 @@ if __name__ == "__main__":
                 rim = "outer" if outward else "hole"
                 num += 1
                 label_y = (
-                    (inner_radius + outer_radius + (-edge_size if outward else edge_size))
-                    / 2 * y_scale
+                    (
+                        inner_radius
+                        + outer_radius
+                        + (-edge_size if outward else edge_size)
+                    )
+                    / 2
+                    * y_scale
                 )
                 result = union(
                     result,
-                    text(4, f"{num}{mod_type[0:3].upper()}", 0).extrude(2)
-                    .center((True, True, False)).translate((0, label_y, 30)),
+                    text(4, f"{num}{mod_type[0:3].upper()}", 0)
+                    .extrude(2)
+                    .center((True, True, False))
+                    .translate((0, label_y, 30)),
                 )
                 view(result, f"{mod_type} {shape_name} {rim}")
                 result = result.color("red")
                 save(f"{num}_{mod_type}_{shape_name}_{rim}.3mf", result)
-            #break # Skip elliptical shapes
+            # break # Skip elliptical shapes
     view_all_now()

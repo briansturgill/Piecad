@@ -1,7 +1,16 @@
 import math
 import pytest
 
-from piecad import Obj3d, ValidationError, cone, cuboid, cylinder, difference, polygon
+from piecad import (
+    Config,
+    Obj3d,
+    ValidationError,
+    cone,
+    cuboid,
+    cylinder,
+    difference,
+    polygon,
+)
 from piecad._edge_modification import (
     bevel_2d,
     bevel_3d,
@@ -310,3 +319,182 @@ def test_modify_edges_supports_printable_profiles(mod_type):
     )
 
     assert 0 < result.volume() < block.volume()
+
+
+@pytest.mark.parametrize(
+    ("shorthand", "expanded"),
+    [
+        ("fillet", ("fillet", "fillet", "comma")),
+        ("bevel", ("bevel", "bevel", "bevel")),
+        ("chamfer", ("chamfer", "chamfer", "chamfer")),
+        ("comma", ("comma", "fillet", "comma")),
+        ("faceted", ("faceted", "fillet", "faceted")),
+        ("sawtooth", ("sawtooth", "fillet", "sawtooth")),
+    ],
+)
+def test_modify_edges_shorthand_expands_to_top_side_bottom_tuple(shorthand, expanded):
+    block = cuboid((10, 10, 10))
+
+    short = block.modify_edges(shorthand, size=0.5)
+    explicit = block.modify_edges(expanded, size=0.5)
+
+    assert 0 < short.volume() < block.volume()
+    assert difference(short, explicit).volume() == pytest.approx(0, abs=1e-8)
+    assert difference(explicit, short).volume() == pytest.approx(0, abs=1e-8)
+
+
+@pytest.mark.parametrize(
+    ("bounds", "profile"),
+    [
+        ((-0.1, -0.1, 9.9, 10.1, 10.1, 10.1), "bevel"),  # top edges
+        ((-0.1, -0.1, -0.1, 0.1, 0.1, 10.1), "fillet"),  # one vertical edge
+        ((-0.1, -0.1, -0.1, 10.1, 10.1, 0.1), "comma"),  # bottom edges
+    ],
+)
+def test_modify_edges_tuple_selects_profile_by_edge_position(bounds, profile):
+    block = cuboid((10, 10, 10))
+
+    mixed = block.modify_edges(("bevel", "fillet", "comma"), size=0.5, include=[bounds])
+    expected = block.modify_edges((profile,) * 3, size=0.5, include=[bounds])
+
+    assert 0 < mixed.volume() < block.volume()
+    assert difference(mixed, expected).volume() == pytest.approx(0, abs=1e-8)
+    assert difference(expected, mixed).volume() == pytest.approx(0, abs=1e-8)
+
+
+@pytest.mark.parametrize("mod_type", ["comma", "sawtooth", "faceted"])
+def test_modify_edges_side_profile_controls_vertical_edges(mod_type):
+    block = cuboid((10, 10, 10))
+    one_vertical_edge = [(-0.1, -0.1, -0.1, 0.1, 0.1, 10.1)]
+
+    filleted = block.modify_edges(("fillet",) * 3, size=0.5, include=one_vertical_edge)
+    result = block.modify_edges((mod_type,) * 3, size=0.5, include=one_vertical_edge)
+
+    # Vertical edges must use the requested side profile, not fall back to a fillet.
+    assert 0 < result.volume() < block.volume()
+    assert abs(result.volume() - filleted.volume()) > 1e-6
+
+
+def test_modify_edges_rejects_invalid_tuples():
+    block = cuboid((10, 10, 10))
+
+    with pytest.raises(ValidationError, match="mod_type"):
+        block.modify_edges(("fillet", "invalid", "fillet"), size=0.5)
+    with pytest.raises(ValidationError, match="top, side, bottom"):
+        block.modify_edges(("fillet", "fillet"), size=0.5)
+
+
+@pytest.mark.parametrize("mod_type", ["comma", "sawtooth", "faceted"])
+def test_modify_edges_flip_on_top_only_affects_top_edges(mod_type):
+    block = cuboid((10, 10, 10))
+    top = [(-0.1, -0.1, 9.9, 10.1, 10.1, 10.1)]
+    bottom = [(-0.1, -0.1, -0.1, 10.1, 10.1, 0.1)]
+
+    flipped = block.modify_edges(
+        (mod_type,) * 3, size=0.5, include=top, flip_on_top=True
+    )
+    unflipped = block.modify_edges(
+        (mod_type,) * 3, size=0.5, include=top, flip_on_top=False
+    )
+    assert difference(flipped, unflipped).volume() > 1e-6
+
+    flipped_bottom = block.modify_edges(
+        (mod_type,) * 3, size=0.5, include=bottom, flip_on_top=True
+    )
+    unflipped_bottom = block.modify_edges(
+        (mod_type,) * 3, size=0.5, include=bottom, flip_on_top=False
+    )
+    assert difference(flipped_bottom, unflipped_bottom).volume() == pytest.approx(
+        0, abs=1e-8
+    )
+
+
+def test_modify_edge_honors_flip_on_top():
+    block = cuboid((10, 10, 10))
+    top_edge = ((0, 0, 10), (10, 0, 10))
+
+    flipped = block.modify_edge(top_edge, "comma", size=0.5, flip_on_top=True)
+    unflipped = block.modify_edge(top_edge, "comma", size=0.5, flip_on_top=False)
+
+    assert difference(flipped, unflipped).volume() > 1e-6
+
+
+def test_overhang_parameter_reaches_all_modify_methods():
+    block = cuboid((10, 10, 10))
+    can = cylinder(10, 10)
+    vertical_edge = ((0, 0, 0), (0, 0, 10))
+
+    # A custom overhang still produces a valid cut; by design it extends the
+    # cutter outside the material without changing the removed shape.
+    result = block.modify_edges("chamfer", size=0.5, overhang=0.01)
+    assert 0 < result.volume() < block.volume()
+
+    # An invalid overhang is rejected by the internal validation, which can
+    # only happen if each method forwards the parameter.
+    with pytest.raises(ValueError, match="overhang"):
+        block.modify_edges("chamfer", size=0.5, overhang=-1)
+    with pytest.raises(ValueError, match="overhang"):
+        block.modify_edge(vertical_edge, "chamfer", size=0.5, overhang=-1)
+    with pytest.raises(ValueError, match="overhang"):
+        can.modify_circular_edges("chamfer", (0, 0, 10), 10, size=0.5, overhang=-1)
+
+
+def test_modify_edges_segments_controls_curved_profiles():
+    block = cuboid((10, 10, 10))
+    vertical_edge = ((0, 0, 0), (0, 0, 10))
+
+    # A finer fillet cylinder hugs the arc more closely, removing less material.
+    coarse = block.modify_edges("fillet", size=1, segments=8)
+    fine = block.modify_edges("fillet", size=1, segments=128)
+    assert coarse.volume() < fine.volume() < block.volume()
+
+    coarse = block.modify_edge(vertical_edge, "fillet", size=1, segments=8)
+    fine = block.modify_edge(vertical_edge, "fillet", size=1, segments=128)
+    assert coarse.volume() < fine.volume()
+
+
+@pytest.mark.parametrize("mod_type", ["comma", "sawtooth"])
+def test_modify_edges_segments_reaches_printable_profiles(mod_type):
+    block = cuboid((10, 10, 10))
+
+    coarse = block.modify_edges((mod_type,) * 3, size=1, segments=8)
+    fine = block.modify_edges((mod_type,) * 3, size=1, segments=128)
+
+    assert difference(fine, coarse).volume() > 1e-9
+
+
+def test_modify_edges_default_segments_match_config():
+    block = cuboid((10, 10, 10))
+
+    default = block.modify_edges("fillet", size=1)
+    explicit = block.modify_edges(
+        "fillet", size=1, segments=Config.get_default_segments()
+    )
+
+    assert difference(default, explicit).volume() == pytest.approx(0, abs=1e-9)
+    assert difference(explicit, default).volume() == pytest.approx(0, abs=1e-9)
+
+
+def test_modify_circular_edges_segments_affects_profile_not_rim():
+    can = cylinder(10, 10)
+
+    coarse = can.modify_circular_edges("fillet", (0, 0, 10), 10, size=1, segments=4)
+    fine = can.modify_circular_edges("fillet", (0, 0, 10), 10, size=1, segments=128)
+    assert coarse.volume() < fine.volume() < can.volume()
+
+    # The cutter's revolution must keep matching the rim's own segmentation.
+    seven = cylinder(10, 10, segments=7)
+    result = seven.modify_circular_edges("chamfer", (0, 0, 10), 10, size=1, segments=64)
+    assert result.slice(9.9).num_verts() == seven.slice(9.9).num_verts()
+
+
+def test_segments_validated_by_all_modify_methods():
+    block = cuboid((10, 10, 10))
+    can = cylinder(10, 10)
+
+    with pytest.raises(ValidationError, match="segments"):
+        block.modify_edges("fillet", size=1, segments=2)
+    with pytest.raises(ValidationError, match="segments"):
+        block.modify_edge(((0, 0, 0), (0, 0, 10)), "fillet", size=1, segments=2)
+    with pytest.raises(ValidationError, match="segments"):
+        can.modify_circular_edges("fillet", (0, 0, 10), 10, size=1, segments=2)

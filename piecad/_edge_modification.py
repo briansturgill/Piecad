@@ -1,7 +1,3 @@
-# Prompt:
-# I need a python program that will take a mesh (input is vertices, faces) I need
-# two lists of edges, one that needs an inner fillet and one that needs an outer fillet.
-
 from collections import defaultdict
 from typing import Sequence
 from . import *
@@ -43,7 +39,26 @@ def face_normal(
 def classify_edges(
     vertices: Sequence[Sequence[float]],
     faces: Sequence[Sequence[int]],
-) -> tuple[list[tuple[int, int]], list[tuple[int, int]]]:
+) -> tuple[
+    list[
+        tuple[
+            tuple[int, int],
+            float,
+            float,
+            tuple[float, float, float],
+            tuple[float, float, float],
+        ]
+    ],
+    list[
+        tuple[
+            tuple[int, int],
+            float,
+            float,
+            tuple[float, float, float],
+            tuple[float, float, float],
+        ]
+    ],
+]:
     """
     Classify mesh edges as inner (concave) or outer (convex) fillet edges.
 
@@ -59,7 +74,11 @@ def classify_edges(
             - inner_edges: concave edges, suitable for an inner fillet
             - outer_edges: convex edges, suitable for an outer fillet
 
-        Each edge is a sorted `(vertex_a, vertex_b)` vertex-index tuple.
+        Each entry is a tuple of:
+            - edge: a sorted `(vertex_a, vertex_b)` vertex-index pair
+            - edge_length
+            - signed_angle: the dihedral angle between the faces, in degrees
+            - the two adjacent face normals
 
     Notes:
         Boundary edges and non-manifold edges are ignored because they do not
@@ -207,8 +226,13 @@ def modify_circular_edges(
     outward: bool = True,
     size: float = 4.0,
     overhang: float = 1e-5,
+    segments: int = -1,
 ) -> Obj3d:
-    """Cut an XY-plane circular or elliptical rim centered at origin."""
+    """Cut an XY-plane circular or elliptical rim centered at origin.
+
+    `segments` controls the resolution of curved profile arcs. The cutter's
+    revolution is not affected: it must match the rim's own segmentation.
+    """
     profiles = {
         "bevel": bevel_2d,
         "chamfer": bevel_2d,
@@ -236,15 +260,15 @@ def modify_circular_edges(
     if outward and rx <= size + overhang:
         raise ValueError("outer radius must be greater than size plus overhang")
 
-    side, segments, rotation = _circular_edge_geometry(obj, origin, radii, outward)
-    profile = profiles[mod_type](size=size, overhang=overhang)
+    side, rim_segments, rotation = _circular_edge_geometry(obj, origin, radii, outward)
+    profile = profiles[mod_type](size=size, overhang=overhang, segments=segments)
     profile = (
         profile.translate((size / 2, size / 2))
         .scale((-1 if outward else 1, side))
         .translate((rx, 0))
     )
     cutter = (
-        profile.revolve(segments=segments)
+        profile.revolve(segments=rim_segments)
         .rotate((0, 0, rotation))
         .scale((1, ry / rx, 1))
         .translate(origin)
@@ -254,7 +278,7 @@ def modify_circular_edges(
 
 def modify_edges(
     obj: Obj3d,
-    mod_type: str,
+    mod_type: tuple[str, str, str],
     size: float,  # For fillets this is radius
     min_edge_length,
     angle_range,
@@ -262,11 +286,16 @@ def modify_edges(
     exclude: list[tuple[float, float, float, float, float, float]] | None,
     overhang=1e-5,
     flip_on_top=True,
+    segments: int = -1,
 ) -> Obj3d:
     """
     Modify the edges of an `Obj3d` object.
     This function is used internally by the `modify_edges` and `modify_edge` methods of `Obj3d`.
+
+    `mod_type` must be a `(top, side, bottom)` tuple of profile names; each
+    edge is classified by `_edge_position` and cut with the matching profile.
     """
+    top_type, side_type, bottom_type = mod_type
     vertices, faces = obj.to_verts_and_faces()
     _, outer_edges = classify_edges(vertices, faces)
 
@@ -320,18 +349,21 @@ def modify_edges(
             if inside_exclude:
                 continue
 
+        full_edge = (v1, v2, first_normal, second_normal)
+        profile = {"top": top_type, "side": side_type, "bottom": bottom_type}[
+            _edge_position(full_edge)
+        ]
         cut_obj = modify_edge(
-            mod_type,
-            (v1, v2, first_normal, second_normal),
+            profile,
+            full_edge,
             size=size,
             overhang=overhang,
             flip_on_top=flip_on_top,
+            segments=segments,
         )
         to_cut.append(cut_obj)
 
-    print(len(to_cut))
     o = difference(obj, *to_cut)
-    # view(union(*to_cut))
 
     return o.simplify()
 
@@ -347,13 +379,16 @@ def modify_edge(
     size: float,
     overhang=1e-5,
     flip_on_top=True,
+    segments: int = -1,
 ) -> Obj3d:
     """
     Modify a single edge of an object.
     This is a low-level function used internally by `modify_edges`.
     """
     o = position_cutter(
-        make_cutter(mod_type, edge, size, overhang, flip_on_top), edge=edge, size=size
+        make_cutter(mod_type, edge, size, overhang, flip_on_top, segments),
+        edge=edge,
+        size=size,
     )
     return o
 
@@ -388,16 +423,30 @@ def _vertical_edge(edge):
     return math.hypot(direction[0], direction[1]) <= length * 1e-10
 
 
+def _edge_position(edge):
+    """Classify an edge as "top", "side" (vertical), or "bottom".
+
+    Top means neither adjacent outward normal points down and at least one
+    points up in world Z. Any other non-vertical edge is a bottom edge.
+    """
+    if _vertical_edge(edge):
+        return "side"
+    first_normal, second_normal = edge[2:]
+    if (
+        max(first_normal[2], second_normal[2]) > 1e-10
+        and min(first_normal[2], second_normal[2]) >= -1e-10
+    ):
+        return "top"
+    return "bottom"
+
+
 def _swap_profile(edge, flip_on_top):
     first_normal, second_normal = edge[2:]
     if first_normal[2] == second_normal[2]:
         swap = tuple(first_normal) < tuple(second_normal)
     else:
         swap = first_normal[2] < second_normal[2]
-    on_top = (
-        max(first_normal[2], second_normal[2]) > 1e-10
-        and min(first_normal[2], second_normal[2]) >= -1e-10
-    )
+    on_top = _edge_position(edge) == "top"
     return swap != (flip_on_top and on_top)
 
 
@@ -459,21 +508,22 @@ def _profile_cutter(edge, size, overhang, flip_on_top, angles, arc_steps):
     return _orient_cutter(polyhedron(vertices, faces, check="batch"), edge)
 
 
-def _cutter_profile(cutter, size, overhang):
+def _cutter_profile(cutter, size, overhang, segments=None):
     """Slice the 3D cutter into its local face-normal coordinates."""
     edge = ((-size, 0, 0), (size, 0, 0), (0, -1, 0), (0, 0, -1))
-    shape = cutter(edge, size=size, overhang=overhang)
+    kwargs = {} if segments is None else {"segments": segments}
+    shape = cutter(edge, size=size, overhang=overhang, **kwargs)
     return shape.transform(((0, 1, 0, 0), (0, 0, 1, 0), (1, 0, 0, 0))).slice(0)
 
 
-def bevel_2d(size=2.0, overhang=1e-5):
+def bevel_2d(size=2.0, overhang=1e-5, segments=-1):
+    # segments is accepted for the uniform profile interface; a bevel has no arcs.
     return _cutter_profile(bevel_3d, size, overhang)
 
 
 def bevel_3d(edge, size=2.0, overhang=1e-5):
     """Build a 45-degree bevel cutter with legs of length size."""
-    if not math.isfinite(size) or size <= 0:
-        raise ValueError("size must be finite and positive")
+    _validate_profile_dimensions(size, overhang)
     start, end, _, _ = edge
     half_length = Vec3.distance(start, end) / 2
     reach = size / 2 + overhang
@@ -499,29 +549,28 @@ def bevel_3d(edge, size=2.0, overhang=1e-5):
     return _orient_cutter(polyhedron(vertices, faces, check="batch"), edge)
 
 
-def comma_2d(size=2.0, overhang=1e-5):
-    return _cutter_profile(comma_3d, size, overhang)
+def comma_2d(size=2.0, overhang=1e-5, segments=-1):
+    return _cutter_profile(comma_3d, size, overhang, segments)
 
 
-def comma_3d(edge, size=2.0, overhang=1e-5, flip_on_top=True):
+def comma_3d(edge, size=2.0, overhang=1e-5, flip_on_top=True, segments=-1):
     """Build a printable fillet, optionally flipping it on top-facing edges.
 
     Top-facing means neither outward normal points down and at least one points
-    up in world Z. Vertical edges use a fillet regardless of this setting.
+    up in world Z.
     """
-    if _vertical_edge(edge):
-        return fillet_3d(edge, size, overhang)
-
     start, end, _, _ = edge
     length = Vec3.distance(start, end)
     cutter = bevel_3d(edge, size, overhang)
-    # Include the 45-degree arc endpoint as a cylinder vertex.
-    segments = ((Config.get_default_segments() + 7) // 8) * 8
+    if segments == -1:
+        segments = Config.get_default_segments()
+    # Round up so the 45-degree arc endpoint lands on a cylinder vertex.
+    segments = ((segments + 7) // 8) * 8
     cylinder_cut = _fillet_cylinder(edge, size, segments)
 
     join = size * (1 - 1 / math.sqrt(2))
-    extent = 3 * size + abs(overhang)
-    bottom = -size - abs(overhang)
+    extent = 3 * size + overhang
+    bottom = -size - overhang
     points = [
         (join, join),
         (2 * join - bottom, bottom),
@@ -541,25 +590,27 @@ def comma_3d(edge, size=2.0, overhang=1e-5, flip_on_top=True):
     return difference(cutter, cylinder_cut, _orient_cutter(wedge, edge))
 
 
-def fillet_2d(size=2.0, overhang=1e-5):
-    return _cutter_profile(fillet_3d, size, overhang)
+def fillet_2d(size=2.0, overhang=1e-5, segments=-1):
+    return _cutter_profile(fillet_3d, size, overhang, segments)
 
 
-def fillet_3d(edge, size=2.0, overhang=1e-5):
+def fillet_3d(edge, size=2.0, overhang=1e-5, segments=-1):
     """Build a fillet cutter by removing a cylinder from the bevel."""
-    return difference(bevel_3d(edge, size, overhang), _fillet_cylinder(edge, size))
+    return difference(
+        bevel_3d(edge, size, overhang), _fillet_cylinder(edge, size, segments)
+    )
 
 
-def sawtooth_2d(size=2.0, overhang=1e-5):
+def sawtooth_2d(size=2.0, overhang=1e-5, segments=-1):
     """Return a representative section of the varying 3D sawtooth."""
-    return _cutter_profile(sawtooth_3d, size, overhang)
+    return _cutter_profile(sawtooth_3d, size, overhang, segments)
 
 
-def sawtooth_3d(edge, size=2.0, overhang=1e-5, flip_on_top=True):
+def sawtooth_3d(edge, size=2.0, overhang=1e-5, flip_on_top=True, segments=-1):
     """Vary the transition from 22.5 to 45 degrees, with pitch about size."""
     _validate_profile_dimensions(size, overhang)
-    if _vertical_edge(edge):
-        return fillet_3d(edge, size, overhang)
+    if segments == -1:
+        segments = Config.get_default_segments()
     length = Vec3.distance(edge[0], edge[1])
     samples_per_tooth = 8
     steps = samples_per_tooth * max(1, math.ceil(length / size))
@@ -567,33 +618,33 @@ def sawtooth_3d(edge, size=2.0, overhang=1e-5, flip_on_top=True):
         3 * math.pi / 16 + math.pi / 16 * math.cos(2 * math.pi * i / samples_per_tooth)
         for i in range(steps + 1)
     ]
-    arc_steps = max(1, math.ceil(Config.get_default_segments() / 8))
+    # The profile arc spans at most 45 degrees, 1/8 of a full circle.
+    arc_steps = max(1, math.ceil(segments / 8))
     return _profile_cutter(edge, size, overhang, flip_on_top, angles, arc_steps)
 
 
-def faceted_2d(size=2.0, overhang=1e-5):
+def faceted_2d(size=2.0, overhang=1e-5, segments=-1):
+    # segments is accepted for the uniform profile interface; facets are fixed.
     return _cutter_profile(faceted_3d, size, overhang)
 
 
 def faceted_3d(edge, size=2.0, overhang=1e-5, flip_on_top=True):
     """Approximate the upper fillet with two facets and a 45-degree tangent."""
     _validate_profile_dimensions(size, overhang)
-    if _vertical_edge(edge):
-        return fillet_3d(edge, size, overhang)
     return _profile_cutter(edge, size, overhang, flip_on_top, (math.pi / 4,) * 2, 2)
 
 
-def make_cutter(mod_type, edge, size=2.0, overhang=1e-5, flip_on_top=True):
+def make_cutter(mod_type, edge, size=2.0, overhang=1e-5, flip_on_top=True, segments=-1):
     if mod_type == "bevel" or mod_type == "chamfer":
         return bevel_3d(edge, size, overhang)
     elif mod_type == "fillet":
-        return fillet_3d(edge, size, overhang)
+        return fillet_3d(edge, size, overhang, segments)
     elif mod_type == "comma":
-        return comma_3d(edge, size, overhang, flip_on_top)
+        return comma_3d(edge, size, overhang, flip_on_top, segments)
     elif mod_type == "faceted":
         return faceted_3d(edge, size, overhang, flip_on_top)
     elif mod_type == "sawtooth":
-        return sawtooth_3d(edge, size, overhang, flip_on_top)
+        return sawtooth_3d(edge, size, overhang, flip_on_top, segments)
     raise ValueError(f"Unknown cutter type: {mod_type}")
 
 

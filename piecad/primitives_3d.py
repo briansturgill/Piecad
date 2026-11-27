@@ -465,12 +465,15 @@ def pyramid(height: int, num_sides: int, radius: float) -> Obj3d:
 
 def rounded_cuboid(
     size: list[float, float, float],
+    mod_type: str = "fillet",
     rounding_radius=2.0,
     segments: int = -1,
     center: bool = False,
 ) -> Obj3d:
     """
     Make a rounded_cuboid with the x, y, and z values given in size.
+
+    See [`modify_edges`](index.html#piecad.Obj3d.modify_edges). for details on the `mod_type` parameter.
 
     Parameter `rounding_radius` is the size of the rounded lip at top and bottom.
 
@@ -490,61 +493,9 @@ def rounded_cuboid(
         size = (size, size, size)
     if any(dimension == 0 for dimension in size):
         return Obj3d()
-    l = []
-    res = Config.get_layer_resolution()
-    arc_segs = rounding_radius / res
-    deg_per_arc_seg = 90.0 / arc_segs
-    deg = 0.0
-    cur_z = 0
     x, y, z = size
-    rr = rounding_radius
-    ix = x - 2 * rr
-    iy = y - 2 * rr
-    smallest_rr = sin(deg_per_arc_seg) / 2.0
-    l.append(
-        (cur_z, rounded_rectangle((ix, iy), smallest_rr, segments).translate((rr, rr)))
-    )
-    deg += deg_per_arc_seg
-    while deg < 90.0:
-        delta = rr * sin(deg)
-        cur_z = rr - rr * cos(deg)
-        l.append(
-            (
-                cur_z,
-                rounded_rectangle(
-                    (ix + 2 * delta, iy + 2 * delta), delta, segments
-                ).translate((rr - delta, rr - delta)),
-            )
-        )
-        deg += deg_per_arc_seg
-
-    cur_z = rr
-    l.append((cur_z, rounded_rectangle((x, y), rr, segments)))
-
-    cur_z = z - rr
-    l.append((cur_z, rounded_rectangle((x, y), rr, segments)))
-
-    deg = 90.0
-    deg -= deg_per_arc_seg
-    while deg > 0.0:
-        delta = rr * sin(deg)
-        cur_z = z - rr + rr * cos(deg)
-        l.append(
-            (
-                cur_z,
-                rounded_rectangle(
-                    ((ix) + 2 * delta, (iy) + 2 * delta), delta, segments
-                ).translate((rr - delta, rr - delta)),
-            )
-        )
-        deg -= deg_per_arc_seg
-
-    cur_z = z
-    l.append(
-        (cur_z, rounded_rectangle((ix, iy), smallest_rr, segments).translate((rr, rr)))
-    )
-
-    o = extrude_chaining(l, is_convex=True)
+    o = cuboid(size)
+    o = o.modify_edges(mod_type=mod_type, size=rounding_radius, segments=segments)
     if center:
         o = o.translate((-x / 2.0, -y / 2.0, -z / 2.0))
     return o

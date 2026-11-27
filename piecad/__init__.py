@@ -42,7 +42,7 @@ class ValidationError(Exception):
 
 from ._color import _parse_color
 
-__version__ = "2.1.4"
+__version__ = "2.1.5"
 
 
 def version() -> str:
@@ -256,6 +256,8 @@ class Obj3d:
         radius: float | tuple[float, float],
         outward: bool = True,
         size: float = 4.0,
+        overhang: float = 1e-5,
+        segments: int = -1,
     ) -> Obj3d:
         """
         Modify a circular or elliptical rim in the XY plane.
@@ -267,23 +269,39 @@ class Obj3d:
         complete, regularly segmented, and join horizontal and vertical faces;
         its segments and rotation are matched by the cutter.
 
-        `mod_type` and `size` have the same meaning as in `modify_edges`.
+        `mod_type` is a single profile name and `size` and `overhang` have
+        the same meaning as in `modify_edges`, which describes each profile.
         An elliptical cutter is made by scaling a circular one, so its
         profile width scales along Y. For an outside rim, the X radius must
-        exceed `size` plus the cutter's overhang (1e-5). The circular sawtooth
+        exceed `size` plus `overhang`. The circular sawtooth
         uses a fixed representative section of the varying straight-edge sawtooth.
         A rim that cannot be uniquely identified raises `ValueError`.
+
+        `segments` controls the resolution of curved profile arcs, such as
+        the fillet arc; `-1` uses the configured default. It does not affect
+        the cutter's revolution, which always matches the rim's own
+        segmentation.
         """
         _chkIn(
             "mod_type",
             mod_type,
             ["fillet", "chamfer", "bevel", "sawtooth", "comma", "faceted"],
         )
+        if segments == -1:
+            segments = Config.get_default_segments()
+        _chkGE("segments", segments, 3)
 
         from ._edge_modification import modify_circular_edges as _modify_circular_edges
 
         return _modify_circular_edges(
-            self, mod_type, origin, radius, outward, size=size
+            self,
+            mod_type,
+            origin,
+            radius,
+            outward,
+            size=size,
+            overhang=overhang,
+            segments=segments,
         )
 
     def modify_edge(
@@ -293,6 +311,9 @@ class Obj3d:
         size: float = 4.0,
         min_edge_length: float = 2.0,
         angle_range: tuple[float, float] = (80, 100),
+        overhang: float = 1e-5,
+        flip_on_top: bool = True,
+        segments: int = -1,
     ) -> Obj3d:
         """
         Modify the specified edge using the specified modification type.
@@ -301,8 +322,9 @@ class Obj3d:
 
         The `edge` parameter is a tuple of two points, specifying the `(start, end)` of the edge to be modified.
 
-        The modification type (`mod_type`) and `size` have the same meaning
-        as in `modify_edges`, which describes each profile.
+        The modification type (`mod_type`) is a single profile name, applied
+        to the edge whatever its position; `modify_edges` describes each
+        profile.
 
         The `size` parameter specifies the size or radius of the shape that will be applied to the edges.
 
@@ -315,12 +337,17 @@ class Obj3d:
         The further one gets from 90 degrees, the more likely that difficulties may arise during
         the modification process.
 
+        The `overhang`, `flip_on_top`, and `segments` parameters have the
+        same meaning as in `modify_edges`.
         """
         _chkIn(
             "mod_type",
             mod_type,
             ["fillet", "chamfer", "bevel", "sawtooth", "comma", "faceted"],
         )
+        if segments == -1:
+            segments = Config.get_default_segments()
+        _chkGE("segments", segments, 3)
 
         from ._edge_modification import modify_edges as _modify_edges
 
@@ -337,22 +364,28 @@ class Obj3d:
 
         return _modify_edges(
             self,
-            mod_type,
+            (mod_type, mod_type, mod_type),
             size=size,
             min_edge_length=min_edge_length,
             angle_range=angle_range,
             include=[bounds],
             exclude=None,
+            overhang=overhang,
+            flip_on_top=flip_on_top,
+            segments=segments,
         )
 
     def modify_edges(
         self,
-        mod_type: str,
+        mod_type: str | tuple[str, str, str],
         size: float = 4.0,
         min_edge_length: float = 2.0,
         angle_range: tuple[float, float] = (80, 100),
         include: list[tuple[float, float, float, float, float, float]] = None,
         exclude: list[tuple[float, float, float, float, float, float]] = None,
+        overhang: float = 1e-5,
+        flip_on_top: bool = True,
+        segments: int = -1,
     ) -> Obj3d:
         """
         Modify the edges of an `Obj3d` by applying the specified modification type.
@@ -360,7 +393,16 @@ class Obj3d:
         Somewhat EXPERIMENTAL - interface could change in future releases.
 
         The modification type (`mod_type`) selects the edge profile:
+        If a tuple of three strings is provided, they represent (top, side, bottom) edge profiles.
+        A single string is a short hand for a profile that is commonly used.
+        - "fillet": ("fillet", "fillet", "comma")
+        - "bevel": ("bevel", "bevel", "bevel")
+        - "chamfer": ("chamfer", "chamfer", "chamfer")
+        - "comma": ("comma", "fillet", "comma")
+        - "faceted": ("faceted", "fillet", "faceted")
+        - "sawtooth": ("sawtooth", "fillet", "sawtooth")
 
+        Profiles:
         - `fillet`: a rounded, circular profile.
         - `chamfer` or `bevel`: a straight 45-degree cut; these are aliases.
         - `comma`: a circular arc joined to a 45-degree tangent.
@@ -369,9 +411,10 @@ class Obj3d:
         - `sawtooth`: an arc joined to a tangent whose transition angle varies
           periodically from 22.5 to 45 degrees along the edge.
 
-        `comma`, `faceted`, and `sawtooth` use a regular fillet on vertical
-        straight edges. Circular and elliptical edges use a revolved profile;
-        see `modify_circular_edges` for details.
+        Each straight edge is classified as top, side (vertical), or bottom
+        from its direction and adjacent face normals, and is cut with the
+        matching profile from the tuple. Circular and elliptical edges use a
+        revolved profile; see `modify_circular_edges` for details.
 
         The `size` parameter specifies the size or radius of the shape that will be applied to the edges.
 
@@ -393,12 +436,42 @@ class Obj3d:
         If the include list is provided, only the edges selected in the list will be filleted.
         If the exclude list is provided, the edges selected in the list will be ignored.
         The exclude list always takes precedence over the include list.
+
+        The `overhang` parameter extends each cutter slightly past the
+        adjacent faces to avoid artifacts between coplanar surfaces; it
+        rarely needs changing.
+
+        The `flip_on_top` parameter affects only the asymmetric `comma`,
+        `faceted`, and `sawtooth` profiles. When `True` (the default), the
+        profile is mirrored on top-facing edges (where neither adjacent
+        normal points down and at least one points up).
+
+        The `segments` parameter controls the resolution of curved cutter
+        arcs, such as the fillet cylinder; `-1` uses the configured default.
         """
-        _chkIn(
-            "mod_type",
-            mod_type,
-            ["fillet", "chamfer", "bevel", "sawtooth", "comma", "faceted"],
-        )
+        profile_names = ["fillet", "chamfer", "bevel", "sawtooth", "comma", "faceted"]
+        shorthands = {
+            "fillet": ("fillet", "fillet", "comma"),
+            "bevel": ("bevel", "bevel", "bevel"),
+            "chamfer": ("chamfer", "chamfer", "chamfer"),
+            "comma": ("comma", "fillet", "comma"),
+            "faceted": ("faceted", "fillet", "faceted"),
+            "sawtooth": ("sawtooth", "fillet", "sawtooth"),
+        }
+        if isinstance(mod_type, str):
+            _chkIn("mod_type", mod_type, profile_names)
+            mod_type = shorthands[mod_type]
+        else:
+            mod_type = tuple(mod_type)
+            if len(mod_type) != 3:
+                raise ValidationError(
+                    "Parameter mod_type must be a profile name or a (top, side, bottom) tuple"
+                )
+            for profile in mod_type:
+                _chkIn("mod_type", profile, profile_names)
+        if segments == -1:
+            segments = Config.get_default_segments()
+        _chkGE("segments", segments, 3)
 
         from ._edge_modification import modify_edges as _modify_edges
 
@@ -410,6 +483,9 @@ class Obj3d:
             angle_range=angle_range,
             include=include,
             exclude=exclude,
+            overhang=overhang,
+            flip_on_top=flip_on_top,
+            segments=segments,
         )
 
     def num_faces(self) -> int:

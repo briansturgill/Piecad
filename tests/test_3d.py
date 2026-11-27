@@ -48,7 +48,7 @@ def _cuboid(s, c=False):
 
 
 def _rounded_cuboid(s, rr, segs, c=False):
-    c = rounded_cuboid(s, rr, segs, c)
+    c = rounded_cuboid(size=s, rounding_radius=rr, segments=segs, center=c)
     c.num_verts()
     return c
 
@@ -135,13 +135,13 @@ def test_cuboid_centered(benchmark):
 
 def test_rounded_cuboid(benchmark):
     c = benchmark(_rounded_cuboid, (15, 10, 36), 3.0, 100)
-    assert c.num_verts() == 6448
+    assert c.num_verts() == 384
     assert c.bounding_box() == (0, 0, 0, 15, 10, 36)
 
 
 def test_rounded_cuboid_centered(benchmark):
     c = benchmark(_rounded_cuboid, (15, 10, 36), 3.0, 100, True)
-    assert c.num_verts() == 6448
+    assert c.num_verts() == 384
     assert c.bounding_box() == (-7.5, -5, -18, 7.5, 5, 18)
 
 
